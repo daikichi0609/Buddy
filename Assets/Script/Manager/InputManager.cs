@@ -3,28 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-public class InputManager : SingletonMonoBehaviour<InputManager>
+public class InputManager : Singleton<InputManager>
 {
 	//移動方向
-	private Vector3 Direction
-    {
-		get;
-		set;
-    }
+	private Vector3 Direction { get; set; }
 
 	//追加入力受付用タイマー
-	private float Timer
-    {
-		get;
-		set;
-    }
+	private float Timer { get; set; }
 
 	//追加入力受付用フラグ
-	private bool IsWaitingAdditionalInput
-    {
-		get;
-		set;
-    }
+	private bool IsWaitingAdditionalInput { get; set; }
 
 	/// <summary>
 	/// UI表示中かどうか
@@ -34,11 +22,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 	/// <summary>
 	/// 重複入力を禁止するためのフラグ
 	/// </summary>
-	public bool IsProhibitDuplicateInput
-	{
-		get;
-		set;
-	}
+	public bool IsProhibitDuplicateInput { get; set; }
 
 	protected override void Awake()
     {
@@ -59,16 +43,14 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 		}
 
 		//プレイヤーキャラ取得
-		GameObject chara = ObjectManager.Instance.PlayerObject(0);
-		CharaMove playerMove = chara.GetComponent<CharaMove>();
-		CharaTurn charaTurn = chara.GetComponent<CharaTurn>();
-		PlayerBattle playerBattle = chara.GetComponent<PlayerBattle>();
+		var player = UnitManager.Interface.PlayerList[0];
+		var move = player.GetComponent<ICharaMove>();
+		var turn = player.GetComponent<ICharaTurn>();
+		var battle = player.GetComponent<ICharaBattle>();
 
 		//操作対象キャラのターンが終わっている場合、行動が禁じられている場合、UI表示中の場合は入力を受け付けない
-		if (charaTurn.IsFinishTurn == true || TurnManager.Instance.IsCanAction == false || IsUiPopUp == true)
-        {
+		if (turn.IsFinishTurn == true || TurnManager.Interface.CanAct == false || IsUiPopUp == true)
 			return;
-        }
 
 		//メニューを開く
 		if (Input.GetKeyDown(KeyCode.Q))
@@ -80,26 +62,21 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 
 		if (IsWaitingAdditionalInput == true)
         {
-			DetectAdditionalInput(chara);
+			DetectAdditionalInput(move);
 			return;
         }
 
 		if (Input.GetKey(KeyCode.W))
-		{
 			Direction = new Vector3(0f, 0f, 1);
-		}
+
 		if (Input.GetKey(KeyCode.A))
-		{
 			Direction = new Vector3(-1f, 0f, 0f);
-		}
+
 		if (Input.GetKey(KeyCode.S))
-		{
 			Direction = new Vector3(0f, 0f, -1);
-		}
+
 		if (Input.GetKey(KeyCode.D))
-		{
 			Direction = new Vector3(1f, 0f, 0f);
-		}
 
 		if(Direction != new Vector3(0f, 0f, 0f))
         {
@@ -107,41 +84,33 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 			return;
         }
 
-		if (playerMove.CharaAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle") == false)
-		{
+		var anim = player.GetComponent<ICharaAnimator>();
+		if (anim.IsCurrentState("Idle") == false)
 			return;
-		}
 
-		if (Input.GetKeyDown(KeyCode.E)　&& TurnManager.Instance.IsCanAttack == true)
-		{
-			playerBattle.Act(InternalDefine.ACTION.ATTACK);
-		}		
+		if (Input.GetKeyDown(KeyCode.E)　&& TurnManager.Interface.CanAct == true)
+			battle.NormalAttack();
+		
 	}
 
-	private void DetectAdditionalInput(GameObject chara)
+	private void DetectAdditionalInput(ICharaMove move)
     {
 		if (Input.GetKey(KeyCode.W) && Direction.z == 0)
-		{
 			Direction += new Vector3(0f, 0f, 1f);
-		}
+
 		if (Input.GetKey(KeyCode.A) && Direction.x == 0)
-		{
 			Direction += new Vector3(-1f, 0f, 0f);
-		}
+
 		if (Input.GetKey(KeyCode.S) && Direction.z == 0)
-		{
 			Direction += new Vector3(0f, 0f, -1);
-		}
+
 		if (Input.GetKey(KeyCode.D) && Direction.x == 0)
-		{
 			Direction += new Vector3(1f, 0f, 0f);
-		}
 
 		Timer += Time.deltaTime;
 		if(Timer >= 0.01f || JudgeDirectionDiagonal(Direction) == true)
         {
-			CharaMove playerMove = chara.GetComponent<CharaMove>();
-			playerMove.Move(Direction);
+			move.Move(Direction);
 			Direction = new Vector3(0f, 0f, 0f);
 			Timer = 0f;
 			IsWaitingAdditionalInput = false;
@@ -151,21 +120,16 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 	private bool JudgeDirectionDiagonal(Vector3 direction)
     {
 		if(direction == new Vector3(1f, 0f, 1f))
-        {
 			return true;
-        }
+
 		if (direction == new Vector3(1f, 0f, -1f))
-		{
 			return true;
-		}
+
 		if (direction == new Vector3(-1f, 0f, 1f))
-		{
 			return true;
-		}
+
 		if (direction == new Vector3(-1f, 0f, -1f))
-		{
 			return true;
-		}
 
 		return false;
 	}

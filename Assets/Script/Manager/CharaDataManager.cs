@@ -31,42 +31,14 @@ public static class CharaDataManager
 
 	public static PlayerStatus.PlayerParameter LoadPlayerScriptableObject(Define.CHARA_NAME name)
 	{
-		PlayerStatus.PlayerParameter param = new PlayerStatus.PlayerParameter();
-		PlayerStatus.PlayerParameter constParam = LoadPlayerParameter(name) as PlayerStatus.PlayerParameter;
-
-		param.Name = constParam.Name;
-		param.Hp = constParam.Hp;
-		param.Atk = constParam.Atk;
-		param.Def = constParam.Def;
-		param.Agi = constParam.Agi;
-		param.Dex = constParam.Dex;
-		param.Eva = constParam.Eva;
-		param.CriticalRate = constParam.CriticalRate;
-		param.Res = constParam.Res;
-
-		param.Luk = constParam.Luk;
-
-		return param;
+		PlayerStatus.PlayerParameter param = LoadCharaParameter(name) as PlayerStatus.PlayerParameter;
+		return new PlayerStatus.PlayerParameter(param);
     }
 
 	public static EnemyStatus.EnemyParameter LoadEnemyScriptableObject(Define.CHARA_NAME name)
 	{
-		EnemyStatus.EnemyParameter param = new EnemyStatus.EnemyParameter();
-		EnemyStatus.EnemyParameter constParam = LoadPlayerParameter(name) as EnemyStatus.EnemyParameter;
-
-		param.Name = constParam.Name;
-		param.Hp = constParam.Hp;
-		param.Atk = constParam.Atk;
-		param.Def = constParam.Def;
-		param.Agi = constParam.Agi;
-		param.Dex = constParam.Dex;
-		param.Eva = constParam.Eva;
-		param.CriticalRate = constParam.CriticalRate;
-		param.Res = constParam.Res;
-
-		param.Ex = constParam.Ex;
-
-		return param;
+        EnemyStatus.EnemyParameter param = LoadCharaParameter(name) as EnemyStatus.EnemyParameter;
+        return new EnemyStatus.EnemyParameter(param);
 	}
 
 	public static void SaveScriptableObject(BattleStatus status)
@@ -75,18 +47,18 @@ public static class CharaDataManager
 		AssetDatabase.SaveAssets();
 	}
 
-	public static BattleStatus.Parameter LoadPlayerParameter(Define.CHARA_NAME name)
+	public static BattleStatus.Parameter LoadCharaParameter(Define.CHARA_NAME name)
     {
-		PlayerStatus playerStatus = Resources.Load<PlayerStatus>(name.ToString());
-		if(playerStatus != null)
+		PlayerStatus playerParam = Resources.Load<PlayerStatus>(name.ToString());
+		if(playerParam != null)
         {
-			return playerStatus.Param;
+			return playerParam.Param;
         }
 
-		EnemyStatus enemyStatus = Resources.Load<EnemyStatus>(name.ToString());
-		if (enemyStatus != null)
+		EnemyStatus enemyParam = Resources.Load<EnemyStatus>(name.ToString());
+		if (enemyParam != null)
         {
-			return enemyStatus.Param;
+			return enemyParam.Param;
         }
 
 		Debug.LogError("キャラクターステータスの読み込みに失敗しました");

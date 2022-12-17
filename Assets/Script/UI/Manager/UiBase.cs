@@ -51,7 +51,7 @@ public abstract class UiBase
     /// <summary>
     /// 選択肢のメソッド
     /// </summary>
-    protected virtual List<Action> OptionMethods
+    protected virtual List<System.Action> OptionMethods
     {
         get;
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonContentsHolder : SingletonMonoBehaviour<DungeonContentsHolder>
+public class DungeonContentsHolder : Singleton<DungeonContentsHolder>
 {
     [SerializeField] private GameObject m_Wall;
     public GameObject Wall
@@ -77,5 +77,49 @@ public class DungeonContentsHolder : SingletonMonoBehaviour<DungeonContentsHolde
     public GameObject Rock_C
     {
         get { return m_Rock_C; }
+    }
+
+    public GameObject PathWayGrid
+    {
+        get
+        {
+            switch (GameManager.Instance.DungeonTheme)
+            {
+                case Define.DUNGEON_THEME.GRASS:
+                    return DungeonContentsHolder.Instance.Grass_C;
+
+                case Define.DUNGEON_THEME.ROCK:
+                    return DungeonContentsHolder.Instance.Rock_C;
+
+                case Define.DUNGEON_THEME.WHITE:
+                    return DungeonContentsHolder.Instance.White_C;
+
+                case Define.DUNGEON_THEME.CRYSTAL:
+                    return DungeonContentsHolder.Instance.CrystalRock_C;
+            }
+            return null;
+        }
+    }
+
+    public GameObject RoomGrid
+    {
+        get
+        {
+            switch (GameManager.Instance.DungeonTheme)
+            {
+                case Define.DUNGEON_THEME.GRASS:
+                    return DungeonContentsHolder.Instance.Grass_A;
+
+                case Define.DUNGEON_THEME.ROCK:
+                    return DungeonContentsHolder.Instance.Rock_A;
+
+                case Define.DUNGEON_THEME.WHITE:
+                    return DungeonContentsHolder.Instance.White_A;
+
+                case Define.DUNGEON_THEME.CRYSTAL:
+                    return DungeonContentsHolder.Instance.CrystalRock_A;
+            }
+            return null;
+        }
     }
 }

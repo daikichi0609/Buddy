@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CharaHolder : SingletonMonoBehaviour<CharaHolder>
+public class CharaHolder : Singleton<CharaHolder>
 {
     public GameObject CharaObject(Define.CHARA_NAME name)
     {

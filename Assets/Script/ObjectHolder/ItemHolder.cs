@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemHolder : SingletonMonoBehaviour<ItemHolder>
+public class ItemHolder : Singleton<ItemHolder>
 {
     public GameObject ItemObject(Define.ITEM_NAME name)
     {

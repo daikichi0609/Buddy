@@ -5,7 +5,7 @@ using UniRx;
 using System;
 using UnityEngine.UI;
 
-public class BagManager : SingletonMonoBehaviour<BagManager>
+public class BagManager : Singleton<BagManager>
 {
     /// <summary>
     /// マネージャークラス本体
@@ -57,7 +57,7 @@ public class BagManager : SingletonMonoBehaviour<BagManager>
         /// <summary>
         /// 選択肢のメソッド
         /// </summary>
-        protected override List<Action> OptionMethods => new List<Action>
+        protected override List<System.Action> OptionMethods => new List<System.Action>
         {
             () => SelectItem(BagManager.Instance.Bag.ItemList[OptionId])
         };
@@ -151,12 +151,12 @@ public class BagManager : SingletonMonoBehaviour<BagManager>
             MenuManager.Instance.GetManager.IsActive = true;
         }
 
-        public void SelectItem(Item item)
+        public void SelectItem(IItem item)
         {
 
         }
 
-        public void PutAway(GameObject item)
+        public void PutAway(IItem item)
         {
             bool success = BagManager.Instance.Bag.PutAway(item);
 

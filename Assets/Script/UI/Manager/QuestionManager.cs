@@ -9,7 +9,7 @@ using System;
 /// 選択肢と質問文のUi
 /// </summary>
 
-public class QuestionManager :SingletonMonoBehaviour<QuestionManager>
+public class QuestionManager :Singleton<QuestionManager>
 {
     /// <summary>
     /// マネージャークラス本体
@@ -56,7 +56,7 @@ public class QuestionManager :SingletonMonoBehaviour<QuestionManager>
         /// <summary>
         /// 選択肢のメソッド
         /// </summary>
-        protected override List<Action> OptionMethods => QuestionManager.Instance.Log.OptionMethod;
+        protected override List<System.Action> OptionMethods => QuestionManager.Instance.Log.OptionMethod;
 
         /// <summary>
         /// 操作するUi

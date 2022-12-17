@@ -71,7 +71,7 @@ public class RogueUtils
 
 }
 
-public class MapGenerator : SingletonMonoBehaviour<MapGenerator>
+public class MapGenerator : Singleton<MapGenerator>
 {
 
 	private const int MINIMUM_RANGE_WIDTH = 6;
@@ -106,7 +106,7 @@ public class MapGenerator : SingletonMonoBehaviour<MapGenerator>
 			{
 				for (int y = pass.Start.Y; y <= pass.End.Y; y++)
 				{
-					map[x, y] = (int)DungeonTerrain.GRID_ID.PATH_WAY;
+					map[x, y] = (int)GRID_ID.PATH_WAY;
 				}
 			}
 		}
@@ -116,7 +116,7 @@ public class MapGenerator : SingletonMonoBehaviour<MapGenerator>
 			{
 				for (int y = roomPass.Start.Y; y <= roomPass.End.Y; y++)
 				{
-					map[x, y] = (int)DungeonTerrain.GRID_ID.PATH_WAY;
+					map[x, y] = (int)GRID_ID.PATH_WAY;
 				}
 			}
 		}
@@ -126,7 +126,7 @@ public class MapGenerator : SingletonMonoBehaviour<MapGenerator>
 			{
 				for (int y = room.Start.Y; y <= room.End.Y; y++)
 				{
-					map[x, y] = (int)DungeonTerrain.GRID_ID.ROOM;
+					map[x, y] = (int)GRID_ID.ROOM;
 				}
 			}
 		}
@@ -258,7 +258,7 @@ public class MapGenerator : SingletonMonoBehaviour<MapGenerator>
 
 			// 部屋リストへ追加
 			Range room = new Range(startX, startY, endX, endY);
-			DungeonTerrain.Instance.RangeList.Add(room);
+			DungeonManager.Interface.RangeList.Add(room);
 			roomList.Add(room);
 
 			// 通路を作る

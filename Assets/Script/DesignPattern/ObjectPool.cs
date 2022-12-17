@@ -2,26 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool: SingletonMonoBehaviour<ObjectPool>
+public class ObjectPool: Singleton<ObjectPool>
 {
-    public Dictionary<string, List<GameObject>> ObjectPoolDictionary
-    {
-        get;
-    } = new Dictionary<string, List<GameObject>>();
+    public Dictionary<string, List<GameObject>> ObjectPoolDictionary { get; } = new Dictionary<string, List<GameObject>>();
 
-    public GameObject PoolObject(string key)
+    public bool TryGetPoolObject(string key, out GameObject gameObject)
     {
+        gameObject = null;
+
         ObjectPoolDictionary.TryGetValueEx(key, new List<GameObject>());
         if (ObjectPoolDictionary[key] == null || ObjectPoolDictionary[key].Count == 0)
         {
-            return null;
+            return false;
         }
 
         List<GameObject> list = ObjectPoolDictionary[key];
-        GameObject obj = list[list.Count - 1];
-        obj.SetActive(true);
+        gameObject = list[list.Count - 1];
+        gameObject.SetActive(true);
         list.RemoveAt(list.Count - 1);
-        return obj;
+        return true;
     }
 
     public void SetObject(string key, GameObject gameObject)

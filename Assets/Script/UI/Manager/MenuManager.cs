@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// 左上メニューと説明のUi
 /// </summary>
 
-public class MenuManager : SingletonMonoBehaviour<MenuManager>
+public class MenuManager : Singleton<MenuManager>
 {
     /// <summary>
     /// マネージャークラス本体
@@ -56,7 +56,7 @@ public class MenuManager : SingletonMonoBehaviour<MenuManager>
         /// <summary>
         /// 選択肢のメソッド
         /// </summary>
-        protected override List<Action> OptionMethods => new List<Action>
+        protected override List<System.Action> OptionMethods => new List<System.Action>
         {
             () => MenuManager.Instance.OpenBag(),
             () => MenuManager.Instance.CheckStatus(),

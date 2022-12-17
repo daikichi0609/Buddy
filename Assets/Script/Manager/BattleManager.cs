@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class BattleManager : SingletonMonoBehaviour<BattleManager>
+public class BattleManager : Singleton<BattleManager>
 {
     private delegate bool CheckFinishTurn();
     private CheckFinishTurn m_ChechFinishTurn;

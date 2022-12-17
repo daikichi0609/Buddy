@@ -3,39 +3,25 @@ using UnityEngine.UI;
 
 public class CharaUi : MonoBehaviour
 {
-    [SerializeField] private GameObject m_TargetObject;
-    public GameObject TargetObject
-    {
-        get { return m_TargetObject; }
-        set { m_TargetObject = value; }
-    }
+    private ICharaBattle m_Target;
 
-    [SerializeField] private Text m_CharaText;
-    public Text CharaName
-    {
-        get { return m_CharaText; }
-        set { m_CharaText = value; }
-    }
+    [SerializeField]
+    private Text m_CharaName;
 
-    [SerializeField] private Slider m_HpSlider;
-    public Slider HpSlider
-    {
-        get { return m_HpSlider; }
-        set { m_HpSlider = value; }
-    }
+    [SerializeField]
+    private Slider m_HpSlider;
 
-    public void Initialize(GameObject target)
+    public void Initialize(ICollector target)
     {
-        TargetObject = target;
-        CharaBattle chara = TargetObject.GetComponent<CharaBattle>();
-        CharaName.text = chara.Parameter.Name.ToString();
-        HpSlider.maxValue = chara.MaxHp;
-        HpSlider.value = chara.Parameter.Hp;
+        var battle = target.GetComponent<ICharaBattle>();
+        m_Target = battle;
+        m_CharaName.text = battle.Parameter.Name.ToString();
+        m_HpSlider.maxValue = battle.Parameter.MaxHp;
+        m_HpSlider.value = battle.Status.Hp;
     }
 
     public void UpdateUi()
     {
-        BattleStatus.Parameter param = TargetObject.GetComponent<CharaBattle>().Parameter;
-        HpSlider.value = param.Hp;
+        m_HpSlider.value = m_Target.Status.Hp;
     }
 }

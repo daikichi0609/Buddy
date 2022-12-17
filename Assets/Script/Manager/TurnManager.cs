@@ -4,158 +4,99 @@ using UnityEngine;
 using UniRx;
 using System;
 
-public class TurnManager : SingletonMonoBehaviour<TurnManager>
+public interface ITurnManager : ISingleton
+{
+    bool CanAct { get; }
+    void NextUnitAct();
+    IEnumerator WaitCanAct(Action action);
+    void AllCharaActionable();
+}
+
+public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 {
     /// <summary>
     /// 全キャラに行動を禁止させるフラグ
     /// </summary>
     [SerializeField]
-    private bool m_IsCanAction => IsCanAction;
-    public bool IsCanAction
+    private bool m_CanAct => CanAct;
+    private bool CanAct
     {
         get
         {
-            foreach(GameObject obj in ObjectManager.Instance.m_PlayerList)
-            {
-                if(obj.GetComponent<CharaTurn>().CAN_ACTION == false)
-                {
+            foreach(ICollector player in UnitManager.Interface.PlayerList)
+                if(player.GetComponent<ICharaTurn>().IsActing == true)
                     return false;
-                }
-            }
 
-            foreach (GameObject obj in ObjectManager.Instance.m_EnemyList)
-            {
-                if (obj.GetComponent<CharaTurn>().CAN_ACTION == false)
-                {
+            foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+                if (enemy.GetComponent<ICharaTurn>().IsActing == true)
                     return false;
-                }
-            }
 
             return true;
         }
     }
-
-    /// <summary>
-    /// 全キャラに攻撃を禁止させるフラグ
-    /// </summary>
-    [SerializeField]
-    private bool m_IsCanAttack => IsCanAttack;
-    public bool IsCanAttack
-    {
-        get
-        {
-            foreach (GameObject obj in ObjectManager.Instance.m_PlayerList)
-            {
-                if (obj.GetComponent<CharaTurn>().CAN_ATTACK == false)
-                {
-                    return false;
-                }
-            }
-
-            foreach (GameObject obj in ObjectManager.Instance.m_EnemyList)
-            {
-                if (obj.GetComponent<CharaTurn>().CAN_ATTACK == false)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    protected override void Awake()
-    {
-        MessageBroker.Default.Receive<Message.MFinishTurn>()
-            .Subscribe(_ => NextAction()).AddTo(this);
-    }
+    bool ITurnManager.CanAct => CanAct;
 
     /// <summary>
     /// 次の行動を促す
     /// </summary>
-    private void NextAction()
+    private void NextUnitAct()
     {
-        //行動禁止中なら受け付けない
-        if(IsCanAction == false)
-        {
-            Debug.Log("禁止中");
-            return;
-        }
-
-        //プレイヤーから回す
-        foreach(GameObject obj in ObjectManager.Instance.m_PlayerList)
-        {
-            if(obj.GetComponent<CharaTurn>().IsFinishTurn == false)
-            {
+        //プレイヤーの行動待ち
+        foreach (ICollector player in UnitManager.Interface.PlayerList)
+            if (player.GetComponent<ICharaTurn>().IsFinishTurn == false)
                 return;
-            }
-        }
 
         //敵
-        foreach(GameObject obj in ObjectManager.Instance.m_EnemyList)
-        {
-            if (obj.GetComponent<CharaTurn>().IsFinishTurn == false)
+        foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+            if (enemy.GetComponent<ICharaTurn>().IsFinishTurn == false)
             {
-                EnemyBattle enemyBattle = obj.GetComponent<EnemyBattle>();
-                enemyBattle.DecideAndExecuteAction();
+                var ai = enemy.GetComponent<IEnemyAi>();
+                ai.DecideAndExecuteAction();
                 return;
             }
-        }
 
         //全キャラ行動済みなら行動済みステータスをリセット
         AllCharaActionable();
     }
-
-    /// <summary>
-    /// 攻撃許可が出るまで待つ
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator WaitForIsCanAttack()
-    {
-        yield return new WaitUntil(() => IsCanAttack == true);
-    }
+    void ITurnManager.NextUnitAct() => NextUnitAct();
 
     /// <summary>
     /// 攻撃許可が出るまで待ってから実行
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    public IEnumerator WaitForIsCanAttack(Action action)
+    private IEnumerator WaitCanAct(Action action)
     {
-        yield return new WaitUntil(() => IsCanAttack == true);
+        yield return new WaitUntil(() => CanAct == true);
         action?.Invoke();
     }
+    IEnumerator ITurnManager.WaitCanAct(Action action) => WaitCanAct(action);
 
     /// <summary>
     /// 全キャラの行動済みステータスをリセット
     /// </summary>
-    public void AllCharaActionable()
+    private void AllCharaActionable()
     {
         AllPlayerActionable();
         AllEnemyActionable();
     }
+    void ITurnManager.AllCharaActionable() => AllCharaActionable();
 
     /// <summary>
     /// プレイヤーの行動済みステータスをリセット
     /// </summary>
-    public void AllPlayerActionable()
+    private void AllPlayerActionable()
     {
-        foreach (GameObject player in ObjectManager.Instance.m_PlayerList)
-        {
-            CharaTurn chara = player.GetComponent<CharaTurn>();
-            chara.StartTurn();
-        }
+        foreach (ICollector player in UnitManager.Interface.PlayerList)
+            player.GetComponent<ICharaTurn>().StartTurn();
     }
 
     /// <summary>
     /// 敵の行動済みステータスをリセット
     /// </summary>
-    public void AllEnemyActionable()
+    private void AllEnemyActionable()
     {
-        foreach (GameObject enemy in ObjectManager.Instance.m_EnemyList)
-        {
-            CharaTurn chara = enemy.GetComponent<CharaTurn>();
-            chara.StartTurn();
-        }
+        foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+            enemy.GetComponent<ICharaTurn>().StartTurn();
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundManager :  SingletonMonoBehaviour<SoundManager>
+public class SoundManager :  Singleton<SoundManager>
 {
     [SerializeField] private AudioSource m_BlueCrossBGM;
     public AudioSource BlueCrossBGM

@@ -3,13 +3,19 @@
 	// キャラ名
 	public enum CHARA_NAME
 	{
-		BOXMAN,
-		RAGON,
-		ICHIGO,
-		WIZARD,
-		ARCHER,
+		BOXMAN, // 段ボール
+		RAGON, // リザードマン
+		BERRY, // いちご
+		DORCHE, // 魔術師
 
-		MASHROOM
+		BALE, // 熊
+		LAMY, // 吸血鬼
+		PLISS, // 聖職者
+
+		KING, // 王様
+		BARM, // 騎士
+
+		MASHROOM, // きのこ
 	}
 
 	// アイテム名
@@ -63,17 +69,6 @@ public static class InternalDefine
 		ENEMY,
 		NONE
 	}
-
-	/// <summary>
-    /// 敵の行動タイプ
-    /// </summary>
-	public enum ENEMY_STATE
-	{
-		NONE,
-		SEARCHING,
-		CHASING,
-		ATTACKING
-	}
 }
 
 public static class Message
@@ -112,19 +107,11 @@ public static class Message
     }
 
 	/// <summary>
-    /// ターン終了通知
-    /// </summary>
-	public struct MFinishTurn
-    {
-		
-    }
-
-	/// <summary>
     /// ダメージ終了
     /// </summary>
-	public struct MFinishDamage
+	public readonly struct MFinishDamage
     {
-		public MFinishDamage(CharaBattle chara, bool isHit, bool isDead)
+		public MFinishDamage(ICharaBattle chara, bool isHit, bool isDead)
         {
 			Chara = chara;
 			IsHit = isHit;
@@ -134,7 +121,7 @@ public static class Message
 		/// <summary>
         /// 攻撃元のキャラ
         /// </summary>
-		public CharaBattle Chara
+		public ICharaBattle Chara
         {
 			get;
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraManager : SingletonMonoBehaviour<CameraManager>
+public class CameraManager : Singleton<CameraManager>
 {
     [SerializeField] private GameObject m_MainCamera;
     public GameObject MainCamera

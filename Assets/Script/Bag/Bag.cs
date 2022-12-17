@@ -4,29 +4,16 @@ using UnityEngine;
 
 public class Bag 
 {
-    public List<Item> ItemList
-    {
-        get;
-    } = new List<Item>();
+    private static readonly int InventoryCount = 9;
 
-    public int InventoryCount
-    {
-        get => BagManager.Instance.InventryCount;
-    }
+    public List<IItem> ItemList { get; } = new List<IItem>();
 
-    public bool PutAway(GameObject obj)
+    public bool PutAway(IItem item)
     {
-        Item item = obj.GetComponent<Item>();
-        if(item == null)
-        {
-            Debug.Log("不正なアイテムです");
-            return false;
-        }
-
         if(ItemList.Count < InventoryCount)
         {
             ItemList.Add(item);
-            ObjectPool.Instance.SetObject(item.Name.ToString(), obj);
+            ObjectPool.Instance.SetObject(item.Name.ToString(), item.GameObject);
             return true;
         }
         else

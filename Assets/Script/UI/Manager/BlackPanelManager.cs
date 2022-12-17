@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UniRx;
 using System;
 
-public class BlackPanelManager : SingletonMonoBehaviour<BlackPanelManager>
+public class BlackPanelManager : Singleton<BlackPanelManager>
 {
     //暗転・明転動作完了フラグ
     public bool IsActive

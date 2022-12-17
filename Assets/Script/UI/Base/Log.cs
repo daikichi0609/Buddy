@@ -23,7 +23,7 @@ public abstract class QuestionInfo
     }
 
     //選択肢のメソッド
-    public virtual List<Action> OptionMethod
+    public virtual List<System.Action> OptionMethod
     {
         get;
     }

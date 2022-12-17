@@ -6,7 +6,7 @@ using UniRx;
 using UniRx.Triggers;
 using System;
 
-public class GameManager : SingletonMonoBehaviour<GameManager>
+public class GameManager : Singleton<GameManager>
 {
     //現在のゲームステート
     [SerializeField] private InternalDefine.GAME_STATE m_CurrentGameState;
@@ -113,7 +113,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         Debug.Log("再初期化");
         RemoveDungeon();
         RebuildDungeon();
-        TurnManager.Instance.AllCharaActionable();
+        TurnManager.Interface.AllCharaActionable();
         BlackPanelManager.Instance.ControllText();
     }
 
@@ -127,14 +127,14 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     private void RebuildDungeon()
     {
         Debug.Log("Rebuild");
-        DungeonTerrain.Instance.DeployDungeon();
+        DungeonManager.Instance.DeployDungeon();
         DungeonContents.Instance.RedeployDungeonContents();
     }
 
     //ダンジョン破壊
     private void RemoveDungeon()
     {
-        DungeonTerrain.Instance.RemoveDungeon();
+        DungeonManager.Instance.RemoveDungeon();
         DungeonContents.Instance.RemoveDungeonContents();
     }
 

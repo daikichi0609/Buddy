@@ -19,9 +19,9 @@ public class StairsLog : QuestionInfo
         get => new List<string> { "はい", "いいえ" };
     }
 
-    public override List<Action> OptionMethod
+    public override List<System.Action> OptionMethod
     {
-        get => new List<Action> { () => Yes(), () => No() };
+        get => new List<System.Action> { () => Yes(), () => No() };
     }
 
     private void Yes()

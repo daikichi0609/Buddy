@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Param:
     m_GivenName: 5
-    m_Hp: 20
+    m_MaxHp: 100
     m_Atk: 8
     m_Def: 3
     m_Agi: 1
     m_Dex: 1
     m_Eva: 0.05
-    m_CriticalRank: 0.05
+    m_CriticalRate: 0
     m_Res: 0.05
     m_Ex: 2
