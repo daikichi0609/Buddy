@@ -28,6 +28,8 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
     private ICell DestinationCell { get; set; }
 
+    private InternalDefine.TARGET m_Target = InternalDefine.TARGET.PLAYER;
+
     protected override void Initialize()
     {
         m_CharaMove = Collector.GetComponent<ICharaMove>();
@@ -46,8 +48,8 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
                 // 行動禁止中なら待つ
                 if (TurnManager.Interface.CanAct == false)
                 {
-                    Debug.Log("禁止中");
-                    TurnManager.Interface.WaitCanAct(() => DecideAndExecuteAction());
+                    Debug.Log("攻撃禁止中");
+                    StartCoroutine(TurnManager.Interface.WaitCanAct(() => DecideAndExecuteAction()));
                     return;
                 }
                 Face(clue.TargetList);
@@ -172,11 +174,11 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
             foreach(ICell cell in gates)
             {
                 var distance = (m_CharaMove.Position - cell.Position).magnitude;
-                if (distance < minDistance)
+                if (distance > minDistance)
                     continue;
                 else if (distance == minDistance)
                     candidates.Add(cell);
-                else if (distance > minDistance)
+                else if (distance < minDistance)
                 {
                     candidates.Clear();
                     candidates.Add(cell);
@@ -186,7 +188,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         }
 
         //入り口についた場合、部屋を出る
-        if (m_CharaMove.Position == DestinationCell.Position)
+        if (m_CharaMove.Position.x == DestinationCell.X && m_CharaMove.Position.z == DestinationCell.Z)
         {
             var aroundGridID = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = aroundGridID.Cells;
@@ -237,22 +239,22 @@ public partial class EnemyAi
         var aroundCell = DungeonHandler.Interface.GetAroundCell((int)currentPos.x, (int)currentPos.z);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
-        if (TryGetCandidateAttack(aroundCell, out var attack) == true)
+        if (TryGetCandidateAttack(aroundCell, m_Target, out var attack) == true)
             return new ActionClue(ENEMY_STATE.ATTACKING, attack);
 
-        if (TryGetCandidateChase(currentPos, out var chase) == true)
+        if (TryGetCandidateChase(currentPos, m_Target, out var chase) == true)
             return new ActionClue(ENEMY_STATE.CHASING, chase);
 
         return new ActionClue(ENEMY_STATE.SEARCHING, null);
     }
 
-    private bool TryGetCandidateAttack(AroundCell aroundCell, out List<ICollector> targets)
+    private bool TryGetCandidateAttack(AroundCell aroundCell, InternalDefine.TARGET target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 
         foreach (KeyValuePair<DIRECTION, ICell> kvp in aroundCell.Cells)
         {
-            if (UnitManager.Interface.TryGetSpecifiedPositionPlayer(kvp.Value.Position, out var collector) == false)
+            if (UnitManager.Interface.TryGetSpecifiedPositionUnit(kvp.Value.Position, out var collector, target) == false)
                 continue;
 
             if (DungeonHandler.Interface.CanMoveDiagonal(aroundCell.BaseCell.Position, kvp.Key) == false)
@@ -264,7 +266,7 @@ public partial class EnemyAi
         return targets.Count != 0;
     }
 
-    private bool TryGetCandidateChase(Vector3 pos, out List<ICollector> targets)
+    private bool TryGetCandidateChase(Vector3 pos, InternalDefine.TARGET target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 
@@ -272,7 +274,7 @@ public partial class EnemyAi
         if (roomId == 0)
             return false;
 
-        UnitManager.Interface.TryGetSpecifiedRoomPlayerList(roomId, out targets);
+        UnitManager.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
 
         return targets.Count != 0;
     }

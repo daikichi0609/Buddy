@@ -197,7 +197,7 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
                             else
                                 cellObject.transform.position = new Vector3(i, 0, j);
 
-                            type = GRID_ID.NONE;
+                            type = GRID_ID.GATE;
                         }
                         else
                         {
@@ -207,12 +207,13 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
                                 cellObject.transform.position = new Vector3(i, 0, j);
 
 
-                            type = GRID_ID.NONE;
+                            type = GRID_ID.ROOM;
                         }
                         break;
                 }
 
                 var cell = cellObject.GetComponent<ICell>();
+                cell.GameObject = cellObject;
                 cell.GridID = type;
                 m_CellMap[i].Add(cell);
             }

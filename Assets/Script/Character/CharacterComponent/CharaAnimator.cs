@@ -17,6 +17,7 @@ public enum ANIMATION_TYPE
 public interface ICharaAnimator : ICharacterComponent
 {
     void PlayAnimation(ANIMATION_TYPE type);
+    void PlayAnimation(ANIMATION_TYPE type, float time);
 
     void StopAnimation(ANIMATION_TYPE type);
 
@@ -32,6 +33,11 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
     private Animator m_CharaAnimator;
 
     void ICharaAnimator.PlayAnimation(ANIMATION_TYPE type) => m_CharaAnimator.SetBool(GetKey(type), true);
+    void ICharaAnimator.PlayAnimation(ANIMATION_TYPE type, float time)
+    {
+        m_CharaAnimator.SetBool(GetKey(type), true);
+        StartCoroutine(Coroutine.DelayCoroutine(time, () => m_CharaAnimator.SetBool(GetKey(type), false)));
+    }
 
     void ICharaAnimator.StopAnimation(ANIMATION_TYPE type) => m_CharaAnimator.SetBool(GetKey(type), false);
 

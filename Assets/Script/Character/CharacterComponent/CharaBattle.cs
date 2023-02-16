@@ -75,13 +75,16 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
     private void NormalAttack(Vector3 direction, InternalDefine.TARGET target)
     {
         m_CharaTurn.StartAction();
-        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.ATTACK);
-        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackHitTime, () =>
+        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.ATTACK, ms_NormalAttackTotalTime);
+        StartCoroutine(Coroutine.DelayCoroutine(0.1f, () =>
         {
             SoundManager.Instance.Attack_Sword.Play();
         }));
 
-        Attack(direction, target);
+        var attackPos = m_CharaMove.Position + direction;
+
+        Attack(attackPos, target);
+        m_CharaTurn.FinishTurn();
     }
 
     void ICharaBattle.NormalAttack(Vector3 direction, InternalDefine.TARGET target) => NormalAttack(direction, target);
@@ -109,8 +112,10 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
         if (ConfirmAttack(attackPos, target, false) == false)
             return;
 
+        ICollector collector = null;
+
         //ターゲットの情報取得
-        if (UnitManager.Interface.TryGetSpecifiedPositionPlayer(attackPos, out var collector) == false)
+        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(attackPos, out collector, target) == false)
             return;
 
         if (collector.Require<ICharaBattle>(out var battle) == false)
@@ -137,8 +142,6 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
         {
             battle.Damage(this, power);
         }));
-
-        m_CharaTurn.FinishTurn();
     }
 
     private bool ConfirmAttack(Vector3 attackPos, InternalDefine.TARGET target, bool isPossibleToDiagonal)
@@ -180,14 +183,14 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
     void ICharaBattle.Damage(ICharaBattle oppChara, int power)
     {
         //ダメージ処理
-        int damage = Calculator.CalculateDamage(power, m_Parameter.Def);
+        int damage = Calculator.CalculateDamage(power, m_Status.Def);
         m_Status.Hp = Calculator.CalculateRemainingHp(m_Status.Hp, damage);
 
         SoundManager.Instance.Damage_Small.Play();
-        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.DAMAGE);
+        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.DAMAGE, ms_NormalAttackHitTime);
         StartCoroutine(Coroutine.DelayCoroutine(0.5f, () =>
         {
-            if (m_Parameter.MaxHp <= 0)
+            if (m_Status.Hp <= 0)
             {
                 Death();
                 MessageBroker.Default.Publish(new Message.MFinishDamage(oppChara, true, true));
@@ -201,7 +204,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
 
     protected virtual void Death()
     {
-        
+        Debug.Log("志望");
     }
 }
 

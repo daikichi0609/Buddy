@@ -17,8 +17,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// <summary>
     /// 全キャラに行動を禁止させるフラグ
     /// </summary>
-    [SerializeField]
-    private bool m_CanAct => CanAct;
     private bool CanAct
     {
         get

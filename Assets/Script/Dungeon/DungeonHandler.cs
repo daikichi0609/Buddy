@@ -7,6 +7,8 @@ public interface IDungeonHandler : ISingleton
     AroundCell GetAroundCell(int x, int z);
     AroundCellId GetAroundCellId(int x, int z);
 
+    bool CanMove(Vector3 pos, Vector3 dir);
+
     bool CanMoveDiagonal(Vector3 pos, Vector3 dir);
     bool CanMoveDiagonal(Vector3 pos, DIRECTION dir);
 
@@ -43,10 +45,6 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         int direction_x = (int)Positional.GetDirection(dir).x;
         int direction_z = (int)Positional.GetDirection(dir).z;
 
-        if (direction_x != 0 && direction_z != 0) //斜め移動の場合、壁が邪魔になっていないかどうかチェックする
-            if (CanMoveDiagonal(pos, dir) == false)
-                return false;
-
         int pos_x = (int)pos.x;
         int pos_z = (int)pos.z;
 
@@ -57,6 +55,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
 
         return false;
     }
+    bool IDungeonHandler.CanMove(Vector3 pos, Vector3 dir) => CanMove(pos, Positional.GetDirection(dir));
 
     /// <summary>
     /// 斜め移動できるかを調べる
@@ -72,7 +71,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         if (Map[(int)(pos.x + dir.x), (int)pos.z] == (int)GRID_ID.WALL || Map[(int)pos.x, (int)(pos.z + dir.z)] == (int)GRID_ID.WALL)
             return false;
 
-        return true;
+        return CanMove(pos, Positional.GetDirection(dir));
     }
 
     bool IDungeonHandler.CanMoveDiagonal(Vector3 pos, Vector3 dir) => CanMoveDiagonal(pos, dir);
@@ -165,26 +164,28 @@ public readonly struct AroundCellId
         Cells = new Dictionary<DIRECTION, int>();
 
         // 左
-        if (x - 1 >= 0)
-        {
+        if (x - 1 >= 0 && z - 1 >= 0)
             Cells.Add(DIRECTION.LOWER_LEFT, map[x - 1, z - 1]);
+
+        if (x - 1 >= 0)
             Cells.Add(DIRECTION.LEFT, map[x - 1, z]);
+
+        if (x - 1 >= 0 && z + 1 < map.Length)
             Cells.Add(DIRECTION.UPPER_LEFT, map[x - 1, z + 1]);
-        }
 
         // 上
         if (z + 1 < map.Length)
-        {
             Cells.Add(DIRECTION.UP, map[x, z + 1]);
+
+        if (x + 1 < map.Length && z + 1 < map.Length)
             Cells.Add(DIRECTION.UPPER_RIGHT, map[x + 1, z + 1]);
-        }
 
         // 右
         if (x + 1 < map.Length)
-        {
             Cells.Add(DIRECTION.RIGHT, map[x + 1, z]);
+
+        if (x + 1 < map.Length && z - 1 >= 0)
             Cells.Add(DIRECTION.LOWER_RIGHT, map[x + 1, z - 1]);
-        }
 
         // 下
         if (z - 1 >= 0)

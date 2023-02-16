@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MASHROOM
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 5
-    m_MaxHp: 100
+    m_GivenName: 9
+    m_MaxHp: 10
     m_Atk: 8
     m_Def: 3
     m_Agi: 1

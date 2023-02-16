@@ -109,9 +109,10 @@ public class CharaMove : CharaComponentBase, ICharaMove
         if (DungeonHandler.Interface.CanMoveDiagonal(Position, direction) == false)
             return false;
 
-        //敵をすり抜けはできない
         Vector3 destinationPos = Position + direction;
-        if (UnitManager.Interface.IsEnemyOn(destinationPos) == true)
+
+        // 他ユニットがいるなら移動不可
+        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
             return false;
 
         // 移動成功
