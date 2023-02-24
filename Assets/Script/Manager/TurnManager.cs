@@ -6,18 +6,31 @@ using System;
 
 public interface ITurnManager : ISingleton
 {
-    bool CanAct { get; }
-    void NextUnitAct();
-    IEnumerator WaitCanAct(Action action);
+    bool ProhibitAllAction { get; set; }
+    bool NoOneActing { get; }
     void AllCharaActionable();
 }
 
 public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 {
+    protected override void Awake()
+    {
+        base.Awake();
+
+        GameManager.Instance.GetUpdate
+            .Subscribe(_ => NextUnitAct()).AddTo(this);
+    }
+
     /// <summary>
-    /// 全キャラに行動を禁止させるフラグ
+    /// 全ての行動を禁じる
     /// </summary>
-    private bool CanAct
+    private bool ProhibitAllAction { get; set; }
+    bool ITurnManager.ProhibitAllAction { get => ProhibitAllAction; set => ProhibitAllAction = value; }
+
+    /// <summary>
+    /// 全てのキャラが行動中でない
+    /// </summary>
+    private bool NoOneActing
     {
         get
         {
@@ -32,21 +45,24 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
             return true;
         }
     }
-    bool ITurnManager.CanAct => CanAct;
+    bool ITurnManager.NoOneActing => NoOneActing;
 
     /// <summary>
     /// 次の行動を促す
     /// </summary>
     private void NextUnitAct()
     {
+        if (ProhibitAllAction == true)
+            return;
+
         //プレイヤーの行動待ち
         foreach (ICollector player in UnitManager.Interface.PlayerList)
-            if (player.GetComponent<ICharaTurn>().IsFinishTurn == false)
+            if (player.GetComponent<ICharaTurn>().CanAct == true)
                 return;
 
         //敵
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-            if (enemy.GetComponent<ICharaTurn>().IsFinishTurn == false)
+            if (enemy.GetComponent<ICharaTurn>().CanAct == true)
             {
                 var ai = enemy.GetComponent<IEnemyAi>();
                 ai.DecideAndExecuteAction();
@@ -56,19 +72,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         //全キャラ行動済みなら行動済みステータスをリセット
         AllCharaActionable();
     }
-    void ITurnManager.NextUnitAct() => NextUnitAct();
-
-    /// <summary>
-    /// 攻撃許可が出るまで待ってから実行
-    /// </summary>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    private IEnumerator WaitCanAct(Action action)
-    {
-        yield return new WaitUntil(() => CanAct == true);
-        action?.Invoke();
-    }
-    IEnumerator ITurnManager.WaitCanAct(Action action) => WaitCanAct(action);
 
     /// <summary>
     /// 全キャラの行動済みステータスをリセット
@@ -86,7 +89,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllPlayerActionable()
     {
         foreach (ICollector player in UnitManager.Interface.PlayerList)
-            player.GetComponent<ICharaTurn>().StartTurn();
+            player.GetComponent<ICharaTurn>().CanAct = true;
     }
 
     /// <summary>
@@ -95,6 +98,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllEnemyActionable()
     {
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-            enemy.GetComponent<ICharaTurn>().StartTurn();
+            enemy.GetComponent<ICharaTurn>().CanAct = true;
     }
 }

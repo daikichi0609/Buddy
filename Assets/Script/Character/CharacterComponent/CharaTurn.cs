@@ -5,14 +5,8 @@ using UniRx;
 
 public interface ICharaTurn : ICharacterComponent
 {
-    bool IsFinishTurn { get; }
-    bool IsActing { get; }
-
-    void StartTurn();
-    void FinishTurn();
-    void StartAction();
-    void FinishAction();
-
+    bool CanAct { get; set; }
+    bool IsActing { get; set; }
 }
 
 public class CharaTurn : CharaComponentBase, ICharaTurn
@@ -20,37 +14,46 @@ public class CharaTurn : CharaComponentBase, ICharaTurn
     /// <summary>
     /// 行動済みステータス
     /// </summary>
-    private bool IsFinishTurn { get; set; }
-    bool ICharaTurn.IsFinishTurn => IsFinishTurn;
-
-    /// <summary>
-    /// 行動中ステータス
-    /// 行動の終了 = ターン終了ではない場合に使う
-    /// </summary>
-    private bool IsActing { get; set; }
-    bool ICharaTurn.IsActing => IsActing;
-
-    /// <summary>
-    /// ターン開始 行動可能状態になる
-    /// </summary>
-    void ICharaTurn.StartTurn() => IsFinishTurn = false;
-
-    /// <summary>
-    /// ターン終了 行動済み状態になる
-    /// </summary>
-    void ICharaTurn.FinishTurn()
+    private bool CanAct { get; set; } = true;
+    bool ICharaTurn.CanAct
     {
-        IsFinishTurn = true;
-        TurnManager.Interface.NextUnitAct();
+        get => CanAct;
+        set => CanAct = value;
     }
 
     /// <summary>
-    /// アクション開始 アクション中状態になる
+    /// 行動中ステータス
     /// </summary>
-    void ICharaTurn.StartAction() => IsActing = true;
+    private bool IsActing { get; set; } = false;
+    bool ICharaTurn.IsActing
+    {
+        get => IsActing;
+        set => IsActing = value;
+    }
 
-    /// <summary>
-    /// アクション終わり
-    /// </summary>
-    void ICharaTurn.FinishAction() => IsActing = false;
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ICharaTurn>(this);
+    }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
+        {
+            // 攻撃
+            battle.OnAttackStart.Subscribe(_ => CanAct = false).AddTo(this);
+
+            // ダメージ前
+            battle.OnDamageStart.Subscribe(_ => CanAct = false).AddTo(this);
+        }
+
+        if (Owner.RequireComponent<ICharaMoveEvent>(out var move) == true)
+        {
+            // 移動前
+            move.OnMoveStart.Subscribe(_ => CanAct = false).AddTo(this);
+        }
+    }
 }

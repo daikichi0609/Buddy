@@ -65,7 +65,7 @@ public class DungeonContents : Singleton<DungeonContents>
 
         foreach(ICollector collector in UnitManager.Interface.PlayerList)
         {
-            if (collector.Require<ICharaMove>(out var move) == false)
+            if (collector.RequireComponent<ICharaMove>(out var move) == false)
                 continue;
 
             move.Warp(new Vector3(cell.X, 0.51f, cell.Z));
@@ -77,7 +77,7 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         foreach (ICollector player in UnitManager.Interface.PlayerList)
         {
-            string name = player.GetComponent<ICharaBattle>().Parameter.Name.ToString();
+            string name = player.GetComponent<ICharaStatus>().Parameter.Name.ToString();
             ObjectPool.Instance.SetObject(name, player.GetComponent<ICharaObjectHolder>().MoveObject);
         }
 
@@ -113,7 +113,7 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
         {
-            string name = enemy.GetComponent<ICharaBattle>().Parameter.Name.ToString();
+            string name = enemy.GetComponent<ICharaStatus>().Parameter.Name.ToString();
             ObjectPool.Instance.SetObject(name, enemy.GetComponent<ICharaObjectHolder>().MoveObject);
         }
 
@@ -124,7 +124,7 @@ public class DungeonContents : Singleton<DungeonContents>
     private void RemoveEnemyObject(ICollector enemy)
     {
         UnitManager.Interface.EnemyList.Remove(enemy);
-        string name = enemy.GetComponent<ICharaBattle>().Parameter.Name.ToString();
+        string name = enemy.GetComponent<ICharaStatus>().Parameter.Name.ToString();
         ObjectPool.Instance.SetObject(name, enemy.GetComponent<ICharaObjectHolder>().MoveObject);
     }
 

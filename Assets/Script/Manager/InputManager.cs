@@ -2,27 +2,76 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System;
 
-public class InputManager : Singleton<InputManager>
+[Flags]
+public enum KeyCodeFlag
 {
-	//移動方向
-	private Vector3 Direction { get; set; }
+	None = 0,
 
-	//追加入力受付用タイマー
-	private float Timer { get; set; }
+	// ----- 移動 ----- //
+	W = 1 << 1,
+	A = 1 << 2,
+	S = 1 << 3,
+	D = 1 << 4,
+	Right_Shift = 1 << 5,
 
-	//追加入力受付用フラグ
-	private bool IsWaitingAdditionalInput { get; set; }
+	// 攻撃
+	E = 1 << 6,
+
+	// インベントリ
+	Q = 1 << 7,
+
+	// Ui決定
+	Return = 1 << 8,
+}
+
+public readonly struct InputInfo
+{
+	/// <summary>
+	/// キーコード
+	/// </summary>
+	public KeyCodeFlag KeyCodeFlag { get; }
+
+	public InputInfo(KeyCodeFlag flag)
+	{
+		KeyCodeFlag = flag;
+	}
+}
+
+public interface IInputManager : ISingleton
+{
+    IObservable<InputInfo> InputEvent { get; }
+	Action SetActiveUi(IUiBase ui);
+	bool IsUiPopUp { get; }
+}
+
+public class InputManager : Singleton<InputManager, IInputManager>, IInputManager
+{
+	/// <summary>
+	/// 入力イベント
+	/// </summary>
+	private Subject<InputInfo> m_InputEvent = new Subject<InputInfo>();
+	IObservable<InputInfo> IInputManager.InputEvent => m_InputEvent;
+
+	/// <summary>
+	/// 今表示中のUi
+	/// </summary>
+	private IUiBase ActiveUi { get; set; }
+
+    Action IInputManager.SetActiveUi(IUiBase ui)
+	{
+		if (IsUiPopUp == true)
+			return null;
+
+		ActiveUi = ui;
+		return () => ActiveUi = null;
+	}
 
 	/// <summary>
 	/// UI表示中かどうか
 	/// </summary>
-	public bool IsUiPopUp => QuestionManager.Instance.GetManager.IsActive || MenuManager.Instance.GetManager.IsActive || BagManager.Instance.GetManager.IsActive;
-
-	/// <summary>
-	/// 重複入力を禁止するためのフラグ
-	/// </summary>
-	public bool IsProhibitDuplicateInput { get; set; }
+	public bool IsUiPopUp => ActiveUi != null;
 
 	protected override void Awake()
     {
@@ -32,105 +81,38 @@ public class InputManager : Singleton<InputManager>
 			.Subscribe(_ => DetectInput()).AddTo(this);
     }
 
-    //入力受付メソッド
+    //入力を見てメッセージ発行
     private void DetectInput()
     {
-		//入力禁止中なら入力を受け付けない
-		if (IsProhibitDuplicateInput == true)
-		{
-			IsProhibitDuplicateInput = false;
-			return;
-		}
-
-		//プレイヤーキャラ取得
-		var player = UnitManager.Interface.PlayerList[0];
-		var move = player.GetComponent<ICharaMove>();
-		var turn = player.GetComponent<ICharaTurn>();
-		var battle = player.GetComponent<ICharaBattle>();
-
-		//操作対象キャラのターンが終わっている場合、行動が禁じられている場合、UI表示中の場合は入力を受け付けない
-		if (turn.IsFinishTurn == true || TurnManager.Interface.CanAct == false || IsUiPopUp == true)
-			return;
-
-		//メニューを開く
-		if (Input.GetKeyDown(KeyCode.Q))
-		{
-			IsProhibitDuplicateInput = true;
-			MenuManager.Instance.GetManager.IsActive = true;
-			return;
-		}
-
-		if (IsWaitingAdditionalInput == true)
-        {
-			DetectAdditionalInput(move);
-			return;
-        }
+		var flag = KeyCodeFlag.None;
 
 		if (Input.GetKey(KeyCode.W))
-			Direction = new Vector3(0f, 0f, 1);
+			flag |= KeyCodeFlag.W;
 
-		if (Input.GetKey(KeyCode.A))
-			Direction = new Vector3(-1f, 0f, 0f);
+        if (Input.GetKey(KeyCode.A))
+            flag |= KeyCodeFlag.A;
 
-		if (Input.GetKey(KeyCode.S))
-			Direction = new Vector3(0f, 0f, -1);
+        if (Input.GetKey(KeyCode.S))
+            flag |= KeyCodeFlag.S;
 
-		if (Input.GetKey(KeyCode.D))
-			Direction = new Vector3(1f, 0f, 0f);
+        if (Input.GetKey(KeyCode.D))
+            flag |= KeyCodeFlag.D;
 
-		if(Direction != new Vector3(0f, 0f, 0f))
-        {
-			IsWaitingAdditionalInput = true;
-			return;
-        }
+        if (Input.GetKey(KeyCode.RightShift))
+            flag |= KeyCodeFlag.Right_Shift;
 
-		var anim = player.GetComponent<ICharaAnimator>();
-		if (anim.IsCurrentState("Idle") == false)
-			return;
+        if (Input.GetKey(KeyCode.E))
+            flag |= KeyCodeFlag.E;
 
-		if (Input.GetKeyDown(KeyCode.E)　&& TurnManager.Interface.CanAct == true)
-			battle.NormalAttack();
-		
+        if (Input.GetKey(KeyCode.Q))
+            flag |= KeyCodeFlag.Q;
+
+        m_InputEvent.OnNext(new InputInfo(flag));
 	}
+}
 
-	private void DetectAdditionalInput(ICharaMove move)
-    {
-		if (Input.GetKey(KeyCode.W) && Direction.z == 0)
-			Direction += new Vector3(0f, 0f, 1f);
-
-		if (Input.GetKey(KeyCode.A) && Direction.x == 0)
-			Direction += new Vector3(-1f, 0f, 0f);
-
-		if (Input.GetKey(KeyCode.S) && Direction.z == 0)
-			Direction += new Vector3(0f, 0f, -1);
-
-		if (Input.GetKey(KeyCode.D) && Direction.x == 0)
-			Direction += new Vector3(1f, 0f, 0f);
-
-		Timer += Time.deltaTime;
-		if(Timer >= 0.01f || JudgeDirectionDiagonal(Direction) == true)
-        {
-			move.Move(Direction);
-			Direction = new Vector3(0f, 0f, 0f);
-			Timer = 0f;
-			IsWaitingAdditionalInput = false;
-		}
-    }
-
-	private bool JudgeDirectionDiagonal(Vector3 direction)
-    {
-		if(direction == new Vector3(1f, 0f, 1f))
-			return true;
-
-		if (direction == new Vector3(1f, 0f, -1f))
-			return true;
-
-		if (direction == new Vector3(-1f, 0f, 1f))
-			return true;
-
-		if (direction == new Vector3(-1f, 0f, -1f))
-			return true;
-
-		return false;
-	}
+// 拡張メソッド
+static class EnumExtensions
+{
+    public static bool HasBitFlag(this KeyCodeFlag value, KeyCodeFlag flag) => (value & flag) == flag;
 }

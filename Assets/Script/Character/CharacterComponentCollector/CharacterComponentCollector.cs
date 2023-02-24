@@ -11,7 +11,7 @@ public interface ICollector
     /// コンポーネント登録
     /// </summary>
     /// <param name="comp"></param>
-    void Register(ICharacterComponent comp);
+    void Register<TComp>(TComp comp) where TComp : class, ICharacterComponent;
 
     /// <summary>
     /// コンポーネント取得
@@ -25,7 +25,7 @@ public interface ICollector
     /// </summary>
     /// <param name="comp"></param>
     /// <returns></returns>
-    bool Require<TComp>(out TComp comp) where TComp : class, ICharacterComponent;
+    bool RequireComponent<TComp>(out TComp comp) where TComp : class, ICharacterComponent;
 }
 
 /// <summary>
@@ -35,7 +35,16 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector
 {
     private List<ICharacterComponent> m_Components = new List<ICharacterComponent>();
 
-    void ICollector.Register(ICharacterComponent comp)
+    /// <summary>
+    /// Initialize実行
+    /// </summary>
+    private void Start()
+    {
+        foreach(var comp in m_Components)
+            comp.Initialize();
+    }
+
+    void ICollector.Register<TComp>(TComp comp)
     {
         m_Components.Add(comp);
     }
@@ -50,7 +59,7 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector
         return null;
     }
 
-    bool ICollector.Require<TComp>(out TComp comp)
+    bool ICollector.RequireComponent<TComp>(out TComp comp)
     {
         foreach (var val in m_Components)
             if (val is TComp)

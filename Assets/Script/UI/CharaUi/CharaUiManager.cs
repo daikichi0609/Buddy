@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-public interface ICharaUiHandler : ISingleton
+public interface ICharaUiManager : ISingleton
 {
     void InitializeCharacterUi(ICollector player);
 }
 
-public class CharaUiHandler : Singleton<CharaUiHandler, ICharaUiHandler>, ICharaUiHandler
+public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, ICharaUiManager
 {
     //各キャラUI格納用List（キャラUiは他とは別）
     [SerializeField] private List<CharaUi> m_CharacterUiList = new List<CharaUi>();
@@ -26,7 +26,7 @@ public class CharaUiHandler : Singleton<CharaUiHandler, ICharaUiHandler>, IChara
             .Subscribe(_ => UpdateCharaUi());
     }
 
-    void ICharaUiHandler.InitializeCharacterUi(ICollector player)
+    void ICharaUiManager.InitializeCharacterUi(ICollector player)
     {
         GameObject obj = Instantiate(UiHolder.Instance.CharacterUi);
         obj.transform.SetParent(UiHolder.Instance.Canvas.transform, false);

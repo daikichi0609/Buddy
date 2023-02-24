@@ -63,7 +63,7 @@ public static class InternalDefine
 	/// <summary>
     /// 目標にするターゲット
     /// </summary>
-	public enum TARGET
+	public enum CHARA_TYPE
 	{
 		PLAYER,
 		ENEMY,

@@ -28,12 +28,18 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
     private ICell DestinationCell { get; set; }
 
-    private InternalDefine.TARGET m_Target = InternalDefine.TARGET.PLAYER;
+    private InternalDefine.CHARA_TYPE m_Target = InternalDefine.CHARA_TYPE.PLAYER;
+
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<IEnemyAi>(this);
+    }
 
     protected override void Initialize()
     {
-        m_CharaMove = Collector.GetComponent<ICharaMove>();
-        m_CharaBattle = Collector.GetComponent<ICharaBattle>();
+        m_CharaMove = Owner.GetComponent<ICharaMove>();
+        m_CharaBattle = Owner.GetComponent<ICharaBattle>();
     }
 
     /// <summary>
@@ -45,13 +51,6 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         switch (clue.State)
         {
             case ENEMY_STATE.ATTACKING:
-                // 行動禁止中なら待つ
-                if (TurnManager.Interface.CanAct == false)
-                {
-                    Debug.Log("攻撃禁止中");
-                    StartCoroutine(TurnManager.Interface.WaitCanAct(() => DecideAndExecuteAction()));
-                    return;
-                }
                 Face(clue.TargetList);
                 NormalAttack();
                 break;
@@ -84,7 +83,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         return target;
     }
 
-    private void NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, InternalDefine.TARGET.PLAYER);
+    private void NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, InternalDefine.CHARA_TYPE.PLAYER);
 
     /// <summary>
     /// 追いかける
@@ -248,7 +247,7 @@ public partial class EnemyAi
         return new ActionClue(ENEMY_STATE.SEARCHING, null);
     }
 
-    private bool TryGetCandidateAttack(AroundCell aroundCell, InternalDefine.TARGET target, out List<ICollector> targets)
+    private bool TryGetCandidateAttack(AroundCell aroundCell, InternalDefine.CHARA_TYPE target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 
@@ -266,7 +265,7 @@ public partial class EnemyAi
         return targets.Count != 0;
     }
 
-    private bool TryGetCandidateChase(Vector3 pos, InternalDefine.TARGET target, out List<ICollector> targets)
+    private bool TryGetCandidateChase(Vector3 pos, InternalDefine.CHARA_TYPE target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 

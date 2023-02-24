@@ -1,178 +1,155 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System.Threading.Tasks;
 
 public interface ICharaBattle : ICharacterComponent
 {
-    void NormalAttack();
-    void NormalAttack(Vector3 direction, InternalDefine.TARGET target);
+    Task NormalAttack();
+    Task NormalAttack(Vector3 direction, InternalDefine.CHARA_TYPE target);
 
-    void Damage(ICharaBattle oppChara, int power);
-
-    BattleStatus.Parameter Parameter { get; }
-    CurrentStatus Status { get; }
+    AttackResult Damage(AttackInfo attackInfo);
 }
 
-public class CharaBattle : CharaComponentBase, ICharaBattle
+public interface ICharaBattleEvent : ICharacterComponent
 {
-    private ICharaMove m_CharaMove;
+    /// <summary>
+    /// 攻撃前
+    /// </summary>
+    IObservable<AttackInfo> OnAttackStart { get; }
 
+    /// <summary>
+    /// 攻撃後
+    /// </summary>
+    IObservable<AttackResult> OnAttackEnd { get; }
+
+    /// <summary>
+    /// ダメージ前
+    /// </summary>
+    IObservable<AttackResult> OnDamageStart { get; }
+
+    /// <summary>
+    /// ダメージ後
+    /// </summary>
+    IObservable<AttackResult> OnDamageEnd { get; }
+}
+
+public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
+{
+    private ICharaStatus m_CharaStatus;
+    private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
 
-    private ICharaAnimator m_CharaAnimator;
-
-    private ICharaCondition m_CharaCondition;
-
-    [SerializeField]
-    private Define.CHARA_NAME m_Name = Define.CHARA_NAME.BOXMAN;
+    public static readonly int ms_NormalAttackTotalTime = 700;
+    public static readonly int ms_NormalAttackHitTime = 400;
+    public static readonly int ms_DamageTotalTime = 500;
 
     /// <summary>
-    /// 元パラメータ
+    /// 味方か敵か
     /// </summary>
-    private BattleStatus.Parameter m_Parameter;
-    BattleStatus.Parameter ICharaBattle.Parameter => m_Parameter;
+    private InternalDefine.CHARA_TYPE m_Type = InternalDefine.CHARA_TYPE.NONE;
 
     /// <summary>
-    /// 現在のステータス
+    /// ステータス
     /// </summary>
-    private CurrentStatus m_Status;
-    CurrentStatus ICharaBattle.Status => m_Status;
+    private CurrentStatus Status => m_CharaStatus.CurrentStatus;
 
     /// <summary>
-    /// 通常攻撃演出時間
+    /// 攻撃前に呼ばれる
     /// </summary>
-    private static readonly float ms_NormalAttackTotalTime = 0.6f;
+    private Subject<AttackInfo> m_OnAttackStart = new Subject<AttackInfo>();
+    IObservable<AttackInfo> ICharaBattleEvent.OnAttackStart => m_OnAttackStart;
 
     /// <summary>
-    /// 通常攻撃ヒットタイミング
+    /// 攻撃後に呼ばれる
     /// </summary>
-    private static readonly float ms_NormalAttackHitTime = 0.4f;
+    private Subject<AttackResult> m_OnAttackEnd = new Subject<AttackResult>();
+    IObservable<AttackResult> ICharaBattleEvent.OnAttackEnd => m_OnAttackEnd;
+
+    /// <summary>
+    /// ダメージ前に呼ばれる
+    /// </summary>
+    private Subject<AttackResult> m_OnDamageStart = new Subject<AttackResult>();
+    IObservable<AttackResult> ICharaBattleEvent.OnDamageStart => m_OnDamageStart;
+
+    /// <summary>
+    /// ダメージ後に呼ばれる
+    /// </summary>
+    private Subject<AttackResult> m_OnDamageEnd = new Subject<AttackResult>();
+    IObservable<AttackResult> ICharaBattleEvent.OnDamageEnd => m_OnDamageEnd;
+
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ICharaBattle>(this);
+        owner.Register<ICharaBattleEvent>(this);
+    }
 
     protected override void Initialize()
     {
-        m_CharaMove = Collector.GetComponent<ICharaMove>();
-        m_CharaTurn = Collector.GetComponent<ICharaTurn>();
-        m_CharaAnimator = Collector.GetComponent<ICharaAnimator>();
-        m_CharaCondition = Collector.GetComponent<ICharaCondition>();
+        m_CharaStatus = Owner.GetComponent<ICharaStatus>();
+        m_CharaMove = Owner.GetComponent<ICharaMove>();
+        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
 
-        m_Parameter = CharaDataManager.LoadCharaParameter(m_Name);
-        m_Status = new CurrentStatus(m_Parameter);
-
-        CharaUiHandler.Interface.InitializeCharacterUi(this.Collector);
+        if (Owner.RequireComponent<IEnemyAi>(out var enemy) == true)
+            m_Type = InternalDefine.CHARA_TYPE.ENEMY;
+        else
+            m_Type = InternalDefine.CHARA_TYPE.PLAYER;
     }
 
     /// <summary>
-    /// 通常攻撃 プレイヤー用
+    /// 通常攻撃・プレイヤー操作
     /// </summary>
-    void ICharaBattle.NormalAttack() => NormalAttack(m_CharaMove.Direction, InternalDefine.TARGET.ENEMY);
+    async Task ICharaBattle.NormalAttack() => await NormalAttack(m_CharaMove.Direction, InternalDefine.CHARA_TYPE.ENEMY);
 
     /// <summary>
-    /// 通常攻撃 Ai用
+    /// 通常攻撃
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="target"></param>
-    private void NormalAttack(Vector3 direction, InternalDefine.TARGET target)
+    private async Task NormalAttack(Vector3 direction, InternalDefine.CHARA_TYPE target)
     {
-        m_CharaTurn.StartAction();
-        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.ATTACK, ms_NormalAttackTotalTime);
-        StartCoroutine(Coroutine.DelayCoroutine(0.1f, () =>
-        {
-            SoundManager.Instance.Attack_Sword.Play();
-        }));
+        // 誰かが行動中なら攻撃できない
+        if (TurnManager.Interface.NoOneActing == false)
+            return;
+
+        var attackInfo = new AttackInfo(Status.Name, Status.Atk, Status.Dex);
+        m_OnAttackStart.OnNext(attackInfo);
 
         var attackPos = m_CharaMove.Position + direction;
+        var result = await AttackInternal(attackPos, target, attackInfo);
 
-        Attack(attackPos, target);
-        m_CharaTurn.FinishTurn();
+        //モーション終わりに実行
+        m_OnAttackEnd.OnNext(result);
     }
 
-    void ICharaBattle.NormalAttack(Vector3 direction, InternalDefine.TARGET target) => NormalAttack(direction, target);
+    async Task ICharaBattle.NormalAttack(Vector3 direction, InternalDefine.CHARA_TYPE target) => await NormalAttack(direction, target);
 
     /// <summary>
     /// 攻撃 空振り考慮のプレイヤー用
     /// </summary>
     /// <param name="attackPos"></param>
     /// <param name="target"></param>
-    private void Attack(Vector3 attackPos, InternalDefine.TARGET target)
+    private async Task<AttackResult> AttackInternal(Vector3 attackPos, InternalDefine.CHARA_TYPE target, AttackInfo attackInfo)
     {
-        //攻撃音
-        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackHitTime, () =>
-        {
-            SoundManager.Instance.Miss.Play();
-        }));
+        await Task.Delay(ms_NormalAttackTotalTime); // モーション終わりまで
+        Debug.Log("Attack End");
 
-        //アクション終了
-        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackTotalTime, () =>
-        {
-            m_CharaTurn.FinishAction();
-        }));
+        // 角抜け確認
+        if (DungeonHandler.Interface.CanMoveDiagonal(m_CharaMove.Position, m_CharaMove.Direction) == false)
+            return AttackResult.Invalid;
 
-        //攻撃対象がいるか
-        if (ConfirmAttack(attackPos, target, false) == false)
-            return;
+        // ターゲットの情報取得
+        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false)
+            return AttackResult.Invalid;
 
-        ICollector collector = null;
+        // 必要なコンポーネント
+        if (collector.RequireComponent<ICharaBattle>(out var battle) == false)
+            return AttackResult.Invalid;
 
-        //ターゲットの情報取得
-        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(attackPos, out collector, target) == false)
-            return;
-
-        if (collector.Require<ICharaBattle>(out var battle) == false)
-            return;
-
-        CurrentStatus targetStatus = battle.Status;
-
-        //ヒットorノット判定
-        if (Calculator.JudgeHit(m_Status.Dex, targetStatus.Eva) == false)
-        {
-            //攻撃音
-            StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackTotalTime, () =>
-            {
-                SoundManager.Instance.Miss.Play();
-            }));
-            return;
-        }
-
-        //威力計算
-        int power = m_Status.Atk;
-
-        //ダメージはモーション終わりに実行
-        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackTotalTime, () =>
-        {
-            battle.Damage(this, power);
-        }));
-    }
-
-    private bool ConfirmAttack(Vector3 attackPos, InternalDefine.TARGET target, bool isPossibleToDiagonal)
-    {
-        //壁抜け不可能ならできなくする
-        if (isPossibleToDiagonal == false)
-            if (DungeonHandler.Interface.CanMoveDiagonal(m_CharaMove.Position, m_CharaMove.Direction)== false)
-                return false;
-
-        //攻撃範囲に攻撃対象がいるか確認
-        switch (target)
-        {
-            case InternalDefine.TARGET.PLAYER:
-                return UnitManager.Interface.IsPlayerOn(attackPos);
-
-            case InternalDefine.TARGET.ENEMY:
-                return UnitManager.Interface.IsEnemyOn(attackPos);
-
-            case InternalDefine.TARGET.NONE:
-                return UnitManager.Interface.IsUnitOn(attackPos);
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// スキル
-    /// </summary>
-    protected virtual void Skill()
-    {
-
+        return battle.Damage(attackInfo);
     }
 
     /// <summary>
@@ -180,77 +157,35 @@ public class CharaBattle : CharaComponentBase, ICharaBattle
     /// </summary>
     /// <param name="power"></param>
     /// <param name="dex"></param>
-    void ICharaBattle.Damage(ICharaBattle oppChara, int power)
+    AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
     {
-        //ダメージ処理
-        int damage = Calculator.CalculateDamage(power, m_Status.Def);
-        m_Status.Hp = Calculator.CalculateRemainingHp(m_Status.Hp, damage);
+        var isHit = Calculator.JudgeHit(attackInfo.Dex, Status.Eva);
 
-        SoundManager.Instance.Damage_Small.Play();
-        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.DAMAGE, ms_NormalAttackHitTime);
-        StartCoroutine(Coroutine.DelayCoroutine(0.5f, () =>
+        if (isHit == false)
+            return AttackResult.Invalid;
+
+        //ダメージ処理
+        int damage = Calculator.CalculateDamage(attackInfo.Atk, Status.Def);
+        Status.Hp = Calculator.CalculateRemainingHp(Status.Hp , damage);
+        bool isDead = Status.Hp == 0;
+
+        var result = new AttackResult(attackInfo, Status.Name, isHit, damage, Status.Hp, isDead);
+        m_OnDamageStart.OnNext(result);
+
+        // awaitしない
+        var _ = Task.Run(async () =>
         {
-            if (m_Status.Hp <= 0)
-            {
+            await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
+            m_OnDamageEnd.OnNext(result);
+            if (isDead == true)
                 Death();
-                MessageBroker.Default.Publish(new Message.MFinishDamage(oppChara, true, true));
-            }
-            else
-            {
-                MessageBroker.Default.Publish(new Message.MFinishDamage(oppChara, true, false));
-            }
-        }));
+        });
+
+        return result;
     }
 
     protected virtual void Death()
     {
-        Debug.Log("志望");
+
     }
-}
-
-
-public class CurrentStatus
-{
-    /// <summary>
-    /// 初期化
-    /// </summary>
-    /// <param name="param"></param>
-    public CurrentStatus(BattleStatus.Parameter param)
-    {
-        Hp = param.MaxHp;
-        Atk = param.Atk;
-        Def = param.Def;
-        Agi = param.Agi;
-        Dex = param.Dex;
-        Eva = param.Eva;
-        CriticalRate = param.CriticalRate;
-        Res = param.Res;
-    }
-
-    // レベル
-    public int Lv { get; set; } = 1;
-
-    // ヒットポイント
-    public int Hp { get; set; }
-
-    // 攻撃力
-    public int Atk { get; set; }
-
-    // 防御力
-    public int Def { get; set; }
-
-    // 速さ
-    public int Agi { get; set; }
-
-    // 命中率補正
-    public float Dex { get; set; }
-
-    // 回避率補正
-    public float Eva { get; set; }
-
-    // 会心率補正
-    public float CriticalRate { get; set; }
-
-    // 抵抗率
-    public float Res { get; set; }
 }

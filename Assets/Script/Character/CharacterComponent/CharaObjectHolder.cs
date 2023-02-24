@@ -12,12 +12,6 @@ public interface ICharaObjectHolder : ICharacterComponent
 
 public class CharaObjectHolder : CharaComponentBase, ICharaObjectHolder
 {
-    public CharaObjectHolder(GameObject chara, GameObject move)
-    {
-        m_CharaObject = chara;
-        m_MoveObject = move;
-    }
-
     /// <summary>
     /// キャラのオブジェクト
     /// </summary>
@@ -31,4 +25,10 @@ public class CharaObjectHolder : CharaComponentBase, ICharaObjectHolder
     [SerializeField]
     private GameObject m_MoveObject;
     GameObject ICharaObjectHolder.MoveObject => m_MoveObject;
+
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ICharaObjectHolder>(this);
+    }
 }

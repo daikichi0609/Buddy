@@ -10,9 +10,9 @@ public interface IUnitManager : ISingleton
     List<ICollector> PlayerList { get; }
     List<ICollector> EnemyList { get; }
 
-    bool TryGetSpecifiedPositionUnit(Vector3 pos, out ICollector val, InternalDefine.TARGET target = InternalDefine.TARGET.NONE);
+    bool TryGetSpecifiedPositionUnit(Vector3 pos, out ICollector val, InternalDefine.CHARA_TYPE target = InternalDefine.CHARA_TYPE.NONE);
 
-    bool TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, InternalDefine.TARGET target = InternalDefine.TARGET.NONE);
+    bool TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, InternalDefine.CHARA_TYPE target = InternalDefine.CHARA_TYPE.NONE);
 
     void AddPlayer(ICollector player);
     void AddEnemy(ICollector enemy);
@@ -55,13 +55,13 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private bool TryGetSpecifiedPositionUnit(Vector3 pos, InternalDefine.TARGET target, out ICollector val)
+    private bool TryGetSpecifiedPositionUnit(Vector3 pos, InternalDefine.CHARA_TYPE target, out ICollector val)
     {
-        if(target == InternalDefine.TARGET.PLAYER || target == InternalDefine.TARGET.NONE)
+        if(target == InternalDefine.CHARA_TYPE.PLAYER || target == InternalDefine.CHARA_TYPE.NONE)
         {
             foreach (ICollector collector in m_PlayerList)
             {
-                if (collector.Require<ICharaMove>(out var move) == false)
+                if (collector.RequireComponent<ICharaMove>(out var move) == false)
                     continue;
 
                 if (move.Position.x == pos.x && move.Position.z == pos.z)
@@ -72,11 +72,11 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
             }
         }
 
-        if (target == InternalDefine.TARGET.ENEMY || target == InternalDefine.TARGET.NONE)
+        if (target == InternalDefine.CHARA_TYPE.ENEMY || target == InternalDefine.CHARA_TYPE.NONE)
         {
             foreach (ICollector collector in m_EnemyList)
             {
-                if (collector.Require<ICharaMove>(out var move) == false)
+                if (collector.RequireComponent<ICharaMove>(out var move) == false)
                     continue;
 
                 if (move.Position.x == pos.x && move.Position.z == pos.z)
@@ -91,14 +91,14 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         return false;
     }
 
-    bool IUnitManager.TryGetSpecifiedPositionUnit(Vector3 pos, out ICollector val, InternalDefine.TARGET target) => TryGetSpecifiedPositionUnit(pos, target, out val);
+    bool IUnitManager.TryGetSpecifiedPositionUnit(Vector3 pos, out ICollector val, InternalDefine.CHARA_TYPE target) => TryGetSpecifiedPositionUnit(pos, target, out val);
 
     /// <summary>
     /// 特定の部屋にいるプレイヤーを取得
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    private bool TryGetSpecifiedRoomUnitList(int roomId, InternalDefine.TARGET target, out List<ICollector> val)
+    private bool TryGetSpecifiedRoomUnitList(int roomId, InternalDefine.CHARA_TYPE target, out List<ICollector> val)
     {
         val = new List<ICollector>();
         if(roomId <= 0)
@@ -106,11 +106,11 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
 
         List<ICell> roomList = DungeonManager.Interface.GetRoomCellList(roomId);
 
-        if (target == InternalDefine.TARGET.PLAYER || target == InternalDefine.TARGET.NONE)
+        if (target == InternalDefine.CHARA_TYPE.PLAYER || target == InternalDefine.CHARA_TYPE.NONE)
         {
             foreach (ICollector unit in m_PlayerList)
             {
-                if (unit.Require<ICharaMove>(out var move) == false)
+                if (unit.RequireComponent<ICharaMove>(out var move) == false)
                     continue;
 
                 foreach (ICell cell in roomList)
@@ -119,11 +119,11 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
             }
         }
 
-        if (target == InternalDefine.TARGET.ENEMY || target == InternalDefine.TARGET.NONE)
+        if (target == InternalDefine.CHARA_TYPE.ENEMY || target == InternalDefine.CHARA_TYPE.NONE)
         {
             foreach (ICollector unit in m_PlayerList)
             {
-                if (unit.Require<ICharaMove>(out var move) == false)
+                if (unit.RequireComponent<ICharaMove>(out var move) == false)
                     continue;
 
                 foreach (ICell cell in roomList)
@@ -135,7 +135,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         return val.Count != 0;
     }
 
-    bool IUnitManager.TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, InternalDefine.TARGET target) => TryGetSpecifiedRoomUnitList(roomId, target, out list);
+    bool IUnitManager.TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, InternalDefine.CHARA_TYPE target) => TryGetSpecifiedRoomUnitList(roomId, target, out list);
 
     /// <summary>
     /// ユニットが存在するかを返す

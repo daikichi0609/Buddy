@@ -15,26 +15,29 @@ public interface ICharaMove : ICharacterComponent
     void Warp(Vector3 pos);
 }
 
-public class CharaMove : CharaComponentBase, ICharaMove
+public interface ICharaMoveEvent : ICharacterComponent
+{
+    IObservable<Unit> OnMoveStart { get; }
+    IObservable<Unit> OnMoveEnd { get; }
+}
+
+public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
 {
     private ICharaObjectHolder m_Holder;
     private GameObject CharaObject => m_Holder.CharaObject;
     private GameObject MoveObject => m_Holder.MoveObject;
-
     private ICharaTurn m_CharaTurn;
 
-    private ICharaAnimator m_CharaAnimator;
-
-	/// <summary>
-	/// 位置
-	/// </summary>
-	private Vector3 Position { get; set; }
+    /// <summary>
+    /// 位置
+    /// </summary>
+    private Vector3 Position { get; set; }
     Vector3 ICharaMove.Position => Position;
 
-	/// <summary>
+    /// <summary>
     /// 向いている方向
     /// </summary>
-	private Vector3 Direction { get; set; }
+    private Vector3 Direction { get; set; }
     Vector3 ICharaMove.Direction => Direction;
 
     /// <summary>
@@ -65,19 +68,34 @@ public class CharaMove : CharaComponentBase, ICharaMove
     }
 
     /// <summary>
-    /// 初期化処理
+    /// 攻撃前に呼ばれる
     /// </summary>
-    /// <param name="inventoryCount"></param>
+    private Subject<Unit> m_OnMoveStart = new Subject<Unit>();
+    IObservable<Unit> ICharaMoveEvent.OnMoveStart => m_OnMoveStart;
+
+    /// <summary>
+    /// 攻撃後に呼ばれる
+    /// </summary>
+    private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
+    IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
+
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ICharaMove>(this);
+        owner.Register<ICharaMoveEvent>(this);
+    }
+
     protected override void Initialize()
     {
-        m_Holder = Collector.GetComponent<ICharaObjectHolder>();
-        m_CharaTurn = Collector.GetComponent<ICharaTurn>();
-        m_CharaAnimator = Collector.GetComponent<ICharaAnimator>();
+        m_Holder = Owner.GetComponent<ICharaObjectHolder>();
 
         Direction = new Vector3(0, 0, -1);
         Position = MoveObject.transform.position;
 
         GameManager.Instance.GetUpdate.Subscribe(_ => Moving());
+
+        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
     }
 
     /// <summary>
@@ -98,10 +116,6 @@ public class CharaMove : CharaComponentBase, ICharaMove
     /// <returns></returns>
     bool ICharaMove.Move(Vector3 direction)
     {
-        //行動中ならできない
-        if (m_CharaTurn.IsActing == true)
-            return false;
-
         //向きを変える
         Face(direction);
 
@@ -115,29 +129,18 @@ public class CharaMove : CharaComponentBase, ICharaMove
         if (UnitManager.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
             return false;
 
-        // 移動成功
-        // Actionフラグオン
-        m_CharaTurn.StartAction();
+        // 移動前イベント
+        m_OnMoveStart.OnNext(Unit.Default);
 
-        //目標座標設定
+        // 座標設定
         DestinationPos = destinationPos;
-
         LastMoveDirection = direction;
 
-        //内部的には先に移動しとく
+        // 内部的には先に移動しとく
         Position = DestinationPos;
 
-        //移動開始
-        m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.MOVE);
+        // フラグオン
         IsMoving = true;
-
-        //移動終わる前に現在マスチェックを済ませる
-        //移動後何かする必要あるなら、それを覚える
-        if(CheckCurrentGrid(out m_EventType) == true)
-            m_CharaTurn.StartAction();
-
-        //ターンを返す
-        m_CharaTurn.FinishTurn();
 
         return true;
     }
@@ -162,15 +165,17 @@ public class CharaMove : CharaComponentBase, ICharaMove
     private void FinishMove()
     {
         IsMoving = false;
-        m_CharaTurn.FinishAction();
-        m_CharaAnimator.StopAnimation(ANIMATION_TYPE.MOVE);
         MoveObject.transform.position = Position;
+        m_OnMoveEnd.OnNext(Unit.Default);
     }
 
     /// <summary>
     /// 待機 ターン終了するだけ
     /// </summary>
-    void ICharaMove.Wait() => m_CharaTurn.FinishTurn();
+    void ICharaMove.Wait()
+    {
+        m_CharaTurn.CanAct = false;
+    }
 
     /// <summary>
     /// ワープ

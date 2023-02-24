@@ -46,12 +46,10 @@ public static class Calculator
 
     public static int CalculateRemainingHp(int hp, int damage)
     {
-        int remainingHp = hp - damage;
-        if (remainingHp < 0)
-        {
-            remainingHp = 0;
-        }
-        return remainingHp;
+        hp -= damage;
+        if (hp < 0)
+            hp = 0;
+        return hp;
     }
 
     public static bool JudgeHit(float dex, float eva)
