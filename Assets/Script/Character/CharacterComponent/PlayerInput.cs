@@ -4,14 +4,14 @@ using System.Xml.Linq;
 using UnityEngine;
 using UniRx;
 
-public interface IPlayer : ICharacterComponent
+public interface IPlayerInput : ICharacterComponent
 {
 }
 
 /// <summary>
 /// 入力機能
 /// </summary>
-public class Player : CharaComponentBase, IPlayer
+public class PlayerInput : CharaComponentBase, IPlayerInput
 {
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
@@ -20,7 +20,7 @@ public class Player : CharaComponentBase, IPlayer
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
-        owner.Register<IPlayer>(this);
+        owner.Register<IPlayerInput>(this);
     }
 
     protected override void Initialize()

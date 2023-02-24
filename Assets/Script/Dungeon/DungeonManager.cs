@@ -119,7 +119,7 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
     {
         base.Awake();
 
-        GameManager.Instance.GetInit.Subscribe(_ => DeployDungeon());
+        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon());
     }
 
     public void DeployDungeon()

@@ -31,7 +31,7 @@ public class CharaLog : CharaComponentBase, ICharaLog
             });
 
             // 攻撃結果ログ
-            battle.OnAttackEnd.Subscribe(result =>
+            battle.OnDamageStart.Subscribe(result =>
             {
                 // ヒットしていないならログを出さない
                 if (result.IsHit == false)

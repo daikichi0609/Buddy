@@ -16,6 +16,7 @@ public interface IUnitManager : ISingleton
 
     void AddPlayer(ICollector player);
     void AddEnemy(ICollector enemy);
+    void RemoveUnit(ICollector unit);
 
     bool IsUnitOn(Vector3 pos);
     bool IsPlayerOn(Vector3 pos);
@@ -49,6 +50,26 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
 
     void IUnitManager.AddPlayer(ICollector player) => m_PlayerList.Add(player);
     void IUnitManager.AddEnemy(ICollector enemy) => m_EnemyList.Add(enemy);
+    void IUnitManager.RemoveUnit(ICollector unit)
+    {
+        foreach (ICollector player in m_PlayerList)
+        {
+            if (player == unit)
+            {
+                m_PlayerList.Remove(unit);
+                return;
+            }
+        }
+
+        foreach (ICollector enemy in m_EnemyList)
+        {
+            if (enemy == unit)
+            {
+                m_EnemyList.Remove(unit);
+                return;
+            }
+        }
+    }
 
     /// <summary>
     /// 特定の座標のユニットを取得

@@ -56,6 +56,8 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     private bool IsMoving { get; set; }
 
+    private static readonly float SPEED_MAG = 1.5f;
+
     /// <summary>
     /// 移動後イベントタイプ
     /// </summary>
@@ -93,7 +95,7 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
         Direction = new Vector3(0, 0, -1);
         Position = MoveObject.transform.position;
 
-        GameManager.Instance.GetUpdate.Subscribe(_ => Moving());
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving());
 
         m_CharaTurn = Owner.GetComponent<ICharaTurn>();
     }
@@ -153,7 +155,7 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
         if (IsMoving == false)
             return;
 
-        MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, DestinationPos, Time.deltaTime * 3);
+        MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, DestinationPos, Time.deltaTime * SPEED_MAG);
 
         if ((MoveObject.transform.position - DestinationPos).magnitude <= 0.01f)
             FinishMove();

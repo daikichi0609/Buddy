@@ -33,7 +33,7 @@ public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, 
         var e = m_Question switch
         {
             QUESTION_TYPE.STAIRS => new OptionElement
-            (new Action[2] { () => GameManager.Instance.UpToNextFloor(), () => Deactivate() }, OptionText),
+            (new Action[2] { async () => await GameManager.Interface.NextFloor(), () => Deactivate() }, OptionText),
 
             QUESTION_TYPE.NONE => new OptionElement(),
             _ => new OptionElement()

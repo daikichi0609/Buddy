@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using static UnityEditor.Progress;
 
 public interface ICharaBattle : ICharacterComponent
 {
@@ -41,6 +42,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
+    private ICharaObjectHolder m_CharaObjectHolder;
 
     public static readonly int ms_NormalAttackTotalTime = 700;
     public static readonly int ms_NormalAttackHitTime = 400;
@@ -92,6 +94,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaStatus = Owner.GetComponent<ICharaStatus>();
         m_CharaMove = Owner.GetComponent<ICharaMove>();
         m_CharaTurn = Owner.GetComponent<ICharaTurn>();
+        m_CharaObjectHolder = Owner.GetComponent<ICharaObjectHolder>();
 
         if (Owner.RequireComponent<IEnemyAi>(out var enemy) == true)
             m_Type = InternalDefine.CHARA_TYPE.ENEMY;
@@ -135,7 +138,6 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
     private async Task<AttackResult> AttackInternal(Vector3 attackPos, InternalDefine.CHARA_TYPE target, AttackInfo attackInfo)
     {
         await Task.Delay(ms_NormalAttackTotalTime); // モーション終わりまで
-        Debug.Log("Attack End");
 
         // 角抜け確認
         if (DungeonHandler.Interface.CanMoveDiagonal(m_CharaMove.Position, m_CharaMove.Direction) == false)
@@ -173,19 +175,26 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnDamageStart.OnNext(result);
 
         // awaitしない
-        var _ = Task.Run(async () =>
-        {
-            await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
-            m_OnDamageEnd.OnNext(result);
-            if (isDead == true)
-                Death();
-        });
+        PostDamage(result);
 
         return result;
     }
 
+    /// <summary>
+    /// ダメージモーション終わり
+    /// </summary>
+    /// <param name="result"></param>
+    private async void PostDamage(AttackResult result)
+    {
+        await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
+        m_OnDamageEnd.OnNext(result);
+        if (result.IsDead == true)
+            Death();
+    }
+
     protected virtual void Death()
     {
-
+        ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
+        UnitManager.Interface.RemoveUnit(Owner);
     }
 }

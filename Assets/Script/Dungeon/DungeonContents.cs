@@ -8,7 +8,7 @@ public class DungeonContents : Singleton<DungeonContents>
     protected override void Awake()
     {
         base.Awake();
-        GameManager.Instance.GetInit.Subscribe(_ => DeployDungeonContents());
+        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeonContents());
     }
 
     //ダンジョンコンテンツ配置
@@ -52,7 +52,7 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
 
-        GameObject player = CharaObject(GameManager.Instance.LeaderName);
+        GameObject player = CharaObject(GameManager.Interface.LeaderName);
         player.transform.position = new Vector3(cell.X, 0.51f, cell.Z);
         var collector = player.GetComponent<ICollector>();
         UnitManager.Interface.AddPlayer(collector);

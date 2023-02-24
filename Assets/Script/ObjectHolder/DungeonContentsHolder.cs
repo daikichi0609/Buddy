@@ -83,7 +83,7 @@ public class DungeonContentsHolder : Singleton<DungeonContentsHolder>
     {
         get
         {
-            switch (GameManager.Instance.DungeonTheme)
+            switch (GameManager.Interface.DungeonTheme)
             {
                 case Define.DUNGEON_THEME.GRASS:
                     return DungeonContentsHolder.Instance.Grass_C;
@@ -105,7 +105,7 @@ public class DungeonContentsHolder : Singleton<DungeonContentsHolder>
     {
         get
         {
-            switch (GameManager.Instance.DungeonTheme)
+            switch (GameManager.Interface.DungeonTheme)
             {
                 case Define.DUNGEON_THEME.GRASS:
                     return DungeonContentsHolder.Instance.Grass_A;

@@ -6,6 +6,9 @@ using System;
 
 public interface ITurnManager : ISingleton
 {
+    int TotalTurnCount { get; }
+    IObservable<int> OnTurnEnd { get; }
+
     bool ProhibitAllAction { get; set; }
     bool NoOneActing { get; }
     void AllCharaActionable();
@@ -17,9 +20,16 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         base.Awake();
 
-        GameManager.Instance.GetUpdate
+        GameManager.Interface.GetUpdateEvent
             .Subscribe(_ => NextUnitAct()).AddTo(this);
     }
+
+    /// <summary>
+    /// 累計ターン数
+    /// </summary>
+    private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>();
+    IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
+    int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
     /// <summary>
     /// 全ての行動を禁じる
@@ -78,6 +88,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private void AllCharaActionable()
     {
+        m_TotalTurnCount.Value++;
         AllPlayerActionable();
         AllEnemyActionable();
     }

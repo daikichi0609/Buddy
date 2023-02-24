@@ -22,7 +22,7 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
     {
         base.Awake();
 
-        GameManager.Instance.GetUpdate
+        GameManager.Interface.GetUpdateEvent
             .Subscribe(_ => UpdateCharaUi());
     }
 

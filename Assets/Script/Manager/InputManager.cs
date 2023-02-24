@@ -77,7 +77,7 @@ public class InputManager : Singleton<InputManager, IInputManager>, IInputManage
     {
         base.Awake();
 
-		GameManager.Instance.GetUpdate
+		GameManager.Interface.GetUpdateEvent
 			.Subscribe(_ => DetectInput()).AddTo(this);
     }
 

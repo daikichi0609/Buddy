@@ -113,7 +113,8 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
         var target = candidates[0];
         var dir = Positional.CalculateDirection(m_CharaMove.Position, target.GetComponent<ICharaMove>().Position);
-        m_CharaMove.Move(dir);
+        if (m_CharaMove.Move(dir) == false)
+            m_CharaMove.Wait();
     }
 
     /// <summary>
