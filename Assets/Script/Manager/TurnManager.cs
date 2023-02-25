@@ -44,8 +44,8 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         get
         {
-            foreach(ICollector player in UnitManager.Interface.PlayerList)
-                if(player.GetComponent<ICharaTurn>().IsActing == true)
+            foreach (ICollector player in UnitManager.Interface.PlayerList)
+                if (player.GetComponent<ICharaTurn>().IsActing == true)
                     return false;
 
             foreach (ICollector enemy in UnitManager.Interface.EnemyList)
@@ -100,7 +100,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllPlayerActionable()
     {
         foreach (ICollector player in UnitManager.Interface.PlayerList)
-            player.GetComponent<ICharaTurn>().CanAct = true;
+            player.GetComponent<ICharaTurn>().CanBeAct();
     }
 
     /// <summary>
@@ -109,6 +109,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllEnemyActionable()
     {
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-            enemy.GetComponent<ICharaTurn>().CanAct = true;
+            enemy.GetComponent<ICharaTurn>().CanBeAct();
     }
 }

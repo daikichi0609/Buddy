@@ -9,6 +9,7 @@ public interface IItemManager : ISingleton
 {
     List<IItem> ItemList { get; }
     void AddItem(IItem item);
+    void RemoveItem(IItem item);
 }
 
 public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
@@ -20,4 +21,5 @@ public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
     List<IItem> IItemManager.ItemList => m_ItemList;
 
     void IItemManager.AddItem(IItem item) => m_ItemList.Add(item);
+    void IItemManager.RemoveItem(IItem item) => m_ItemList.Remove(item);
 }

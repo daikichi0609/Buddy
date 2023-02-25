@@ -31,12 +31,8 @@ public class CharaLog : CharaComponentBase, ICharaLog
             });
 
             // 攻撃結果ログ
-            battle.OnDamageStart.Subscribe(result =>
+            battle.OnAttackEnd.Subscribe(result =>
             {
-                // ヒットしていないならログを出さない
-                if (result.IsHit == false)
-                    return;
-
                 var log = CreateAttackResultLog(result);
                 BattleLogManager.Interface.Log(log);
             }).AddTo(this);
@@ -52,6 +48,17 @@ public class CharaLog : CharaComponentBase, ICharaLog
             }).AddTo(this);
         }
 
+        if (Owner.RequireComponent<ICharaInventoryEvent>(out var inventory) == true)
+        {
+            inventory.OnPutItem.Subscribe(info =>
+            {
+                if (info.Item1.RequireComponent<ICharaStatus>(out var status) == false)
+                    return;
+
+                var log = CreatePutItemLog(status.CurrentStatus.Name, info.Item2);
+                BattleLogManager.Interface.Log(log);
+            });
+        }
     }
 
     /// <summary>
@@ -62,7 +69,7 @@ public class CharaLog : CharaComponentBase, ICharaLog
     private string CreateAttackLog(AttackInfo info)
     {
         var sb = new StringBuilder();
-        string attacker = info.Attacker.ToString();
+        string attacker = info.Name.ToString();
 
         sb.Append(attacker + "の攻撃！");
 
@@ -77,11 +84,17 @@ public class CharaLog : CharaComponentBase, ICharaLog
     private string CreateAttackResultLog(AttackResult result)
     {
         var sb = new StringBuilder();
-        string defender = result.Defender.ToString();
+
+        string defender = result.Name.ToString();
         string damage = result.Damage.ToString();
 
-        sb.Append(defender + "に" + damage + "ダメージ");
+        if (result.IsHit == false)
+        {
+            sb.Append("しかし" + defender + "には当たらなかった");
+            return sb.ToString();
+        }
 
+        sb.Append(defender + "に" + damage + "ダメージ");
         return sb.ToString();
     }
 
@@ -93,9 +106,23 @@ public class CharaLog : CharaComponentBase, ICharaLog
     private string CreateDeadLog(AttackResult result)
     {
         var sb = new StringBuilder();
-        string defender = result.Defender.ToString();
+        string defender = result.Name.ToString();
 
         sb.Append(defender + "は倒れた！");
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 死亡ログ
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    private string CreatePutItemLog(CHARA_NAME name, IItem item)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(name + "は" + item.Name + "を拾った");
 
         return sb.ToString();
     }

@@ -15,9 +15,24 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
 
     protected override OptionElement CreateOptionElement()
     {
-        return new OptionElement
-        (new Action[0] {},
-        new string[0] {});
+        var player = UnitManager.Interface.PlayerList[0];
+        var inventory = player.GetComponent<ICharaInventory>();
+        var items = inventory.Items;
+        int itemCount = items.Length;
+
+        var effects = new Action[itemCount];
+        var names = new string[itemCount];
+
+        for (int i = 0; i < itemCount; i++)
+        {
+            var item = items[i];
+            var name = item.Name;
+            var effect = ItemEffect.GetEffect(name);
+            effects[i] = () => effect.Effect(player, item);
+            names[i] = name.ToString();
+        }
+
+        return new OptionElement(effects, names);
     }
 
     public class BagUi : UiBase

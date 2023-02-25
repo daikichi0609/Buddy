@@ -28,7 +28,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
     private ICell DestinationCell { get; set; }
 
-    private InternalDefine.CHARA_TYPE m_Target = InternalDefine.CHARA_TYPE.PLAYER;
+    private CHARA_TYPE m_Target = CHARA_TYPE.PLAYER;
 
     protected override void Register(ICollector owner)
     {
@@ -76,14 +76,14 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
     private ICollector Face(List<ICollector> targets)
     {
         //ターゲットをランダムに絞って向く
-        Utility.Shuffle<ICollector>(targets);
+        targets.Shuffle();
         var target = targets[0];
-        Vector3 direction = target.GetComponent<ICharaMove>().Position - m_CharaMove.Position;
+        var direction = (target.GetComponent<ICharaMove>().Position - m_CharaMove.Position).ToDirEnum();
         m_CharaMove.Face(direction);
         return target;
     }
 
-    private void NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, InternalDefine.CHARA_TYPE.PLAYER);
+    private void NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, CHARA_TYPE.PLAYER);
 
     /// <summary>
     /// 追いかける
@@ -91,8 +91,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
     /// <param name="targets"></param>
     private void Chase(List<ICollector> targets)
     {
-        Utility.Shuffle<ICollector>(targets);
-
+        targets.Shuffle();
         List<ICollector> candidates = new List<ICollector>();
         float minDistance = 100f;
 
@@ -104,7 +103,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
                 continue;
             else if (distance == minDistance)
                 candidates.Add(candidate);
-            else if(distance < minDistance)
+            else if (distance < minDistance)
             {
                 candidates.Clear();
                 candidates.Add(candidate);
@@ -128,37 +127,25 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         {
             AroundCellId around = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = around.Cells;
-            Vector3 lastDirection = m_CharaMove.LastMoveDirection;
-            Vector3 oppDirection = lastDirection * -1;
-            List<Vector3> directionList = new List<Vector3>();
-            if (cells[DIRECTION.UP] > (int)GRID_ID.WALL)
-            {
-                Vector3 up = new Vector3(0f, 0f, 1f);
-                if (lastDirection != up * -1)
-                    directionList.Add(up);
-            }
-            if (cells[DIRECTION.UNDER] > (int)GRID_ID.WALL)
-            {
-                Vector3 down = new Vector3(0f, 0f, -1f);
-                if (lastDirection != down * -1)
-                    directionList.Add(down);
-            }
-            if (cells[DIRECTION.LEFT] > (int)GRID_ID.WALL)
-            {
-                Vector3 left = new Vector3(-1f, 0f, 0f);
-                if (lastDirection != left * -1)
-                    directionList.Add(left);
-            }
-            if (cells[DIRECTION.RIGHT] > (int)GRID_ID.WALL)
-            {
-                Vector3 right = new Vector3(1f, 0f, 0f);
-                if (lastDirection != right * -1)
-                    directionList.Add(right);
-            }
+            var lastDirection = m_CharaMove.LastMoveDirection;
+            var candidateDir = new List<DIRECTION>();
+            var oppDirection = (-1 * lastDirection.ToV3Int()).ToDirEnum();
 
-            Utility.Shuffle(directionList);
+            if (cells[DIRECTION.UP] > CELL_ID.WALL && DIRECTION.UP != oppDirection)
+                candidateDir.Add(DIRECTION.UP);
 
-            if (m_CharaMove.Move(directionList[0]) == false)
+            if (cells[DIRECTION.UNDER] > CELL_ID.WALL && DIRECTION.UNDER != oppDirection)
+                candidateDir.Add(DIRECTION.UNDER);
+
+            if (cells[DIRECTION.LEFT] > CELL_ID.WALL && DIRECTION.LEFT != oppDirection)
+                candidateDir.Add(DIRECTION.LEFT);
+
+            if (cells[DIRECTION.RIGHT] > CELL_ID.WALL && DIRECTION.RIGHT != oppDirection)
+                candidateDir.Add(DIRECTION.RIGHT);
+
+            Utility.Shuffle(candidateDir);
+
+            if (m_CharaMove.Move(candidateDir[0]) == false)
                 if (m_CharaMove.Move(oppDirection) == false)
                     m_CharaMove.Wait();
             return;
@@ -171,7 +158,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
             var candidates = new List<ICell>();
             var minDistance = 999f;
-            foreach(ICell cell in gates)
+            foreach (ICell cell in gates)
             {
                 var distance = (m_CharaMove.Position - cell.Position).magnitude;
                 if (distance > minDistance)
@@ -192,24 +179,24 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         {
             var aroundGridID = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = aroundGridID.Cells;
-            if (cells[DIRECTION.UP] == (int)GRID_ID.PATH_WAY)
+            if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
             {
-                if (m_CharaMove.Move(new Vector3(0f, 0f, 1f)) == true)
+                if (m_CharaMove.Move(DIRECTION.UP) == true)
                     return;
             }
-            if (cells[DIRECTION.UNDER] == (int)GRID_ID.PATH_WAY)
+            if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
             {
-                if (m_CharaMove.Move(new Vector3(0f, 0f, -1f)) == true)
+                if (m_CharaMove.Move(DIRECTION.UNDER) == true)
                     return;
             }
-            if (cells[DIRECTION.LEFT] == (int)GRID_ID.PATH_WAY)
+            if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
             {
-                if (m_CharaMove.Move(new Vector3(-1f, 0f, 0f)) == true)
+                if (m_CharaMove.Move(DIRECTION.LEFT) == true)
                     return;
             }
-            if (cells[DIRECTION.RIGHT] == (int)GRID_ID.PATH_WAY)
+            if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
             {
-                if (m_CharaMove.Move(new Vector3(1f, 0f, 0f)) == true)
+                if (m_CharaMove.Move(DIRECTION.RIGHT) == true)
                     return;
             }
 
@@ -234,9 +221,9 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 public partial class EnemyAi
 {
     //敵AI
-    private ActionClue ConsiderAction(Vector3 currentPos)
+    private ActionClue ConsiderAction(Vector3Int currentPos)
     {
-        var aroundCell = DungeonHandler.Interface.GetAroundCell((int)currentPos.x, (int)currentPos.z);
+        var aroundCell = DungeonHandler.Interface.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, m_Target, out var attack) == true)
@@ -248,16 +235,16 @@ public partial class EnemyAi
         return new ActionClue(ENEMY_STATE.SEARCHING, null);
     }
 
-    private bool TryGetCandidateAttack(AroundCell aroundCell, InternalDefine.CHARA_TYPE target, out List<ICollector> targets)
+    private bool TryGetCandidateAttack(AroundCell aroundCell, CHARA_TYPE target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 
-        foreach (KeyValuePair<DIRECTION, ICell> kvp in aroundCell.Cells)
+        foreach (KeyValuePair<DIRECTION, ICell> pair in aroundCell.Cells)
         {
-            if (UnitManager.Interface.TryGetSpecifiedPositionUnit(kvp.Value.Position, out var collector, target) == false)
+            if (UnitManager.Interface.TryGetSpecifiedPositionUnit(pair.Value.Position, out var collector, target) == false)
                 continue;
 
-            if (DungeonHandler.Interface.CanMoveDiagonal(aroundCell.BaseCell.Position, kvp.Key) == false)
+            if (DungeonHandler.Interface.CanMove(aroundCell.BaseCell.Position, pair.Key) == false)
                 continue;
 
             targets.Add(collector);
@@ -266,7 +253,7 @@ public partial class EnemyAi
         return targets.Count != 0;
     }
 
-    private bool TryGetCandidateChase(Vector3 pos, InternalDefine.CHARA_TYPE target, out List<ICollector> targets)
+    private bool TryGetCandidateChase(Vector3Int pos, CHARA_TYPE target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
 

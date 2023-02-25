@@ -8,8 +8,8 @@ using UniRx;
 
 public interface IDungeonManager : ISingleton
 {
-    int[,] Map { get; }
-    void SetMapValue(int value, int x, int z);
+    CELL_ID[,] IdMap { get; }
+
 
     List<List<ICell>> CellMap { get; }
 
@@ -18,7 +18,7 @@ public interface IDungeonManager : ISingleton
     List<Range> RangeList { get; }
 }
 
-public enum GRID_ID
+public enum CELL_ID
 {
     NONE = -1,
     WALL = 0,
@@ -42,22 +42,15 @@ public enum GRID_ID
 z
  x → → →
 */
-public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeonManager
+public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDungeonManager
 {
     /// <summary>
     /// マップ
     /// </summary>
-    private int[,] m_Map;
-    int[,] IDungeonManager.Map => m_Map;
-    /*
-    private int GetId(int x, int z)
-    {
-        return m_Map[x, z];
-    }
-    int IDungeonManager.GetId(int x, int z) => GetId(x, z);
-    */
-    private void SetMapValue(int value, int x, int z) => m_Map[x, z] = value;
-    void IDungeonManager.SetMapValue(int value, int x, int z) => SetMapValue(value, x, z);
+    private CELL_ID[,] m_Map;
+    CELL_ID[,] IDungeonManager.IdMap => m_Map;
+
+    private void OverWriteCellId(CELL_ID value, int x, int z) => m_Map[x, z] = value;
 
     private MapCreateSetting m_Setting = new MapCreateSetting(32, 32, 8);
 
@@ -134,11 +127,11 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
 
     public void RemoveDungeon()
     {
-        foreach(List<ICell> list in m_CellMap)
+        foreach (List<ICell> list in m_CellMap)
         {
-            foreach(ICell cell in list)
+            foreach (ICell cell in list)
             {
-                GRID_ID id = cell.GridID;
+                CELL_ID id = cell.CellId;
                 string key = id.ToString();
                 ObjectPool.Instance.SetObject(key, cell.GameObject);
             }
@@ -162,59 +155,59 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
 
             for (int j = 0; j < m_Map.GetLength(1) - 1; j++)
             {
-                int id = m_Map[i, j];
+                var id = m_Map[i, j];
                 GameObject cellObject = null;
-                GRID_ID type = GRID_ID.NONE;
+                CELL_ID type = CELL_ID.NONE;
 
                 switch (id)
                 {
-                    case (int)GRID_ID.WALL: //0
-                        if (ObjectPool.Instance.TryGetPoolObject(GRID_ID.WALL.ToString(), out cellObject) == false)
+                    case CELL_ID.WALL: //0
+                        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.WALL.ToString(), out cellObject) == false)
                             cellObject = Instantiate(DungeonContentsHolder.Instance.Wall, new Vector3(i, 0, j), Quaternion.identity);
                         else
-                            cellObject.transform.position = new Vector3(i, 0, j);
+                            cellObject.transform.position = new Vector3Int(i, 0, j);
 
-                        type = GRID_ID.WALL;
+                        type = CELL_ID.WALL;
                         break;
 
-                    case (int)GRID_ID.PATH_WAY: //1
-                        if (ObjectPool.Instance.TryGetPoolObject(GRID_ID.PATH_WAY.ToString(), out cellObject) == false)
+                    case CELL_ID.PATH_WAY: //1
+                        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
                             cellObject = Instantiate(DungeonContentsHolder.Instance.PathWayGrid, new Vector3(i, 0, j), Quaternion.identity);
                         else
-                            cellObject.transform.position = new Vector3(i, 0, j);
+                            cellObject.transform.position = new Vector3Int(i, 0, j);
 
-                        type = GRID_ID.PATH_WAY;
+                        type = CELL_ID.PATH_WAY;
                         break;
 
-                    case (int)GRID_ID.ROOM: //2
+                    case CELL_ID.ROOM: //2
                         AroundCellId aroundId = DungeonHandler.Interface.GetAroundCellId(i, j);
                         if (CheckGateWay(aroundId) == true)
                         {
-                            m_Map[i, j] = (int)GRID_ID.GATE; // 入口なら設定し直す
+                            m_Map[i, j] = CELL_ID.GATE; // 入口なら設定し直す
 
-                            if (ObjectPool.Instance.TryGetPoolObject(GRID_ID.GATE.ToString(), out cellObject) == false)
+                            if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.GATE.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(DungeonContentsHolder.Instance.RoomGrid, new Vector3(i, 0, j), Quaternion.identity);
                             else
-                                cellObject.transform.position = new Vector3(i, 0, j);
+                                cellObject.transform.position = new Vector3Int(i, 0, j);
 
-                            type = GRID_ID.GATE;
+                            type = CELL_ID.GATE;
                         }
                         else
                         {
-                            if (ObjectPool.Instance.TryGetPoolObject(GRID_ID.ROOM.ToString(), out cellObject) == false)
+                            if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(DungeonContentsHolder.Instance.RoomGrid, new Vector3(i, 0, j), Quaternion.identity);
                             else
-                                cellObject.transform.position = new Vector3(i, 0, j);
+                                cellObject.transform.position = new Vector3Int(i, 0, j);
 
 
-                            type = GRID_ID.ROOM;
+                            type = CELL_ID.ROOM;
                         }
                         break;
                 }
 
                 var cell = cellObject.GetComponent<ICell>();
                 cell.GameObject = cellObject;
-                cell.GridID = type;
+                cell.CellId = type;
                 m_CellMap[i].Add(cell);
             }
         }
@@ -227,15 +220,16 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
         var x = (int)emp.Position.x;
         var z = (int)emp.Position.z;
 
-        SetMapValue((int)GRID_ID.STAIRS, x, z); //マップに階段を登録
+        OverWriteCellId(CELL_ID.STAIRS, x, z); //マップに階段を登録
 
-        if (ObjectPool.Instance.TryGetPoolObject(GRID_ID.STAIRS.ToString(), out var cellObject) == false)
+        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
             cellObject = Instantiate(DungeonContentsHolder.Instance.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);
 
         var cell = cellObject.GetComponent<ICell>();
-        cell.GridID = GRID_ID.STAIRS;
+        cell.GameObject = cellObject;
+        cell.CellId = CELL_ID.STAIRS;
         SetCell(cell, x, z); //既存のオブジェクトの代わりに代入
     }
 
@@ -244,9 +238,9 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
     /// </summary>
     public void RegisterRoomID()
     {
-        for(int id = 0; id < m_RoomCellList.Count; id++)
+        for (int id = 0; id < m_RoomCellList.Count; id++)
         {
-            for(int num = 0; num < m_RoomCellList[id].Count; num++)
+            for (int num = 0; num < m_RoomCellList[id].Count; num++)
             {
                 ICell cell = GetRoomCell(id, num);
                 cell.RoomId = id + 1;
@@ -263,16 +257,16 @@ public class DungeonManager: Singleton<DungeonManager, IDungeonManager>, IDungeo
     {
         var cells = aroundGrid.Cells;
 
-        if (cells[DIRECTION.UP] == (int)GRID_ID.PATH_WAY)
+        if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
             return true;
 
-        if (cells[DIRECTION.UNDER] == (int)GRID_ID.PATH_WAY)
+        if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
             return true;
 
-        if (cells[DIRECTION.LEFT] == (int)GRID_ID.PATH_WAY)
+        if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
             return true;
 
-        if (cells[DIRECTION.RIGHT] == (int)GRID_ID.PATH_WAY)
+        if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
             return true;
 
         return false;

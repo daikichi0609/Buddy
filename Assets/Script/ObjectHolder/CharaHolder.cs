@@ -2,28 +2,22 @@
 
 public class CharaHolder : Singleton<CharaHolder>
 {
-    public GameObject CharaObject(Define.CHARA_NAME name)
+    public GameObject CharaObject(CHARA_NAME name)
     {
         switch (name)
         {
-            case Define.CHARA_NAME.BOXMAN:
-                return Boxman;
+            case CHARA_NAME.BOXMAN:
+                return m_Boxman;
 
-            case Define.CHARA_NAME.MASHROOM:
-                return Mashroom;
+            case CHARA_NAME.MASHROOM:
+                return m_Mashroom;
         }
         return null;
     }
 
-    [SerializeField] private GameObject m_Boxman;
-    public GameObject Boxman
-    {
-        get { return m_Boxman; }
-    }
+    [SerializeField]
+    private GameObject m_Boxman;
 
-    [SerializeField] private GameObject m_Mashroom;
-    public GameObject Mashroom
-    {
-        get { return m_Mashroom; }
-    }
+    [SerializeField]
+    private GameObject m_Mashroom;
 }

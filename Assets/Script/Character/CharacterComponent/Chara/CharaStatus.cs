@@ -19,7 +19,7 @@ public interface ICharaStatus : ICharacterComponent
 public class CharaStatus : CharaComponentBase, ICharaStatus
 {
     [SerializeField]
-    private Define.CHARA_NAME m_Name = Define.CHARA_NAME.BOXMAN;
+    private CHARA_NAME m_GivenName = CHARA_NAME.BOXMAN;
 
     /// <summary>
     /// 元パラメータ
@@ -43,7 +43,7 @@ public class CharaStatus : CharaComponentBase, ICharaStatus
     {
         base.Initialize();
 
-        m_Parameter = CharaDataManager.LoadCharaParameter(m_Name);
+        m_Parameter = CharaDataManager.LoadCharaParameter(m_GivenName);
         m_CurrentStatus = new CurrentStatus(m_Parameter);
     }
 }

@@ -12,7 +12,12 @@ public readonly struct AttackResult
     /// <summary>
     /// 被攻撃者
     /// </summary>
-    public Define.CHARA_NAME Defender { get; }
+    public ICollector Defender { get; }
+
+    /// <summary>
+    /// 被攻撃者の名前
+    /// </summary>
+    public CHARA_NAME Name { get; }
 
     /// <summary>
     /// ヒットしたかどうか
@@ -34,15 +39,16 @@ public readonly struct AttackResult
     /// </summary>
     public bool IsDead { get; }
 
-    public AttackResult(AttackInfo info, Define.CHARA_NAME defender, bool isHit, int damage, int remainingHp, bool isDead)
+    public AttackResult(AttackInfo info, ICollector defender, CHARA_NAME name, bool isHit, int damage, int remainingHp, bool isDead)
     {
         AttackInfo = info;
         Defender = defender;
+        Name = name;
         IsHit = isHit;
         Damage = damage;
         RemainingHp = remainingHp;
         IsDead = isDead;
     }
 
-     public static readonly AttackResult Invalid = new AttackResult();
+    public static readonly AttackResult Invalid = new AttackResult();
 }

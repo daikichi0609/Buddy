@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BOXMAN
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 0
+    m_GivenName: 1
     m_MaxHp: 100
     m_Atk: 10
     m_Def: 5

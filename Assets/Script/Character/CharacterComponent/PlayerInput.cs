@@ -84,22 +84,22 @@ public class PlayerInput : CharaComponentBase, IPlayerInput
     /// <returns></returns>
     private bool DetectInputMove(KeyCodeFlag flag)
     {
-        var direction = new Vector3();
+        var direction = new Vector3Int();
 
         if (flag.HasBitFlag(KeyCodeFlag.W))
-            direction += new Vector3(0f, 0f, 1f);
+            direction += new Vector3Int(0, 0, 1);
 
         if (flag.HasBitFlag(KeyCodeFlag.A))
-            direction += new Vector3(-1f, 0f, 0f);
+            direction += new Vector3Int(-1, 0, 0);
 
         if (flag.HasBitFlag(KeyCodeFlag.S))
-            direction += new Vector3(0f, 0f, -1);
+            direction += new Vector3Int(0, 0, -1);
 
         if (flag.HasBitFlag(KeyCodeFlag.D))
-            direction += new Vector3(1f, 0f, 0f);
+            direction += new Vector3Int(1, 0, 0);
 
         // 入力なし
-        if (direction == new Vector3(0f, 0f, 0f))
+        if (direction == new Vector3Int(0, 0, 0))
             return false;
 
         // 斜め入力限定
@@ -107,7 +107,7 @@ public class PlayerInput : CharaComponentBase, IPlayerInput
         if (diagonal == true && JudgeDirectionDiagonal(direction) == false)
             return false;
 
-        m_CharaMove.Move(direction);
+        m_CharaMove.Move(direction.ToDirEnum());
         return true;
     }
 

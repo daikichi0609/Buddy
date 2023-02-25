@@ -85,16 +85,16 @@ public class DungeonContentsHolder : Singleton<DungeonContentsHolder>
         {
             switch (GameManager.Interface.DungeonTheme)
             {
-                case Define.DUNGEON_THEME.GRASS:
+                case DUNGEON_THEME.GRASS:
                     return DungeonContentsHolder.Instance.Grass_C;
 
-                case Define.DUNGEON_THEME.ROCK:
+                case DUNGEON_THEME.ROCK:
                     return DungeonContentsHolder.Instance.Rock_C;
 
-                case Define.DUNGEON_THEME.WHITE:
+                case DUNGEON_THEME.WHITE:
                     return DungeonContentsHolder.Instance.White_C;
 
-                case Define.DUNGEON_THEME.CRYSTAL:
+                case DUNGEON_THEME.CRYSTAL:
                     return DungeonContentsHolder.Instance.CrystalRock_C;
             }
             return null;
@@ -107,16 +107,16 @@ public class DungeonContentsHolder : Singleton<DungeonContentsHolder>
         {
             switch (GameManager.Interface.DungeonTheme)
             {
-                case Define.DUNGEON_THEME.GRASS:
+                case DUNGEON_THEME.GRASS:
                     return DungeonContentsHolder.Instance.Grass_A;
 
-                case Define.DUNGEON_THEME.ROCK:
+                case DUNGEON_THEME.ROCK:
                     return DungeonContentsHolder.Instance.Rock_A;
 
-                case Define.DUNGEON_THEME.WHITE:
+                case DUNGEON_THEME.WHITE:
                     return DungeonContentsHolder.Instance.White_A;
 
-                case Define.DUNGEON_THEME.CRYSTAL:
+                case DUNGEON_THEME.CRYSTAL:
                     return DungeonContentsHolder.Instance.CrystalRock_A;
             }
             return null;

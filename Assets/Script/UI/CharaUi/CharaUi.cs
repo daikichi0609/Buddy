@@ -15,7 +15,7 @@ public class CharaUi : MonoBehaviour
     {
         var status = target.GetComponent<ICharaStatus>();
         m_Target = status;
-        m_CharaName.text = status.Parameter.Name.ToString();
+        m_CharaName.text = status.Parameter.GivenName.ToString();
         m_HpSlider.maxValue = status.Parameter.MaxHp;
         m_HpSlider.value = status.CurrentStatus.Hp;
     }

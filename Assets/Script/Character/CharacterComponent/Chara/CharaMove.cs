@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 using UniRx;
 using System;
+using NaughtyAttributes;
 
 public interface ICharaMove : ICharacterComponent
 {
-    Vector3 Position { get; }
-    Vector3 Direction { get; }
-    Vector3 LastMoveDirection { get; }
+    Vector3Int Position { get; }
+    DIRECTION Direction { get; }
+    DIRECTION LastMoveDirection { get; }
 
-    void Face(Vector3 direction);
-    bool Move(Vector3 direction);
+    void Face(DIRECTION direction);
+    bool Move(DIRECTION dir);
     void Wait();
 
-    void Warp(Vector3 pos);
+    void Warp(Vector3Int pos);
 }
 
 public interface ICharaMoveEvent : ICharacterComponent
@@ -31,20 +32,21 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     /// <summary>
     /// 位置
     /// </summary>
-    private Vector3 Position { get; set; }
-    Vector3 ICharaMove.Position => Position;
+    [ShowNativeProperty]
+    private Vector3Int Position { get; set; }
+    Vector3Int ICharaMove.Position => Position;
 
     /// <summary>
     /// 向いている方向
     /// </summary>
-    private Vector3 Direction { get; set; }
-    Vector3 ICharaMove.Direction => Direction;
+    private DIRECTION Direction { get; set; }
+    DIRECTION ICharaMove.Direction => Direction;
 
     /// <summary>
     /// 前回の移動した方向
     /// </summary>
-    private Vector3 LastMoveDirection { get; set; }
-    Vector3 ICharaMove.LastMoveDirection => LastMoveDirection;
+    private DIRECTION LastMoveDirection { get; set; }
+    DIRECTION ICharaMove.LastMoveDirection => LastMoveDirection;
 
     /// <summary>
     /// 移動目標座標
@@ -57,17 +59,7 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     private bool IsMoving { get; set; }
 
     private static readonly float SPEED_MAG = 1.5f;
-
-    /// <summary>
-    /// 移動後イベントタイプ
-    /// </summary>
-    private MOVE_FINISH_EVENT_TYPE m_EventType;
-    public enum MOVE_FINISH_EVENT_TYPE
-    {
-        NONE,
-        ITEM,
-        TRAP,
-    }
+    public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
     /// 攻撃前に呼ばれる
@@ -92,8 +84,9 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     {
         m_Holder = Owner.GetComponent<ICharaObjectHolder>();
 
-        Direction = new Vector3(0, 0, -1);
-        Position = MoveObject.transform.position;
+        Direction = DIRECTION.UNDER;
+        var pos = MoveObject.transform.position;
+        Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
         GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving());
 
@@ -104,42 +97,43 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     /// 向きを変える
     /// </summary>
     /// <param name="direction"></param>
-    private void Face(Vector3 direction)
+    private void Face(DIRECTION direction)
     {
         Direction = direction;
-        CharaObject.transform.rotation = Quaternion.LookRotation(direction);
+        CharaObject.transform.rotation = Quaternion.LookRotation(direction.ToV3Int());
     }
-    void ICharaMove.Face(Vector3 direction) => Face(direction);
+    void ICharaMove.Face(DIRECTION direction) => Face(direction);
 
     /// <summary>
     /// 移動
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    bool ICharaMove.Move(Vector3 direction)
+    bool ICharaMove.Move(DIRECTION direction)
     {
         //向きを変える
         Face(direction);
 
         //壁抜けはできない
-        if (DungeonHandler.Interface.CanMoveDiagonal(Position, direction) == false)
+        if (DungeonHandler.Interface.CanMove(Position, direction) == false)
             return false;
 
-        Vector3 destinationPos = Position + direction;
+        Vector3Int destinationPos = Position + direction.ToV3Int();
 
         // 他ユニットがいるなら移動不可
         if (UnitManager.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
             return false;
 
-        // 移動前イベント
-        m_OnMoveStart.OnNext(Unit.Default);
-
         // 座標設定
-        DestinationPos = destinationPos;
+        DestinationPos = destinationPos + new Vector3(0f, OFFSET_Y, 0f);
         LastMoveDirection = direction;
 
         // 内部的には先に移動しとく
-        Position = DestinationPos;
+        Position = destinationPos;
+
+        // 移動開始イベント
+        m_OnMoveStart.OnNext(Unit.Default);
+        m_CharaTurn.TurnEnd();
 
         // フラグオン
         IsMoving = true;
@@ -167,7 +161,6 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     private void FinishMove()
     {
         IsMoving = false;
-        MoveObject.transform.position = Position;
         m_OnMoveEnd.OnNext(Unit.Default);
     }
 
@@ -176,57 +169,17 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     void ICharaMove.Wait()
     {
-        m_CharaTurn.CanAct = false;
+        m_CharaTurn.TurnEnd();
     }
 
     /// <summary>
     /// ワープ
     /// </summary>
     /// <param name="pos"></param>
-    void ICharaMove.Warp(Vector3 pos)
+    void ICharaMove.Warp(Vector3Int pos)
     {
         Position = pos;
-        m_Holder.MoveObject.transform.position = pos;
-    }
-
-    /// <summary>
-    /// 現在地マスのイベント処理
-    /// </summary>
-    private bool CheckCurrentGrid(out MOVE_FINISH_EVENT_TYPE type)
-    {
-        type = MOVE_FINISH_EVENT_TYPE.NONE;
-
-        /* ここでやらない
-        //メインプレイヤーなら
-        if (this.gameObject == ObjectManager.Instance.m_PlayerList[0])
-        {
-            //階段チェック
-            if (DungeonTerrain.Instance.GridID((int)Position.x, (int)Position.z) == (int)DungeonTerrain.GRID_ID.STAIRS)
-            {
-                QuestionManager.Instance.Log = new StairsLog();
-                QuestionManager.Instance.GetManager.IsActive = true;
-                return true;
-            }
-        }
-        */
-
-        /*
-        //アイテムチェック
-        foreach (GameObject obj in UnitManager.Instance.ItemList)
-        {
-            Vector3 pos = obj.GetComponent<Item>().Position;
-
-            if (pos.x == Position.x && pos.z == Position.z)
-            {
-                BagManager.Instance.GetManager.PutAway(obj);
-                return true;
-            }
-        }
-        */
-
-        //罠チェック
-
-
-        return false;
+        var v3 = new Vector3(Position.x, OFFSET_Y, Position.z);
+        m_Holder.MoveObject.transform.position = v3;
     }
 }

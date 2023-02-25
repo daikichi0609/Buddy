@@ -16,14 +16,14 @@ public static class Utility
         }
     }
 
-    public static Define.CHARA_NAME RandomEnemyName()
+    public static CHARA_NAME RandomEnemyName()
     {
-        return Define.CHARA_NAME.MASHROOM;
+        return CHARA_NAME.MASHROOM;
     }
 
-    public static Define.ITEM_NAME RandomItemName()
+    public static ITEM_NAME RandomItemName()
     {
-        return Define.ITEM_NAME.APPLE;
+        return ITEM_NAME.APPLE;
     }
 }
 
@@ -37,28 +37,30 @@ public static class Calculator
     public static int CalculateDamage(int power, int def)
     {
         int damage = power - def;
+
         if (damage < 1)
-        {
             damage = 1;
-        }
+
         return damage;
     }
 
     public static int CalculateRemainingHp(int hp, int damage)
     {
         hp -= damage;
+
         if (hp < 0)
             hp = 0;
+
         return hp;
     }
 
     public static bool JudgeHit(float dex, float eva)
     {
-        if(UnityEngine.Random.Range(1,101) >= dex * 100)
+        if (UnityEngine.Random.Range(1, 101) >= dex * 100)
         {
             return false;
         }
-        if(UnityEngine.Random.Range(1, 101) <= eva * 100)
+        if (UnityEngine.Random.Range(1, 101) <= eva * 100)
         {
             return false;
         }

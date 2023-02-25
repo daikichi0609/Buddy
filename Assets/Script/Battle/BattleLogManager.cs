@@ -50,7 +50,7 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
             m_LogText.Dequeue();
 
         var sb = new StringBuilder();
-        foreach(var t in m_LogText)
+        foreach (var t in m_LogText)
         {
             sb.Append(t);
             sb.Append("\n");
@@ -69,7 +69,10 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
     private void OnUpdate()
     {
         m_Timer += Time.deltaTime;
-        if(m_Timer >= LOG_TIME)
+        if (m_Timer >= LOG_TIME)
+        {
             m_BattleLog.SetActive(false);
+            m_LogText.Clear();
+        }
     }
 }

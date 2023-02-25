@@ -42,7 +42,9 @@ public readonly struct InputInfo
 public interface IInputManager : ISingleton
 {
     IObservable<InputInfo> InputEvent { get; }
-	Action SetActiveUi(IUiBase ui);
+	IObservable<InputInfo> InputStartEvent { get; }
+
+    Action SetActiveUi(IUiBase ui);
 	bool IsUiPopUp { get; }
 }
 
@@ -54,10 +56,16 @@ public class InputManager : Singleton<InputManager, IInputManager>, IInputManage
 	private Subject<InputInfo> m_InputEvent = new Subject<InputInfo>();
 	IObservable<InputInfo> IInputManager.InputEvent => m_InputEvent;
 
-	/// <summary>
-	/// 今表示中のUi
-	/// </summary>
-	private IUiBase ActiveUi { get; set; }
+    /// <summary>
+    /// 入力始めイベント
+    /// </summary>
+    private Subject<InputInfo> m_InputStartEvent = new Subject<InputInfo>();
+    IObservable<InputInfo> IInputManager.InputStartEvent => m_InputStartEvent;
+
+    /// <summary>
+    /// 今表示中のUi
+    /// </summary>
+    private IUiBase ActiveUi { get; set; }
 
     Action IInputManager.SetActiveUi(IUiBase ui)
 	{
@@ -84,10 +92,23 @@ public class InputManager : Singleton<InputManager, IInputManager>, IInputManage
     //入力を見てメッセージ発行
     private void DetectInput()
     {
-		var flag = KeyCodeFlag.None;
+		var input = CreateGetKeyFlag();
+        var start = CreateGetKeyDownFlag();
 
-		if (Input.GetKey(KeyCode.W))
-			flag |= KeyCodeFlag.W;
+        m_InputEvent.OnNext(new InputInfo(input));
+        m_InputStartEvent.OnNext(new InputInfo(start));
+	}
+
+    /// <summary>
+    /// 入力中ずっと
+    /// </summary>
+    /// <returns></returns>
+	private KeyCodeFlag CreateGetKeyFlag()
+	{
+        var flag = KeyCodeFlag.None;
+
+        if (Input.GetKey(KeyCode.W))
+            flag |= KeyCodeFlag.W;
 
         if (Input.GetKey(KeyCode.A))
             flag |= KeyCodeFlag.A;
@@ -107,8 +128,46 @@ public class InputManager : Singleton<InputManager, IInputManager>, IInputManage
         if (Input.GetKey(KeyCode.Q))
             flag |= KeyCodeFlag.Q;
 
-        m_InputEvent.OnNext(new InputInfo(flag));
-	}
+        if (Input.GetKey(KeyCode.Return))
+            flag |= KeyCodeFlag.Return;
+
+        return flag;
+    }
+
+    /// <summary>
+    /// 入力時
+    /// </summary>
+    /// <returns></returns>
+    private KeyCodeFlag CreateGetKeyDownFlag()
+    {
+        var flag = KeyCodeFlag.None;
+
+        if (Input.GetKeyDown(KeyCode.W))
+            flag |= KeyCodeFlag.W;
+
+        if (Input.GetKeyDown(KeyCode.A))
+            flag |= KeyCodeFlag.A;
+
+        if (Input.GetKeyDown(KeyCode.S))
+            flag |= KeyCodeFlag.S;
+
+        if (Input.GetKeyDown(KeyCode.D))
+            flag |= KeyCodeFlag.D;
+
+        if (Input.GetKeyDown(KeyCode.RightShift))
+            flag |= KeyCodeFlag.Right_Shift;
+
+        if (Input.GetKeyDown(KeyCode.E))
+            flag |= KeyCodeFlag.E;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+            flag |= KeyCodeFlag.Q;
+
+        if (Input.GetKeyDown(KeyCode.Return))
+            flag |= KeyCodeFlag.Return;
+
+        return flag;
+    }
 }
 
 // 拡張メソッド

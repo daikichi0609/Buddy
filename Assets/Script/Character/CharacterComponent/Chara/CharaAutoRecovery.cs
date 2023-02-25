@@ -27,7 +27,7 @@ public class CharaAutoRecovery : CharaComponentBase, ICharaAutoRecovery
 
         if (Owner.RequireComponent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEnd.Subscribe(_ =>
+            turn.OnTurnEndPost.Subscribe(_ =>
             {
                 if (Owner.RequireComponent<ICharaStarvation>(out var starvation) == false || starvation.IsStarvate == true)
                     return;

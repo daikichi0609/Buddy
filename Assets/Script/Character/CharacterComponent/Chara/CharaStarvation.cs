@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public interface ICharaStarvation : ICharacterComponent
 {
     bool IsStarvate { get; }
+    void RecoverHungry(int add);
 }
 
 /// <summary>
@@ -44,7 +45,7 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
 
         if (Owner.RequireComponent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEnd.Subscribe(_ =>
+            turn.OnTurnEndPost.Subscribe(_ =>
             {
                 if (IsStarvate == true)
                     Starvate();
@@ -52,6 +53,15 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
                     MakeHungry();
             }).AddTo(this);
         }
+    }
+
+    /// <summary>
+    /// 空腹を回復する
+    /// </summary>
+    /// <param name="add"></param>
+    void ICharaStarvation.RecoverHungry(int add)
+    {
+        m_Hungry += add;
     }
 
     /// <summary>
@@ -68,7 +78,8 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
         if (Owner.RequireComponent<ICharaStatus>(out var status) == false)
             return;
 
-        m_Hungry++;
+        // 死亡はしない
+        Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.Parameter.MaxHp);
     }
 
     /// <summary>

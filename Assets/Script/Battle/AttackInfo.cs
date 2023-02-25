@@ -7,7 +7,12 @@ public readonly struct AttackInfo
     /// <summary>
     /// 攻撃者
     /// </summary>
-    public Define.CHARA_NAME Attacker { get; }
+    public ICollector Attacker { get; }
+
+    /// <summary>
+    /// 攻撃者（名前）
+    /// </summary>
+    public CHARA_NAME Name { get; }
 
     /// <summary>
     /// 攻撃力
@@ -19,9 +24,10 @@ public readonly struct AttackInfo
     /// </summary>
     public float Dex { get; }
 
-    public AttackInfo(Define.CHARA_NAME name, int atk, float dex)
+    public AttackInfo(ICollector attacker, CHARA_NAME name, int atk, float dex)
     {
-        Attacker = name;
+        Attacker = attacker;
+        Name = name;
         Atk = atk;
         Dex = dex;
     }

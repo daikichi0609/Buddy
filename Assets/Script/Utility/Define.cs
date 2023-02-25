@@ -1,72 +1,49 @@
-﻿public static class Define
+﻿/// <summary>
+/// キャラ名
+/// </summary>
+public enum CHARA_NAME
 {
-	// キャラ名
-	public enum CHARA_NAME
-	{
-		BOXMAN, // 段ボール
-		RAGON, // リザードマン
-		BERRY, // いちご
-		DORCHE, // 魔術師
+    NONE,
+    BOXMAN, // 段ボール
+    RAGON, // リザードマン
+    BERRY, // いちご
+    DORCHE, // 魔術師
 
-		BALE, // 熊
-		LAMY, // 吸血鬼
-		PLISS, // 聖職者
+    BALE, // 熊
+    LAMY, // 吸血鬼
+    PLISS, // 聖職者
 
-		KING, // 王様
-		BARM, // 騎士
+    KING, // 王様
+    BARM, // 騎士
 
-		MASHROOM, // きのこ
-	}
-
-	// アイテム名
-	public enum ITEM_NAME
-    {
-		APPLE,
-    }
-
-	//ダンジョンテーマ
-	public enum DUNGEON_THEME
-	{
-		GRASS,
-		ROCK,
-		CRYSTAL,
-		WHITE
-	}
-
-	//ダンジョン名
-	public enum DUNGEON_NAME
-	{
-		始まりの森,
-		岩場,
-		クリスタル,
-		白
-	}
+    MASHROOM, // きのこ
 }
 
-public static class InternalDefine
+/// <summary>
+/// アイテム名
+/// </summary>
+public enum ITEM_NAME
 {
-	//ゲーム全体のステート
-	public enum GAME_STATE
-	{
-		LOADING,
-		PLAYING
-	}
+    APPLE,
+}
 
-	//実行する行動タイプ
-	public enum ACTION
-	{
-		ATTACK,
-		SKILL,
-		MOVE,
-	}
+/// <summary>
+/// ダンジョン種類
+/// </summary>
+public enum DUNGEON_THEME
+{
+    GRASS,
+    ROCK,
+    CRYSTAL,
+    WHITE,
+}
 
-	/// <summary>
-    /// 目標にするターゲット
-    /// </summary>
-	public enum CHARA_TYPE
-	{
-		PLAYER,
-		ENEMY,
-		NONE
-	}
+/// <summary>
+/// キャラタイプ
+/// </summary>
+public enum CHARA_TYPE
+{
+    PLAYER,
+    ENEMY,
+    NONE
 }

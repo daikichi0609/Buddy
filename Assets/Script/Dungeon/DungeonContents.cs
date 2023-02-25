@@ -5,6 +5,12 @@ using UniRx;
 
 public class DungeonContents : Singleton<DungeonContents>
 {
+    [SerializeField]
+    private int m_EnemyCount;
+
+    [SerializeField]
+    private int m_ItemCount;
+
     protected override void Awake()
     {
         base.Awake();
@@ -15,8 +21,8 @@ public class DungeonContents : Singleton<DungeonContents>
     public void DeployDungeonContents()
     {
         DeployPlayer();
-        DeployEnemy(5);
-        DeployItem(5);
+        DeployEnemy(m_EnemyCount);
+        DeployItem(m_ItemCount);
     }
 
     //ダンジョンコンテンツ撤去
@@ -34,9 +40,9 @@ public class DungeonContents : Singleton<DungeonContents>
     }
 
     //キャラオブジェクト取得用
-    private GameObject CharaObject(Define.CHARA_NAME name)
+    private GameObject CharaObject(CHARA_NAME name)
     {
-        if(ObjectPool.Instance.TryGetPoolObject(name.ToString(), out var chara) == false)
+        if (ObjectPool.Instance.TryGetPoolObject(name.ToString(), out var chara) == false)
             chara = Instantiate(CharaHolder.Instance.CharaObject(name));
         return chara;
     }
@@ -63,12 +69,12 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
 
-        foreach(ICollector collector in UnitManager.Interface.PlayerList)
+        foreach (ICollector collector in UnitManager.Interface.PlayerList)
         {
             if (collector.RequireComponent<ICharaMove>(out var move) == false)
                 continue;
 
-            move.Warp(new Vector3(cell.X, 0.51f, cell.Z));
+            move.Warp(cell.Position);
         }
     }
 
@@ -77,7 +83,7 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         foreach (ICollector player in UnitManager.Interface.PlayerList)
         {
-            string name = player.GetComponent<ICharaStatus>().Parameter.Name.ToString();
+            string name = player.GetComponent<ICharaStatus>().Parameter.GivenName.ToString();
             ObjectPool.Instance.SetObject(name, player.GetComponent<ICharaObjectHolder>().MoveObject);
         }
 
@@ -96,7 +102,7 @@ public class DungeonContents : Singleton<DungeonContents>
         if (count <= 0)
             return;
 
-        int[,] map = DungeonManager.Interface.Map;
+        var map = DungeonManager.Interface.IdMap;
 
         for (int num = 1; num <= count; num++)
         {
@@ -113,7 +119,7 @@ public class DungeonContents : Singleton<DungeonContents>
     {
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
         {
-            string name = enemy.GetComponent<ICharaStatus>().Parameter.Name.ToString();
+            string name = enemy.GetComponent<ICharaStatus>().Parameter.GivenName.ToString();
             ObjectPool.Instance.SetObject(name, enemy.GetComponent<ICharaObjectHolder>().MoveObject);
         }
 
@@ -124,17 +130,14 @@ public class DungeonContents : Singleton<DungeonContents>
     private void RemoveEnemyObject(ICollector enemy)
     {
         UnitManager.Interface.EnemyList.Remove(enemy);
-        string name = enemy.GetComponent<ICharaStatus>().Parameter.Name.ToString();
+        string name = enemy.GetComponent<ICharaStatus>().Parameter.GivenName.ToString();
         ObjectPool.Instance.SetObject(name, enemy.GetComponent<ICharaObjectHolder>().MoveObject);
     }
 
     /// <summary>
-    ///
     /// アイテム関連
-    /// 
     /// </summary>
-    
-    private GameObject ItemObject(Define.ITEM_NAME name)
+    private GameObject ItemObject(ITEM_NAME name)
     {
         if (ObjectPool.Instance.TryGetPoolObject(name.ToString(), out var item) == false)
             item = Instantiate(ItemHolder.Instance.ItemObject(name));
@@ -147,7 +150,7 @@ public class DungeonContents : Singleton<DungeonContents>
         if (itemNum <= 0)
             return;
 
-        int[,] map = DungeonManager.Interface.Map;
+        var map = DungeonManager.Interface.IdMap;
 
         for (int num = 0; num <= itemNum - 1; num++)
         {
@@ -156,7 +159,7 @@ public class DungeonContents : Singleton<DungeonContents>
             obj.transform.position = new Vector3(cell.X, 0.75f, cell.Z);
             obj.transform.eulerAngles = new Vector3(45f, 0f, 0f);
             IItem item = obj.GetComponent<Item>();
-            item.Position = new Vector3(cell.X, 0f, cell.Z);
+            item.Position = cell.Position;
             ItemManager.Interface.AddItem(item);
         }
     }

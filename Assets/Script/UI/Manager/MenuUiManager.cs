@@ -20,15 +20,46 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
         new string[2] { "バッグ", "ステータス" });
     }
 
+    /// <summary>
+    /// メニュー開く購読
+    /// </summary>
+    private IDisposable m_OpenMenuDisposable;
+
     protected override void Awake()
     {
         base.Awake();
 
-        InputManager.Interface.InputEvent.Subscribe(input =>
+        SubscribeMenuOpen();
+    }
+
+    /// <summary>
+    /// メニューを開く
+    /// </summary>
+    private void SubscribeMenuOpen()
+    {
+        m_OpenMenuDisposable = InputManager.Interface.InputStartEvent.Subscribe(input =>
         {
             if (IsActive == false && TurnManager.Interface.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
                 Activate();
         });
+    }
+
+    /// <summary>
+    /// メニュー開く購読破棄
+    /// </summary>
+    protected override void Activate()
+    {
+        base.Activate();
+        m_OpenMenuDisposable.Dispose();
+    }
+
+    /// <summary>
+    /// メニュー開く再購読
+    /// </summary>
+    protected override void Deactivate()
+    {
+        base.Deactivate();
+        SubscribeMenuOpen();
     }
 
     /// <summary>

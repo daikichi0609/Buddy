@@ -30,6 +30,7 @@ public readonly struct OptionElement
 public interface IUiManager : ISingleton
 {
     void Activate();
+    void Deactive();
 }
 
 /// <summary>
@@ -65,12 +66,6 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     protected override void Awake()
     {
         base.Awake();
-
-        // Input検知購読
-        InputManager.Interface.InputEvent.Subscribe(input =>
-        {
-            DetectInput(input.KeyCodeFlag);
-        }).AddTo(this);
     }
 
     private void DetectInput(KeyCodeFlag flag)
@@ -115,6 +110,7 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     /// </summary>
     protected virtual void Activate()
     {
+        SubscribeDetectInput();
         CloseUiEvent = InputManager.Interface.SetActiveUi(this.UiInterface);
         UiInterface.Initialize(m_Disposables, CreateOptionElement());
         UiInterface.SetActive(IsActive);
@@ -131,5 +127,17 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
 
         CloseUiEvent?.Invoke();
         CloseUiEvent = null;
+    }
+    void IUiManager.Deactive() => Deactivate();
+
+    private void SubscribeDetectInput()
+    {
+        // 入力購読
+        var disposable = InputManager.Interface.InputStartEvent.Subscribe(input =>
+        {
+            DetectInput(input.KeyCodeFlag);
+        }).AddTo(this);
+
+        m_Disposables.Add(disposable);
     }
 }

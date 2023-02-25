@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 public interface IGameManager : ISingleton
 {
-    Define.DUNGEON_THEME DungeonTheme { get; set; }
-    Define.DUNGEON_NAME DungeonName { get; set; }
-    Define.CHARA_NAME LeaderName { get; set; }
+    DUNGEON_THEME DungeonTheme { get; set; }
+    CHARA_NAME LeaderName { get; set; }
 
     IObservable<Unit> GetInitEvent { get; }
     IObservable<Unit> GetUpdateEvent { get; }
@@ -24,20 +23,14 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
 {
     //現在のダンジョンテーマ
     [SerializeField]
-    private Define.DUNGEON_THEME m_DungeonTheme;
-    Define.DUNGEON_THEME IGameManager.DungeonTheme
+    private DUNGEON_THEME m_DungeonTheme;
+    DUNGEON_THEME IGameManager.DungeonTheme
     {
         get { return m_DungeonTheme; }
         set { m_DungeonTheme = value; }
     }
 
-    //現在のダンジョン名
-    Define.DUNGEON_NAME IGameManager.DungeonName
-    {
-        get; set;
-    }
-
-    Define.CHARA_NAME IGameManager.LeaderName { get; set; } = Define.CHARA_NAME.BOXMAN;
+    CHARA_NAME IGameManager.LeaderName { get; set; } = CHARA_NAME.BOXMAN;
 
     /// <summary>
     /// 現在のフロア階層
@@ -83,6 +76,8 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     /// <returns></returns>
     async Task IGameManager.NextFloor()
     {
+        YesorNoQuestionUiManager.Interface.Deactive();
+
         // 階層up
         m_FloorNum.Value++;
 

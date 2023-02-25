@@ -6,28 +6,43 @@ public interface ICell
 {
     GameObject GameObject { get; set; }
 
-    Vector3 Position { get; }
+    Vector3Int Position { get; }
     int X { get; }
     int Z { get; }
 
     int RoomId { get; set; }
 
-    GRID_ID GridID { get; set; }
+    CELL_ID CellId { get; set; }
 }
 
 public class Cell : MonoBehaviour, ICell
 {
+    /// <summary>
+    /// GameObject
+    /// </summary>
+    [SerializeField]
     private GameObject m_GameObject;
-    GameObject ICell.GameObject { get; set; }
+    GameObject ICell.GameObject { get => m_GameObject; set => m_GameObject = value; }
 
-    private Vector3 Position => gameObject.transform.position;
-    Vector3 ICell.Position => Position;
-    int ICell.X => (int)Position.x;
-    int ICell.Z => (int)Position.z;
+    /// <summary>
+    /// Position
+    /// </summary>
+    private Vector3Int Position => gameObject.transform.position.ToV3Int();
+    Vector3Int ICell.Position => Position;
+    int ICell.X => Position.x;
+    int ICell.Z => Position.z;
 
-    int ICell.RoomId { get; set; }
+    /// <summary>
+    /// 部屋Id
+    /// </summary>
+    private int m_RoomId;
+    int ICell.RoomId { get => m_RoomId; set => m_RoomId = value; }
 
-    GRID_ID ICell.GridID { get; set; }
+    /// <summary>
+    /// CellId
+    /// </summary>
+    private CELL_ID m_CellId;
+    CELL_ID ICell.CellId { get => m_CellId; set => m_CellId = value; }
 }
 
 public static class CellExtension

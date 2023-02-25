@@ -6,7 +6,7 @@ public class CurrentStatus
     /// <param name="param"></param>
     public CurrentStatus(BattleStatus.Parameter param)
     {
-        Name = param.Name;
+        Name = param.GivenName;
         Hp = param.MaxHp;
         Atk = param.Atk;
         Def = param.Def;
@@ -17,7 +17,7 @@ public class CurrentStatus
         Res = param.Res;
     }
 
-    public Define.CHARA_NAME Name { get; }
+    public CHARA_NAME Name { get; }
 
     // レベル
     public int Lv { get; set; } = 1;

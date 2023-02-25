@@ -47,7 +47,7 @@ public abstract class UiBase : IUiBase
     /// 選択肢Id
     /// </summary>
     private ReactiveProperty<int> m_OptionId = new ReactiveProperty<int>();
-    private IObservable<int> OptionIdChanged => m_OptionId.Skip(1);
+    private IObservable<int> OptionIdChanged => m_OptionId;
     void IUiBase.AddOptionId(int add)
     {
         int option = Mathf.Clamp(m_OptionId.Value + add, 0, OptionCount);
@@ -63,7 +63,7 @@ public abstract class UiBase : IUiBase
     /// 選択肢のメソッド
     /// </summary>
     protected Action[] OptionMethods { get; set; }
-    void IUiBase.InvokeOptionMethod() => OptionMethods[m_OptionId.Value].Invoke();
+    void IUiBase.InvokeOptionMethod() => OptionMethods[m_OptionId.Value]?.Invoke();
 
     /// <summary>
     /// 操作するUi
@@ -84,10 +84,7 @@ public abstract class UiBase : IUiBase
         IsActiveChanged.Subscribe(active => OnChangeUiActive(active)).AddTo(disposable);
 
         // 有効な選択肢の変更
-        OptionIdChanged.Subscribe(option => OnChangeActiveOption(option)).AddTo(disposable);
-
-        // 有効中の選択肢初期化
-        m_OptionId.Value = 0;
+        OptionIdChanged.Subscribe(option => OnChangeActiveOption(ref option)).AddTo(disposable);
 
         // 選択肢メソッド初期化
         OptionMethods = element.OptionMethods;
@@ -95,6 +92,9 @@ public abstract class UiBase : IUiBase
         // 選択肢テキスト初期化
         for (int i = 0; i < element.OptionMethods?.Length; i++)
             Texts[i].text = element.OptionTexts[i];
+
+        // 有効中の選択肢初期化
+        m_OptionId.Value = 0;
     }
 
     void IUiBase.Initialize(CompositeDisposable disposable, OptionElement element) => Initialize(disposable, element);
@@ -107,8 +107,10 @@ public abstract class UiBase : IUiBase
     /// <summary>
     /// テキスト更新操作
     /// </summary>
-    private void OnChangeActiveOption(int optionId)
+    private void OnChangeActiveOption(ref int optionId)
     {
+        optionId = Mathf.Clamp(optionId, 0, Texts.Count - 1);
+
         //選択肢の文字色更新
         for (int i = 0; i <= Texts.Count - 1; i++)
             Texts[i].color = Color.white;

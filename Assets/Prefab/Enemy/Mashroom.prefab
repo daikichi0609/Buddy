@@ -185,6 +185,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aff126964a14e8ca0e8b985a578c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_AnimationState:
+    value: 0
   m_CharaAnimator: {fileID: 3135674774231689225}
 --- !u!114 &1280366501833697905
 MonoBehaviour:
@@ -260,7 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a293fee2d42044088acf95f0a0c4a350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Name: 9
+  m_GivenName: 10
 --- !u!114 &3311249493831154698
 MonoBehaviour:
   m_ObjectHideFlags: 0

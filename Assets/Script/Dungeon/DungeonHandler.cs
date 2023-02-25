@@ -4,34 +4,121 @@ using UniRx;
 
 public interface IDungeonHandler : ISingleton
 {
-    AroundCell GetAroundCell(int x, int z);
+    /// <summary>
+    /// セル
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    ICell GetCell(Vector3Int pos);
+
+    /// <summary>
+    /// セルId
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    CELL_ID GetCellId(Vector3Int pos);
+
+    /// <summary>
+    /// 周りのセル取得
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
+    AroundCell GetAroundCell(Vector3Int pos);
+
+    /// <summary>
+    /// 周りのセルId取得
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
     AroundCellId GetAroundCellId(int x, int z);
+    AroundCellId GetAroundCellId(Vector3Int pos);
 
-    bool CanMove(Vector3 pos, Vector3 dir);
+    /// <summary>
+    /// 任意の地点から任意の方向に移動できるか
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    bool CanMove(Vector3Int pos, DIRECTION dir);
 
-    bool CanMoveDiagonal(Vector3 pos, Vector3 dir);
-    bool CanMoveDiagonal(Vector3 pos, DIRECTION dir);
-
+    /// <summary>
+    /// 任意の部屋の入り口セル取得
+    /// </summary>
+    /// <param name="roomId"></param>
+    /// <returns></returns>
     List<ICell> GetGateWayCells(int roomId);
 
-    int GetRoomId(Vector3 pos);
+    /// <summary>
+    /// 任意の位置の部屋Id取得
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    int GetRoomId(Vector3Int pos);
 
+    /// <summary>
+    /// ランダムな部屋のセルを取得
+    /// </summary>
+    /// <returns></returns>
     ICell GetRandomRoomCell();
+
+    /// <summary>
+    /// ランダムな部屋の何もないセルを取得
+    /// </summary>
+    /// <returns></returns>
     ICell GetRandomRoomEmptyCell();
 }
 
 public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>, IDungeonHandler
 {
-    private int[,] Map => DungeonManager.Interface.Map;
+    /// <summary>
+    /// マップ
+    /// </summary>
+    private CELL_ID[,] IdMap => DungeonManager.Interface.IdMap;
     private List<List<ICell>> CellMap => DungeonManager.Interface.CellMap;
 
+    /// <summary>
+    /// セル取得
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private ICell GetCell(Vector3Int pos) => DungeonManager.Interface.CellMap[pos.x][pos.z];
+    ICell IDungeonHandler.GetCell(Vector3Int pos) => GetCell(pos);
+
+    /// <summary>
+    /// セルId取得
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private CELL_ID GetCellId(Vector3Int pos) => DungeonManager.Interface.IdMap[pos.x, pos.z];
+    CELL_ID IDungeonHandler.GetCellId(Vector3Int pos) => GetCellId(pos);
+
+    /// <summary>
+    /// 周囲のセル取得
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
     private AroundCell NewAroundCell(int x, int z) => new AroundCell(CellMap, x, z);
-    AroundCell IDungeonHandler.GetAroundCell(int x, int z) => NewAroundCell(x, z);
+    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => NewAroundCell((int)pos.x, (int)pos.z);
 
-    private AroundCellId NewAroundCellId(int x, int z) => new AroundCellId(Map, x, z);
+    /// <summary>
+    /// 周囲のセルId取得
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
+    private AroundCellId NewAroundCellId(int x, int z) => new AroundCellId(IdMap, x, z);
     AroundCellId IDungeonHandler.GetAroundCellId(int x, int z) => NewAroundCellId(x, z);
+    AroundCellId IDungeonHandler.GetAroundCellId(Vector3Int pos) => NewAroundCellId(pos.x, pos.z);
 
-    int IDungeonHandler.GetRoomId(Vector3 pos) => DungeonManager.Interface.CellMap[(int)pos.x][(int)pos.z].RoomId;
+    /// <summary>
+    /// 任意座標の部屋Id取得
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    int IDungeonHandler.GetRoomId(Vector3Int pos) => DungeonManager.Interface.CellMap[pos.x][pos.z].RoomId;
 
     /// <summary>
     /// 移動可能か
@@ -39,23 +126,32 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <param name="pos"></param>
     /// <param name="direction"></param>
     /// <returns></returns>
-    private bool CanMove(Vector3 pos, DIRECTION dir) //指定座標から指定方向へ１マス移動可能かどうか調べる
+    private bool CanMove(Vector3Int pos, DIRECTION dir) //指定座標から指定方向へ１マス移動可能かどうか調べる
     {
-        int[,] map = Map;
-        int direction_x = (int)Positional.GetDirection(dir).x;
-        int direction_z = (int)Positional.GetDirection(dir).z;
+        var destinationPos = pos + dir.ToV3Int();
+        if (IsPassable(destinationPos) == false)
+            return false;
 
-        int pos_x = (int)pos.x;
-        int pos_z = (int)pos.z;
+        if (CanMoveDiagonal(pos, dir.ToV3Int()) == false)
+            return false;
 
-        int id = Map[pos_x + direction_x, pos_z + direction_z];
+        return true;
+    }
+    bool IDungeonHandler.CanMove(Vector3Int pos, DIRECTION dir) => CanMove(pos, dir);
 
-        if (id == (int)GRID_ID.PATH_WAY || id == (int)GRID_ID.ROOM || id == (int)GRID_ID.GATE || id == (int)GRID_ID.STAIRS)
+    /// <summary>
+    /// 通れるか
+    /// </summary>
+    /// <returns></returns>
+    private bool IsPassable(Vector3Int pos)
+    {
+        var id = IdMap[pos.x, pos.z];
+
+        if (id == CELL_ID.PATH_WAY || id == CELL_ID.ROOM || id == CELL_ID.GATE || id == CELL_ID.STAIRS)
             return true;
 
         return false;
     }
-    bool IDungeonHandler.CanMove(Vector3 pos, Vector3 dir) => CanMove(pos, Positional.GetDirection(dir));
 
     /// <summary>
     /// 斜め移動できるかを調べる
@@ -65,17 +161,13 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <param name="direction_x"></param>
     /// <param name="direction_z"></param>
     /// <returns></returns>
-    private bool CanMoveDiagonal(Vector3 pos, DIRECTION direction) => CanMoveDiagonal(pos, Positional.GetDirection(direction));
-    private bool CanMoveDiagonal(Vector3 pos, Vector3 dir)
+    private bool CanMoveDiagonal(Vector3Int pos, Vector3Int dir)
     {
-        if (Map[(int)(pos.x + dir.x), (int)pos.z] == (int)GRID_ID.WALL || Map[(int)pos.x, (int)(pos.z + dir.z)] == (int)GRID_ID.WALL)
+        if (IdMap[pos.x + dir.x, pos.z] == CELL_ID.WALL || IdMap[pos.x, pos.z + dir.z] == CELL_ID.WALL)
             return false;
 
-        return CanMove(pos, Positional.GetDirection(dir));
+        return true;
     }
-
-    bool IDungeonHandler.CanMoveDiagonal(Vector3 pos, Vector3 dir) => CanMoveDiagonal(pos, dir);
-    bool IDungeonHandler.CanMoveDiagonal(Vector3 pos, DIRECTION dir) => CanMoveDiagonal(pos, dir);
 
     /// <summary>
     /// 特定の部屋の出入り口を取得
@@ -87,7 +179,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         List<ICell> roomList = DungeonManager.Interface.GetRoomCellList(roomId);
         List<ICell> list = new List<ICell>();
         foreach (ICell cell in roomList)
-            if (cell.GridID == GRID_ID.GATE)
+            if (cell.CellId == CELL_ID.GATE)
                 list.Add(cell);
 
         return list;
@@ -114,15 +206,15 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private ICell GetRandamRoomCell()
     {
-        int id = -1;
+        var id = CELL_ID.NONE;
         int x = -1;
         int z = -1;
 
-        while (id != 2)
+        while (id != CELL_ID.ROOM)
         {
-            x = Random.Range(0, Map.GetLength(0));
-            z = Random.Range(0, Map.GetLength(1));
-            id = Map[x, z];
+            x = Random.Range(0, IdMap.GetLength(0));
+            z = Random.Range(0, IdMap.GetLength(1));
+            id = IdMap[x, z];
         }
 
         return DungeonManager.Interface.CellMap[x][z];
@@ -155,13 +247,13 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
 /// </summary>
 public readonly struct AroundCellId
 {
-    public int BaseCell { get; }
-    public Dictionary<DIRECTION, int> Cells { get; }
+    public CELL_ID BaseCell { get; }
+    public Dictionary<DIRECTION, CELL_ID> Cells { get; }
 
-    public AroundCellId(int[,] map, int x, int z)
+    public AroundCellId(CELL_ID[,] map, int x, int z)
     {
         BaseCell = map[x, z];
-        Cells = new Dictionary<DIRECTION, int>();
+        Cells = new Dictionary<DIRECTION, CELL_ID>();
 
         // 左
         if (x - 1 >= 0 && z - 1 >= 0)
@@ -221,7 +313,7 @@ public readonly struct AroundCell
             Cells.Add(DIRECTION.UPPER_RIGHT, cellList[x + 1][z + 1]);
 
         // 右
-        if(x + 1 < cellList.Count)
+        if (x + 1 < cellList.Count)
             Cells.Add(DIRECTION.RIGHT, cellList[x + 1][z]);
 
         if (x + 1 < cellList.Count && z - 1 >= 0)

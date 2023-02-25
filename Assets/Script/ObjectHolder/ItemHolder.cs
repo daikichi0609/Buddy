@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class ItemHolder : Singleton<ItemHolder>
 {
-    public GameObject ItemObject(Define.ITEM_NAME name)
+    public GameObject ItemObject(ITEM_NAME name)
     {
         switch (name)
         {
-            case Define.ITEM_NAME.APPLE:
-                return Apple;
+            case ITEM_NAME.APPLE:
+                return m_Apple;
         }
         return null;
     }
 
-    [SerializeField] private GameObject m_Apple;
-    public GameObject Apple
-    {
-        get { return m_Apple; }
-    }
+    [SerializeField]
+    private GameObject m_Apple;
 }

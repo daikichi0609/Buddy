@@ -3,41 +3,60 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using System.Threading.Tasks;
 
 public interface ICharaTurn : ICharacterComponent
 {
-    bool CanAct { get; set; }
+    bool CanAct { get; }
     bool IsActing { get; set; }
+
+    Task TurnEnd();
+    void CanBeAct();
+
+    Task WaitFinishActing(Action action);
 }
 
 public interface ICharaTurnEvent : ICharacterComponent
 {
+    /// <summary>
+    /// ターン開始 CanAct -> true
+    /// </summary>
     IObservable<bool> OnTurnStart { get; }
-    IObservable<bool> OnTurnEnd { get; }
+
+    /// <summary>
+    /// ターン終了後 CanAct -> false
+    /// </summary>
+    IObservable<bool> OnTurnEndPost { get; }
 }
 
 public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
 {
+    private ICharaBattle m_CharaBattle;
+
     /// <summary>
     /// 行動済みステータス
     /// </summary>
     private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>();
-    bool ICharaTurn.CanAct
-    {
-        get => m_CanAct.Value;
-        set => m_CanAct.Value = value;
-    }
+    bool ICharaTurn.CanAct => m_CanAct.Value;
+
+    /// <summary>
+    /// CanAct -> true
+    /// </summary>
     IObservable<bool> ICharaTurnEvent.OnTurnStart => m_CanAct.Where(turn => turn == true);
-    IObservable<bool> ICharaTurnEvent.OnTurnEnd => m_CanAct.Where(turn => turn == false);
+
+    /// <summary>
+    /// CanAct -> false
+    /// </summary>
+    IObservable<bool> ICharaTurnEvent.OnTurnEndPost => m_CanAct.Where(turn => turn == false);
 
     /// <summary>
     /// 行動中ステータス
     /// </summary>
-    private bool IsActing { get; set; } = false;
+    private bool m_IsActing;
     bool ICharaTurn.IsActing
     {
-        get => IsActing;
-        set => IsActing = value;
+        get => m_IsActing;
+        set => m_IsActing = value;
     }
 
     protected override void Register(ICollector owner)
@@ -50,17 +69,32 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     protected override void Initialize()
     {
         base.Initialize();
+        m_CharaBattle = Owner.GetComponent<ICharaBattle>();
+    }
 
-        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
-        {
-            // 攻撃
-            battle.OnAttackStart.Subscribe(_ => m_CanAct.Value = false).AddTo(this);
-        }
+    /// <summary>
+    /// ターン終了
+    /// </summary>
+    async Task ICharaTurn.TurnEnd()
+    {
+        if (Owner.RequireComponent<ICharaCellEventChecker>(out var checker) == true)
+            await checker.CheckCurrentCell();
 
-        if (Owner.RequireComponent<ICharaMoveEvent>(out var move) == true)
-        {
-            // 移動前
-            move.OnMoveStart.Subscribe(_ => m_CanAct.Value = false).AddTo(this);
-        }
+        // 終了
+        m_CanAct.Value = false;
+    }
+
+    /// <summary>
+    /// ターン開始
+    /// </summary>
+    void ICharaTurn.CanBeAct() => m_CanAct.Value = true;
+
+    async Task ICharaTurn.WaitFinishActing(Action action)
+    {
+        // IsActing -> false になるまで待つ
+        while (m_IsActing == true)
+            await Task.Delay(1);
+
+        action.Invoke();
     }
 }

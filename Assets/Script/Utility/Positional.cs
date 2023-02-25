@@ -20,14 +20,16 @@ public enum DIRECTION
 
 public static class Positional
 {
-    private static readonly Vector3[] Direction = new Vector3[8]
+    public static Vector3Int ToV3Int(this Vector3 v3) => new Vector3Int((int)v3.x, (int)v3.y, (int)v3.z);
+
+    private static readonly Vector3Int[] Direction = new Vector3Int[8]
     {
-        new Vector3(-1f, 0f, -1f), new Vector3(-1f, 0f, 0f), new Vector3(-1f, 0f, 1f), new Vector3(0f, 0f, 1f),
-        new Vector3(1f, 0f, 1f), new Vector3(1f, 0f, 0f), new Vector3(1f, 0f, -1f),  new Vector3(0f, 0f, -1f),
+        new Vector3Int(-1, 0, -1), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, 0, 1),
+        new Vector3Int(1, 0, 1), new Vector3Int(1, 0, 0), new Vector3Int(1, 0, -1),  new Vector3Int(0, 0, -1),
     };
 
-    public static Vector3 GetDirection(DIRECTION dir) => Direction[(int)dir];
-    public static DIRECTION GetDirection(Vector3 dir)
+    public static Vector3Int ToV3Int(this DIRECTION dir) => Direction[(int)dir];
+    public static DIRECTION ToDirEnum(this Vector3Int dir)
     {
         for (int i = 0; i < (int)DIRECTION.MAX; i++)
             if (dir == Direction[i])
@@ -36,11 +38,11 @@ public static class Positional
         return DIRECTION.NONE;
     }
 
-    public static Vector3 CalculateDirection(Vector3 pos, Vector3 opp)
+    public static DIRECTION CalculateDirection(this Vector3Int pos, Vector3 opp)
     {
         var dir = opp - pos;
         if (dir.x == 0 && dir.z == 0)
-            return new Vector3(0f, 0f, 0f);
+            return DIRECTION.NONE;
 
         var x = dir.x;
         var z = dir.z;
@@ -49,10 +51,10 @@ public static class Positional
         var z_Abs = Mathf.Abs(z);
 
         if (x_Abs == z_Abs)
-            return new Vector3(Mathf.Clamp(x, -1f, 1f), 0f, Mathf.Clamp(z, -1f, 1f));
+            return new Vector3Int((int)Mathf.Clamp(x, -1, 1), 0, (int)Mathf.Clamp(z, -1, 1)).ToDirEnum();
         else if (x_Abs > z_Abs)
-            return new Vector3(Mathf.Clamp(x, -1f, 1f), 0f, 0f);
+            return new Vector3Int((int)Mathf.Clamp(x, -1, 1), 0, 0).ToDirEnum();
         else
-            return new Vector3(0f, 0f, Mathf.Clamp(z, -1f, 1f));
+            return new Vector3Int(0, 0, (int)Mathf.Clamp(z, -1, 1)).ToDirEnum();
     }
 }
