@@ -9,8 +9,6 @@ using UniRx;
 public interface IDungeonManager : ISingleton
 {
     CELL_ID[,] IdMap { get; }
-
-
     List<List<ICell>> CellMap { get; }
 
     List<ICell> GetRoomCellList(int roomId);
@@ -64,7 +62,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     {
         var remove = m_CellMap[x][z];
         m_CellMap[x].RemoveAt(z);
-        Destroy(remove.GameObject);
+        Destroy(remove.CellObject);
         m_CellMap[x].Insert(z, cell);
     }
 
@@ -111,8 +109,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     protected override void Awake()
     {
         base.Awake();
-
-        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon());
+        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon()).AddTo(this);
     }
 
     public void DeployDungeon()
@@ -133,7 +130,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
             {
                 CELL_ID id = cell.CellId;
                 string key = id.ToString();
-                ObjectPool.Instance.SetObject(key, cell.GameObject);
+                ObjectPool.Instance.SetObject(key, cell.CellObject);
             }
         }
 
@@ -206,7 +203,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
                 }
 
                 var cell = cellObject.GetComponent<ICell>();
-                cell.GameObject = cellObject;
+                cell.CellObject = cellObject;
                 cell.CellId = type;
                 m_CellMap[i].Add(cell);
             }
@@ -228,7 +225,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
             cellObject.transform.position = new Vector3(x, 0, z);
 
         var cell = cellObject.GetComponent<ICell>();
-        cell.GameObject = cellObject;
+        cell.CellObject = cellObject;
         cell.CellId = CELL_ID.STAIRS;
         SetCell(cell, x, z); //既存のオブジェクトの代わりに代入
     }

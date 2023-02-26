@@ -143,6 +143,9 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
             if (cells[DIRECTION.RIGHT] > CELL_ID.WALL && DIRECTION.RIGHT != oppDirection)
                 candidateDir.Add(DIRECTION.RIGHT);
 
+            if (candidateDir.Count == 0)
+                Debug.LogAssertion("行き先候補がない");
+
             Utility.Shuffle(candidateDir);
 
             if (m_CharaMove.Move(candidateDir[0]) == false)

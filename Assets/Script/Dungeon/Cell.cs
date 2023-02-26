@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ICell
 {
-    GameObject GameObject { get; set; }
+    GameObject CellObject { get; set; }
 
     Vector3Int Position { get; }
     int X { get; }
@@ -21,8 +21,8 @@ public class Cell : MonoBehaviour, ICell
     /// GameObject
     /// </summary>
     [SerializeField]
-    private GameObject m_GameObject;
-    GameObject ICell.GameObject { get => m_GameObject; set => m_GameObject = value; }
+    private GameObject m_CellObject;
+    GameObject ICell.CellObject { get => m_CellObject; set => m_CellObject = value; }
 
     /// <summary>
     /// Position

@@ -32,10 +32,10 @@ public enum ITEM_NAME
 /// </summary>
 public enum DUNGEON_THEME
 {
-    GRASS,
-    ROCK,
-    CRYSTAL,
-    WHITE,
+    GRASS = 0,
+    ROCK = 1,
+    CRYSTAL = 2,
+    WHITE = 3,
 }
 
 /// <summary>

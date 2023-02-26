@@ -230,6 +230,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CharaObject: {fileID: 7437906401129777486}
   m_MoveObject: {fileID: 8497573164149189218}
+  m_MeshRenderer: {fileID: 7437906401116145232}
+  m_DefaultColor: {r: 1, g: 1, b: 1, a: 1}
+  m_RedColor: {r: 1, g: 0.39215687, b: 0.39215687, a: 1}
 --- !u!114 &2258635251871997100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,6 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 603c1a10ac7ee47d5bb61aa2603b93fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CanAct:
+    value: 0
+  m_IsActing: 0
 --- !u!114 &-1207655876620710545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -343,6 +349,12 @@ PrefabInstance:
     - {fileID: 13607324, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef, type: 3}
     - {fileID: 5495698, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef, type: 3}
+--- !u!137 &7437906401116145232 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13797538, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef,
+    type: 3}
+  m_PrefabInstance: {fileID: 7437906401129877234}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &7437906401120407502 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 9535804, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef,

@@ -13,7 +13,7 @@ public interface ICharaAutoRecovery : ICharacterComponent
 /// </summary>
 public class CharaAutoRecovery : CharaComponentBase, ICharaAutoRecovery
 {
-    private static readonly int RECOVER_TURN = 10;
+    private static readonly int RECOVER_TURN = 5;
 
     protected override void Register(ICollector owner)
     {

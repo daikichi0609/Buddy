@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public interface ICharacterComponent
+public interface ICharacterComponent : IDisposable
 {
     /// <summary>
     /// コンポーネント初期化
@@ -33,6 +34,11 @@ public abstract class CharaComponentBase : MonoBehaviour, ICharacterComponent
     {
         // コンポーネント初期化
     }
-
     void ICharacterComponent.Initialize() => Initialize();
+
+    protected virtual void Dispose()
+    {
+        // コンポーネント破棄
+    }
+    void IDisposable.Dispose() => Dispose();
 }

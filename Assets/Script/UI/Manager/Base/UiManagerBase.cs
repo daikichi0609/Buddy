@@ -114,6 +114,8 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
         CloseUiEvent = InputManager.Interface.SetActiveUi(this.UiInterface);
         UiInterface.Initialize(m_Disposables, CreateOptionElement());
         UiInterface.SetActive(IsActive);
+
+        BattleLogManager.Interface.Deactive();
     }
     void IUiManager.Activate() => Activate();
 

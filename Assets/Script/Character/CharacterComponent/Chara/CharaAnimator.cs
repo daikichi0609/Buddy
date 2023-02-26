@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Threading.Tasks;
+using NaughtyAttributes;
 
 /// <summary>
 /// アニメーションパターン定義
@@ -43,7 +44,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
     /// <summary>
     /// 現在のステート
     /// </summary>
-    [SerializeField]
+    [SerializeField, ReadOnly]
     private ReactiveProperty<ANIMATION_TYPE> m_AnimationState = new ReactiveProperty<ANIMATION_TYPE>(ANIMATION_TYPE.IDLE);
     private IObservable<ANIMATION_TYPE> AnimationStateChanged => m_AnimationState;
 
@@ -69,7 +70,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
             .Zip(AnimationStateChanged.Skip(1), (Old, New) => new { Old, New })
             .Subscribe(state =>
             {
-                switch(state.New)
+                switch (state.New)
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
@@ -84,7 +85,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
                         TurnManager.Interface.ProhibitAllAction = false;
                         return;
                 }
-            });
+            }).AddTo(this);
 
         if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
         {

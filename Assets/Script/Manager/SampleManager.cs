@@ -10,6 +10,7 @@ public interface ISampleManager : ISingleton
 
 }
 
-public class SampleManager : Singleton<UnitManager, ISampleManager>, ISampleManager
+public class SampleManager : Singleton<SampleManager, ISampleManager>, ISampleManager
 {
+
 }

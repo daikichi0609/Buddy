@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 public interface IFadeManager : ISingleton
 {
-    Task NextFloor(Action blackOutEvent);
+    Task NextFloor(Action blackOutEvent, int nextFloor, string dungeonName);
 }
 
 public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
@@ -15,12 +15,20 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     /// <summary>
     /// 黒画面
     /// </summary>
-    private Image BlackScreen => UiHolder.Instance.BlackPanel.GetComponent<Image>();
+    [SerializeField]
+    private Image m_BlackScreen;
 
     /// <summary>
     /// 階層
     /// </summary>
-    private Text FloorText => UiHolder.Instance.FloorNumText;
+    [SerializeField]
+    private Text m_FloorText;
+
+    /// <summary>
+    /// ダンジョン名
+    /// </summary>
+    [SerializeField]
+    private Text m_DungeonName;
 
     // フェイド速度
     private static readonly float FADE_SPEED = 1f;
@@ -35,8 +43,11 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     /// </summary>
     /// <param name="blackOutEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.NextFloor(Action blackOutEvent)
+    async Task IFadeManager.NextFloor(Action blackOutEvent, int nextFloor, string dungeonName)
     {
+        m_FloorText.text = nextFloor.ToString() + "F";
+        m_DungeonName.text = dungeonName;
+
         FadeOutScreen();
         await Task.Delay(1000);
         FadeInText();
@@ -48,9 +59,17 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         await Task.Delay(1000);
     }
 
-    private void FadeOutScreen() => BlackScreen.DOFade(1f, FADE_SPEED);
-    private void FadeInScreen() => BlackScreen.DOFade(0f, FADE_SPEED);
+    private void FadeOutScreen() => m_BlackScreen.DOFade(1f, FADE_SPEED);
+    private void FadeInScreen() => m_BlackScreen.DOFade(0f, FADE_SPEED);
 
-    private void FadeOutText() => FloorText.DOFade(0f, FADE_SPEED);
-    private void FadeInText() => FloorText.DOFade(1f, FADE_SPEED);
+    private void FadeInText()
+    {
+        m_FloorText.DOFade(1f, FADE_SPEED);
+        m_DungeonName.DOFade(1f, FADE_SPEED);
+    }
+    private void FadeOutText()
+    {
+        m_FloorText.DOFade(0f, FADE_SPEED);
+        m_DungeonName.DOFade(0f, FADE_SPEED);
+    }
 }

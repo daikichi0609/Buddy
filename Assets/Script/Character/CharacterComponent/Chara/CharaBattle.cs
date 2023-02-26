@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
-using static UnityEditor.Progress;
 
 public interface ICharaBattle : ICharacterComponent
 {

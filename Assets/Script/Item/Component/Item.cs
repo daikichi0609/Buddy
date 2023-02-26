@@ -6,7 +6,7 @@ using System;
 public interface IItem
 {
     ITEM_NAME Name { get; }
-    GameObject GameObject { get; }
+    GameObject ItemObject { get; }
     Vector3Int Position { get; set; }
 }
 
@@ -19,8 +19,8 @@ public class Item : MonoBehaviour, IItem
     ITEM_NAME IItem.Name => m_Name;
 
     [SerializeField]
-    private GameObject m_GameObject;
-    GameObject IItem.GameObject => m_GameObject;
+    private GameObject m_ItemObject;
+    GameObject IItem.ItemObject => m_ItemObject;
 
     /// <summary>
     /// アイテムの位置

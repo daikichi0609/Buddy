@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
+using NaughtyAttributes;
 
 public interface ICharaStatus : ICharacterComponent
 {
@@ -30,6 +31,7 @@ public class CharaStatus : CharaComponentBase, ICharaStatus
     /// <summary>
     /// 現在のステータス
     /// </summary>
+    [SerializeField, ReadOnly]
     private CurrentStatus m_CurrentStatus;
     CurrentStatus ICharaStatus.CurrentStatus => m_CurrentStatus;
 

@@ -60,7 +60,7 @@ public class CharaInventory : CharaComponentBase, ICharaInventory, ICharaInvento
         if (m_ItemList.Count < InventoryCount)
         {
             m_ItemList.Add(item);
-            ObjectPool.Instance.SetObject(item.Name.ToString(), item.GameObject);
+            ObjectPool.Instance.SetObject(item.Name.ToString(), item.ItemObject);
             ItemManager.Interface.RemoveItem(item);
 
             m_OnPutItem.OnNext((Owner, item));

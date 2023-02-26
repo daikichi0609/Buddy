@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Threading.Tasks;
+using NaughtyAttributes;
 
 public interface ICharaTurn : ICharacterComponent
 {
@@ -36,6 +37,7 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// 行動済みステータス
     /// </summary>
+    [SerializeField, ReadOnly]
     private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>();
     bool ICharaTurn.CanAct => m_CanAct.Value;
 
@@ -52,6 +54,7 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// 行動中ステータス
     /// </summary>
+    [SerializeField, ReadOnly]
     private bool m_IsActing;
     bool ICharaTurn.IsActing
     {

@@ -14,7 +14,7 @@ public class DungeonContents : Singleton<DungeonContents>
     protected override void Awake()
     {
         base.Awake();
-        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeonContents());
+        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeonContents()).AddTo(this);
     }
 
     //ダンジョンコンテンツ配置
@@ -36,7 +36,7 @@ public class DungeonContents : Singleton<DungeonContents>
     public void RedeployDungeonContents()
     {
         RedeployPlayer();
-        DeployEnemy(5);
+        DeployEnemy(m_EnemyCount);
     }
 
     //キャラオブジェクト取得用
@@ -91,9 +91,7 @@ public class DungeonContents : Singleton<DungeonContents>
     }
 
     /// <summary>
-    ///
     /// 敵関連
-    /// 
     /// </summary>
 
     //敵配置
@@ -102,14 +100,29 @@ public class DungeonContents : Singleton<DungeonContents>
         if (count <= 0)
             return;
 
-        var map = DungeonManager.Interface.IdMap;
-
-        for (int num = 1; num <= count; num++)
+        for (int num = 0; num < count; num++)
         {
             var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell();
             GameObject enemy = CharaObject(Utility.RandomEnemyName());
             enemy.transform.position = new Vector3(cell.X, 0.51f, cell.Z);
             var collector = enemy.GetComponent<ICollector>();
+            UnitManager.Interface.AddEnemy(collector);
+        }
+    }
+
+    //敵配置
+    private void ReDeployEnemy(int count)
+    {
+        if (count <= 0)
+            return;
+
+        for (int num = 0; num < count; num++)
+        {
+            var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell();
+            GameObject enemy = CharaObject(Utility.RandomEnemyName());
+            var collector = enemy.GetComponent<ICollector>();
+            var move = collector.GetComponent<ICharaMove>();
+            move.Warp(new Vector3Int(cell.X, 0, cell.Z));
             UnitManager.Interface.AddEnemy(collector);
         }
     }
@@ -170,7 +183,7 @@ public class DungeonContents : Singleton<DungeonContents>
         foreach (IItem item in ItemManager.Interface.ItemList)
         {
             string name = item.Name.ToString();
-            ObjectPool.Instance.SetObject(name, item.GameObject);
+            ObjectPool.Instance.SetObject(name, item.ItemObject);
         }
         ItemManager.Interface.ItemList.Clear();
     }
@@ -178,9 +191,9 @@ public class DungeonContents : Singleton<DungeonContents>
     //特定の敵オブジェクトを撤去
     public void RemoveItem(IItem item)
     {
-        item.GameObject.SetActive(false);
+        item.ItemObject.SetActive(false);
         ItemManager.Interface.ItemList.Remove(item);
         string name = item.Name.ToString();
-        ObjectPool.Instance.SetObject(name, item.GameObject);
+        ObjectPool.Instance.SetObject(name, item.ItemObject);
     }
 }

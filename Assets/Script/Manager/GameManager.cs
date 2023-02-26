@@ -82,7 +82,7 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
         m_FloorNum.Value++;
 
         // 暗転 & ダンジョン再構築
-        await FadeManager.Interface.NextFloor(() => RebuildDungeon());
+        await FadeManager.Interface.NextFloor(() => RebuildDungeon(), m_FloorNum.Value, m_DungeonTheme.ToString());
 
         // 行動許可
         TurnManager.Interface.AllCharaActionable();

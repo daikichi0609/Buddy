@@ -67,17 +67,23 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 
         //プレイヤーの行動待ち
         foreach (ICollector player in UnitManager.Interface.PlayerList)
-            if (player.GetComponent<ICharaTurn>().CanAct == true)
+        {
+            var turn = player.GetComponent<ICharaTurn>();
+            if (turn.CanAct == true)
                 return;
+        }
 
         //敵
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-            if (enemy.GetComponent<ICharaTurn>().CanAct == true)
+        {
+            var turn = enemy.GetComponent<ICharaTurn>();
+            if (turn.CanAct == true && turn.IsActing == false)
             {
                 var ai = enemy.GetComponent<IEnemyAi>();
                 ai.DecideAndExecuteAction();
                 return;
             }
+        }
 
         //全キャラ行動済みなら行動済みステータスをリセット
         AllCharaActionable();

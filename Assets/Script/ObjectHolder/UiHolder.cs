@@ -8,36 +8,10 @@ public class UiHolder : Singleton<UiHolder>
     /// <summary>
     /// Ui全体
     /// </summary>
-    
+
     //キャンバス
     [SerializeField] private GameObject m_Canvas;
-    public GameObject Canvas
-    {
-        get { return m_Canvas; }
-    }
-
-    /// <summary>
-    /// 暗転系
-    /// </summary>
-    
-    //暗転用パネル
-    [SerializeField] private GameObject m_BlackPanel;
-    public GameObject BlackPanel
-    {
-        get { return m_BlackPanel; }
-    }
-
-    [SerializeField] private Text m_DungeonNameText;
-    public Text DungeonNameText
-    {
-        get { return m_DungeonNameText; }
-    }
-
-    [SerializeField] private Text m_FloorNumText;
-    public Text FloorNumText
-    {
-        get { return m_FloorNumText; }
-    }
+    public GameObject Canvas => m_Canvas;
 
     /// <summary>
     /// キャラUi関連

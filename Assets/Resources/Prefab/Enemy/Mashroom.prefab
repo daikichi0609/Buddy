@@ -238,6 +238,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CharaObject: {fileID: 3135674774238795827}
   m_MoveObject: {fileID: 3135674774238795827}
+  m_MeshRenderer: {fileID: 3135674774235655525}
 --- !u!114 &5104390185089169507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,6 +276,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 603c1a10ac7ee47d5bb61aa2603b93fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CanAct:
+    value: 0
+  m_IsActing: 0
 --- !u!114 &7502244154460438228
 MonoBehaviour:
   m_ObjectHideFlags: 0

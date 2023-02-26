@@ -8,6 +8,7 @@ using UniRx;
 public interface IBattleLogManager : ISingleton
 {
     void Log(string log);
+    void Deactive();
 }
 
 public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, IBattleLogManager
@@ -50,10 +51,12 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
             m_LogText.Dequeue();
 
         var sb = new StringBuilder();
+        int count = 0;
         foreach (var t in m_LogText)
         {
             sb.Append(t);
-            sb.Append("\n");
+            if (++count != m_LogText.Count)
+                sb.Append("\n");
         }
 
         m_Text.text = sb.ToString();
@@ -63,6 +66,13 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
         m_BattleLog.SetActive(true);
     }
 
+    private void Deactive()
+    {
+        m_BattleLog.SetActive(false);
+        m_LogText.Clear();
+    }
+    void IBattleLogManager.Deactive() => Deactive();
+
     /// <summary>
     /// 時間経過でログ非表示
     /// </summary>
@@ -70,9 +80,6 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
     {
         m_Timer += Time.deltaTime;
         if (m_Timer >= LOG_TIME)
-        {
-            m_BattleLog.SetActive(false);
-            m_LogText.Clear();
-        }
+            Deactive();
     }
 }

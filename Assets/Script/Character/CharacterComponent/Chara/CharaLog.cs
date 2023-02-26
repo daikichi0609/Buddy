@@ -90,7 +90,9 @@ public class CharaLog : CharaComponentBase, ICharaLog
 
         if (result.IsHit == false)
         {
-            sb.Append("しかし" + defender + "には当たらなかった");
+            if (result.Name != CHARA_NAME.NONE)
+                sb.Append("しかし" + defender + "には当たらなかった");
+
             return sb.ToString();
         }
 

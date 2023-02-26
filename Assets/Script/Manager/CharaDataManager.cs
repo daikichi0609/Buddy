@@ -49,13 +49,13 @@ public static class CharaDataManager
 
     public static BattleStatus.Parameter LoadCharaParameter(CHARA_NAME name)
     {
-        PlayerStatus playerParam = Resources.Load<PlayerStatus>(name.ToString());
+        PlayerStatus playerParam = Resources.Load<PlayerStatus>("Character/" + name.ToString());
         if (playerParam != null)
         {
             return playerParam.Param;
         }
 
-        EnemyStatus enemyParam = Resources.Load<EnemyStatus>(name.ToString());
+        EnemyStatus enemyParam = Resources.Load<EnemyStatus>("Character/" + name.ToString());
         if (enemyParam != null)
         {
             return enemyParam.Param;
