@@ -7,7 +7,7 @@ using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
 using static UnityEditor.VersionControl.Asset;
 
-public interface ICharaCellEventChecker : ICharacterComponent
+public interface ICharaCellEventChecker : ICharacterInterface
 {
     Task CheckCurrentCell();
 }
@@ -30,9 +30,9 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     protected override void Initialize()
     {
         base.Initialize();
-        m_CharaMove = Owner.GetComponent<ICharaMove>();
-        m_CharaInventory = Owner.GetComponent<ICharaInventory>();
-        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
+        m_CharaMove = Owner.GetInterface<ICharaMove>();
+        m_CharaInventory = Owner.GetInterface<ICharaInventory>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
     }
 
     /// <summary>
@@ -43,11 +43,18 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     {
         // 階段チェック
         if (await CheckStairsCell() == true)
+        {
+            Debug.Log("階段マス");
             return;
+        }
+
 
         // 階段チェック
         if (await CheckItem() == true)
+        {
+            Debug.Log("アイテムマス");
             return;
+        }
 
         // 罠チェック
 

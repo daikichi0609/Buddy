@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using System.Collections.Generic;
 
-public interface ICharaStarvation : ICharacterComponent
+public interface ICharaStarvation : ICharacterInterface
 {
     bool IsStarvate { get; }
     void RecoverHungry(int add);
@@ -43,7 +43,7 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
     {
         base.Initialize();
 
-        if (Owner.RequireComponent<ICharaTurnEvent>(out var turn) == true)
+        if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
             turn.OnTurnEndPost.Subscribe(_ =>
             {
@@ -51,7 +51,7 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
                     Starvate();
                 else
                     MakeHungry();
-            }).AddTo(this);
+            }).AddTo(Disposable);
         }
     }
 
@@ -75,7 +75,7 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
         if (currentTurn % STARVATION_TURN == 0)
             return;
 
-        if (Owner.RequireComponent<ICharaStatus>(out var status) == false)
+        if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
             return;
 
         // 死亡はしない
@@ -93,7 +93,7 @@ public class CharaStarvation : CharaComponentBase, ICharaStarvation
         if (currentTurn % HUNGRY_TURN == 0)
             return;
 
-        if (Owner.RequireComponent<ICharaStatus>(out var status) == false)
+        if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
             return;
 
         Mathf.Clamp(++m_Hungry, 0, MAX_HUNGRY);

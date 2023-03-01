@@ -45,11 +45,11 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         get
         {
             foreach (ICollector player in UnitManager.Interface.PlayerList)
-                if (player.GetComponent<ICharaTurn>().IsActing == true)
+                if (player.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
             foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-                if (enemy.GetComponent<ICharaTurn>().IsActing == true)
+                if (enemy.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
             return true;
@@ -68,7 +68,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         //プレイヤーの行動待ち
         foreach (ICollector player in UnitManager.Interface.PlayerList)
         {
-            var turn = player.GetComponent<ICharaTurn>();
+            var turn = player.GetInterface<ICharaTurn>();
             if (turn.CanAct == true)
                 return;
         }
@@ -76,10 +76,10 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         //敵
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
         {
-            var turn = enemy.GetComponent<ICharaTurn>();
+            var turn = enemy.GetInterface<ICharaTurn>();
             if (turn.CanAct == true && turn.IsActing == false)
             {
-                var ai = enemy.GetComponent<IEnemyAi>();
+                var ai = enemy.GetInterface<IEnemyAi>();
                 ai.DecideAndExecuteAction();
                 return;
             }
@@ -106,7 +106,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllPlayerActionable()
     {
         foreach (ICollector player in UnitManager.Interface.PlayerList)
-            player.GetComponent<ICharaTurn>().CanBeAct();
+            player.GetInterface<ICharaTurn>().CanBeAct();
     }
 
     /// <summary>
@@ -115,6 +115,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void AllEnemyActionable()
     {
         foreach (ICollector enemy in UnitManager.Interface.EnemyList)
-            enemy.GetComponent<ICharaTurn>().CanBeAct();
+            enemy.GetInterface<ICharaTurn>().CanBeAct();
     }
 }

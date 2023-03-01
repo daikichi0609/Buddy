@@ -633,7 +633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a8d542fbc064006957e9c2c6409e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EnemyCount: 5
+  m_EnemyCount: 1
   m_ItemCount: 5
 --- !u!1 &246840967
 GameObject:
@@ -1392,10 +1392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee5c3c741c464cf1a2e086405a20ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Boxman: {fileID: 8497573164149189218, guid: 7ad8cdb04ab8d4f82af6403f6a9f0dca,
-    type: 3}
-  m_Mashroom: {fileID: 3135674774238795827, guid: c16c44626a5144ea0b97fa6477770a52,
-    type: 3}
 --- !u!1 &602078753
 GameObject:
   m_ObjectHideFlags: 0

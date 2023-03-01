@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using NaughtyAttributes;
 
 public interface IItem
 {
@@ -25,10 +26,13 @@ public class Item : MonoBehaviour, IItem
     /// <summary>
     /// アイテムの位置
     /// </summary>
+    [SerializeField, ReadOnly]
     private Vector3Int m_Position;
     Vector3Int IItem.Position
     {
         get => m_Position;
         set => m_Position = value;
     }
+
+    public static readonly float OFFSET_Y = 0.75f;
 }

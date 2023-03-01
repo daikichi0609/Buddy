@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 
-public interface ICharaInventory : ICharacterComponent
+public interface ICharaInventory : ICharacterInterface
 {
     /// <summary>
     /// 所持しているアイテム
@@ -25,12 +25,24 @@ public interface ICharaInventory : ICharacterComponent
     void Consume(IItem item);
 }
 
-public interface ICharaInventoryEvent : ICharacterComponent
+public interface ICharaInventoryEvent : ICharacterInterface
 {
     /// <summary>
     /// アイテムしまうとき
     /// </summary>
-    IObservable<(ICollector, IItem)> OnPutItem { get; }
+    IObservable<ItemPutInfo> OnPutItem { get; }
+}
+
+public readonly struct ItemPutInfo
+{
+    public ICollector Owner { get; }
+    public IItem Item { get; }
+
+    public ItemPutInfo(ICollector owner, IItem item)
+    {
+        Owner = owner;
+        Item = item;
+    }
 }
 
 public class CharaInventory : CharaComponentBase, ICharaInventory, ICharaInventoryEvent
@@ -40,8 +52,8 @@ public class CharaInventory : CharaComponentBase, ICharaInventory, ICharaInvento
     private List<IItem> m_ItemList = new List<IItem>();
     IItem[] ICharaInventory.Items => m_ItemList.ToArray();
 
-    Subject<(ICollector, IItem)> m_OnPutItem = new Subject<(ICollector, IItem)>();
-    IObservable<(ICollector, IItem)> ICharaInventoryEvent.OnPutItem => m_OnPutItem;
+    Subject<ItemPutInfo> m_OnPutItem = new Subject<ItemPutInfo>();
+    IObservable<ItemPutInfo> ICharaInventoryEvent.OnPutItem => m_OnPutItem;
 
     protected override void Register(ICollector owner)
     {
@@ -63,7 +75,7 @@ public class CharaInventory : CharaComponentBase, ICharaInventory, ICharaInvento
             ObjectPool.Instance.SetObject(item.Name.ToString(), item.ItemObject);
             ItemManager.Interface.RemoveItem(item);
 
-            m_OnPutItem.OnNext((Owner, item));
+            m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
             return true;
         }
         else

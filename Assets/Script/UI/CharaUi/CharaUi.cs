@@ -13,7 +13,7 @@ public class CharaUi : MonoBehaviour
 
     public void Initialize(ICollector target)
     {
-        var status = target.GetComponent<ICharaStatus>();
+        var status = target.GetInterface<ICharaStatus>();
         m_Target = status;
         m_CharaName.text = status.Parameter.GivenName.ToString();
         m_HpSlider.maxValue = status.Parameter.MaxHp;

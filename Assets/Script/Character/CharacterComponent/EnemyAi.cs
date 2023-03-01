@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEnemyAi : ICharacterComponent
+public interface IEnemyAi : ICharacterInterface
 {
     void DecideAndExecuteAction();
 }
@@ -38,8 +38,8 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
     protected override void Initialize()
     {
-        m_CharaMove = Owner.GetComponent<ICharaMove>();
-        m_CharaBattle = Owner.GetComponent<ICharaBattle>();
+        m_CharaMove = Owner.GetInterface<ICharaMove>();
+        m_CharaBattle = Owner.GetInterface<ICharaBattle>();
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         //ターゲットをランダムに絞って向く
         targets.Shuffle();
         var target = targets[0];
-        var direction = (target.GetComponent<ICharaMove>().Position - m_CharaMove.Position).ToDirEnum();
+        var direction = (target.GetInterface<ICharaMove>().Position - m_CharaMove.Position).ToDirEnum();
         m_CharaMove.Face(direction);
         return target;
     }
@@ -97,7 +97,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
 
         foreach (ICollector candidate in targets)
         {
-            var move = candidate.GetComponent<ICharaMove>();
+            var move = candidate.GetInterface<ICharaMove>();
             var distance = (m_CharaMove.Position - move.Position).magnitude;
             if (distance > minDistance)
                 continue;
@@ -111,7 +111,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         }
 
         var target = candidates[0];
-        var dir = Positional.CalculateDirection(m_CharaMove.Position, target.GetComponent<ICharaMove>().Position);
+        var dir = Positional.CalculateDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
         if (m_CharaMove.Move(dir) == false)
             m_CharaMove.Wait();
     }

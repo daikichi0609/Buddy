@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using System.Collections.Generic;
 
-public interface ICharaAutoRecovery : ICharacterComponent
+public interface ICharaAutoRecovery : ICharacterInterface
 {
 
 }
@@ -25,11 +25,11 @@ public class CharaAutoRecovery : CharaComponentBase, ICharaAutoRecovery
     {
         base.Initialize();
 
-        if (Owner.RequireComponent<ICharaTurnEvent>(out var turn) == true)
+        if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
             turn.OnTurnEndPost.Subscribe(_ =>
             {
-                if (Owner.RequireComponent<ICharaStarvation>(out var starvation) == false || starvation.IsStarvate == true)
+                if (Owner.RequireInterface<ICharaStarvation>(out var starvation) == false || starvation.IsStarvate == true)
                     return;
 
                 int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
@@ -38,12 +38,12 @@ public class CharaAutoRecovery : CharaComponentBase, ICharaAutoRecovery
                 if (currentTurn % RECOVER_TURN == 0)
                     return;
 
-                if (Owner.RequireComponent<ICharaStatus>(out var status) == false)
+                if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
                 status.CurrentStatus.Hp++;
 
-            }).AddTo(this);
+            }).AddTo(Disposable);
         }
     }
 }

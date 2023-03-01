@@ -37,7 +37,7 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
     {
         base.Awake();
 
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ => OnUpdate());
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
     }
 
     /// <summary>
@@ -46,6 +46,9 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
     /// <param name="log"></param>
     void IBattleLogManager.Log(string log)
     {
+        if (log == string.Empty)
+            return;
+
         m_LogText.Enqueue(log);
         if (m_LogText.Count > MAX_LOG)
             m_LogText.Dequeue();

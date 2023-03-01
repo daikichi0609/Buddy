@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-public interface ICharaSound : ICharacterComponent
+public interface ICharaSound : ICharacterInterface
 {
 
 }
@@ -20,7 +20,7 @@ public class CharaSound : CharaComponentBase, ICharaSound
     {
         base.Initialize();
 
-        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
+        if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             battle.OnAttackStart.Subscribe(_ =>
             {
@@ -29,22 +29,22 @@ public class CharaSound : CharaComponentBase, ICharaSound
                 {
                     SoundManager.Instance.Attack_Sword.Play();
                 }));
-            }).AddTo(this);
+            }).AddTo(Disposable);
 
             battle.OnAttackEnd.Subscribe(result =>
             {
-                if(result.IsHit == false)
+                if (result.IsHit == false)
                 {
                     // 空振り音
                     SoundManager.Instance.Miss.Play();
                 }
-            }).AddTo(this);
+            }).AddTo(Disposable);
 
             battle.OnDamageEnd.Subscribe(_ =>
             {
                 // ダメージ音
                 SoundManager.Instance.Damage_Small.Play();
-            }).AddTo(this);
+            }).AddTo(Disposable);
         }
 
     }

@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using NaughtyAttributes;
 
-public interface ICharaMove : ICharacterComponent
+public interface ICharaMove : ICharacterInterface
 {
     Vector3Int Position { get; }
     DIRECTION Direction { get; }
@@ -16,7 +16,7 @@ public interface ICharaMove : ICharacterComponent
     void Warp(Vector3Int pos);
 }
 
-public interface ICharaMoveEvent : ICharacterComponent
+public interface ICharaMoveEvent : ICharacterEvent
 {
     IObservable<Unit> OnMoveStart { get; }
     IObservable<Unit> OnMoveEnd { get; }
@@ -82,15 +82,16 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
 
     protected override void Initialize()
     {
-        m_Holder = Owner.GetComponent<ICharaObjectHolder>();
+        m_Holder = Owner.GetInterface<ICharaObjectHolder>();
 
         Direction = DIRECTION.UNDER;
+        LastMoveDirection = DIRECTION.NONE;
         var pos = MoveObject.transform.position;
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving());
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(Disposable);
 
-        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
     }
 
     /// <summary>

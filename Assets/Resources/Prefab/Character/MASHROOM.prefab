@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 3311249493831154698}
   - component: {fileID: 7502244154460438228}
   m_Layer: 0
-  m_Name: Mashroom
+  m_Name: MASHROOM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

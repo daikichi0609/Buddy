@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using UniRx;
 
-public interface ICharacterComponent : IDisposable
+public interface ICharacterInterface : IDisposable
 {
     /// <summary>
     /// コンポーネント初期化
@@ -9,12 +10,21 @@ public interface ICharacterComponent : IDisposable
     void Initialize();
 }
 
-public abstract class CharaComponentBase : MonoBehaviour, ICharacterComponent
+public interface ICharacterEvent
+{
+}
+
+public abstract class CharaComponentBase : MonoBehaviour, ICharacterInterface
 {
     /// <summary>
     /// コレクター
     /// </summary>
     protected ICollector Owner { get; set; }
+
+    /// <summary>
+    /// Disposeするもの
+    /// </summary>
+    protected CompositeDisposable Disposable { get; } = new CompositeDisposable();
 
     /// <summary>
     /// Owner取得
@@ -34,11 +44,12 @@ public abstract class CharaComponentBase : MonoBehaviour, ICharacterComponent
     {
         // コンポーネント初期化
     }
-    void ICharacterComponent.Initialize() => Initialize();
+    void ICharacterInterface.Initialize() => Initialize();
 
     protected virtual void Dispose()
     {
         // コンポーネント破棄
+        Disposable.Clear();
     }
     void IDisposable.Dispose() => Dispose();
 }

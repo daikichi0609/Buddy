@@ -32,7 +32,7 @@ public enum ANIMATION_TYPE
     DAMAGE,
 }
 
-public interface ICharaAnimator : ICharacterComponent
+public interface ICharaAnimator : ICharacterInterface
 {
 
 }
@@ -63,7 +63,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
     protected override void Initialize()
     {
         base.Initialize();
-        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 特定のアニメーション中は他キャラの行動を禁止する
         AnimationStateChanged
@@ -85,24 +85,24 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
                         TurnManager.Interface.ProhibitAllAction = false;
                         return;
                 }
-            }).AddTo(this);
+            }).AddTo(Disposable);
 
-        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
+        if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             // 攻撃
-            battle.OnAttackStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(this);
+            battle.OnAttackStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(Disposable);
 
             // ダメージ前
-            battle.OnDamageStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime)).AddTo(this);
+            battle.OnDamageStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime)).AddTo(Disposable);
         }
 
-        if (Owner.RequireComponent<ICharaMoveEvent>(out var move) == true)
+        if (Owner.RequireEvent<ICharaMoveEvent>(out var move) == true)
         {
             // 移動前
-            move.OnMoveStart.Subscribe(_ => PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(this);
+            move.OnMoveStart.Subscribe(_ => PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(Disposable);
 
             // 移動後
-            move.OnMoveEnd.Subscribe(_ => StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(this);
+            move.OnMoveEnd.Subscribe(_ => StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(Disposable);
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Text;
 
-public interface ICharaLog : ICharacterComponent
+public interface ICharaLog : ICharacterInterface
 {
 
 }
@@ -21,21 +21,21 @@ public class CharaLog : CharaComponentBase, ICharaLog
     {
         base.Initialize();
 
-        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
+        if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             // 攻撃ログ
             battle.OnAttackStart.Subscribe(info =>
             {
                 var log = CreateAttackLog(info);
                 BattleLogManager.Interface.Log(log);
-            });
+            }).AddTo(Disposable);
 
             // 攻撃結果ログ
             battle.OnAttackEnd.Subscribe(result =>
             {
                 var log = CreateAttackResultLog(result);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(this);
+            }).AddTo(Disposable);
 
             // 死亡ログ
             battle.OnDamageEnd.Subscribe(result =>
@@ -45,19 +45,19 @@ public class CharaLog : CharaComponentBase, ICharaLog
 
                 var log = CreateDeadLog(result);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(this);
+            }).AddTo(Disposable);
         }
 
-        if (Owner.RequireComponent<ICharaInventoryEvent>(out var inventory) == true)
+        if (Owner.RequireInterface<ICharaInventoryEvent>(out var inventory) == true)
         {
             inventory.OnPutItem.Subscribe(info =>
             {
-                if (info.Item1.RequireComponent<ICharaStatus>(out var status) == false)
+                if (info.Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
-                var log = CreatePutItemLog(status.CurrentStatus.Name, info.Item2);
+                var log = CreatePutItemLog(status.CurrentStatus.Name, info.Item);
                 BattleLogManager.Interface.Log(log);
-            });
+            }).AddTo(Disposable);
         }
     }
 

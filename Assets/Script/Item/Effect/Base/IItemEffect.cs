@@ -40,11 +40,11 @@ public abstract class ItemEffect : IItemEffect
         BagUiManager.Interface.Deactive();
 
         // アイテム消費
-        if (owner.RequireComponent<ICharaInventory>(out var inventory) == true)
+        if (owner.RequireInterface<ICharaInventory>(out var inventory) == true)
             inventory.Consume(item);
 
         // ターン消費
-        if (owner.RequireComponent<ICharaTurn>(out var turn) == true)
+        if (owner.RequireInterface<ICharaTurn>(out var turn) == true)
             turn.TurnEnd();
     }
 

@@ -95,10 +95,10 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     {
         // ダンジョン撤去
         DungeonManager.Instance.RemoveDungeon();
-        DungeonContents.Instance.RemoveDungeonContents();
+        DungeonContentsDeployer.Interface.Remove();
 
         // ダンジョン再構築
         DungeonManager.Instance.DeployDungeon();
-        DungeonContents.Instance.RedeployDungeonContents();
+        DungeonContentsDeployer.Interface.Deploy();
     }
 }

@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using UnityEngine;
 using UniRx;
 
-public interface IPlayerInput : ICharacterComponent
+public interface IPlayerInput : ICharacterInterface
 {
 }
 
@@ -28,14 +28,14 @@ public class PlayerInput : CharaComponentBase, IPlayerInput
         base.Initialize();
         CharaUiManager.Interface.InitializeCharacterUi(this.Owner);
 
-        m_CharaBattle = Owner.GetComponent<ICharaBattle>();
-        m_CharaMove = Owner.GetComponent<ICharaMove>();
-        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
+        m_CharaBattle = Owner.GetInterface<ICharaBattle>();
+        m_CharaMove = Owner.GetInterface<ICharaMove>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         InputManager.Interface.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);
-        }).AddTo(this);
+        }).AddTo(Disposable);
     }
 
     /// <summary>

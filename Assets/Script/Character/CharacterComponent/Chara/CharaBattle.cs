@@ -5,7 +5,7 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 
-public interface ICharaBattle : ICharacterComponent
+public interface ICharaBattle : ICharacterInterface
 {
     Task NormalAttack();
     Task NormalAttack(DIRECTION direction, CHARA_TYPE target);
@@ -13,7 +13,7 @@ public interface ICharaBattle : ICharacterComponent
     AttackResult Damage(AttackInfo attackInfo);
 }
 
-public interface ICharaBattleEvent : ICharacterComponent
+public interface ICharaBattleEvent : ICharacterEvent
 {
     /// <summary>
     /// 攻撃前
@@ -101,12 +101,14 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
 
     protected override void Initialize()
     {
-        m_CharaStatus = Owner.GetComponent<ICharaStatus>();
-        m_CharaMove = Owner.GetComponent<ICharaMove>();
-        m_CharaTurn = Owner.GetComponent<ICharaTurn>();
-        m_CharaObjectHolder = Owner.GetComponent<ICharaObjectHolder>();
+        base.Initialize();
 
-        if (Owner.RequireComponent<IEnemyAi>(out var enemy) == true)
+        m_CharaStatus = Owner.GetInterface<ICharaStatus>();
+        m_CharaMove = Owner.GetInterface<ICharaMove>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
+
+        if (Owner.RequireInterface<IEnemyAi>(out var enemy) == true)
             m_Type = CHARA_TYPE.ENEMY;
         else
             m_Type = CHARA_TYPE.PLAYER;
@@ -160,7 +162,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
             return AttackResult.Invalid;
 
         // 必要なコンポーネント
-        if (collector.RequireComponent<ICharaBattle>(out var battle) == false)
+        if (collector.RequireInterface<ICharaBattle>(out var battle) == false)
             return AttackResult.Invalid;
 
         return battle.Damage(attackInfo);
@@ -212,7 +214,8 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
     {
         m_OnDead.OnNext(Unit.Default);
 
-        ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
+        Owner.Dispose();
         UnitManager.Interface.RemoveUnit(Owner);
+        ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
     }
 }

@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using NaughtyAttributes;
 
-public interface ICharaTurn : ICharacterComponent
+public interface ICharaTurn : ICharacterInterface
 {
     bool CanAct { get; }
     bool IsActing { get; set; }
@@ -17,7 +17,7 @@ public interface ICharaTurn : ICharacterComponent
     Task WaitFinishActing(Action action);
 }
 
-public interface ICharaTurnEvent : ICharacterComponent
+public interface ICharaTurnEvent : ICharacterEvent
 {
     /// <summary>
     /// ターン開始 CanAct -> true
@@ -72,7 +72,7 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     protected override void Initialize()
     {
         base.Initialize();
-        m_CharaBattle = Owner.GetComponent<ICharaBattle>();
+        m_CharaBattle = Owner.GetInterface<ICharaBattle>();
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// </summary>
     async Task ICharaTurn.TurnEnd()
     {
-        if (Owner.RequireComponent<ICharaCellEventChecker>(out var checker) == true)
+        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
             await checker.CheckCurrentCell();
 
         // 終了

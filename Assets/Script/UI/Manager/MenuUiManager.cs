@@ -41,7 +41,7 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
         {
             if (IsActive == false && TurnManager.Interface.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
                 Activate();
-        });
+        }).AddTo(this);
     }
 
     /// <summary>

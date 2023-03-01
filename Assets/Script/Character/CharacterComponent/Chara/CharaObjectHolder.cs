@@ -5,7 +5,7 @@ using UniRx;
 using System.Threading.Tasks;
 using DG.Tweening;
 
-public interface ICharaObjectHolder : ICharacterComponent
+public interface ICharaObjectHolder : ICharacterInterface
 {
     GameObject MoveObject { get; }
 
@@ -43,9 +43,9 @@ public class CharaObjectHolder : CharaComponentBase, ICharaObjectHolder
     {
         base.Initialize();
 
-        if (Owner.RequireComponent<ICharaBattleEvent>(out var battle) == true)
+        if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDamageStart.Subscribe(async _ => await RedFlash()).AddTo(this);
+            battle.OnDamageStart.Subscribe(async _ => await RedFlash()).AddTo(Disposable);
         }
     }
 

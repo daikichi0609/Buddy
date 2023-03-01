@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 
 public interface ICell
 {
@@ -27,22 +28,25 @@ public class Cell : MonoBehaviour, ICell
     /// <summary>
     /// Position
     /// </summary>
+    [SerializeField]
     private Vector3Int Position => gameObject.transform.position.ToV3Int();
     Vector3Int ICell.Position => Position;
     int ICell.X => Position.x;
     int ICell.Z => Position.z;
 
     /// <summary>
-    /// 部屋Id
-    /// </summary>
-    private int m_RoomId;
-    int ICell.RoomId { get => m_RoomId; set => m_RoomId = value; }
-
-    /// <summary>
     /// CellId
     /// </summary>
+    [SerializeField, ReadOnly]
     private CELL_ID m_CellId;
     CELL_ID ICell.CellId { get => m_CellId; set => m_CellId = value; }
+
+    /// <summary>
+    /// 部屋Id
+    /// </summary>
+    [SerializeField, ReadOnly]
+    private int m_RoomId;
+    int ICell.RoomId { get => m_RoomId; set => m_RoomId = value; }
 }
 
 public static class CellExtension

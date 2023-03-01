@@ -16,7 +16,7 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
     protected override OptionElement CreateOptionElement()
     {
         var player = UnitManager.Interface.PlayerList[0];
-        var inventory = player.GetComponent<ICharaInventory>();
+        var inventory = player.GetInterface<ICharaInventory>();
         var items = inventory.Items;
         int itemCount = items.Length;
 

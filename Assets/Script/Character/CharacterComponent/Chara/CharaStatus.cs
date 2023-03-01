@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using UnityEngine;
 using NaughtyAttributes;
 
-public interface ICharaStatus : ICharacterComponent
+public interface ICharaStatus : ICharacterInterface
 {
     /// <summary>
     /// 現在のステータス

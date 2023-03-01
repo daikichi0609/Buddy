@@ -12,21 +12,22 @@ public interface ICollector : IDisposable
     /// コンポーネント登録
     /// </summary>
     /// <param name="comp"></param>
-    void Register<TComp>(TComp comp) where TComp : class, ICharacterComponent;
+    void Register<TComp>(TComp comp) where TComp : class;
 
     /// <summary>
     /// コンポーネント取得
     /// </summary>
     /// <typeparam name="TComp"></typeparam>
     /// <returns></returns>
-    TComp GetComponent<TComp>() where TComp : class, ICharacterComponent;
+    TComp GetInterface<TComp>() where TComp : class, ICharacterInterface;
 
     /// <summary>
     /// コンポーネント要求
     /// </summary>
     /// <param name="comp"></param>
     /// <returns></returns>
-    bool RequireComponent<TComp>(out TComp comp) where TComp : class, ICharacterComponent;
+    bool RequireInterface<TComp>(out TComp comp) where TComp : class, ICharacterInterface;
+    bool RequireEvent<TEvent>(out TEvent comp) where TEvent : class, ICharacterEvent;
 
     /// <summary>
     /// 初期化
@@ -37,21 +38,17 @@ public interface ICollector : IDisposable
 /// <summary>
 /// コンポーネント集約クラス
 /// </summary>
-public class CharacterComponentCollector : MonoBehaviour, ICollector, IDisposable
+public class CharacterComponentCollector : MonoBehaviour, ICollector
 {
-    private List<ICharacterComponent> m_Components = new List<ICharacterComponent>();
-
-    /// <summary>
-    /// UnityのStart関数
-    /// </summary>
-    private void Start() => Initialize();
+    private List<ICharacterInterface> m_Interfaces = new List<ICharacterInterface>();
+    private List<ICharacterEvent> m_Events = new List<ICharacterEvent>();
 
     /// <summary>
     /// 初期化
     /// </summary>
     private void Initialize()
     {
-        foreach (var comp in m_Components)
+        foreach (var comp in m_Interfaces)
             comp.Initialize();
     }
     void ICollector.Initialize() => Initialize();
@@ -63,7 +60,11 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector, IDisposabl
     /// <param name="comp"></param>
     void ICollector.Register<TComp>(TComp comp)
     {
-        m_Components.Add(comp);
+        if (comp is ICharacterInterface)
+            m_Interfaces.Add(comp as ICharacterInterface);
+
+        if (comp is ICharacterEvent)
+            m_Events.Add(comp as ICharacterEvent);
     }
 
     /// <summary>
@@ -71,9 +72,9 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector, IDisposabl
     /// </summary>
     /// <typeparam name="TComp"></typeparam>
     /// <returns></returns>
-    TComp ICollector.GetComponent<TComp>()
+    TComp ICollector.GetInterface<TComp>()
     {
-        foreach (var val in m_Components)
+        foreach (var val in m_Interfaces)
             if (val is TComp)
                 return val as TComp;
 
@@ -87,12 +88,31 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector, IDisposabl
     /// <typeparam name="TComp"></typeparam>
     /// <param name="comp"></param>
     /// <returns></returns>
-    bool ICollector.RequireComponent<TComp>(out TComp comp)
+    bool ICollector.RequireInterface<TComp>(out TComp comp)
     {
-        foreach (var val in m_Components)
+        foreach (var val in m_Interfaces)
             if (val is TComp)
             {
                 comp = val as TComp;
+                return true;
+            }
+
+        comp = null;
+        return false;
+    }
+
+    /// <summary>
+    /// コンポーネント要求
+    /// </summary>
+    /// <typeparam name="TComp"></typeparam>
+    /// <param name="comp"></param>
+    /// <returns></returns>
+    bool ICollector.RequireEvent<TEvent>(out TEvent comp)
+    {
+        foreach (var val in m_Events)
+            if (val is TEvent)
+            {
+                comp = val as TEvent;
                 return true;
             }
 
@@ -105,7 +125,7 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector, IDisposabl
     /// </summary>
     void IDisposable.Dispose()
     {
-        foreach (var comp in m_Components)
+        foreach (var comp in m_Interfaces)
             comp.Dispose();
     }
 }

@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: -3478033662524825469}
   - component: {fileID: -1207655876620710545}
   m_Layer: 0
-  m_Name: Box_man
+  m_Name: BOXMAN
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -82,7 +82,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         {
             foreach (ICollector collector in m_PlayerList)
             {
-                if (collector.RequireComponent<ICharaMove>(out var move) == false)
+                if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
                 if (move.Position.x == pos.x && move.Position.z == pos.z)
@@ -97,7 +97,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         {
             foreach (ICollector collector in m_EnemyList)
             {
-                if (collector.RequireComponent<ICharaMove>(out var move) == false)
+                if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
                 if (move.Position.x == pos.x && move.Position.z == pos.z)
@@ -131,7 +131,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         {
             foreach (ICollector unit in m_PlayerList)
             {
-                if (unit.RequireComponent<ICharaMove>(out var move) == false)
+                if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
                 foreach (ICell cell in roomList)
@@ -144,7 +144,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
         {
             foreach (ICollector unit in m_PlayerList)
             {
-                if (unit.RequireComponent<ICharaMove>(out var move) == false)
+                if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
                 foreach (ICell cell in roomList)
@@ -186,7 +186,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
 
         foreach (ICollector player in m_PlayerList)
         {
-            var move = player.GetComponent<ICharaMove>();
+            var move = player.GetInterface<ICharaMove>();
             if (move.Position.x == pos.x && move.Position.z == pos.z)
                 return true;
         }
@@ -207,7 +207,7 @@ public class UnitManager : Singleton<UnitManager, IUnitManager>, IUnitManager
 
         foreach (ICollector enemy in m_EnemyList)
         {
-            var move = enemy.GetComponent<ICharaMove>();
+            var move = enemy.GetInterface<ICharaMove>();
             if (move.Position.x == pos.x && move.Position.z == pos.z)
                 return true;
         }
