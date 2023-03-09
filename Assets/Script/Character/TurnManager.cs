@@ -27,7 +27,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// <summary>
     /// 累計ターン数
     /// </summary>
-    private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>();
+    private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>(1);
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
@@ -44,11 +44,11 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         get
         {
-            foreach (ICollector player in UnitManager.Interface.PlayerList)
+            foreach (ICollector player in UnitHolder.Interface.PlayerList)
                 if (player.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
-            foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+            foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
                 if (enemy.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
@@ -65,19 +65,19 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         if (ProhibitAllAction == true)
             return;
 
-        //プレイヤーの行動待ち
-        foreach (ICollector player in UnitManager.Interface.PlayerList)
+        // プレイヤーの行動待ち
+        foreach (ICollector player in UnitHolder.Interface.PlayerList)
         {
             var turn = player.GetInterface<ICharaTurn>();
             if (turn.CanAct == true)
                 return;
         }
 
-        //敵
-        foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+        // 敵
+        foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
         {
             var turn = enemy.GetInterface<ICharaTurn>();
-            if (turn.CanAct == true && turn.IsActing == false)
+            if (turn.CanAct == true)
             {
                 var ai = enemy.GetInterface<IEnemyAi>();
                 ai.DecideAndExecuteAction();
@@ -85,7 +85,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
             }
         }
 
-        //全キャラ行動済みなら行動済みステータスをリセット
+        // 全キャラ行動済みなら行動済みステータスをリセット
         AllCharaActionable();
     }
 
@@ -105,7 +105,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private void AllPlayerActionable()
     {
-        foreach (ICollector player in UnitManager.Interface.PlayerList)
+        foreach (ICollector player in UnitHolder.Interface.PlayerList)
             player.GetInterface<ICharaTurn>().CanBeAct();
     }
 
@@ -114,7 +114,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private void AllEnemyActionable()
     {
-        foreach (ICollector enemy in UnitManager.Interface.EnemyList)
+        foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
             enemy.GetInterface<ICharaTurn>().CanBeAct();
     }
 }

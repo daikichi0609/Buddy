@@ -122,7 +122,7 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
         Vector3Int destinationPos = Position + direction.ToV3Int();
 
         // 他ユニットがいるなら移動不可
-        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
+        if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
             return false;
 
         // 座標設定
@@ -134,7 +134,7 @@ public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
 
         // 移動開始イベント
         m_OnMoveStart.OnNext(Unit.Default);
-        m_CharaTurn.TurnEnd();
+        m_CharaTurn.TurnEnd(true);
 
         // フラグオン
         IsMoving = true;

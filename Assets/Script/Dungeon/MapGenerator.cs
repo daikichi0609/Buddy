@@ -76,21 +76,19 @@ public class MapGenerator : Singleton<MapGenerator>
 
     private const int MINIMUM_RANGE_WIDTH = 6;
 
-    private int mapSizeX;
-    private int mapSizeY;
-    private int maxRoom;
+    private int m_MapSizeX;
+    private int m_MapSizeY;
+    private int m_MaxRoom;
 
-    private List<Range> roomList = new List<Range>();
-    private List<Range> rangeList = new List<Range>();
-    private List<Range> passList = new List<Range>();
-    private List<Range> roomPassList = new List<Range>();
-
-    private bool isGenerated = false;
+    private List<Range> m_RoomList = new List<Range>();
+    private List<Range> m_RangeList = new List<Range>();
+    private List<Range> m_PassList = new List<Range>();
+    private List<Range> m_RoomPassList = new List<Range>();
 
     public CELL_ID[,] GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
     {
-        this.mapSizeX = mapSizeX;
-        this.mapSizeY = mapSizeY;
+        this.m_MapSizeX = mapSizeX;
+        this.m_MapSizeY = mapSizeY;
 
         CELL_ID[,] map = new CELL_ID[mapSizeX, mapSizeY];
 
@@ -100,7 +98,7 @@ public class MapGenerator : Singleton<MapGenerator>
         CreateRoom();
 
         // ここまでの結果を一度配列に反映する
-        foreach (Range pass in passList)
+        foreach (Range pass in m_PassList)
         {
             for (int x = pass.Start.X; x <= pass.End.X; x++)
             {
@@ -110,7 +108,7 @@ public class MapGenerator : Singleton<MapGenerator>
                 }
             }
         }
-        foreach (Range roomPass in roomPassList)
+        foreach (Range roomPass in m_RoomPassList)
         {
             for (int x = roomPass.Start.X; x <= roomPass.End.X; x++)
             {
@@ -120,7 +118,7 @@ public class MapGenerator : Singleton<MapGenerator>
                 }
             }
         }
-        foreach (Range room in roomList)
+        foreach (Range room in m_RoomList)
         {
             for (int x = room.Start.X; x <= room.End.X; x++)
             {
@@ -138,16 +136,16 @@ public class MapGenerator : Singleton<MapGenerator>
 
     private void Initialize()
     {
-        roomList = new List<Range>();
-        rangeList = new List<Range>();
-        passList = new List<Range>();
-        roomPassList = new List<Range>();
+        m_RoomList = new List<Range>();
+        m_RangeList = new List<Range>();
+        m_PassList = new List<Range>();
+        m_RoomPassList = new List<Range>();
     }
 
     public void CreateRange(int maxRoom)
     {
         // 区画のリストの初期値としてマップ全体を入れる
-        rangeList.Add(new Range(0, 0, mapSizeX - 1, mapSizeY - 1));
+        m_RangeList.Add(new Range(0, 0, m_MapSizeX - 1, m_MapSizeY - 1));
 
         bool isDevided;
         do
@@ -157,7 +155,7 @@ public class MapGenerator : Singleton<MapGenerator>
             isDevided = DevideRange(true) || isDevided;
 
             // もしくは最大区画数を超えたら終了
-            if (rangeList.Count >= maxRoom)
+            if (m_RangeList.Count >= maxRoom)
             {
                 break;
             }
@@ -171,7 +169,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
         // 区画ごとに切るかどうか判定する
         List<Range> newRangeList = new List<Range>();
-        foreach (Range range in rangeList)
+        foreach (Range range in m_RangeList)
         {
             // これ以上分割できない場合はスキップ
             if (isVertical && range.GetWidthY() < MINIMUM_RANGE_WIDTH * 2 + 1)
@@ -187,7 +185,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
             // 40％の確率で分割しない
             // ただし、区画の数が1つの時は必ず分割する
-            if (rangeList.Count > 2 && RogueUtils.RandomJadge(0.4f))
+            if (m_RangeList.Count > 2 && RogueUtils.RandomJadge(0.4f))
             {
                 continue;
             }
@@ -203,13 +201,13 @@ public class MapGenerator : Singleton<MapGenerator>
             Range newRange = new Range();
             if (isVertical)
             {
-                passList.Add(new Range(range.Start.X, devideIndex, range.End.X, devideIndex));
+                m_PassList.Add(new Range(range.Start.X, devideIndex, range.End.X, devideIndex));
                 newRange = new Range(range.Start.X, devideIndex + 1, range.End.X, range.End.Y);
                 range.End.Y = devideIndex - 1;
             }
             else
             {
-                passList.Add(new Range(devideIndex, range.Start.Y, devideIndex, range.End.Y));
+                m_PassList.Add(new Range(devideIndex, range.Start.Y, devideIndex, range.End.Y));
                 newRange = new Range(devideIndex + 1, range.Start.Y, range.End.X, range.End.Y);
                 range.End.X = devideIndex - 1;
             }
@@ -221,7 +219,7 @@ public class MapGenerator : Singleton<MapGenerator>
         }
 
         // 追加リストに退避しておいた新しい区画を追加する。
-        rangeList.AddRange(newRangeList);
+        m_RangeList.AddRange(newRangeList);
 
         return isDevided;
     }
@@ -229,15 +227,15 @@ public class MapGenerator : Singleton<MapGenerator>
     private void CreateRoom()
     {
         // 部屋のない区画が偏らないようにリストをシャッフルする
-        rangeList.Sort((a, b) => RogueUtils.GetRandomInt(0, 1) - 1);
+        m_RangeList.Sort((a, b) => RogueUtils.GetRandomInt(0, 1) - 1);
 
         // 1区画あたり1部屋を作っていく。作らない区画もあり。
-        foreach (Range range in rangeList)
+        foreach (Range range in m_RangeList)
         {
             System.Threading.Thread.Sleep(1);
             // 30％の確率で部屋を作らない
             // ただし、最大部屋数の半分に満たない場合は作る
-            if (roomList.Count > maxRoom / 2 && RogueUtils.RandomJadge(0.3f))
+            if (m_RoomList.Count > m_MaxRoom / 2 && RogueUtils.RandomJadge(0.3f))
             {
                 continue;
             }
@@ -259,7 +257,7 @@ public class MapGenerator : Singleton<MapGenerator>
             // 部屋リストへ追加
             Range room = new Range(startX, startY, endX, endY);
             DungeonManager.Interface.RangeList.Add(room);
-            roomList.Add(room);
+            m_RoomList.Add(room);
 
             // 通路を作る
             CreatePass(range, room);
@@ -274,7 +272,7 @@ public class MapGenerator : Singleton<MapGenerator>
             // Xマイナス方向
             directionList.Add(0);
         }
-        if (range.End.X != mapSizeX - 1)
+        if (range.End.X != m_MapSizeX - 1)
         {
             // Xプラス方向
             directionList.Add(1);
@@ -284,7 +282,7 @@ public class MapGenerator : Singleton<MapGenerator>
             // Yマイナス方向
             directionList.Add(2);
         }
-        if (range.End.Y != mapSizeY - 1)
+        if (range.End.Y != m_MapSizeY - 1)
         {
             // Yプラス方向
             directionList.Add(3);
@@ -314,22 +312,22 @@ public class MapGenerator : Singleton<MapGenerator>
             {
                 case 0: // Xマイナス方向
                     random = room.Start.Y + RogueUtils.GetRandomInt(1, room.GetWidthY()) - 1;
-                    roomPassList.Add(new Range(range.Start.X, random, room.Start.X - 1, random));
+                    m_RoomPassList.Add(new Range(range.Start.X, random, room.Start.X - 1, random));
                     break;
 
                 case 1: // Xプラス方向
                     random = room.Start.Y + RogueUtils.GetRandomInt(1, room.GetWidthY()) - 1;
-                    roomPassList.Add(new Range(room.End.X + 1, random, range.End.X, random));
+                    m_RoomPassList.Add(new Range(room.End.X + 1, random, range.End.X, random));
                     break;
 
                 case 2: // Yマイナス方向
                     random = room.Start.X + RogueUtils.GetRandomInt(1, room.GetWidthX()) - 1;
-                    roomPassList.Add(new Range(random, range.Start.Y, random, room.Start.Y - 1));
+                    m_RoomPassList.Add(new Range(random, range.Start.Y, random, room.Start.Y - 1));
                     break;
 
                 case 3: // Yプラス方向
                     random = room.Start.X + RogueUtils.GetRandomInt(1, room.GetWidthX()) - 1;
-                    roomPassList.Add(new Range(random, room.End.Y + 1, random, range.End.Y));
+                    m_RoomPassList.Add(new Range(random, room.End.Y + 1, random, range.End.Y));
                     break;
             }
         }
@@ -339,9 +337,9 @@ public class MapGenerator : Singleton<MapGenerator>
     private void TrimPassList(ref CELL_ID[,] map)
     {
         // どの部屋通路からも接続されなかった通路を削除する
-        for (int i = passList.Count - 1; i >= 0; i--)
+        for (int i = m_PassList.Count - 1; i >= 0; i--)
         {
-            Range pass = passList[i];
+            Range pass = m_PassList[i];
 
             bool isVertical = pass.GetWidthY() > 1;
 
@@ -375,7 +373,7 @@ public class MapGenerator : Singleton<MapGenerator>
             // 削除対象となった通路を削除する
             if (isTrimTarget)
             {
-                passList.Remove(pass);
+                m_PassList.Remove(pass);
 
                 // マップ配列からも削除
                 if (isVertical)
@@ -399,11 +397,11 @@ public class MapGenerator : Singleton<MapGenerator>
 
         // 外周に接している通路を別の通路との接続点まで削除する
         // 上下基準
-        for (int x = 0; x < mapSizeX - 1; x++)
+        for (int x = 0; x < m_MapSizeX - 1; x++)
         {
             if (map[x, 0] == CELL_ID.PATH_WAY)
             {
-                for (int y = 0; y < mapSizeY; y++)
+                for (int y = 0; y < m_MapSizeY; y++)
                 {
                     if (map[x - 1, y] == CELL_ID.PATH_WAY || map[x + 1, y] == CELL_ID.PATH_WAY)
                     {
@@ -412,9 +410,9 @@ public class MapGenerator : Singleton<MapGenerator>
                     map[x, y] = 0;
                 }
             }
-            if (map[x, mapSizeY - 1] == CELL_ID.PATH_WAY)
+            if (map[x, m_MapSizeY - 1] == CELL_ID.PATH_WAY)
             {
-                for (int y = mapSizeY - 1; y >= 0; y--)
+                for (int y = m_MapSizeY - 1; y >= 0; y--)
                 {
                     if (map[x - 1, y] == CELL_ID.PATH_WAY || map[x + 1, y] == CELL_ID.PATH_WAY)
                     {
@@ -425,11 +423,11 @@ public class MapGenerator : Singleton<MapGenerator>
             }
         }
         // 左右基準
-        for (int y = 0; y < mapSizeY - 1; y++)
+        for (int y = 0; y < m_MapSizeY - 1; y++)
         {
             if (map[0, y] == CELL_ID.PATH_WAY)
             {
-                for (int x = 0; x < mapSizeY; x++)
+                for (int x = 0; x < m_MapSizeY; x++)
                 {
                     if (map[x, y - 1] == CELL_ID.PATH_WAY || map[x, y + 1] == CELL_ID.PATH_WAY)
                     {
@@ -438,9 +436,9 @@ public class MapGenerator : Singleton<MapGenerator>
                     map[x, y] = 0;
                 }
             }
-            if (map[mapSizeX - 1, y] == CELL_ID.PATH_WAY)
+            if (map[m_MapSizeX - 1, y] == CELL_ID.PATH_WAY)
             {
-                for (int x = mapSizeX - 1; x >= 0; x--)
+                for (int x = m_MapSizeX - 1; x >= 0; x--)
                 {
                     if (map[x, y - 1] == CELL_ID.PATH_WAY || map[x, y + 1] == CELL_ID.PATH_WAY)
                     {

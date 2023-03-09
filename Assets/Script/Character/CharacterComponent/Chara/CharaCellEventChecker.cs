@@ -9,7 +9,7 @@ using static UnityEditor.VersionControl.Asset;
 
 public interface ICharaCellEventChecker : ICharacterInterface
 {
-    Task CheckCurrentCell();
+    Task<bool> CheckCurrentCell();
 }
 
 /// <summary>
@@ -39,13 +39,13 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     /// 現在地セルのイベントチェック
     /// </summary>
     /// <returns></returns>
-    async Task ICharaCellEventChecker.CheckCurrentCell()
+    async Task<bool> ICharaCellEventChecker.CheckCurrentCell()
     {
         // 階段チェック
         if (await CheckStairsCell() == true)
         {
             Debug.Log("階段マス");
-            return;
+            return true;
         }
 
 
@@ -53,11 +53,14 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
         if (await CheckItem() == true)
         {
             Debug.Log("アイテムマス");
-            return;
+            return true;
         }
 
         // 罠チェック
 
+
+
+        return false;
     }
 
     /// <summary>
@@ -67,7 +70,7 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     async private Task<bool> CheckStairsCell()
     {
         //メインプレイヤーなら
-        if (Owner == UnitManager.Interface.PlayerList[0])
+        if (Owner == UnitHolder.Interface.PlayerList[0])
         {
             //階段チェック
             if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == CELL_ID.STAIRS)

@@ -77,11 +77,16 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
             switch (type)
             {
                 case CONTENTS_TYPE.PLAYER:
+                    if (UnitHolder.Interface.PlayerList.Count != 0)
+                    {
+                        RedeployPlayer(cell);
+                        break;
+                    }
                     content = CharaObject(GameManager.Interface.LeaderName);
                     content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
                     var player = content.GetComponent<ICollector>();
                     player.Initialize();
-                    UnitManager.Interface.AddPlayer(player);
+                    UnitHolder.Interface.AddPlayer(player);
                     break;
 
                 case CONTENTS_TYPE.ENEMY:
@@ -89,7 +94,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
                     var enemy = content.GetComponent<ICollector>();
                     enemy.Initialize();
-                    UnitManager.Interface.AddEnemy(enemy);
+                    UnitHolder.Interface.AddEnemy(enemy);
                     break;
 
                 case CONTENTS_TYPE.ITEM:
@@ -104,8 +109,18 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         }
     }
 
+    private void RedeployPlayer(ICell cell)
+    {
+        var player = UnitHolder.Interface.PlayerList[0];
+        var content = player.GetInterface<ICharaObjectHolder>().MoveObject;
+        content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
+        player.Initialize();
+        UnitHolder.Interface.AddPlayer(player);
+    }
+
     private void DeployAll()
     {
+        Debug.Log("Deploy Contents");
         Deploy(CONTENTS_TYPE.PLAYER);
         Deploy(CONTENTS_TYPE.ENEMY, m_EnemyCount);
         Deploy(CONTENTS_TYPE.ITEM, m_ItemCount);
@@ -116,33 +131,27 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     private void RemoveAll()
     {
         // ----- Player ----- //
-        for (int i = 0; i < UnitManager.Interface.PlayerList.Count; i++)
+        foreach (var player in UnitHolder.Interface.PlayerList)
         {
-            var player = UnitManager.Interface.PlayerList[i];
-            UnitManager.Interface.RemoveUnit(player);
-            string name = player.GetInterface<ICharaStatus>().Parameter.GivenName.ToString();
-            ObjectPool.Instance.SetObject(name, player.GetInterface<ICharaObjectHolder>().MoveObject);
             player.Dispose();
         }
 
         // ----- Enemy ----- //
-        for (int i = 0; i < UnitManager.Interface.EnemyList.Count; i++)
+        foreach (var enemy in UnitHolder.Interface.EnemyList)
         {
-            var enemy = UnitManager.Interface.EnemyList[i];
-            UnitManager.Interface.RemoveUnit(enemy);
             string name = enemy.GetInterface<ICharaStatus>().Parameter.GivenName.ToString();
             ObjectPool.Instance.SetObject(name, enemy.GetInterface<ICharaObjectHolder>().MoveObject);
             enemy.Dispose();
         }
+        UnitHolder.Interface.EnemyList.Clear();
 
         // ----- Item ----- //
-        for (int i = 0; i < ItemManager.Interface.ItemList.Count; i++)
+        foreach (var item in ItemManager.Interface.ItemList)
         {
-            var item = ItemManager.Interface.ItemList[i];
-            ItemManager.Interface.RemoveItem(item);
             string name = item.Name.ToString();
             ObjectPool.Instance.SetObject(name, item.ItemObject);
         }
+        ItemManager.Interface.ItemList.Clear();
     }
 
     void IDungeonContentsDeployer.Remove()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
 using UniRx;
+using System.Threading.Tasks;
 
 public interface IPlayerInput : ICharacterInterface
 {
@@ -107,8 +108,7 @@ public class PlayerInput : CharaComponentBase, IPlayerInput
         if (diagonal == true && JudgeDirectionDiagonal(direction) == false)
             return false;
 
-        m_CharaMove.Move(direction.ToDirEnum());
-        return true;
+        return m_CharaMove.Move(direction.ToDirEnum());
     }
 
     /// <summary>

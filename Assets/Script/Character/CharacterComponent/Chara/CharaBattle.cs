@@ -139,7 +139,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         //モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
 
-        await m_CharaTurn.TurnEnd();
+        m_CharaTurn.TurnEnd();
     }
 
     async Task ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => await NormalAttack(direction, target);
@@ -158,7 +158,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
             return AttackResult.Invalid;
 
         // ターゲットの情報取得
-        if (UnitManager.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false)
+        if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false)
             return AttackResult.Invalid;
 
         // 必要なコンポーネント
@@ -215,7 +215,7 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnDead.OnNext(Unit.Default);
 
         Owner.Dispose();
-        UnitManager.Interface.RemoveUnit(Owner);
+        UnitHolder.Interface.RemoveUnit(Owner);
         ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
     }
 }

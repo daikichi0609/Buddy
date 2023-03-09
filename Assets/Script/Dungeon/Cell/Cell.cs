@@ -5,15 +5,40 @@ using NaughtyAttributes;
 
 public interface ICell
 {
+    /// <summary>
+    /// GameObject
+    /// </summary>
     GameObject CellObject { get; set; }
 
+    /// <summary>
+    /// 座標
+    /// </summary>
     Vector3Int Position { get; }
     int X { get; }
     int Z { get; }
 
+    /// <summary>
+    /// 部屋Id
+    /// </summary>
     int RoomId { get; set; }
 
+    /// <summary>
+    /// CellId
+    /// </summary>
     CELL_ID CellId { get; set; }
+
+    /// <summary>
+    /// 罠取得、あるなら
+    /// </summary>
+    /// <param name="trap"></param>
+    /// <returns></returns>
+    bool TryGetTrap(out TrapBase trap);
+
+    /// <summary>
+    /// 罠設置
+    /// </summary>
+    /// <param name="trap"></param>
+    void SetTrap(TrapBase trap);
 }
 
 public class Cell : MonoBehaviour, ICell
@@ -47,6 +72,29 @@ public class Cell : MonoBehaviour, ICell
     [SerializeField, ReadOnly]
     private int m_RoomId;
     int ICell.RoomId { get => m_RoomId; set => m_RoomId = value; }
+
+    /// <summary>
+    /// 罠
+    /// </summary>
+    [SerializeField, ReadOnly, Expandable]
+    private TrapBase m_Trap;
+
+    /// <summary>
+    /// 罠取得
+    /// </summary>
+    /// <param name="trap"></param>
+    /// <returns></returns>
+    bool ICell.TryGetTrap(out TrapBase trap)
+    {
+        trap = m_Trap;
+        return trap != null;
+    }
+
+    /// <summary>
+    /// 罠取得
+    /// </summary>
+    /// <param name="trap"></param>
+    void ICell.SetTrap(TrapBase trap) => m_Trap = trap;
 }
 
 public static class CellExtension

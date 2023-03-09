@@ -244,7 +244,7 @@ public partial class EnemyAi
 
         foreach (KeyValuePair<DIRECTION, ICell> pair in aroundCell.Cells)
         {
-            if (UnitManager.Interface.TryGetSpecifiedPositionUnit(pair.Value.Position, out var collector, target) == false)
+            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(pair.Value.Position, out var collector, target) == false)
                 continue;
 
             if (DungeonHandler.Interface.CanMove(aroundCell.BaseCell.Position, pair.Key) == false)
@@ -264,7 +264,7 @@ public partial class EnemyAi
         if (roomId == 0)
             return false;
 
-        UnitManager.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
+        UnitFinder.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
 
         return targets.Count != 0;
     }

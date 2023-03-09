@@ -11,7 +11,7 @@ public interface ICharaTurn : ICharacterInterface
     bool CanAct { get; }
     bool IsActing { get; set; }
 
-    Task TurnEnd();
+    void TurnEnd(bool hasCheck = false);
     void CanBeAct();
 
     Task WaitFinishActing(Action action);
@@ -78,12 +78,12 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// ターン終了
     /// </summary>
-    async Task ICharaTurn.TurnEnd()
+    async void ICharaTurn.TurnEnd(bool hasCheck)
     {
-        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
-            await checker.CheckCurrentCell();
+        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true && hasCheck == true)
+            if (await checker.CheckCurrentCell() == true)
+                return;
 
-        // 終了
         m_CanAct.Value = false;
     }
 

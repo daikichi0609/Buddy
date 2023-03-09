@@ -192,7 +192,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private bool IsNothingThere(Vector3 pos)
     {
-        if (UnitManager.Interface.IsUnitOn(pos) == true)
+        if (UnitFinder.Interface.IsUnitOn(pos) == true)
             return false;
 
         // TODO:アイテム

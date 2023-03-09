@@ -94,11 +94,11 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     private void RebuildDungeon()
     {
         // ダンジョン撤去
-        DungeonManager.Instance.RemoveDungeon();
+        DungeonManager.Interface.RemoveDungeon();
         DungeonContentsDeployer.Interface.Remove();
 
         // ダンジョン再構築
-        DungeonManager.Instance.DeployDungeon();
+        DungeonManager.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.Deploy();
     }
 }
