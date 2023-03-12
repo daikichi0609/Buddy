@@ -7,19 +7,22 @@ using static UnityEditor.PlayerSettings;
 using static UnityEditor.Progress;
 using static UnityEditor.VersionControl.Asset;
 
-public interface ICharaCellEventChecker : ICharacterInterface
+public interface ICharaCellEventChecker : IActorInterface
 {
     Task<bool> CheckCurrentCell();
+
+    Task<bool> CheckStairsCell();
 }
 
 /// <summary>
 /// セルイベント実行
 /// </summary>
-public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
+public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
 {
     private ICharaMove m_CharaMove;
     private ICharaInventory m_CharaInventory;
     private ICharaTurn m_CharaTurn;
+    private ICharaTypeHolder m_TypeHolder;
 
     protected override void Register(ICollector owner)
     {
@@ -33,6 +36,7 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaInventory = Owner.GetInterface<ICharaInventory>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
     }
 
     /// <summary>
@@ -41,24 +45,13 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     /// <returns></returns>
     async Task<bool> ICharaCellEventChecker.CheckCurrentCell()
     {
-        // 階段チェック
-        if (await CheckStairsCell() == true)
-        {
-            Debug.Log("階段マス");
-            return true;
-        }
-
-
-        // 階段チェック
+        // アイテムチェック
         if (await CheckItem() == true)
-        {
-            Debug.Log("アイテムマス");
             return true;
-        }
 
         // 罠チェック
-
-
+        if (await CheckTrap() == true)
+            return true;
 
         return false;
     }
@@ -67,18 +60,14 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
     /// 階段チェック
     /// </summary>
     /// <returns></returns>
-    async private Task<bool> CheckStairsCell()
+    async Task<bool> ICharaCellEventChecker.CheckStairsCell()
     {
-        //メインプレイヤーなら
-        if (Owner == UnitHolder.Interface.PlayerList[0])
+        //階段チェック
+        if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == CELL_ID.STAIRS)
         {
-            //階段チェック
-            if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == CELL_ID.STAIRS)
-            {
-                YesorNoQuestionUiManager.Interface.SetQuestion(QUESTION_TYPE.STAIRS);
-                await m_CharaTurn.WaitFinishActing(() => YesorNoQuestionUiManager.Interface.Activate());
-                return true;
-            }
+            YesorNoQuestionUiManager.Interface.SetQuestion(QUESTION_TYPE.STAIRS);
+            await m_CharaTurn.WaitFinishActing(() => YesorNoQuestionUiManager.Interface.Activate());
+            return true;
         }
 
         return false;
@@ -100,6 +89,23 @@ public class CharaCellEventChecker : CharaComponentBase, ICharaCellEventChecker
                 return true;
             }
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// アイテムチェック
+    /// </summary>
+    /// <returns></returns>
+    async private Task<bool> CheckTrap()
+    {
+        var cell = DungeonHandler.Interface.GetCell(m_CharaMove.Position);
+        if (cell.RequireInterface<ITrapHolder>(out var holder) == true)
+            if (holder.TryGetTrap(out var trap) == true)
+            {
+                await trap.Effect(Owner, UnitFinder.Interface);
+                return true;
+            }
 
         return false;
     }

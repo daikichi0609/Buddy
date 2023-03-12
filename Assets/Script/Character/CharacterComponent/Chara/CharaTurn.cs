@@ -5,8 +5,9 @@ using UniRx;
 using System;
 using System.Threading.Tasks;
 using NaughtyAttributes;
+using System.Threading;
 
-public interface ICharaTurn : ICharacterInterface
+public interface ICharaTurn : IActorInterface
 {
     bool CanAct { get; }
     bool IsActing { get; set; }
@@ -17,7 +18,7 @@ public interface ICharaTurn : ICharacterInterface
     Task WaitFinishActing(Action action);
 }
 
-public interface ICharaTurnEvent : ICharacterEvent
+public interface ICharaTurnEvent : IActorEvent
 {
     /// <summary>
     /// ターン開始 CanAct -> true
@@ -30,7 +31,7 @@ public interface ICharaTurnEvent : ICharacterEvent
     IObservable<bool> OnTurnEndPost { get; }
 }
 
-public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
+public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
 {
     private ICharaBattle m_CharaBattle;
 
@@ -38,7 +39,7 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// 行動済みステータス
     /// </summary>
     [SerializeField, ReadOnly]
-    private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>();
+    private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>(true);
     bool ICharaTurn.CanAct => m_CanAct.Value;
 
     /// <summary>
@@ -80,11 +81,13 @@ public class CharaTurn : CharaComponentBase, ICharaTurn, ICharaTurnEvent
     /// </summary>
     async void ICharaTurn.TurnEnd(bool hasCheck)
     {
-        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true && hasCheck == true)
+        if (hasCheck == true && Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
             if (await checker.CheckCurrentCell() == true)
                 return;
 
         m_CanAct.Value = false;
+        if (Owner.RequireInterface<ICharaTypeHolder>(out var type) == true && type.Type == CHARA_TYPE.PLAYER)
+            TurnManager.Interface.StartAiAct();
     }
 
     /// <summary>

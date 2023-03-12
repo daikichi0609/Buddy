@@ -4,12 +4,12 @@ using UnityEngine;
 using UniRx;
 using System.Text;
 
-public interface ICharaLog : ICharacterInterface
+public interface ICharaLog : IActorInterface
 {
 
 }
 
-public class CharaLog : CharaComponentBase, ICharaLog
+public class CharaLog : ActorComponentBase, ICharaLog
 {
     protected override void Register(ICollector owner)
     {

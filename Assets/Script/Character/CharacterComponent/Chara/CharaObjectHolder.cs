@@ -5,14 +5,14 @@ using UniRx;
 using System.Threading.Tasks;
 using DG.Tweening;
 
-public interface ICharaObjectHolder : ICharacterInterface
+public interface ICharaObjectHolder : IActorInterface
 {
     GameObject MoveObject { get; }
 
     GameObject CharaObject { get; }
 }
 
-public class CharaObjectHolder : CharaComponentBase, ICharaObjectHolder
+public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
 {
     /// <summary>
     /// キャラのオブジェクト

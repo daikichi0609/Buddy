@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UniRx;
 
-public interface ICharacterInterface : IDisposable
+public interface IActorInterface : IDisposable
 {
     /// <summary>
     /// コンポーネント初期化
@@ -10,11 +10,11 @@ public interface ICharacterInterface : IDisposable
     void Initialize();
 }
 
-public interface ICharacterEvent
+public interface IActorEvent
 {
 }
 
-public abstract class CharaComponentBase : MonoBehaviour, ICharacterInterface
+public abstract class ActorComponentBase : MonoBehaviour, IActorInterface
 {
     /// <summary>
     /// コレクター
@@ -31,7 +31,7 @@ public abstract class CharaComponentBase : MonoBehaviour, ICharacterInterface
     /// </summary>
     private void Awake()
     {
-        Owner = GetComponent<CharacterComponentCollector>();
+        Owner = GetComponent<ActorComponentCollector>();
         Register(Owner);
     }
 
@@ -44,7 +44,7 @@ public abstract class CharaComponentBase : MonoBehaviour, ICharacterInterface
     {
         // コンポーネント初期化
     }
-    void ICharacterInterface.Initialize() => Initialize();
+    void IActorInterface.Initialize() => Initialize();
 
     protected virtual void Dispose()
     {

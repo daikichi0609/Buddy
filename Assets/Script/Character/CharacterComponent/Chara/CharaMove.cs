@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using NaughtyAttributes;
 
-public interface ICharaMove : ICharacterInterface
+public interface ICharaMove : IActorInterface
 {
     Vector3Int Position { get; }
     DIRECTION Direction { get; }
@@ -16,13 +16,13 @@ public interface ICharaMove : ICharacterInterface
     void Warp(Vector3Int pos);
 }
 
-public interface ICharaMoveEvent : ICharacterEvent
+public interface ICharaMoveEvent : IActorEvent
 {
     IObservable<Unit> OnMoveStart { get; }
     IObservable<Unit> OnMoveEnd { get; }
 }
 
-public class CharaMove : CharaComponentBase, ICharaMove, ICharaMoveEvent
+public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 {
     private ICharaObjectHolder m_Holder;
     private GameObject CharaObject => m_Holder.CharaObject;

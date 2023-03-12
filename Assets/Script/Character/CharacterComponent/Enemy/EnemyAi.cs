@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
-public interface IEnemyAi : ICharacterInterface
+public interface IAiAction : IActorInterface
 {
-    void DecideAndExecuteAction();
+    Task<bool> DecideAndExecuteAction();
 }
 
 /// <summary>
@@ -19,21 +20,21 @@ public enum ENEMY_STATE
     ATTACKING
 }
 
-public partial class EnemyAi : CharaComponentBase, IEnemyAi
+public partial class EnemyAi : ActorComponentBase, IAiAction
 {
     private ICharaMove m_CharaMove;
     private ICharaBattle m_CharaBattle;
 
     private ENEMY_STATE CurrentState { get; set; }
 
-    private ICell DestinationCell { get; set; }
+    private ICellInfoHolder DestinationCell { get; set; }
 
     private CHARA_TYPE m_Target = CHARA_TYPE.PLAYER;
 
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
-        owner.Register<IEnemyAi>(this);
+        owner.Register<IAiAction>(this);
     }
 
     protected override void Initialize()
@@ -45,29 +46,34 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    private void DecideAndExecuteAction()
+    private async Task<bool> DecideAndExecuteAction()
     {
+        // 死んでいるなら行動しない
+        if (Owner.RequireInterface<ICharaStatus>(out var status) == true && status.IsDead == true)
+            return true;
+
         ActionClue clue = ConsiderAction(m_CharaMove.Position);
+
         switch (clue.State)
         {
             case ENEMY_STATE.ATTACKING:
                 Face(clue.TargetList);
-                NormalAttack();
-                break;
+                return await NormalAttack();
 
             case ENEMY_STATE.CHASING:
                 Chase(clue.TargetList);
-                break;
+                return true;
 
             case ENEMY_STATE.SEARCHING:
                 SearchPlayer();
-                break;
+                return true;
         }
 
         CurrentState = clue.State;
+        return false;
     }
 
-    void IEnemyAi.DecideAndExecuteAction() => DecideAndExecuteAction();
+    async Task<bool> IAiAction.DecideAndExecuteAction() => await DecideAndExecuteAction();
 
     /// <summary>
     /// ターゲットの方を向く 主に攻撃前
@@ -83,7 +89,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         return target;
     }
 
-    private void NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, CHARA_TYPE.PLAYER);
+    private Task<bool> NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, CHARA_TYPE.PLAYER);
 
     /// <summary>
     /// 追いかける
@@ -122,6 +128,7 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
     private void SearchPlayer()
     {
         int currentRoomId = DungeonHandler.Interface.GetRoomId(m_CharaMove.Position);
+
         //通路にいる場合
         if (currentRoomId == 0)
         {
@@ -159,9 +166,9 @@ public partial class EnemyAi : CharaComponentBase, IEnemyAi
         {
             var gates = DungeonHandler.Interface.GetGateWayCells(DungeonHandler.Interface.GetRoomId(m_CharaMove.Position));
 
-            var candidates = new List<ICell>();
+            var candidates = new List<ICellInfoHolder>();
             var minDistance = 999f;
-            foreach (ICell cell in gates)
+            foreach (ICellInfoHolder cell in gates)
             {
                 var distance = (m_CharaMove.Position - cell.Position).magnitude;
                 if (distance > minDistance)
@@ -241,13 +248,15 @@ public partial class EnemyAi
     private bool TryGetCandidateAttack(AroundCell aroundCell, CHARA_TYPE target, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
+        var baseInfo = aroundCell.BaseCell.GetInterface<ICellInfoHolder>();
 
-        foreach (KeyValuePair<DIRECTION, ICell> pair in aroundCell.Cells)
+        foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
         {
-            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(pair.Value.Position, out var collector, target) == false)
+            var info = pair.Value.GetInterface<ICellInfoHolder>();
+            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, target) == false)
                 continue;
 
-            if (DungeonHandler.Interface.CanMove(aroundCell.BaseCell.Position, pair.Key) == false)
+            if (DungeonHandler.Interface.CanMove(baseInfo.Position, pair.Key) == false)
                 continue;
 
             targets.Add(collector);

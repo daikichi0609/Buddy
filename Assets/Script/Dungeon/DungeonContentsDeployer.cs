@@ -71,19 +71,20 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         for (int i = 0; i < count; i++)
         {
             var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
+            var info = cell.GetInterface<ICellInfoHolder>();
             GameObject content = null;
 
             // ゲームオブジェクト取得
             switch (type)
             {
                 case CONTENTS_TYPE.PLAYER:
-                    if (UnitHolder.Interface.PlayerList.Count != 0)
+                    if (UnitHolder.Interface.FriendList.Count != 0)
                     {
                         RedeployPlayer(cell);
                         break;
                     }
                     content = CharaObject(GameManager.Interface.LeaderName);
-                    content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
+                    content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var player = content.GetComponent<ICollector>();
                     player.Initialize();
                     UnitHolder.Interface.AddPlayer(player);
@@ -91,7 +92,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
                 case CONTENTS_TYPE.ENEMY:
                     content = CharaObject(Utility.RandomEnemyName());
-                    content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
+                    content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var enemy = content.GetComponent<ICollector>();
                     enemy.Initialize();
                     UnitHolder.Interface.AddEnemy(enemy);
@@ -99,21 +100,22 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
                 case CONTENTS_TYPE.ITEM:
                     content = ItemObject(Utility.RandomItemName());
-                    content.transform.position = new Vector3(cell.X, Item.OFFSET_Y, cell.Z);
+                    content.transform.position = new Vector3(info.X, Item.OFFSET_Y, info.Z);
                     content.transform.eulerAngles = new Vector3(45f, 0f, 0f);
                     IItem item = content.GetComponent<Item>();
-                    item.Position = cell.Position;
+                    item.Position = info.Position;
                     ItemManager.Interface.AddItem(item);
                     break;
             }
         }
     }
 
-    private void RedeployPlayer(ICell cell)
+    private void RedeployPlayer(ICollector cell)
     {
-        var player = UnitHolder.Interface.PlayerList[0];
+        var player = UnitHolder.Interface.FriendList[0];
         var content = player.GetInterface<ICharaObjectHolder>().MoveObject;
-        content.transform.position = new Vector3(cell.X, CharaMove.OFFSET_Y, cell.Z);
+        var info = cell.GetInterface<ICellInfoHolder>();
+        content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
         player.Initialize();
         UnitHolder.Interface.AddPlayer(player);
     }
@@ -131,7 +133,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     private void RemoveAll()
     {
         // ----- Player ----- //
-        foreach (var player in UnitHolder.Interface.PlayerList)
+        foreach (var player in UnitHolder.Interface.FriendList)
         {
             player.Dispose();
         }

@@ -58,7 +58,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     {
         if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector collector in UnitHolder.Interface.PlayerList)
+            foreach (ICollector collector in UnitHolder.Interface.FriendList)
             {
                 if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
@@ -103,16 +103,16 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         if (roomId <= 0)
             return false;
 
-        List<ICell> roomList = DungeonManager.Interface.GetRoomCellList(roomId);
+        var roomList = DungeonManager.Interface.GetRoomCellList(roomId);
 
         if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector unit in UnitHolder.Interface.PlayerList)
+            foreach (ICollector unit in UnitHolder.Interface.FriendList)
             {
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                foreach (ICell cell in roomList)
+                foreach (ICellInfoHolder cell in roomList)
                     if (move.Position.x == cell.Position.x && move.Position.z == cell.Position.z)
                         val.Add(unit);
             }
@@ -125,7 +125,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                foreach (ICell cell in roomList)
+                foreach (ICellInfoHolder cell in roomList)
                     if (move.Position.x == cell.Position.x && move.Position.z == cell.Position.z)
                         val.Add(unit);
             }
@@ -162,7 +162,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         int pos_x = (int)pos.x;
         int pos_z = (int)pos.z;
 
-        foreach (ICollector player in UnitHolder.Interface.PlayerList)
+        foreach (ICollector player in UnitHolder.Interface.FriendList)
         {
             var move = player.GetInterface<ICharaMove>();
             if (move.Position.x == pos.x && move.Position.z == pos.z)

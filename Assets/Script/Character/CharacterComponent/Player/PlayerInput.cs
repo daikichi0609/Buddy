@@ -5,14 +5,14 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 
-public interface IPlayerInput : ICharacterInterface
+public interface IPlayerInput : IActorInterface
 {
 }
 
 /// <summary>
 /// 入力機能
 /// </summary>
-public class PlayerInput : CharaComponentBase, IPlayerInput
+public class PlayerInput : ActorComponentBase, IPlayerInput
 {
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;

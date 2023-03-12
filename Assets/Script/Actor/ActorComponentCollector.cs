@@ -19,15 +19,15 @@ public interface ICollector : IDisposable
     /// </summary>
     /// <typeparam name="TComp"></typeparam>
     /// <returns></returns>
-    TComp GetInterface<TComp>() where TComp : class, ICharacterInterface;
+    TComp GetInterface<TComp>() where TComp : class, IActorInterface;
 
     /// <summary>
     /// コンポーネント要求
     /// </summary>
     /// <param name="comp"></param>
     /// <returns></returns>
-    bool RequireInterface<TComp>(out TComp comp) where TComp : class, ICharacterInterface;
-    bool RequireEvent<TEvent>(out TEvent comp) where TEvent : class, ICharacterEvent;
+    bool RequireInterface<TComp>(out TComp comp) where TComp : class, IActorInterface;
+    bool RequireEvent<TEvent>(out TEvent comp) where TEvent : class, IActorEvent;
 
     /// <summary>
     /// 初期化
@@ -38,10 +38,10 @@ public interface ICollector : IDisposable
 /// <summary>
 /// コンポーネント集約クラス
 /// </summary>
-public class CharacterComponentCollector : MonoBehaviour, ICollector
+public class ActorComponentCollector : MonoBehaviour, ICollector
 {
-    private List<ICharacterInterface> m_Interfaces = new List<ICharacterInterface>();
-    private List<ICharacterEvent> m_Events = new List<ICharacterEvent>();
+    private List<IActorInterface> m_Interfaces = new List<IActorInterface>();
+    private List<IActorEvent> m_Events = new List<IActorEvent>();
 
     /// <summary>
     /// 初期化
@@ -60,11 +60,11 @@ public class CharacterComponentCollector : MonoBehaviour, ICollector
     /// <param name="comp"></param>
     void ICollector.Register<TComp>(TComp comp)
     {
-        if (comp is ICharacterInterface)
-            m_Interfaces.Add(comp as ICharacterInterface);
+        if (comp is IActorInterface)
+            m_Interfaces.Add(comp as IActorInterface);
 
-        if (comp is ICharacterEvent)
-            m_Events.Add(comp as ICharacterEvent);
+        if (comp is IActorEvent)
+            m_Events.Add(comp as IActorEvent);
     }
 
     /// <summary>

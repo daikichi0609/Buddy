@@ -37,7 +37,7 @@ public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, 
 
             QUESTION_TYPE.NONE => new OptionElement(),
             _ => new OptionElement()
-        } ;
+        };
 
         return e;
     }
@@ -85,5 +85,18 @@ public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, 
         /// 操作するテキストUi
         /// </summary>
         protected override List<Text> Texts => UiHolder.Instance.OptionTextList;
+    }
+}
+
+/// <summary>
+/// Ui非表示メッセージ
+/// </summary>
+public readonly struct CloseUiMessage
+{
+    public QUESTION_TYPE Type { get; }
+
+    public CloseUiMessage(QUESTION_TYPE type)
+    {
+        Type = type;
     }
 }

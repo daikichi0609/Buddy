@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-public interface ICharaSound : ICharacterInterface
+public interface ICharaSound : IActorInterface
 {
 
 }
 
-public class CharaSound : CharaComponentBase, ICharaSound
+public class CharaSound : ActorComponentBase, ICharaSound
 {
     protected override void Register(ICollector owner)
     {

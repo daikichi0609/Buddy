@@ -32,12 +32,12 @@ public enum ANIMATION_TYPE
     DAMAGE,
 }
 
-public interface ICharaAnimator : ICharacterInterface
+public interface ICharaAnimator : IActorInterface
 {
 
 }
 
-public class CharaAnimator : CharaComponentBase, ICharaAnimator
+public class CharaAnimator : ActorComponentBase, ICharaAnimator
 {
     private ICharaTurn m_CharaTurn;
 
@@ -53,6 +53,11 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
     /// </summary>
     [SerializeField]
     private Animator m_CharaAnimator;
+
+    /// <summary>
+    /// 禁止フラグ解除
+    /// </summary>
+    private IDisposable m_CancelRequest;
 
     protected override void Register(ICollector owner)
     {
@@ -74,7 +79,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        TurnManager.Interface.ProhibitAllAction = true;
+                        m_CancelRequest = TurnManager.Interface.RequestProhibitAction();
                         return;
                 }
 
@@ -82,7 +87,7 @@ public class CharaAnimator : CharaComponentBase, ICharaAnimator
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        TurnManager.Interface.ProhibitAllAction = false;
+                        m_CancelRequest?.Dispose();
                         return;
                 }
             }).AddTo(Disposable);

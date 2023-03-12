@@ -5,15 +5,31 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 
-public interface ICharaBattle : ICharacterInterface
+public interface ICharaBattle : IActorInterface
 {
+    /// <summary>
+    /// 通常攻撃
+    /// </summary>
+    /// <returns></returns>
     Task NormalAttack();
-    Task NormalAttack(DIRECTION direction, CHARA_TYPE target);
 
+    /// <summary>
+    /// 通常攻撃、方向指定
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target);
+
+    /// <summary>
+    /// 被ダメージ
+    /// </summary>
+    /// <param name="attackInfo"></param>
+    /// <returns></returns>
     AttackResult Damage(AttackInfo attackInfo);
 }
 
-public interface ICharaBattleEvent : ICharacterEvent
+public interface ICharaBattleEvent : IActorEvent
 {
     /// <summary>
     /// 攻撃前
@@ -41,7 +57,7 @@ public interface ICharaBattleEvent : ICharacterEvent
     IObservable<Unit> OnDead { get; }
 }
 
-public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
+public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 {
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;
@@ -51,11 +67,6 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
     public static readonly int ms_NormalAttackTotalTime = 700;
     public static readonly int ms_NormalAttackHitTime = 400;
     public static readonly int ms_DamageTotalTime = 500;
-
-    /// <summary>
-    /// 味方か敵か
-    /// </summary>
-    private CHARA_TYPE m_Type = CHARA_TYPE.NONE;
 
     /// <summary>
     /// ステータス
@@ -107,11 +118,6 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
-
-        if (Owner.RequireInterface<IEnemyAi>(out var enemy) == true)
-            m_Type = CHARA_TYPE.ENEMY;
-        else
-            m_Type = CHARA_TYPE.PLAYER;
     }
 
     /// <summary>
@@ -124,11 +130,11 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="target"></param>
-    private async Task NormalAttack(DIRECTION direction, CHARA_TYPE target)
+    private async Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target)
     {
         // 誰かが行動中なら攻撃できない
         if (TurnManager.Interface.NoOneActing == false)
-            return;
+            return false;
 
         var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, Status.Dex);
         m_OnAttackStart.OnNext(attackInfo);
@@ -140,9 +146,10 @@ public class CharaBattle : CharaComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackEnd.OnNext(result);
 
         m_CharaTurn.TurnEnd();
+        return true;
     }
 
-    async Task ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => await NormalAttack(direction, target);
+    async Task<bool> ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => await NormalAttack(direction, target);
 
     /// <summary>
     /// 攻撃 空振り考慮のプレイヤー用

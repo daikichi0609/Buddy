@@ -9,9 +9,9 @@ using UniRx;
 public interface IDungeonManager : ISingleton
 {
     CELL_ID[,] IdMap { get; }
-    List<List<ICell>> CellMap { get; }
+    List<List<ICollector>> CellMap { get; }
 
-    List<ICell> GetRoomCellList(int roomId);
+    List<ICollector> GetRoomCellList(int roomId);
 
     List<Range> RangeList { get; }
 
@@ -58,21 +58,22 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// <summary>
     /// インスタンス
     /// </summary>
-    private List<List<ICell>> m_CellMap = new List<List<ICell>>();
-    List<List<ICell>> IDungeonManager.CellMap => m_CellMap;
+    private List<List<ICollector>> m_CellMap = new List<List<ICollector>>();
+    List<List<ICollector>> IDungeonManager.CellMap => m_CellMap;
 
-    private void SetCell(ICell cell, int x, int z)
+    private void SetCell(ICollector cell, int x, int z)
     {
         var remove = m_CellMap[x][z];
         m_CellMap[x].RemoveAt(z);
-        Destroy(remove.CellObject);
+        var info = remove.GetInterface<ICellInfoHolder>();
+        Destroy(info.CellObject);
         m_CellMap[x].Insert(z, cell);
     }
 
     /// <summary>
     /// インスタンス（ルーム限定）
     /// </summary>
-    private List<List<ICell>> m_RoomCellList = new List<List<ICell>>();
+    private List<List<ICollector>> m_RoomCellList = new List<List<ICollector>>();
 
     /// <summary>
     /// 部屋IDの部屋オブジェクトリストを取得
@@ -80,20 +81,20 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    private List<ICell> GetRoomCellList(int roomId) => m_RoomCellList[roomId - 1];
-    List<ICell> IDungeonManager.GetRoomCellList(int roomId) => GetRoomCellList(roomId);
+    private List<ICollector> GetRoomCellList(int roomId) => m_RoomCellList[roomId - 1];
+    List<ICollector> IDungeonManager.GetRoomCellList(int roomId) => GetRoomCellList(roomId);
 
-    private ICell GetRoomCell(int id, int num) => m_RoomCellList[id][num];
+    private ICollector GetRoomCell(int id, int num) => m_RoomCellList[id][num];
 
     /// <summary>
     /// <see cref="m_RoomCellList"/> 初期化
     /// </summary>
     private void CreateRoomCellList()
     {
-        m_RoomCellList = new List<List<ICell>>();
+        m_RoomCellList = new List<List<ICollector>>();
         foreach (Range range in m_RangeList)
         {
-            List<ICell> list = new List<ICell>();
+            var list = new List<ICollector>();
 
             for (int x = range.Start.X; x <= range.End.X; x++)
                 for (int z = range.Start.Y; z <= range.End.Y; z++)
@@ -129,9 +130,9 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
     public void RemoveDungeon()
     {
-        foreach (List<ICell> list in m_CellMap)
+        foreach (var list in m_CellMap)
         {
-            foreach (ICell cell in list)
+            foreach (ICellInfoHolder cell in list)
             {
                 CELL_ID id = cell.CellId;
                 string key = id.ToString();
@@ -145,16 +146,16 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
     private void InitializeAllList()
     {
-        m_CellMap = new List<List<ICell>>();
-        m_RoomCellList = new List<List<ICell>>();
-        m_RangeList = new List<Range>();
+        m_CellMap.Clear();
+        m_RoomCellList.Clear();
+        m_RangeList.Clear();
     }
 
     private void DeployDungeonTerrain()
     {
         for (int i = 0; i < m_IdMap.GetLength(0) - 1; i++)
         {
-            m_CellMap.Add(new List<ICell>());
+            m_CellMap.Add(new List<ICollector>());
 
             for (int j = 0; j < m_IdMap.GetLength(1) - 1; j++)
             {
@@ -207,9 +208,10 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
                         break;
                 }
 
-                var cell = cellObject.GetComponent<ICell>();
-                cell.CellObject = cellObject;
-                cell.CellId = type;
+                var cell = cellObject.GetComponent<ICollector>();
+                var info = cell.GetInterface<ICellInfoHolder>();
+                info.CellObject = cellObject;
+                info.CellId = type;
                 m_CellMap[i].Add(cell);
             }
         }
@@ -219,8 +221,9 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     private void DeployStairs() //階段配置
     {
         var emp = DungeonHandler.Interface.GetRandomRoomEmptyCell(); // 何もない部屋座標を取得
-        var x = (int)emp.Position.x;
-        var z = (int)emp.Position.z;
+        var info = emp.GetInterface<ICellInfoHolder>();
+        var x = info.Position.x;
+        var z = info.Position.z;
 
         OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
 
@@ -229,9 +232,10 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
         else
             cellObject.transform.position = new Vector3(x, 0, z);
 
-        var cell = cellObject.GetComponent<ICell>();
-        cell.CellObject = cellObject;
-        cell.CellId = CELL_ID.STAIRS;
+        var cell = cellObject.GetComponent<ICollector>();
+        info = cell.GetInterface<ICellInfoHolder>();
+        info.CellObject = cellObject;
+        info.CellId = CELL_ID.STAIRS;
         SetCell(cell, x, z); // 既存のオブジェクトの代わりに代入
     }
 
@@ -244,8 +248,9 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
         {
             for (int num = 0; num < m_RoomCellList[id].Count; num++)
             {
-                ICell cell = GetRoomCell(id, num);
-                cell.RoomId = id + 1;
+                var cell = GetRoomCell(id, num);
+                var info = cell.GetInterface<ICellInfoHolder>();
+                info.RoomId = id + 1;
             }
         }
     }

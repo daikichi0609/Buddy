@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 
-public interface ICharaInventory : ICharacterInterface
+public interface ICharaInventory : IActorInterface
 {
     /// <summary>
     /// 所持しているアイテム
@@ -25,7 +25,7 @@ public interface ICharaInventory : ICharacterInterface
     void Consume(IItem item);
 }
 
-public interface ICharaInventoryEvent : ICharacterInterface
+public interface ICharaInventoryEvent : IActorInterface
 {
     /// <summary>
     /// アイテムしまうとき
@@ -45,7 +45,7 @@ public readonly struct ItemPutInfo
     }
 }
 
-public class CharaInventory : CharaComponentBase, ICharaInventory, ICharaInventoryEvent
+public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInventoryEvent
 {
     private static readonly int InventoryCount = 9;
 

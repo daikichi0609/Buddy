@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 2258635251871997100}
   - component: {fileID: -803890539288610525}
   - component: {fileID: -3478033662524825469}
+  - component: {fileID: -4790564921227572243}
   - component: {fileID: -1207655876620710545}
   m_Layer: 0
   m_Name: BOXMAN
@@ -231,8 +232,6 @@ MonoBehaviour:
   m_CharaObject: {fileID: 7437906401129777486}
   m_MoveObject: {fileID: 8497573164149189218}
   m_MeshRenderer: {fileID: 7437906401116145232}
-  m_DefaultColor: {r: 1, g: 1, b: 1, a: 1}
-  m_RedColor: {r: 1, g: 0.39215687, b: 0.39215687, a: 1}
 --- !u!114 &2258635251871997100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,6 +272,18 @@ MonoBehaviour:
   m_CanAct:
     value: 0
   m_IsActing: 0
+--- !u!114 &-4790564921227572243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8497573164149189218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8507ce85efc8943a9a8a1c1733905534, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-1207655876620710545
 MonoBehaviour:
   m_ObjectHideFlags: 0

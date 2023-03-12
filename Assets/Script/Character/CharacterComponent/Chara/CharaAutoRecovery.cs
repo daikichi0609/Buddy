@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using System.Collections.Generic;
 
-public interface ICharaAutoRecovery : ICharacterInterface
+public interface ICharaAutoRecovery : IActorInterface
 {
 
 }
@@ -11,7 +11,7 @@ public interface ICharaAutoRecovery : ICharacterInterface
 /// <summary>
 /// 自動回復
 /// </summary>
-public class CharaAutoRecovery : CharaComponentBase, ICharaAutoRecovery
+public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 {
     private static readonly int RECOVER_TURN = 5;
 

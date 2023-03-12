@@ -11,7 +11,12 @@ public interface IUnitHolder : ISingleton
     /// <summary>
     /// プレイヤー
     /// </summary>
-    List<ICollector> PlayerList { get; }
+    ICollector Player { get; }
+
+    /// <summary>
+    /// 味方
+    /// </summary>
+    List<ICollector> FriendList { get; }
 
     /// <summary>
     /// 敵
@@ -54,8 +59,18 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     /// Playerのコレクターリスト
     /// </summary>
     [ReadOnly]
-    private List<ICollector> m_PlayerList = new List<ICollector>();
-    List<ICollector> IUnitHolder.PlayerList => m_PlayerList;
+    private List<ICollector> m_FriendList = new List<ICollector>();
+    List<ICollector> IUnitHolder.FriendList => m_FriendList;
+    ICollector IUnitHolder.Player
+    {
+        get
+        {
+            if (m_FriendList.Count != 0)
+                return m_FriendList[0];
+            else
+                return null;
+        }
+    }
 
     /// <summary>
     /// Enemyのコレクターリスト
@@ -64,15 +79,15 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     private List<ICollector> m_EnemyList = new List<ICollector>();
     List<ICollector> IUnitHolder.EnemyList => m_EnemyList;
 
-    void IUnitHolder.AddPlayer(ICollector player) => m_PlayerList.Add(player);
+    void IUnitHolder.AddPlayer(ICollector player) => m_FriendList.Add(player);
     void IUnitHolder.AddEnemy(ICollector enemy) => m_EnemyList.Add(enemy);
     void IUnitHolder.RemoveUnit(ICollector unit)
     {
-        foreach (ICollector player in m_PlayerList)
+        foreach (ICollector player in m_FriendList)
         {
             if (player == unit)
             {
-                m_PlayerList.Remove(unit);
+                m_FriendList.Remove(unit);
                 return;
             }
         }

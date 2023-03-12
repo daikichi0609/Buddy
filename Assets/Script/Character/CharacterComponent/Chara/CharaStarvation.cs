@@ -3,7 +3,7 @@ using UniRx;
 using System;
 using System.Collections.Generic;
 
-public interface ICharaStarvation : ICharacterInterface
+public interface ICharaStarvation : IActorInterface
 {
     bool IsStarvate { get; }
     void RecoverHungry(int add);
@@ -12,7 +12,7 @@ public interface ICharaStarvation : ICharacterInterface
 /// <summary>
 /// 自動回復
 /// </summary>
-public class CharaStarvation : CharaComponentBase, ICharaStarvation
+public class CharaStarvation : ActorComponentBase, ICharaStarvation
 {
     /// <summary>
     /// 空腹値

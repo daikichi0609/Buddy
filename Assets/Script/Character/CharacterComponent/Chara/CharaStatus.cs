@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using UnityEngine;
 using NaughtyAttributes;
 
-public interface ICharaStatus : ICharacterInterface
+public interface ICharaStatus : IActorInterface
 {
     /// <summary>
     /// 現在のステータス
@@ -15,9 +15,14 @@ public interface ICharaStatus : ICharacterInterface
     /// 元パラメタ
     /// </summary>
     BattleStatus.Parameter Parameter { get; }
+
+    /// <summary>
+    /// 死んでいるか
+    /// </summary>
+    bool IsDead { get; }
 }
 
-public class CharaStatus : CharaComponentBase, ICharaStatus
+public class CharaStatus : ActorComponentBase, ICharaStatus
 {
     [SerializeField]
     private CHARA_NAME m_GivenName = CHARA_NAME.BOXMAN;
@@ -34,6 +39,8 @@ public class CharaStatus : CharaComponentBase, ICharaStatus
     [SerializeField, ReadOnly]
     private CurrentStatus m_CurrentStatus;
     CurrentStatus ICharaStatus.CurrentStatus => m_CurrentStatus;
+
+    bool ICharaStatus.IsDead => m_CurrentStatus.Hp == 0;
 
     protected override void Register(ICollector owner)
     {

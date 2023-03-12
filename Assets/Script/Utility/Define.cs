@@ -39,11 +39,22 @@ public enum DUNGEON_THEME
 }
 
 /// <summary>
+/// 罠種類
+/// </summary>
+public enum TRAP_TYPE
+{
+    NONE,
+    BOMB,
+
+}
+
+/// <summary>
 /// キャラタイプ
 /// </summary>
 public enum CHARA_TYPE
 {
+    NONE,
     PLAYER,
+    FRIEND,
     ENEMY,
-    NONE
 }

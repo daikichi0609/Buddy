@@ -9,7 +9,7 @@ public interface IDungeonHandler : ISingleton
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    ICell GetCell(Vector3Int pos);
+    ICollector GetCell(Vector3Int pos);
 
     /// <summary>
     /// セルId
@@ -48,7 +48,7 @@ public interface IDungeonHandler : ISingleton
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    List<ICell> GetGateWayCells(int roomId);
+    List<ICollector> GetGateWayCells(int roomId);
 
     /// <summary>
     /// 任意の位置の部屋Id取得
@@ -61,13 +61,13 @@ public interface IDungeonHandler : ISingleton
     /// ランダムな部屋のセルを取得
     /// </summary>
     /// <returns></returns>
-    ICell GetRandomRoomCell();
+    ICollector GetRandomRoomCell();
 
     /// <summary>
     /// ランダムな部屋の何もないセルを取得
     /// </summary>
     /// <returns></returns>
-    ICell GetRandomRoomEmptyCell();
+    ICollector GetRandomRoomEmptyCell();
 }
 
 public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>, IDungeonHandler
@@ -76,15 +76,15 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// マップ
     /// </summary>
     private CELL_ID[,] IdMap => DungeonManager.Interface.IdMap;
-    private List<List<ICell>> CellMap => DungeonManager.Interface.CellMap;
+    private List<List<ICollector>> CellMap => DungeonManager.Interface.CellMap;
 
     /// <summary>
     /// セル取得
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private ICell GetCell(Vector3Int pos) => DungeonManager.Interface.CellMap[pos.x][pos.z];
-    ICell IDungeonHandler.GetCell(Vector3Int pos) => GetCell(pos);
+    private ICollector GetCell(Vector3Int pos) => DungeonManager.Interface.CellMap[pos.x][pos.z];
+    ICollector IDungeonHandler.GetCell(Vector3Int pos) => GetCell(pos);
 
     /// <summary>
     /// セルId取得
@@ -118,7 +118,12 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    int IDungeonHandler.GetRoomId(Vector3Int pos) => DungeonManager.Interface.CellMap[pos.x][pos.z].RoomId;
+    int IDungeonHandler.GetRoomId(Vector3Int pos)
+    {
+        var cell = DungeonManager.Interface.CellMap[pos.x][pos.z];
+        var info = cell.GetInterface<ICellInfoHolder>();
+        return info.RoomId;
+    }
 
     /// <summary>
     /// 移動可能か
@@ -174,13 +179,14 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    List<ICell> IDungeonHandler.GetGateWayCells(int roomId)
+    List<ICollector> IDungeonHandler.GetGateWayCells(int roomId)
     {
-        List<ICell> roomList = DungeonManager.Interface.GetRoomCellList(roomId);
-        List<ICell> list = new List<ICell>();
-        foreach (ICell cell in roomList)
-            if (cell.CellId == CELL_ID.GATE)
-                list.Add(cell);
+        List<ICollector> roomList = DungeonManager.Interface.GetRoomCellList(roomId);
+        List<ICollector> list = new List<ICollector>();
+        foreach (ICollector cell in roomList)
+            if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
+                if (info.CellId == CELL_ID.GATE)
+                    list.Add(cell);
 
         return list;
     }
@@ -204,7 +210,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// ランダムな部屋のセルを返す
     /// </summary>
     /// <returns></returns>
-    private ICell GetRandamRoomCell()
+    private ICollector GetRandamRoomCell()
     {
         var id = CELL_ID.NONE;
         int x = -1;
@@ -219,20 +225,23 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
 
         return DungeonManager.Interface.CellMap[x][z];
     }
-    ICell IDungeonHandler.GetRandomRoomCell() => GetRandamRoomCell();
+    ICollector IDungeonHandler.GetRandomRoomCell() => GetRandamRoomCell();
 
     /// <summary>
     /// ランダムな何も乗っていない部屋セルを返す
     /// </summary>
     /// <returns></returns>
-    ICell IDungeonHandler.GetRandomRoomEmptyCell()
+    ICollector IDungeonHandler.GetRandomRoomEmptyCell()
     {
-        ICell cell = null;
+        ICollector cell = null;
         bool isEmpty = false;
         while (isEmpty == false)
         {
             var temp = GetRandamRoomCell();
-            if (IsNothingThere(temp.Position) == true)
+            if (temp.RequireInterface<ICellInfoHolder>(out var info) == false)
+                continue;
+
+            if (IsNothingThere(info.Position) == true)
             {
                 isEmpty = true;
                 cell = temp;
@@ -287,13 +296,13 @@ public readonly struct AroundCellId
 
 public readonly struct AroundCell
 {
-    public ICell BaseCell { get; } //基準
-    public Dictionary<DIRECTION, ICell> Cells { get; }
+    public ICollector BaseCell { get; } //基準
+    public Dictionary<DIRECTION, ICollector> Cells { get; }
 
-    public AroundCell(List<List<ICell>> cellList, int x, int z)
+    public AroundCell(List<List<ICollector>> cellList, int x, int z)
     {
         BaseCell = cellList[x][z];
-        Cells = new Dictionary<DIRECTION, ICell>();
+        Cells = new Dictionary<DIRECTION, ICollector>();
 
         // 左
         if (x - 1 >= 0 && z - 1 >= 0)

@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class BombTrap : TrapBase
 {
-    protected override void Effect(ICollector stepper, IUnitFinder unitFinder)
+    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder)
     {
-        base.Effect(stepper, unitFinder);
-
+        return;
     }
 }
