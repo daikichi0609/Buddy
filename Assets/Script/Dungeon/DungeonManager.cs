@@ -132,11 +132,12 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     {
         foreach (var list in m_CellMap)
         {
-            foreach (ICellInfoHolder cell in list)
+            foreach (var cell in list)
             {
-                CELL_ID id = cell.CellId;
+                var info = cell.GetInterface<ICellInfoHolder>();
+                CELL_ID id = info.CellId;
                 string key = id.ToString();
-                ObjectPool.Instance.SetObject(key, cell.CellObject);
+                ObjectPool.Instance.SetObject(key, info.CellObject);
             }
         }
 

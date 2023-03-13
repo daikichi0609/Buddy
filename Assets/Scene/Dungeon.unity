@@ -3092,32 +3092,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385bdf8d0f90b4b9e8de19c26cd48184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Wall: {fileID: 192152142048862638, guid: 5c4079b18480349d1991a336d6905994, type: 3}
-  m_Stairs: {fileID: 5549339677088328992, guid: f77c361fbeffa4cc5ac24e43b4f73013,
+  m_Wall: {fileID: 7453813757533545060, guid: 41d028baaffdd41bd998a849cf644a3c, type: 3}
+  m_Stairs: {fileID: 5665641618207039357, guid: 316a3089f8356466f89167544edcd98f,
     type: 3}
-  m_CrystalRock_A: {fileID: 2712583857111479295, guid: 9459611cd1a6140b38f7829c6b9c25a4,
+  m_CrystalRock_A: {fileID: 5279312445410999773, guid: 53efd1ff64fbc40c49efbcb3b91ae9e0,
     type: 3}
-  m_CrystalRock_B: {fileID: 4554346153584238821, guid: 5823fe2d1193a4433acc90c227bb4479,
+  m_CrystalRock_B: {fileID: 6994324862412938395, guid: 6e4264b93bd0f44b4b195ee748aaf3c3,
     type: 3}
-  m_CrystalRock_C: {fileID: 1313566531922512643, guid: 9f397d477be714529a5ee552d5f341a0,
+  m_CrystalRock_C: {fileID: 7596236375708444072, guid: e43eb75f7038e4c3d9b322fac45ec338,
     type: 3}
-  m_Grass_A: {fileID: 5343784185679002807, guid: faf53e5f89b784cba85c7534f5b4694b,
+  m_Grass_A: {fileID: 6286310497864102225, guid: ee2374b35845c4f06a38dd2ca7b50223,
     type: 3}
-  m_Grass_B: {fileID: 1410698556707795064, guid: 279c292a386374c99b079fe268cea465,
+  m_Grass_B: {fileID: 3820241247379512989, guid: 7e8c4de57fd7a45d8b28282285c622ec,
     type: 3}
-  m_Grass_C: {fileID: 2891358438856654470, guid: e69a3e35527eb4b3c975e6c50db6e1e7,
+  m_Grass_C: {fileID: 1360919824113597614, guid: 45165db6163ec4d76a735801de90ce4f,
     type: 3}
-  m_White_A: {fileID: 600427564761060460, guid: b22774d141b504893b4b783543aa9a42,
+  m_White_A: {fileID: 5602990615096958296, guid: e7265bbb725c84598830820d559001bb,
     type: 3}
-  m_White_B: {fileID: 7816280029200902370, guid: 3e83b346715eb47d39207c5f63a0f19c,
+  m_White_B: {fileID: 2132629838152799188, guid: ad30338fcfed7463291f6877a224a4ba,
     type: 3}
-  m_White_C: {fileID: 577489499358746466, guid: 9f10378d5befd49898a766bc44997a10,
+  m_White_C: {fileID: 7274343517776778505, guid: 413f769b70f3a495d9fe30d73ce6e65d,
     type: 3}
-  m_Rock_A: {fileID: 7810573028915081382, guid: 2e252b27d073149dd8e34239356cef9f,
+  m_Rock_A: {fileID: 2712621641935725979, guid: 6bb23b5965db34fbd92ffe27252d05bb,
     type: 3}
-  m_Rock_B: {fileID: 3144217023000961465, guid: 48ea2b98e264d4bacaf28cfc1aa66ec9,
+  m_Rock_B: {fileID: 668533587072601304, guid: 680a931b59ce54f539da4b50c988fd73, type: 3}
+  m_Rock_C: {fileID: 3547369395945924018, guid: 1be52fe30e0144a0e9e26a23e15621a7,
     type: 3}
-  m_Rock_C: {fileID: 481804317386007907, guid: 702116f63969047e69ea309b44e6fac1, type: 3}
 --- !u!1 &1520855591
 GameObject:
   m_ObjectHideFlags: 0

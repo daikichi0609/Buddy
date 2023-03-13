@@ -168,17 +168,18 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
 
             var candidates = new List<ICellInfoHolder>();
             var minDistance = 999f;
-            foreach (ICellInfoHolder cell in gates)
+            foreach (var cell in gates)
             {
-                var distance = (m_CharaMove.Position - cell.Position).magnitude;
+                var info = cell.GetInterface<ICellInfoHolder>();
+                var distance = (m_CharaMove.Position - info.Position).magnitude;
                 if (distance > minDistance)
                     continue;
                 else if (distance == minDistance)
-                    candidates.Add(cell);
+                    candidates.Add(info);
                 else if (distance < minDistance)
                 {
                     candidates.Clear();
-                    candidates.Add(cell);
+                    candidates.Add(info);
                 }
             }
             DestinationCell = candidates[0];

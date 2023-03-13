@@ -112,9 +112,10 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                foreach (ICellInfoHolder cell in roomList)
-                    if (move.Position.x == cell.Position.x && move.Position.z == cell.Position.z)
-                        val.Add(unit);
+                foreach (var cell in roomList)
+                    if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
+                        if (move.Position.x == info.X && move.Position.z == info.Z)
+                            val.Add(unit);
             }
         }
 
@@ -125,9 +126,10 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                foreach (ICellInfoHolder cell in roomList)
-                    if (move.Position.x == cell.Position.x && move.Position.z == cell.Position.z)
-                        val.Add(unit);
+                foreach (var cell in roomList)
+                    if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
+                        if (move.Position.x == info.X && move.Position.z == info.Z)
+                            val.Add(unit);
             }
         }
 
