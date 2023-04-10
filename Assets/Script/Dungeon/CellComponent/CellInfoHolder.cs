@@ -66,8 +66,3 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
         owner.Register<ICellInfoHolder>(this);
     }
 }
-
-public static class CellExtension
-{
-
-}

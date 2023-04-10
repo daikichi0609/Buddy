@@ -48,6 +48,8 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
     /// </summary>
     private async Task<bool> DecideAndExecuteAction()
     {
+        var result = false;
+
         // 死んでいるなら行動しない
         if (Owner.RequireInterface<ICharaStatus>(out var status) == true && status.IsDead == true)
             return true;
@@ -58,19 +60,23 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
         {
             case ENEMY_STATE.ATTACKING:
                 Face(clue.TargetList);
-                return await NormalAttack();
+                result = await NormalAttack();
+                break;
 
             case ENEMY_STATE.CHASING:
                 Chase(clue.TargetList);
-                return true;
+                result = true;
+                break;
 
             case ENEMY_STATE.SEARCHING:
                 SearchPlayer();
-                return true;
+                result = true;
+                break;
         }
 
+        Debug.Log(clue.State);
         CurrentState = clue.State;
-        return false;
+        return result;
     }
 
     async Task<bool> IAiAction.DecideAndExecuteAction() => await DecideAndExecuteAction();

@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class BombTrap : TrapBase
 {
-    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder)
+    protected override TRAP_TYPE TrapType => TRAP_TYPE.BOMB;
+
+    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell)
     {
         return;
     }

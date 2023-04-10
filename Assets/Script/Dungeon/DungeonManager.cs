@@ -45,6 +45,9 @@ z
 */
 public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDungeonManager
 {
+    [SerializeField]
+    private float m_TrapProb;
+
     /// <summary>
     /// マップ
     /// </summary>
@@ -214,11 +217,21 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
                 info.CellObject = cellObject;
                 info.CellId = type;
                 m_CellMap[i].Add(cell);
+
+                // 部屋なら罠抽選
+                if (info.CellId == CELL_ID.ROOM)
+                {
+                    var prob = Random.Range(0f, 1f);
+                    if (prob >= m_TrapProb)
+                        DeployTrap(cell);
+                }
             }
         }
     }
 
-    // 4 -> 階段
+    /// <summary>
+    /// 4 -> 階段
+    /// </summary>
     private void DeployStairs() //階段配置
     {
         var emp = DungeonHandler.Interface.GetRandomRoomEmptyCell(); // 何もない部屋座標を取得
@@ -239,6 +252,26 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
         info.CellId = CELL_ID.STAIRS;
         SetCell(cell, x, z); // 既存のオブジェクトの代わりに代入
     }
+
+    /// <summary>
+    /// トラップ
+    /// </summary>
+    private void DeployTrap(ICollector cell)
+    {
+        var trap = GetRandomTrap();
+        var trapHolder = cell.GetInterface<ITrapHolder>();
+        trapHolder.SetTrap(trap);
+    }
+
+    /// <summary>
+    /// ランダムな罠インスタンスを返す
+    /// </summary>
+    /// <returns></returns>
+    private ITrap GetRandomTrap()
+    {
+        return new BombTrap();
+    }
+
 
     /// <summary>
     /// 部屋Id登録

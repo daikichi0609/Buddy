@@ -633,7 +633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a8d542fbc064006957e9c2c6409e64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EnemyCount: 5
+  m_EnemyCount: 1
   m_ItemCount: 5
 --- !u!1 &246840967
 GameObject:
@@ -2726,6 +2726,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e598f04251b24ff2bae499eece44821, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_TotalTurnCount:
+    value: 1
 --- !u!114 &1184686340
 MonoBehaviour:
   m_ObjectHideFlags: 0

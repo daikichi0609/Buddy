@@ -1,11 +1,5 @@
 using UnityEngine;
-using UniRx;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
-using static UnityEditor.VersionControl.Asset;
 
 public interface ICharaCellEventChecker : IActorInterface
 {
@@ -99,11 +93,14 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// <returns></returns>
     async private Task<bool> CheckTrap()
     {
+        if (m_TypeHolder.Type != CHARA_TYPE.PLAYER)
+            return false;
+
         var cell = DungeonHandler.Interface.GetCell(m_CharaMove.Position);
         if (cell.RequireInterface<ITrapHolder>(out var holder) == true)
             if (holder.TryGetTrap(out var trap) == true)
             {
-                await trap.Effect(Owner, UnitFinder.Interface);
+                await trap.Effect(Owner, UnitFinder.Interface, cell.GetAroundCell());
                 return true;
             }
 

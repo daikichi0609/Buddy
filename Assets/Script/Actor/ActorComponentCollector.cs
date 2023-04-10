@@ -38,6 +38,7 @@ public interface ICollector : IDisposable
 /// <summary>
 /// コンポーネント集約クラス
 /// </summary>
+[Serializable]
 public class ActorComponentCollector : MonoBehaviour, ICollector
 {
     private List<IActorInterface> m_Interfaces = new List<IActorInterface>();

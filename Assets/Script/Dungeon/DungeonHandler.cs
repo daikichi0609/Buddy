@@ -99,9 +99,9 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="x"></param>
     /// <param name="z"></param>
-    /// <returns></returns>
+    /// <returns></returns>s
     private AroundCell NewAroundCell(int x, int z) => new AroundCell(CellMap, x, z);
-    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => NewAroundCell((int)pos.x, (int)pos.z);
+    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => NewAroundCell(pos.x, pos.z);
 
     /// <summary>
     /// 周囲のセルId取得

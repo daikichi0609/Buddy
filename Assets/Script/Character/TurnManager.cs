@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using Unity.Collections;
+using NaughtyAttributes;
+using System.Threading.Tasks;
 
 public interface ITurnManager : ISingleton
 {
@@ -47,7 +50,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         GameManager.Interface.GetInitEvent.Subscribe(_ =>
         {
             AllCharaActionable();
-        });
+        }).AddTo(this);
     }
 
     /// <summary>
@@ -63,6 +66,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// <summary>
     /// 累計ターン数
     /// </summary>
+    [SerializeField, NaughtyAttributes.ReadOnly]
     private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>(1);
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
@@ -110,7 +114,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void SubscribeUpdate()
     {
         m_Disposable = GameManager.Interface.GetUpdateEvent
-            .Subscribe(_ => NextUnitAct()).AddTo(this);
+            .Subscribe(async _ => await NextUnitAct()).AddTo(this);
     }
 
     /// <summary>
@@ -140,7 +144,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// <summary>
     /// 次の行動を促す
     /// </summary>
-    private async void NextUnitAct()
+    private async Task NextUnitAct()
     {
         if (ProhibitAllAction == true)
             return;
