@@ -28,40 +28,4 @@ public static class CharaDataManager
 
         return datastr;//読み込んだJSONファイルをstring型に変換して返す
     }
-
-    public static PlayerStatus.PlayerParameter LoadPlayerScriptableObject(CHARA_NAME name)
-    {
-        PlayerStatus.PlayerParameter param = LoadCharaParameter(name) as PlayerStatus.PlayerParameter;
-        return new PlayerStatus.PlayerParameter(param);
-    }
-
-    public static EnemyStatus.EnemyParameter LoadEnemyScriptableObject(CHARA_NAME name)
-    {
-        EnemyStatus.EnemyParameter param = LoadCharaParameter(name) as EnemyStatus.EnemyParameter;
-        return new EnemyStatus.EnemyParameter(param);
-    }
-
-    public static void SaveScriptableObject(BattleStatus status)
-    {
-        EditorUtility.SetDirty(status);
-        AssetDatabase.SaveAssets();
-    }
-
-    public static BattleStatus.Parameter LoadCharaParameter(CHARA_NAME name)
-    {
-        PlayerStatus playerParam = Resources.Load<PlayerStatus>("Character/" + name.ToString());
-        if (playerParam != null)
-        {
-            return playerParam.Param;
-        }
-
-        EnemyStatus enemyParam = Resources.Load<EnemyStatus>("Character/" + name.ToString());
-        if (enemyParam != null)
-        {
-            return enemyParam.Param;
-        }
-
-        Debug.LogError("キャラクターステータスの読み込みに失敗しました");
-        return null;
-    }
 }

@@ -39,11 +39,11 @@ public readonly struct AttackResult
     /// </summary>
     public bool IsDead { get; }
 
-    public AttackResult(AttackInfo info, ICollector defender, CHARA_NAME name, bool isHit, int damage, int remainingHp, bool isDead)
+    public AttackResult(AttackInfo info, ICollector defender, bool isHit, int damage, int remainingHp, bool isDead)
     {
         AttackInfo = info;
         Defender = defender;
-        Name = name;
+        Name = Defender.GetInterface<ICharaStatus>().CurrentStatus.Name;
         IsHit = isHit;
         Damage = damage;
         RemainingHp = remainingHp;

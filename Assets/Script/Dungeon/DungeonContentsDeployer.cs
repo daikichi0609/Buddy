@@ -25,12 +25,6 @@ public interface IDungeonContentsDeployer : ISingleton
 
 public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDungeonContentsDeployer>, IDungeonContentsDeployer
 {
-    [SerializeField]
-    private int m_EnemyCount;
-
-    [SerializeField]
-    private int m_ItemCount;
-
     protected override void Awake()
     {
         base.Awake();
@@ -42,23 +36,12 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private GameObject CharaObject(CHARA_NAME name)
+    private GameObject CharaObject(CharacterSetup setup)
     {
-        if (ObjectPool.Instance.TryGetPoolObject(name.ToString(), out var chara) == false)
-            chara = Instantiate(Resources.Load<GameObject>("Prefab/Character/" + name.ToString()));
+        if (ObjectPool.Instance.TryGetPoolObject(setup.name, out var chara) == false)
+            chara = Instantiate(setup.Prefab);
 
         return chara;
-    }
-
-    /// <summary>
-    /// アイテムオブジェクト取得
-    /// </summary>
-    private GameObject ItemObject(ITEM_NAME name)
-    {
-        if (ObjectPool.Instance.TryGetPoolObject(name.ToString(), out var item) == false)
-            item = Instantiate(ItemHolder.Instance.ItemObject(name));
-
-        return item;
     }
 
     /// <summary>
@@ -83,15 +66,18 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                         RedeployPlayer(cell);
                         break;
                     }
-                    content = CharaObject(GameManager.Interface.LeaderName);
+                    content = CharaObject(GameManager.Interface.Leader);
                     content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var player = content.GetComponent<ICollector>();
                     player.Initialize();
+                    if (player.RequireInterface<ICharaStatus>(out var status) == true)
+                        status.SetStatus(GameManager.Interface.Leader.Status);
                     UnitHolder.Interface.AddPlayer(player);
                     break;
 
                 case CONTENTS_TYPE.ENEMY:
-                    content = CharaObject(Utility.RandomEnemyName());
+                    var enemySetup = DungeonProgressManager.Interface.GetRandomEnemySetup();
+                    content = CharaObject(enemySetup);
                     content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var enemy = content.GetComponent<ICollector>();
                     enemy.Initialize();
@@ -99,7 +85,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     break;
 
                 case CONTENTS_TYPE.ITEM:
-                    content = ItemObject(Utility.RandomItemName());
+                    var itemSetup = DungeonProgressManager.Interface.GetRandomItemSetup();
+                    content = itemSetup.Prefab;
                     content.transform.position = new Vector3(info.X, Item.OFFSET_Y, info.Z);
                     content.transform.eulerAngles = new Vector3(45f, 0f, 0f);
                     IItem item = content.GetComponent<Item>();
@@ -124,8 +111,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     {
         Debug.Log("Deploy Contents");
         Deploy(CONTENTS_TYPE.PLAYER);
-        Deploy(CONTENTS_TYPE.ENEMY, m_EnemyCount);
-        Deploy(CONTENTS_TYPE.ITEM, m_ItemCount);
+        Deploy(CONTENTS_TYPE.ENEMY, DungeonProgressManager.Interface.CurrentDungeonSetup.EnemyCountMax);
+        Deploy(CONTENTS_TYPE.ITEM, DungeonProgressManager.Interface.CurrentDungeonSetup.ItemCountMax);
     }
     void IDungeonContentsDeployer.Deploy() => DeployAll();
 

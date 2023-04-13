@@ -28,17 +28,6 @@ public enum ITEM_NAME
 }
 
 /// <summary>
-/// ダンジョン種類
-/// </summary>
-public enum DUNGEON_THEME
-{
-    GRASS = 0,
-    ROCK = 1,
-    CRYSTAL = 2,
-    WHITE = 3,
-}
-
-/// <summary>
 /// 罠種類
 /// </summary>
 public enum TRAP_TYPE

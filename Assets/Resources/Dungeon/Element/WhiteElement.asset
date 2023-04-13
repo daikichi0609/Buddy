@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8263aef5c37924790ba6f886d77050e0, type: 3}
+  m_Name: WhiteElement
+  m_EditorClassIdentifier: 
+  m_Room: {fileID: 5602990615096958296, guid: e7265bbb725c84598830820d559001bb, type: 3}
+  m_Path: {fileID: 7274343517776778505, guid: 413f769b70f3a495d9fe30d73ce6e65d, type: 3}
+  m_Wall: {fileID: 7453813757533545060, guid: 41d028baaffdd41bd998a849cf644a3c, type: 3}

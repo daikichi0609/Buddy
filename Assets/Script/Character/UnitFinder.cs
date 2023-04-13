@@ -63,7 +63,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
                 if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                if (move.Position.x == pos.x && move.Position.z == pos.z)
+                if (move.Position == pos)
                 {
                     val = collector;
                     return true;
@@ -78,7 +78,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
                 if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
 
-                if (move.Position.x == pos.x && move.Position.z == pos.z)
+                if (move.Position == pos)
                 {
                     val = collector;
                     return true;
@@ -114,7 +114,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
 
                 foreach (var cell in roomList)
                     if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
-                        if (move.Position.x == info.X && move.Position.z == info.Z)
+                        if (move.Position == info.Position)
                             val.Add(unit);
             }
         }
@@ -128,7 +128,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
 
                 foreach (var cell in roomList)
                     if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
-                        if (move.Position.x == info.X && move.Position.z == info.Z)
+                        if (move.Position == info.Position)
                             val.Add(unit);
             }
         }
@@ -161,13 +161,10 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// <returns></returns>
     private bool IsPlayerOn(Vector3 pos)
     {
-        int pos_x = (int)pos.x;
-        int pos_z = (int)pos.z;
-
         foreach (ICollector player in UnitHolder.Interface.FriendList)
         {
             var move = player.GetInterface<ICharaMove>();
-            if (move.Position.x == pos.x && move.Position.z == pos.z)
+            if (move.Position == pos)
                 return true;
         }
         return false;
@@ -182,13 +179,10 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// <returns></returns>
     private bool IsEnemyOn(Vector3 pos) //指定座標に敵がいるかどうかを調べる
     {
-        int pos_x = (int)pos.x;
-        int pos_z = (int)pos.z;
-
         foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
         {
             var move = enemy.GetInterface<ICharaMove>();
-            if (move.Position.x == pos.x && move.Position.z == pos.z)
+            if (move.Position == pos)
                 return true;
         }
         return false;

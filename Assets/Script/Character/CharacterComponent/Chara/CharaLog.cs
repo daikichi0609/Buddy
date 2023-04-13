@@ -81,7 +81,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    private string CreateAttackResultLog(AttackResult result)
+    public static string CreateAttackResultLog(AttackResult result)
     {
         var sb = new StringBuilder();
 

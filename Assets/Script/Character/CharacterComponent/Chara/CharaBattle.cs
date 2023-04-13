@@ -27,6 +27,13 @@ public interface ICharaBattle : IActorInterface
     /// <param name="attackInfo"></param>
     /// <returns></returns>
     AttackResult Damage(AttackInfo attackInfo);
+
+    /// <summary>
+    /// 割合ダメージ
+    /// </summary>
+    /// <param name="ratio"></param>
+    /// <returns></returns>
+    Task<int> DamagePercentage(float ratio);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -189,7 +196,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
         bool isDead = Status.Hp == 0;
 
-        var result = new AttackResult(attackInfo, Owner, Status.Name, isHit, damage, Status.Hp, isDead);
+        var result = new AttackResult(attackInfo, Owner, isHit, damage, Status.Hp, isDead);
 
         if (isHit == false)
             return result;
@@ -197,7 +204,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnDamageStart.OnNext(result);
 
         // awaitしない
-        PostDamage(result);
+        var _ = PostDamage(result);
 
         return result;
     }
@@ -206,12 +213,35 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// ダメージモーション終わり
     /// </summary>
     /// <param name="result"></param>
-    private async void PostDamage(AttackResult result)
+    private async Task PostDamage(AttackResult result)
     {
         await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
         m_OnDamageEnd.OnNext(result);
         if (result.IsDead == true)
             Dead();
+    }
+
+    /// <summary>
+    /// 割合ダメージ
+    /// </summary>
+    /// <param name="ratio"></param>
+    /// <returns></returns>
+    async Task<int> ICharaBattle.DamagePercentage(float ratio)
+    {
+        // ダメージ処理
+        int damage = (int)(Status.Hp * ratio);
+        Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
+
+        m_OnDamageStart.OnNext(default);
+
+        // ログ出力
+        var log = CharaLog.CreateAttackResultLog(new AttackResult(default, Owner, true, damage, Status.Hp, false));
+        BattleLogManager.Interface.Log(log);
+
+        // awaitする
+        await PostDamage(default);
+
+        return Status.Hp;
     }
 
     /// <summary>

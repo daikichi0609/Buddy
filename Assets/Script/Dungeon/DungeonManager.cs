@@ -45,9 +45,6 @@ z
 */
 public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDungeonManager
 {
-    [SerializeField]
-    private float m_TrapProb;
-
     /// <summary>
     /// マップ
     /// </summary>
@@ -55,8 +52,6 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     CELL_ID[,] IDungeonManager.IdMap => m_IdMap;
 
     private void OverWriteCellId(CELL_ID value, int x, int z) => m_IdMap[x, z] = value;
-
-    private MapCreateSetting m_Setting = new MapCreateSetting(32, 32, 8);
 
     /// <summary>
     /// インスタンス
@@ -121,7 +116,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
     private void DeployDungeon()
     {
-        m_IdMap = MapGenerator.Instance.GenerateMap(m_Setting.MapSizeX, m_Setting.MapSizeZ, m_Setting.MaxRoomCount);
+        m_IdMap = MapGenerator.Instance.GenerateMap(DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x, DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y, DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax);
         Debug.Log("Map Reload");
 
         DeployDungeonTerrain();
@@ -163,26 +158,27 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
             for (int j = 0; j < m_IdMap.GetLength(1) - 1; j++)
             {
-                var id = m_IdMap[i, j];
-                GameObject cellObject = null;
-                CELL_ID type = CELL_ID.NONE;
+                var id = m_IdMap[i, j]; // 古いId
+                CELL_ID type = CELL_ID.NONE; // 新Id
+                GameObject cellObject = null; // GameObject
+                Vector3Int pos = new Vector3Int(i, 0, j);
 
                 switch (id)
                 {
                     case CELL_ID.WALL: // 0
                         if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.WALL.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(DungeonContentsHolder.Instance.Wall, new Vector3(i, 0, j), Quaternion.identity);
+                            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Wall, pos, Quaternion.identity);
                         else
-                            cellObject.transform.position = new Vector3Int(i, 0, j);
+                            cellObject.transform.position = pos;
 
                         type = CELL_ID.WALL;
                         break;
 
                     case CELL_ID.PATH_WAY: // 1
                         if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(DungeonContentsHolder.Instance.PathWayGrid, new Vector3(i, 0, j), Quaternion.identity);
+                            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Path, pos, Quaternion.identity);
                         else
-                            cellObject.transform.position = new Vector3Int(i, 0, j);
+                            cellObject.transform.position = pos;
 
                         type = CELL_ID.PATH_WAY;
                         break;
@@ -194,18 +190,18 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
                             m_IdMap[i, j] = CELL_ID.GATE; // 入口なら設定し直す
 
                             if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.GATE.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(DungeonContentsHolder.Instance.RoomGrid, new Vector3(i, 0, j), Quaternion.identity);
+                                cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
                             else
-                                cellObject.transform.position = new Vector3Int(i, 0, j);
+                                cellObject.transform.position = pos;
 
                             type = CELL_ID.GATE;
                         }
                         else
                         {
                             if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(DungeonContentsHolder.Instance.RoomGrid, new Vector3(i, 0, j), Quaternion.identity);
+                                cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
                             else
-                                cellObject.transform.position = new Vector3Int(i, 0, j);
+                                cellObject.transform.position = pos;
 
                             type = CELL_ID.ROOM;
                         }
@@ -222,8 +218,8 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
                 if (info.CellId == CELL_ID.ROOM)
                 {
                     var prob = Random.Range(0f, 1f);
-                    if (prob >= m_TrapProb)
-                        DeployTrap(cell);
+                    if (prob <= DungeonProgressManager.Interface.CurrentDungeonSetup.TrapProb)
+                        DeployTrap(cell, pos);
                 }
             }
         }
@@ -242,7 +238,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
         OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
 
         if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
-            cellObject = Instantiate(DungeonContentsHolder.Instance.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
+            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);
 
@@ -256,20 +252,21 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// <summary>
     /// トラップ
     /// </summary>
-    private void DeployTrap(ICollector cell)
+    private void DeployTrap(ICollector cell, Vector3Int pos)
     {
         var trap = GetRandomTrap();
-        var trapHolder = cell.GetInterface<ITrapHolder>();
-        trapHolder.SetTrap(trap);
+        var trapHolder = cell.GetInterface<ITrapHandler>();
+        trapHolder.SetTrap(trap.Item1, trap.Item2, pos);
     }
 
     /// <summary>
     /// ランダムな罠インスタンスを返す
     /// </summary>
     /// <returns></returns>
-    private ITrap GetRandomTrap()
+    private (TrapSetup, ITrap) GetRandomTrap()
     {
-        return new BombTrap();
+        var setup = (TrapSetup)Resources.Load("Trap/Setup/TrapBomb");
+        return (setup, new BombTrap());
     }
 
 
@@ -312,21 +309,4 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
         return false;
     }
-}
-
-/// <summary>
-/// マップ作成に必要な設定
-/// </summary>
-public struct MapCreateSetting
-{
-    public MapCreateSetting(int x, int z, int roomCount)
-    {
-        MapSizeX = x;
-        MapSizeZ = z;
-        MaxRoomCount = roomCount;
-    }
-
-    public int MapSizeX { get; }
-    public int MapSizeZ { get; }
-    public int MaxRoomCount { get; }
 }

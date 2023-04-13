@@ -9,34 +9,20 @@ using System.Threading.Tasks;
 
 public interface IGameManager : ISingleton
 {
-    DUNGEON_THEME DungeonTheme { get; set; }
-    CHARA_NAME LeaderName { get; set; }
+    CharacterSetup Leader { get; }
 
     IObservable<Unit> GetInitEvent { get; }
     IObservable<Unit> GetUpdateEvent { get; }
-    IObservable<int> FloorChanged { get; }
-
-    Task NextFloor();
 }
 
 public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
 {
-    //現在のダンジョンテーマ
-    [SerializeField]
-    private DUNGEON_THEME m_DungeonTheme;
-    DUNGEON_THEME IGameManager.DungeonTheme
-    {
-        get { return m_DungeonTheme; }
-        set { m_DungeonTheme = value; }
-    }
-
-    CHARA_NAME IGameManager.LeaderName { get; set; } = CHARA_NAME.BOXMAN;
-
     /// <summary>
-    /// 現在のフロア階層
+    /// リーダーセットアップ
     /// </summary>
-    private ReactiveProperty<int> m_FloorNum = new ReactiveProperty<int>(1);
-    IObservable<int> IGameManager.FloorChanged => m_FloorNum;
+    [SerializeField]
+    private CharacterSetup m_Leader;
+    public CharacterSetup Leader => m_Leader;
 
     /// <summary>
     /// 初期化処理メソッドまとめ
@@ -68,37 +54,5 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     private void Update()
     {
         m_Update.OnNext(Unit.Default);
-    }
-
-    /// <summary>
-    /// 次の階
-    /// </summary>
-    /// <returns></returns>
-    async Task IGameManager.NextFloor()
-    {
-        YesorNoQuestionUiManager.Interface.Deactive();
-
-        // 階層up
-        m_FloorNum.Value++;
-
-        // 暗転 & ダンジョン再構築
-        await FadeManager.Interface.NextFloor(() => RebuildDungeon(), m_FloorNum.Value, m_DungeonTheme.ToString());
-
-        // 行動許可
-        TurnManager.Interface.AllCharaActionable();
-    }
-
-    /// <summary>
-    /// ダンジョン再構築
-    /// </summary>
-    private void RebuildDungeon()
-    {
-        // ダンジョン撤去
-        DungeonManager.Interface.RemoveDungeon();
-        DungeonContentsDeployer.Interface.Remove();
-
-        // ダンジョン再構築
-        DungeonManager.Interface.DeployDungeon();
-        DungeonContentsDeployer.Interface.Deploy();
     }
 }

@@ -7,6 +7,13 @@ using NaughtyAttributes;
 public interface ICharaStatus : IActorInterface
 {
     /// <summary>
+    /// ステータスセット
+    /// </summary>
+    /// <param name="param"></param>
+    /// <returns></returns>
+    bool SetStatus<T>(T status);
+
+    /// <summary>
     /// 現在のステータス
     /// </summary>
     CurrentStatus CurrentStatus { get; }
@@ -24,9 +31,6 @@ public interface ICharaStatus : IActorInterface
 
 public class CharaStatus : ActorComponentBase, ICharaStatus
 {
-    [SerializeField]
-    private CHARA_NAME m_GivenName = CHARA_NAME.BOXMAN;
-
     /// <summary>
     /// 元パラメータ
     /// </summary>
@@ -48,11 +52,33 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         owner.Register(this);
     }
 
-    protected override void Initialize()
+    bool ICharaStatus.SetStatus<T>(T status)
     {
-        base.Initialize();
+        if (m_Parameter != null)
+        {
+            Debug.Log("すでにステータスがセットされています。");
+            return false;
+        }
 
-        m_Parameter = CharaDataManager.LoadCharaParameter(m_GivenName);
+        if (status is PlayerStatus)
+        {
+            var s = status as PlayerStatus;
+            m_Parameter = new BattleStatus.Parameter(s.Param);
+        }
+        else if (status is EnemyStatus)
+        {
+            var s = status as EnemyStatus;
+            m_Parameter = new BattleStatus.Parameter(s.Param);
+        }
+
         m_CurrentStatus = new CurrentStatus(m_Parameter);
+        return m_Parameter != null;
+    }
+
+    protected override void Dispose()
+    {
+        m_Parameter = null;
+        m_CurrentStatus = null;
+        base.Dispose();
     }
 }

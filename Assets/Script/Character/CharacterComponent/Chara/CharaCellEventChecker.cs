@@ -97,12 +97,9 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             return false;
 
         var cell = DungeonHandler.Interface.GetCell(m_CharaMove.Position);
-        if (cell.RequireInterface<ITrapHolder>(out var holder) == true)
-            if (holder.TryGetTrap(out var trap) == true)
-            {
-                await trap.Effect(Owner, UnitFinder.Interface, cell.GetAroundCell());
+        if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
+            if (await handler.ActivateTrap(Owner, UnitFinder.Interface, cell.GetAroundCell()) == true)
                 return true;
-            }
 
         return false;
     }

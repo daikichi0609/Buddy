@@ -15,13 +15,15 @@ public class CharaUi : MonoBehaviour
     {
         var status = target.GetInterface<ICharaStatus>();
         m_Target = status;
-        m_CharaName.text = status.Parameter.GivenName.ToString();
-        m_HpSlider.maxValue = status.Parameter.MaxHp;
-        m_HpSlider.value = status.CurrentStatus.Hp;
     }
 
     public void UpdateUi()
     {
+        if (m_Target == null)
+            return;
+
+        m_CharaName.text = m_Target.Parameter.GivenName.ToString();
+        m_HpSlider.maxValue = m_Target.Parameter.MaxHp;
         m_HpSlider.value = m_Target.CurrentStatus.Hp;
     }
 }
