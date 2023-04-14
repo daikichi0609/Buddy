@@ -70,8 +70,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var player = content.GetComponent<ICollector>();
                     player.Initialize();
-                    if (player.RequireInterface<ICharaStatus>(out var status) == true)
-                        status.SetStatus(GameManager.Interface.Leader.Status);
+                    if (player.RequireInterface<ICharaStatus>(out var p) == true)
+                        p.SetStatus(GameManager.Interface.Leader.Status);
                     UnitHolder.Interface.AddPlayer(player);
                     break;
 
@@ -81,6 +81,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var enemy = content.GetComponent<ICollector>();
                     enemy.Initialize();
+                    if (enemy.RequireInterface<ICharaStatus>(out var e) == true)
+                        e.SetStatus(enemySetup.Status);
                     UnitHolder.Interface.AddEnemy(enemy);
                     break;
 

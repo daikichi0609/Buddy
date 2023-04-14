@@ -74,11 +74,4 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         m_CurrentStatus = new CurrentStatus(m_Parameter);
         return m_Parameter != null;
     }
-
-    protected override void Dispose()
-    {
-        m_Parameter = null;
-        m_CurrentStatus = null;
-        base.Dispose();
-    }
 }

@@ -58,7 +58,6 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     /// <summary>
     /// Playerのコレクターリスト
     /// </summary>
-    [ReadOnly]
     private List<ICollector> m_FriendList = new List<ICollector>();
     List<ICollector> IUnitHolder.FriendList => m_FriendList;
     ICollector IUnitHolder.Player
@@ -71,6 +70,8 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
                 return null;
         }
     }
+    [ShowNativeProperty]
+    private int FriendCount => m_FriendList.Count;
 
     /// <summary>
     /// Enemyのコレクターリスト
@@ -78,6 +79,8 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     [ReadOnly]
     private List<ICollector> m_EnemyList = new List<ICollector>();
     List<ICollector> IUnitHolder.EnemyList => m_EnemyList;
+    [ShowNativeProperty]
+    private int EnemyCount => m_EnemyList.Count;
 
     void IUnitHolder.AddPlayer(ICollector player) => m_FriendList.Add(player);
     void IUnitHolder.AddEnemy(ICollector enemy) => m_EnemyList.Add(enemy);

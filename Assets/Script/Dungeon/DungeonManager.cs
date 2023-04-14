@@ -21,7 +21,7 @@ public interface IDungeonManager : ISingleton
 
 public enum CELL_ID
 {
-    NONE = -1,
+    INVALID = -1,
     WALL = 0,
     PATH_WAY = 1,
     ROOM = 2,
@@ -75,12 +75,10 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
     /// <summary>
     /// 部屋IDの部屋オブジェクトリストを取得
-    /// -1に注意
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    private List<ICollector> GetRoomCellList(int roomId) => m_RoomCellList[roomId - 1];
-    List<ICollector> IDungeonManager.GetRoomCellList(int roomId) => GetRoomCellList(roomId);
+    List<ICollector> IDungeonManager.GetRoomCellList(int roomId) => m_RoomCellList[roomId];
 
     private ICollector GetRoomCell(int id, int num) => m_RoomCellList[id][num];
 
@@ -159,7 +157,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
             for (int j = 0; j < m_IdMap.GetLength(1) - 1; j++)
             {
                 var id = m_IdMap[i, j]; // 古いId
-                CELL_ID type = CELL_ID.NONE; // 新Id
+                CELL_ID type = CELL_ID.INVALID; // 新Id
                 GameObject cellObject = null; // GameObject
                 Vector3Int pos = new Vector3Int(i, 0, j);
 
@@ -281,7 +279,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
             {
                 var cell = GetRoomCell(id, num);
                 var info = cell.GetInterface<ICellInfoHolder>();
-                info.RoomId = id + 1;
+                info.RoomId = id;
             }
         }
     }

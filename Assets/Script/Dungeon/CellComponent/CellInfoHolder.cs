@@ -57,7 +57,7 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
     /// 部屋Id
     /// </summary>
     [SerializeField, ReadOnly]
-    private int m_RoomId;
+    private int m_RoomId = -1;
     int ICellInfoHolder.RoomId { get => m_RoomId; set => m_RoomId = value; }
 
     protected override void Register(ICollector owner)

@@ -136,8 +136,9 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
         int currentRoomId = DungeonHandler.Interface.GetRoomId(m_CharaMove.Position);
 
         //通路にいる場合
-        if (currentRoomId == 0)
+        if (currentRoomId == -1)
         {
+            Debug.Log("通路にいる");
             AroundCellId around = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = around.Cells;
             var lastDirection = m_CharaMove.LastMoveDirection;
@@ -161,16 +162,27 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
 
             Utility.Shuffle(candidateDir);
 
-            if (m_CharaMove.Move(candidateDir[0]) == false)
-                if (m_CharaMove.Move(oppDirection) == false)
-                    m_CharaMove.Wait();
+            if (m_CharaMove.Move(candidateDir[0]) == true)
+                return;
+
+            if (m_CharaMove.Move(oppDirection) == true)
+            {
+                Debug.LogAssertion("反対方向に移動");
+                return;
+            }
+
+            Debug.Log("移動失敗");
+            m_CharaMove.Wait();
+
             return;
         }
 
         //新しくSEARCHINGステートになった場合、目標となる部屋の入り口を設定する
         if (CurrentState != ENEMY_STATE.SEARCHING)
         {
-            var gates = DungeonHandler.Interface.GetGateWayCells(DungeonHandler.Interface.GetRoomId(m_CharaMove.Position));
+            Debug.Log("Searchステートに入った");
+            var roomId = DungeonHandler.Interface.GetRoomId(m_CharaMove.Position);
+            var gates = DungeonHandler.Interface.GetGateWayCells(roomId);
 
             var candidates = new List<ICellInfoHolder>();
             var minDistance = 999f;
@@ -191,44 +203,56 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
             DestinationCell = candidates[0];
         }
 
+        if (DestinationCell == null)
+        {
+            Debug.Log("目的地設定がない");
+            return;
+        }
+
+
         //入り口についた場合、部屋を出る
-        if (m_CharaMove.Position.x == DestinationCell.X && m_CharaMove.Position.z == DestinationCell.Z)
+        if (m_CharaMove.Position == DestinationCell.Position)
         {
             var aroundGridID = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = aroundGridID.Cells;
+
+            // 通路への方向
+            var pathDir = DIRECTION.NONE;
+
             if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
-            {
-                if (m_CharaMove.Move(DIRECTION.UP) == true)
-                    return;
-            }
+                pathDir = DIRECTION.UP;
+
             if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
-            {
-                if (m_CharaMove.Move(DIRECTION.UNDER) == true)
-                    return;
-            }
+                pathDir = DIRECTION.UNDER;
+
             if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
-            {
-                if (m_CharaMove.Move(DIRECTION.LEFT) == true)
-                    return;
-            }
+                pathDir = DIRECTION.LEFT;
+
             if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
+                pathDir = DIRECTION.RIGHT;
+
+            if (m_CharaMove.Move(pathDir) == true)
             {
-                if (m_CharaMove.Move(DIRECTION.RIGHT) == true)
-                    return;
+                Debug.Log("部屋から出る");
+                DestinationCell = null;
+                return;
             }
 
             // 出られないなら待つ
+            Debug.Log("部屋から出られないので待機");
             m_CharaMove.Wait();
             return;
         }
 
         //通路出入り口へ向かう
+        Debug.Log("目的地ゲートに向かう");
         var dir = Positional.CalculateDirection(m_CharaMove.Position, DestinationCell.Position);
         if (m_CharaMove.Move(dir) == false)
         {
             //移動できなかった場合の処理
             // TODO: 妥協移動の実装
             m_CharaMove.Wait();
+            Debug.LogAssertion("妥協移動");
         }
     }
 

@@ -85,7 +85,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_Holder = Owner.GetInterface<ICharaObjectHolder>();
 
         Direction = DIRECTION.UNDER;
-        LastMoveDirection = DIRECTION.NONE;
+        LastMoveDirection = DIRECTION.UNDER;
         var pos = MoveObject.transform.position;
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 

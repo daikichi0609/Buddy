@@ -112,7 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CellObject: {fileID: 0}
   m_CellId: 0
-  m_RoomId: 0
+  m_RoomId: -1
 --- !u!114 &8344875354604100775
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -143,7 +143,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (TurnManager.Interface.NoOneActing == false)
             return false;
 
-        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, Status.Dex);
+        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, Status.Dex, direction);
         m_OnAttackStart.OnNext(attackInfo);
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int();
@@ -201,6 +201,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (isHit == false)
             return result;
 
+        m_CharaMove.Face(attackInfo.Direction.ToOppsiteDir());
         m_OnDamageStart.OnNext(result);
 
         // awaitしない

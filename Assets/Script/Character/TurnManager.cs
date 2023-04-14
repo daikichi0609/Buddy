@@ -57,6 +57,8 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// キャラの行動順
     /// </summary>
     private readonly Queue<ICollector> m_NextActor = new Queue<ICollector>();
+    [ShowNativeProperty]
+    private int ActorCount => m_NextActor.Count;
 
     /// <summary>
     /// 更新止めるもの
@@ -192,6 +194,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
             await checker.CheckStairsCell();
 
         m_TotalTurnCount.Value++;
+        Debug.Log(m_TotalTurnCount.Value);
         AllPlayerActionable();
         AllEnemyActionable();
     }

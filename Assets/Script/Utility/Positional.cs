@@ -37,6 +37,12 @@ public static class Positional
 
         return DIRECTION.NONE;
     }
+    public static DIRECTION ToOppsiteDir(this DIRECTION dir)
+    {
+        var v3 = dir.ToV3Int();
+        v3 *= -1;
+        return v3.ToDirEnum();
+    }
 
     public static DIRECTION CalculateDirection(this Vector3Int pos, Vector3 opp)
     {

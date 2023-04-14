@@ -24,11 +24,17 @@ public readonly struct AttackInfo
     /// </summary>
     public float Dex { get; }
 
-    public AttackInfo(ICollector attacker, CHARA_NAME name, int atk, float dex)
+    /// <summary>
+    /// 攻撃方向
+    /// </summary>
+    public DIRECTION Direction { get; }
+
+    public AttackInfo(ICollector attacker, CHARA_NAME name, int atk, float dex, DIRECTION dir)
     {
         Attacker = attacker;
         Name = name;
         Atk = atk;
         Dex = dex;
+        Direction = dir;
     }
 }

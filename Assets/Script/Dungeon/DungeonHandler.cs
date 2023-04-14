@@ -212,7 +212,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private ICollector GetRandamRoomCell()
     {
-        var id = CELL_ID.NONE;
+        var id = CELL_ID.INVALID;
         int x = -1;
         int z = -1;
 
