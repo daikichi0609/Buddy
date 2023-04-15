@@ -14,7 +14,7 @@ public interface ITrap
     /// <param name="stepper"></param>
     /// <param name="unitFinder"></param>
     /// <returns></returns>
-    Task Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell);
+    Task<bool> Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos);
 
     /// <summary>
     /// 罠が見える状態かどうか
@@ -29,12 +29,12 @@ public abstract class TrapBase : ITrap
     private bool m_IsVisible;
     bool ITrap.IsVisible => m_IsVisible;
 
-    async protected virtual Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell)
+    async protected virtual Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
     {
 
     }
 
-    async Task ITrap.Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell)
+    async Task<bool> ITrap.Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
     {
         m_IsVisible = true;
 
@@ -47,13 +47,14 @@ public abstract class TrapBase : ITrap
         if (ProbabilityCalclator.DetectFromPercent(UNEXPLODE_RATE * 100) == true)
         {
             BattleLogManager.Interface.Log("しかし何も起こらなかった。");
-            return;
+            return false;
         }
         // ----- ログ終わり ----- //
 
-        await EffectInternal(stepper, unitFinder, aroundCell);
+        await EffectInternal(stepper, unitFinder, aroundCell, effect, pos);
 
         var turn = stepper.GetInterface<ICharaTurn>();
         turn.TurnEnd();
+        return true;
     }
 }

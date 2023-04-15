@@ -19,4 +19,11 @@ public class TrapSetup : ScriptableObject
     [SerializeField]
     private TRAP_TYPE m_Type;
     public TRAP_TYPE Type => m_Type;
+
+    /// <summary>
+    /// エフェクト
+    /// </summary>
+    [SerializeField]
+    private GameObject m_Effect;
+    public GameObject Effect => m_Effect;
 }

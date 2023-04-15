@@ -22,6 +22,8 @@ public interface ITrapHandler : IActorInterface
 
 public class TrapHandler : ActorComponentBase, ITrapHandler
 {
+    private static readonly float OFFSET_Y = 0.5f;
+
     /// <summary>
     /// セットアップ
     /// </summary>
@@ -31,6 +33,11 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// オブジェクト
     /// </summary>
     private GameObject m_GameObject;
+
+    /// <summary>
+    /// エフェクト
+    /// </summary>
+    private EffectHadler m_Effect;
 
     /// <summary>
     /// 罠機能
@@ -48,8 +55,12 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
         if (m_Trap == null)
             return false;
 
+        var turn = stepper.GetInterface<ICharaTurn>();
+        while (turn.IsActing == true)
+            await Task.Delay(1);
+
         m_GameObject.SetActive(true);
-        await m_Trap.Effect(m_Setup, stepper, unitFinder, around);
+        await m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position);
         return true;
     }
 
@@ -62,12 +73,16 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
         m_Setup = setup;
         m_Trap = trap;
 
+        var v3 = pos + new Vector3(0f, OFFSET_Y, 0f);
+
         if (m_GameObject == null)
         {
             m_GameObject = Instantiate(m_Setup.Prefab);
             m_GameObject.SetActive(false);
+            var effect = Instantiate(m_Setup.Effect);
+            m_Effect = new EffectHadler(effect);
         }
-        m_GameObject.transform.position = pos + new Vector3(0f, 0.5f, 0f);
+        m_GameObject.transform.position = v3;
     }
 
     protected override void Register(ICollector owner)
