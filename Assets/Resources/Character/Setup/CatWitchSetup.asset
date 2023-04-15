@@ -9,16 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f72509965956456f9d6623b502612a8, type: 3}
-  m_Name: BOXMAN
+  m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
+  m_Name: CatWitchSetup
   m_EditorClassIdentifier: 
-  m_Param:
-    m_GivenName: 1
-    m_MaxHp: 100
-    m_Atk: 10
-    m_Def: 5
-    m_Agi: 1
-    m_Dex: 1
-    m_Eva: 0.1
-    m_CriticalRate: 0
-    m_Res: 0.1
+  m_Prefab: {fileID: 9034633841985723659, guid: 4b4b870767bb44993abbd2581f5e2938,
+    type: 3}
+  m_Status: {fileID: 11400000, guid: 78943cf8817d04fe09cb1e45246f96b9, type: 2}

@@ -44,7 +44,7 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// 敵の出現テーブル
     /// </summary>
-    [SerializeField]
+    [SerializeField, Expandable]
     private EnemyTableSetup m_EnemyTable;
     public EnemyTableSetup EnemyTable => m_EnemyTable;
 

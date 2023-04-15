@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
-  m_Name: MashRoomSetup
+  m_Name: RadishSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 3135674774238795827, guid: c16c44626a5144ea0b97fa6477770a52,
+  m_Prefab: {fileID: 6967327199222666282, guid: 8e121f2b3993c4a21b6ae3902bd9a2d7,
     type: 3}
-  m_Status: {fileID: 11400000, guid: cdb6cc1501e1d4af8a157e93b2867f66, type: 2}
+  m_Status: {fileID: 11400000, guid: d53d4a00c8420452f96eaeb1af0c3179, type: 2}

@@ -15,19 +15,11 @@ public interface ITrap
     /// <param name="unitFinder"></param>
     /// <returns></returns>
     Task<bool> Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos);
-
-    /// <summary>
-    /// 罠が見える状態かどうか
-    /// </summary>
-    bool IsVisible { get; }
 }
 
 public abstract class TrapBase : ITrap
 {
     private static readonly float UNEXPLODE_RATE = 0.1f;
-
-    private bool m_IsVisible;
-    bool ITrap.IsVisible => m_IsVisible;
 
     async protected virtual Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
     {
@@ -36,13 +28,13 @@ public abstract class TrapBase : ITrap
 
     async Task<bool> ITrap.Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
     {
-        m_IsVisible = true;
-
         // ----- ログ ----- //
         var sb = new StringBuilder();
         var charaName = stepper.GetInterface<ICharaStatus>().CurrentStatus.Name;
         sb.Append(charaName + "は" + trap.Type + "を踏んだ！");
         BattleLogManager.Interface.Log(sb.ToString());
+
+        await Task.Delay(500);
 
         if (ProbabilityCalclator.DetectFromPercent(UNEXPLODE_RATE * 100) == true)
         {

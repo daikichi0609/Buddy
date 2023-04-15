@@ -16,7 +16,10 @@ public enum CHARA_NAME
     KING, // 王様
     BARM, // 騎士
 
-    MASHROOM, // きのこ
+    MUSHROOM, // きのこ
+    RADISH, // 大根
+    CAT_WITCH, // 猫魔女
+    CRYSTAL_GOLEM // クリスタルゴーレム
 }
 
 /// <summary>

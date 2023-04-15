@@ -45,7 +45,7 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDamageStart.Subscribe(async _ => await RedFlash()).AddTo(Disposable);
+            battle.OnDamageStart.Subscribe(async _ => await RedFlash()).AddTo(CompositeDisposable);
         }
     }
 

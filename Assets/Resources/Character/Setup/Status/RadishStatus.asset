@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc9d4f014c492457d93ba5c385e0996e, type: 3}
-  m_Name: MASHROOM
+  m_Name: RadishStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 10
-    m_MaxHp: 10
-    m_Atk: 8
+    m_GivenName: 11
+    m_MaxHp: 7
+    m_Atk: 10
     m_Def: 3
     m_Agi: 1
     m_Dex: 1
     m_Eva: 0.05
     m_CriticalRate: 0
     m_Res: 0.05
-    m_Ex: 2
+    m_Ex: 5

@@ -36,7 +36,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         InputManager.Interface.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);
-        }).AddTo(Disposable);
+        }).AddTo(CompositeDisposable);
     }
 
     /// <summary>

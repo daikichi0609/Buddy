@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public interface ITrapHandler : IActorInterface
 {
     /// <summary>
-    /// 罠取得、あるなら
+    /// 罠作動、あるなら
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
@@ -18,6 +18,11 @@ public interface ITrapHandler : IActorInterface
     /// </summary>
     /// <param name="trap"></param>
     void SetTrap(TrapSetup setup, ITrap trap, Vector3Int pos);
+
+    /// <summary>
+    /// 罠が見えるかどうか
+    /// </summary>
+    bool IsVisible { get; }
 }
 
 public class TrapHandler : ActorComponentBase, ITrapHandler
@@ -42,8 +47,13 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// <summary>
     /// 罠機能
     /// </summary>
-    [SerializeField, ReadOnly, Expandable]
     private ITrap m_Trap;
+
+    /// <summary>
+    /// 罠が見えているか
+    /// </summary>
+    private bool IsVisible { get; set; }
+    bool ITrapHandler.IsVisible => IsVisible;
 
     /// <summary>
     /// 罠取得
@@ -55,12 +65,17 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
         if (m_Trap == null)
             return false;
 
+        var disposable = TurnManager.Interface.RequestProhibitAction();
+
         var turn = stepper.GetInterface<ICharaTurn>();
         while (turn.IsActing == true)
             await Task.Delay(1);
 
         m_GameObject.SetActive(true);
+        IsVisible = true;
+
         await m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position);
+        disposable.Dispose();
         return true;
     }
 

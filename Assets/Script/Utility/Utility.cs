@@ -15,16 +15,6 @@ public static class Utility
             list[j] = tmp;
         }
     }
-
-    public static CHARA_NAME RandomEnemyName()
-    {
-        return CHARA_NAME.MASHROOM;
-    }
-
-    public static ITEM_NAME RandomItemName()
-    {
-        return ITEM_NAME.APPLE;
-    }
 }
 
 public static class Calculator

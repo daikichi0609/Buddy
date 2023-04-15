@@ -29,7 +29,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 {
                     SoundManager.Instance.Attack_Sword.Play();
                 }));
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
 
             battle.OnAttackEnd.Subscribe(result =>
             {
@@ -38,13 +38,13 @@ public class CharaSound : ActorComponentBase, ICharaSound
                     // 空振り音
                     SoundManager.Instance.Miss.Play();
                 }
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
 
             battle.OnDamageEnd.Subscribe(_ =>
             {
                 // ダメージ音
                 SoundManager.Instance.Damage_Small.Play();
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
         }
 
     }

@@ -28,14 +28,14 @@ public class CharaLog : ActorComponentBase, ICharaLog
             {
                 var log = CreateAttackLog(info);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
 
             // 攻撃結果ログ
             battle.OnAttackEnd.Subscribe(result =>
             {
                 var log = CreateAttackResultLog(result);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
 
             // 死亡ログ
             battle.OnDamageEnd.Subscribe(result =>
@@ -45,7 +45,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
 
                 var log = CreateDeadLog(result);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
         }
 
         if (Owner.RequireInterface<ICharaInventoryEvent>(out var inventory) == true)
@@ -57,7 +57,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
 
                 var log = CreatePutItemLog(status.CurrentStatus.Name, info.Item);
                 BattleLogManager.Interface.Log(log);
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
         }
     }
 

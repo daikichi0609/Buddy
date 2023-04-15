@@ -9,10 +9,31 @@ using System.Threading;
 
 public interface ICharaTurn : IActorInterface
 {
+    /// <summary>
+    /// 行動可能か
+    /// </summary>
     bool CanAct { get; }
-    bool IsActing { get; set; }
 
+    /// <summary>
+    /// 行動中か
+    /// </summary>
+    bool IsActing { get; }
+
+    /// <summary>
+    /// 行動登録
+    /// </summary>
+    /// <returns></returns>
+    IDisposable RegisterActing();
+
+    /// <summary>
+    /// ターン終了
+    /// </summary>
+    /// <param name="hasCheck">セルイベントのチェック</param>
     void TurnEnd(bool hasCheck = false);
+
+    /// <summary>
+    /// ターン開始
+    /// </summary>
     void CanBeAct();
 
     Task WaitFinishActing(Action action);
@@ -55,13 +76,10 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// 行動中ステータス
     /// </summary>
-    [SerializeField, ReadOnly]
-    private bool m_IsActing;
-    bool ICharaTurn.IsActing
-    {
-        get => m_IsActing;
-        set => m_IsActing = value;
-    }
+    private Queue<ActTicket> m_TicketHolder = new Queue<ActTicket>();
+    [ShowNativeProperty]
+    private bool IsActing => m_TicketHolder.Count != 0;
+    bool ICharaTurn.IsActing => IsActing;
 
     protected override void Register(ICollector owner)
     {
@@ -74,6 +92,17 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     {
         base.Initialize();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
+    }
+
+    /// <summary>
+    /// 行動登録
+    /// </summary>
+    /// <returns></returns>
+    IDisposable ICharaTurn.RegisterActing()
+    {
+        var ticket = new ActTicket();
+        m_TicketHolder.Enqueue(ticket);
+        return Disposable.Create(() => m_TicketHolder.Dequeue());
     }
 
     /// <summary>
@@ -98,9 +127,12 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     async Task ICharaTurn.WaitFinishActing(Action action)
     {
         // IsActing -> false になるまで待つ
-        while (m_IsActing == true)
+        while (IsActing == true)
             await Task.Delay(1);
 
         action.Invoke();
     }
+
+    [Serializable]
+    private struct ActTicket { }
 }

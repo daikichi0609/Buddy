@@ -76,7 +76,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
                     Starvate();
                 else
                     MakeHungry();
-            }).AddTo(Disposable);
+            }).AddTo(CompositeDisposable);
         }
     }
 
