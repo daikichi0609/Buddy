@@ -59,14 +59,17 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
 
         // 死んでいるなら行動しない
         if (Owner.RequireInterface<ICharaStatus>(out var status) == true && status.IsDead == true)
+        {
+            Debug.Log("死亡しているので行動しません。");
             return true;
+        }
 
-        ActionClue clue = ConsiderAction(m_CharaMove.Position);
+        EnemyActionClue clue = ConsiderAction(m_CharaMove.Position);
 
         switch (clue.State)
         {
             case ENEMY_STATE.ATTACKING:
-                Face(clue.TargetList);
+                RandomFace(clue.TargetList);
                 result = await NormalAttack();
                 break;
 
@@ -92,7 +95,7 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
     /// ターゲットの方を向く 主に攻撃前
     /// </summary>
     /// <param name="targetList"></param>
-    private ICollector Face(List<ICollector> targets)
+    private ICollector RandomFace(List<ICollector> targets)
     {
         //ターゲットをランダムに絞って向く
         targets.Shuffle();
@@ -257,18 +260,18 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
 public partial class EnemyAi
 {
     //敵AI
-    private ActionClue ConsiderAction(Vector3Int currentPos)
+    private EnemyActionClue ConsiderAction(Vector3Int currentPos)
     {
         var aroundCell = DungeonHandler.Interface.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, m_Target, out var attack) == true)
-            return new ActionClue(ENEMY_STATE.ATTACKING, attack);
+            return new EnemyActionClue(ENEMY_STATE.ATTACKING, attack);
 
         if (TryGetCandidateChase(currentPos, m_Target, out var chase) == true)
-            return new ActionClue(ENEMY_STATE.CHASING, chase);
+            return new EnemyActionClue(ENEMY_STATE.CHASING, chase);
 
-        return new ActionClue(ENEMY_STATE.SEARCHING, null);
+        return new EnemyActionClue(ENEMY_STATE.SEARCHING, null);
     }
 
     private bool TryGetCandidateAttack(AroundCell aroundCell, CHARA_TYPE target, out List<ICollector> targets)
@@ -279,9 +282,12 @@ public partial class EnemyAi
         foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
         {
             var info = pair.Value.GetInterface<ICellInfoHolder>();
+
+            // Unit存在判定
             if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, target) == false)
                 continue;
 
+            // 壁抜けを判定
             if (DungeonHandler.Interface.CanMove(baseInfo.Position, pair.Key) == false)
                 continue;
 
@@ -305,12 +311,12 @@ public partial class EnemyAi
     }
 }
 
-public readonly struct ActionClue
+public readonly struct EnemyActionClue
 {
     public ENEMY_STATE State { get; }
     public List<ICollector> TargetList { get; }
 
-    public ActionClue(ENEMY_STATE state, List<ICollector> targetList)
+    public EnemyActionClue(ENEMY_STATE state, List<ICollector> targetList)
     {
         State = state;
         TargetList = targetList;

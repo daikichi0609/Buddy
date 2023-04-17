@@ -167,7 +167,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
             if (unit.RequireInterface<IAiAction>(out var ai) == true && await ai.DecideAndExecuteAction() == true)
                 m_NextActor.TryDequeue(out var _);
             else
-                return;
+                return; // Aiじゃないなら入力を待つ
         }
         else
             // 全キャラ行動済みなら行動済みステータスをリセット
