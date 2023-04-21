@@ -17,6 +17,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
+    private ICharaLastActionHolder m_CharaLastAction;
 
     protected override void Register(ICollector owner)
     {
@@ -32,6 +33,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_CharaLastAction = Owner.GetInterface<ICharaLastActionHolder>();
 
         InputManager.Interface.InputEvent.Subscribe(input =>
         {
@@ -40,26 +42,41 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     }
 
     /// <summary>
-    /// 攻撃、移動
+    /// 入力検知
+    /// </summary>
+    private void DetectInput(KeyCodeFlag flag)
+    {
+        // プレイヤーの入力結果を見る
+        var result = DetectInputInternal(flag);
+
+        // 入力結果が有効ならターン終了
+        if (result == true)
+            m_CharaTurn.TurnEnd();
+    }
+
+    /// <summary>
+    /// 入力検知 攻撃、移動
     /// </summary>
     /// <param name="flag"></param>
-    private void DetectInput(KeyCodeFlag flag)
+    private bool DetectInputInternal(KeyCodeFlag flag)
     {
         // 行動許可ないなら何もしない。行動中なら何もしない。
         if (m_CharaTurn.CanAct == false || m_CharaTurn.IsActing == true)
-            return;
+            return false;
 
         // Ui操作中なら何もしない
         if (InputManager.Interface.IsUiPopUp == true)
-            return;
+            return false;
 
         // 攻撃
         if (DetectInputAttack(flag) == true)
-            return;
+            return true;
 
         // 移動
         if (DetectInputMove(flag) == true)
-            return;
+            return true;
+
+        return false;
     }
 
     /// <summary>
@@ -70,10 +87,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private bool DetectInputAttack(KeyCodeFlag flag)
     {
         if (flag.HasBitFlag(KeyCodeFlag.E))
-        {
-            m_CharaBattle.NormalAttack();
-            return true;
-        }
+            return m_CharaBattle.NormalAttack();
 
         return false;
     }

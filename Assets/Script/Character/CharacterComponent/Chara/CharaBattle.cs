@@ -11,7 +11,7 @@ public interface ICharaBattle : IActorInterface
     /// 通常攻撃
     /// </summary>
     /// <returns></returns>
-    Task NormalAttack();
+    bool NormalAttack();
 
     /// <summary>
     /// 通常攻撃、方向指定
@@ -19,7 +19,7 @@ public interface ICharaBattle : IActorInterface
     /// <param name="direction"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-    Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target);
+    bool NormalAttack(DIRECTION direction, CHARA_TYPE target);
 
     /// <summary>
     /// 被ダメージ
@@ -70,6 +70,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
     private ICharaObjectHolder m_CharaObjectHolder;
+    private ICharaLastActionHolder m_CharaLastActionHolder;
 
     public static readonly int ms_NormalAttackTotalTime = 700;
     public static readonly int ms_NormalAttackHitTime = 400;
@@ -125,61 +126,63 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
+        m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
     }
 
     /// <summary>
     /// 通常攻撃・プレイヤー操作
     /// </summary>
-    async Task ICharaBattle.NormalAttack() => await NormalAttack(m_CharaMove.Direction, CHARA_TYPE.ENEMY);
+    bool ICharaBattle.NormalAttack() => NormalAttack(m_CharaMove.Direction, CHARA_TYPE.ENEMY);
 
     /// <summary>
     /// 通常攻撃
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="target"></param>
-    private async Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target)
+    private bool NormalAttack(DIRECTION direction, CHARA_TYPE target)
     {
         // 誰かが行動中なら攻撃できない
         if (TurnManager.Interface.NoOneActing == false)
             return false;
 
-        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, Status.Dex, direction);
+        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, direction);
         m_OnAttackStart.OnNext(attackInfo);
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int();
-        var result = await AttackInternal(attackPos, target, attackInfo);
+
+        var disposable = TurnManager.Interface.RequestProhibitAction();
+        // 非同期で内部処理走らせる
+        StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
+
+        m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
+        return true;
+    }
+
+    bool ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => NormalAttack(direction, target);
+
+    /// <summary>
+    /// 攻撃
+    /// </summary>
+    /// <param name="attackPos"></param>
+    /// <param name="target"></param>
+    private AttackResult AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo, IDisposable disposable)
+    {
+        // 角抜け確認
+        if (DungeonHandler.Interface.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
+            UnitFinder.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
+            collector.RequireInterface<ICharaBattle>(out var battle) == false)
+        {
+            disposable.Dispose();
+            return AttackResult.Invalid;
+        }
+
+        var result = battle.Damage(attackInfo);
 
         //モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
 
-        m_CharaTurn.TurnEnd();
-        return true;
-    }
-
-    async Task<bool> ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => await NormalAttack(direction, target);
-
-    /// <summary>
-    /// 攻撃 空振り考慮のプレイヤー用
-    /// </summary>
-    /// <param name="attackPos"></param>
-    /// <param name="target"></param>
-    private async Task<AttackResult> AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo)
-    {
-        await Task.Delay(ms_NormalAttackTotalTime); // モーション終わりまで
-
-        // 角抜け確認
-        if (DungeonHandler.Interface.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false)
-            return AttackResult.Invalid;
-
-        // ターゲットの情報取得
-        if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false)
-            return AttackResult.Invalid;
-
-        // 必要なコンポーネント
-        if (collector.RequireInterface<ICharaBattle>(out var battle) == false)
-            return AttackResult.Invalid;
-
-        return battle.Damage(attackInfo);
+        disposable.Dispose();
+        return result;
     }
 
     /// <summary>
@@ -189,7 +192,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <param name="dex"></param>
     AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
     {
-        var isHit = Calculator.JudgeHit(attackInfo.Dex, Status.Eva);
+        var isHit = Calculator.JudgeHit(attackInfo.Dex);
 
         //ダメージ処理
         int damage = Calculator.CalculateDamage(attackInfo.Atk, Status.Def);
@@ -254,6 +257,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         Owner.Dispose();
         UnitHolder.Interface.RemoveUnit(Owner);
+        TurnManager.Interface.RemoveUnit(Owner);
         ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
     }
 }

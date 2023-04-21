@@ -6,6 +6,7 @@ using UniRx;
 public enum CONTENTS_TYPE
 {
     PLAYER,
+    FRIEND,
     ENEMY,
     ITEM,
 }
@@ -75,6 +76,33 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     UnitHolder.Interface.AddPlayer(player);
                     break;
 
+                case CONTENTS_TYPE.FRIEND:
+                    if (UnitHolder.Interface.FriendList.Count >= 2)
+                    {
+                        RedeployFriend(cell);
+                        return;
+                    }
+                    var playerPos = UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position;
+                    var around = DungeonHandler.Interface.GetAroundCellId(playerPos);
+                    var dir = DIRECTION.NONE;
+                    foreach (var near in around.Cells)
+                    {
+                        if (near.Value == CELL_ID.ROOM)
+                        {
+                            dir = near.Key;
+                            break;
+                        }
+                    }
+                    var pos = playerPos + dir.ToV3Int() + new Vector3(0f, CharaMove.OFFSET_Y, 0f);
+                    content = CharaObject(GameManager.Interface.Friend);
+                    content.transform.position = pos;
+                    var friend = content.GetComponent<ICollector>();
+                    friend.Initialize();
+                    if (friend.RequireInterface<ICharaStatus>(out var f) == true)
+                        f.SetStatus(GameManager.Interface.Friend.Status);
+                    UnitHolder.Interface.AddPlayer(friend);
+                    break;
+
                 case CONTENTS_TYPE.ENEMY:
                     var enemySetup = DungeonProgressManager.Interface.GetRandomEnemySetup();
                     content = CharaObject(enemySetup);
@@ -101,18 +129,27 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
     private void RedeployPlayer(ICollector cell)
     {
-        var player = UnitHolder.Interface.FriendList[0];
+        var player = UnitHolder.Interface.Player;
         var content = player.GetInterface<ICharaObjectHolder>().MoveObject;
         var info = cell.GetInterface<ICellInfoHolder>();
         content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
         player.Initialize();
-        UnitHolder.Interface.AddPlayer(player);
+    }
+
+    private void RedeployFriend(ICollector cell)
+    {
+        var friend = UnitHolder.Interface.FriendList[1];
+        var content = friend.GetInterface<ICharaObjectHolder>().MoveObject;
+        var info = cell.GetInterface<ICellInfoHolder>();
+        content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
+        friend.Initialize();
     }
 
     private void DeployAll()
     {
         Debug.Log("Deploy Contents");
         Deploy(CONTENTS_TYPE.PLAYER);
+        Deploy(CONTENTS_TYPE.FRIEND);
         Deploy(CONTENTS_TYPE.ENEMY, DungeonProgressManager.Interface.CurrentDungeonSetup.EnemyCountMax);
         Deploy(CONTENTS_TYPE.ITEM, DungeonProgressManager.Interface.CurrentDungeonSetup.ItemCountMax);
     }

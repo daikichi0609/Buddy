@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 1091651124717794477}
   - component: {fileID: 4157648955474717166}
   - component: {fileID: 6797223205253321158}
+  - component: {fileID: 8032669409567812850}
   m_Layer: 0
   m_Name: RADISH
   m_TagString: Untagged
@@ -181,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CanAct:
-    value: 1
+    value: 0
 --- !u!114 &1091651124717794477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +217,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 66d292f5d2dd349968fdec44801cd5c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8032669409567812850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6967327199222666282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc0c3e1962ce5461d9c8b46b7655c3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6967327199222668828

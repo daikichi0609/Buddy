@@ -13,13 +13,10 @@ MonoBehaviour:
   m_Name: RadishStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 11
+    m_GivenName: "\u3060\u3044\u3053\u3093"
     m_MaxHp: 7
     m_Atk: 10
     m_Def: 3
     m_Agi: 1
-    m_Dex: 1
-    m_Eva: 0.05
-    m_CriticalRate: 0
     m_Res: 0.05
     m_Ex: 5

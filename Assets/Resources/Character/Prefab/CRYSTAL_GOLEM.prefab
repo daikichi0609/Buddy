@@ -278,6 +278,7 @@ GameObject:
   - component: {fileID: 7971905113404421844}
   - component: {fileID: 5131280616539126490}
   - component: {fileID: 6251756098423426710}
+  - component: {fileID: 4318866385815056627}
   m_Layer: 0
   m_Name: CRYSTAL_GOLEM
   m_TagString: Untagged
@@ -437,7 +438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CanAct:
-    value: 1
+    value: 0
 --- !u!114 &7971905113404421844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +473,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 66d292f5d2dd349968fdec44801cd5c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4318866385815056627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4278349402472998949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc0c3e1962ce5461d9c8b46b7655c3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4278349402473004791

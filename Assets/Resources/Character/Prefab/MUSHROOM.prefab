@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 3311249493831154698}
   - component: {fileID: 1090330293941385195}
   - component: {fileID: 7502244154460438228}
+  - component: {fileID: 3541614585463877430}
   m_Layer: 0
   m_Name: MUSHROOM
   m_TagString: Untagged
@@ -313,6 +314,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fc2b22f8a75244cbbb7f9d201577c24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3541614585463877430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3135674774238795827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc0c3e1962ce5461d9c8b46b7655c3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3135674774238809845

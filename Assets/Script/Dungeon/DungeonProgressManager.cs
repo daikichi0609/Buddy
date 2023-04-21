@@ -159,9 +159,6 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
 
         // 暗転 & ダンジョン再構築
         await FadeManager.Interface.NextFloor(() => RebuildDungeon(), m_CurrentFloor.Value, CurrentDungeonSetup.DungeonName);
-
-        // 行動許可
-        TurnManager.Interface.AllCharaActionable();
     }
 
     /// <summary>

@@ -11,7 +11,8 @@ public interface ICharaMove : IActorInterface
 
     void Face(DIRECTION direction);
     bool Move(DIRECTION dir);
-    void Wait();
+    void ForcedMove(DIRECTION dir);
+    bool Wait();
 
     void Warp(Vector3Int pos);
 }
@@ -24,10 +25,11 @@ public interface ICharaMoveEvent : IActorEvent
 
 public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 {
-    private ICharaObjectHolder m_Holder;
-    private GameObject CharaObject => m_Holder.CharaObject;
-    private GameObject MoveObject => m_Holder.MoveObject;
-    private ICharaTurn m_CharaTurn;
+    private ICharaObjectHolder m_ObjectHolder;
+    private GameObject CharaObject => m_ObjectHolder.CharaObject;
+    private GameObject MoveObject => m_ObjectHolder.MoveObject;
+    private ICharaTypeHolder m_Type;
+    private ICharaLastActionHolder m_CharaLastActionHolder;
 
     /// <summary>
     /// 位置
@@ -82,7 +84,9 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
     protected override void Initialize()
     {
-        m_Holder = Owner.GetInterface<ICharaObjectHolder>();
+        m_ObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
+        m_Type = Owner.GetInterface<ICharaTypeHolder>();
+        m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
 
         Direction = DIRECTION.UNDER;
         LastMoveDirection = DIRECTION.UNDER;
@@ -90,8 +94,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
         GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
-
-        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
     }
 
     /// <summary>
@@ -121,25 +123,52 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         Vector3Int destinationPos = Position + direction.ToV3Int();
 
-        // 他ユニットがいるなら移動不可
+        // 他ユニットがいる場合
         if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
-            return false;
+        {
+            var type = unit.GetInterface<ICharaTypeHolder>().Type;
+            if (type != m_Type.Type)
+                return false;
+            else
+            {
+                var last = unit.GetInterface<ICharaLastActionHolder>();
+                // ターン消費していないなら入れ違い
+                if (last.LastAction != CHARA_ACTION.NONE)
+                    return false; // 入れ違いできないなら移動不可
 
+                var move = unit.GetInterface<ICharaMove>();
+                move.ForcedMove(direction.ToOppsiteDir());
+            }
+        }
+
+        MoveInternal(destinationPos, direction);
+        return true;
+    }
+
+    private void MoveInternal(Vector3Int dest, DIRECTION dir)
+    {
         // 座標設定
-        DestinationPos = destinationPos + new Vector3(0f, OFFSET_Y, 0f);
-        LastMoveDirection = direction;
+        DestinationPos = dest + new Vector3(0f, OFFSET_Y, 0f);
+        LastMoveDirection = dir;
 
         // 内部的には先に移動しとく
-        Position = destinationPos;
+        Position = dest;
 
         // 移動開始イベント
         m_OnMoveStart.OnNext(Unit.Default);
-        m_CharaTurn.TurnEnd(true);
 
         // フラグオン
         IsMoving = true;
 
-        return true;
+        // アクション登録
+        m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE);
+    }
+
+    void ICharaMove.ForcedMove(DIRECTION dir)
+    {
+        Face(dir);
+        Vector3Int destinationPos = Position + dir.ToV3Int();
+        MoveInternal(destinationPos, dir);
     }
 
     /// <summary>
@@ -168,9 +197,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// <summary>
     /// 待機 ターン終了するだけ
     /// </summary>
-    void ICharaMove.Wait()
+    bool ICharaMove.Wait()
     {
-        m_CharaTurn.TurnEnd();
+        m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.WAIT);
+        return true;
     }
 
     /// <summary>
@@ -181,6 +211,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     {
         Position = pos;
         var v3 = new Vector3(Position.x, OFFSET_Y, Position.z);
-        m_Holder.MoveObject.transform.position = v3;
+        m_ObjectHolder.MoveObject.transform.position = v3;
     }
 }

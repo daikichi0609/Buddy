@@ -13,13 +13,10 @@ MonoBehaviour:
   m_Name: ZombieStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 0
-    m_MaxHp: 0
-    m_Atk: 0
-    m_Def: 0
-    m_Agi: 0
-    m_Dex: 0
-    m_Eva: 0
-    m_CriticalRate: 0
-    m_Res: 0
-    m_Ex: 0
+    m_GivenName: "\u30BE\u30F3\u30D3"
+    m_MaxHp: 20
+    m_Atk: 10
+    m_Def: 5
+    m_Agi: 1
+    m_Res: 0.1
+    m_Ex: 5

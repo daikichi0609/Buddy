@@ -6,6 +6,7 @@ using System;
 using Unity.Collections;
 using NaughtyAttributes;
 using System.Threading.Tasks;
+using static UnityEngine.UI.CanvasScaler;
 
 public interface ITurnManager : ISingleton
 {
@@ -22,7 +23,6 @@ public interface ITurnManager : ISingleton
     /// <summary>
     /// アクション禁止フラグ
     /// </summary>
-    bool ProhibitAllAction { get; }
     IDisposable RequestProhibitAction();
 
     /// <summary>
@@ -31,14 +31,9 @@ public interface ITurnManager : ISingleton
     bool NoOneActing { get; }
 
     /// <summary>
-    /// Ai行動開始
+    /// ユニット除去
     /// </summary>
-    void StartAiAct();
-
-    /// <summary>
-    /// 全てのキャラの行動を許可
-    /// </summary>
-    void AllCharaActionable();
+    void RemoveUnit(ICollector unit);
 }
 
 public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
@@ -47,23 +42,17 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         base.Awake();
 
-        GameManager.Interface.GetInitEvent.Subscribe(_ =>
-        {
-            AllCharaActionable();
-        }).AddTo(this);
+        GameManager.Interface.GetInitEvent.Subscribe(_ => CreateActionList()).AddTo(this);
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
     }
 
     /// <summary>
-    /// キャラの行動順
+    /// 行動するキャラ
     /// </summary>
-    private readonly Queue<ICollector> m_NextActor = new Queue<ICollector>();
-    [ShowNativeProperty]
-    private int ActorCount => m_NextActor.Count;
-
-    /// <summary>
-    /// 更新止めるもの
-    /// </summary>
-    private IDisposable m_Disposable;
+    private List<ICollector> m_ActionUnits = new List<ICollector>();
+    [SerializeField, NaughtyAttributes.ReadOnly]
+    private int m_ActionIndex;
+    void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
 
     /// <summary>
     /// 累計ターン数
@@ -78,7 +67,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private readonly Queue<ProhibitRequest> m_ProhibitAllAction = new Queue<ProhibitRequest>();
     private bool ProhibitAllAction => m_ProhibitAllAction.Count != 0;
-    bool ITurnManager.ProhibitAllAction => ProhibitAllAction;
 
     /// <summary>
     /// 禁止リクエスト
@@ -111,111 +99,69 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     bool ITurnManager.NoOneActing => NoOneActing;
 
     /// <summary>
-    /// 更新購読
+    /// アクションリスト作成
     /// </summary>
-    private void SubscribeUpdate()
-    {
-        m_Disposable = GameManager.Interface.GetUpdateEvent
-            .Subscribe(async _ => await NextUnitAct()).AddTo(this);
-    }
-
-    /// <summary>
-    /// Ai行動開始
-    /// </summary>
-    private void StartAiAct()
-    {
-        SubscribeUpdate();
-        CreateActionQueue();
-    }
-    void ITurnManager.StartAiAct() => StartAiAct();
-
-    /// <summary>
-    /// キュー作成
-    /// </summary>
-    private void CreateActionQueue()
-    {
-        foreach (ICollector player in UnitHolder.Interface.FriendList)
-            if (player.RequireInterface<IAiAction>(out var _) == true)
-                m_NextActor.Enqueue(player);
-
-        foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
-            if (enemy.RequireInterface<IAiAction>(out var _) == true)
-                m_NextActor.Enqueue(enemy);
-    }
-
-    /// <summary>
-    /// 次の行動を促す
-    /// </summary>
-    private async Task NextUnitAct()
-    {
-        if (ProhibitAllAction == true)
-            return;
-
-        if (m_NextActor.TryPeek(out var unit) == true)
-        {
-            var turn = unit.GetInterface<ICharaTurn>();
-            if (turn.CanAct == false)
-            {
-                if (unit.RequireInterface<ICharaStatus>(out var status) == true)
-                    Debug.Log("行動済のキャラがキューに存在します" + status.Parameter.GivenName);
-
-                m_NextActor.TryDequeue(out var _);
-                return;
-            }
-
-            // Ai行動
-            if (unit.RequireInterface<IAiAction>(out var ai) == true && await ai.DecideAndExecuteAction() == true)
-                m_NextActor.TryDequeue(out var _);
-            else
-                return; // Aiじゃないなら入力を待つ
-        }
-        else
-            // 全キャラ行動済みなら行動済みステータスをリセット
-            FinishAiAct();
-    }
-
-    /// <summary>
-    /// Ai行動終了
-    /// </summary>
-    private void FinishAiAct()
-    {
-        m_Disposable.Dispose();
-        AllCharaActionable();
-    }
-
-    /// <summary>
-    /// 全キャラの行動済みステータスをリセット
-    /// </summary>
-    private async void AllCharaActionable()
+    private void CreateActionList()
     {
         // 階段チェック
         var player = UnitHolder.Interface.Player;
-        if (player.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
-            await checker.CheckStairsCell();
+        var checker = player.GetInterface<ICharaCellEventChecker>();
+        checker.CheckStairsCell();
 
-        m_TotalTurnCount.Value++;
-        Debug.Log(m_TotalTurnCount.Value);
-        AllPlayerActionable();
-        AllEnemyActionable();
+        m_ActionUnits.Clear();
+
+        foreach (var friend in UnitHolder.Interface.FriendList)
+        {
+            friend.GetInterface<ICharaLastActionHolder>().Reset();
+            m_ActionUnits.Add(friend);
+        }
+
+        foreach (var enemy in UnitHolder.Interface.EnemyList)
+        {
+            enemy.GetInterface<ICharaLastActionHolder>().Reset();
+            m_ActionUnits.Add(enemy);
+        }
+
+        // indexリセット
+        m_ActionIndex = 0;
+        m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
     }
-    void ITurnManager.AllCharaActionable() => AllCharaActionable();
 
     /// <summary>
-    /// プレイヤーの行動済みステータスをリセット
+    /// 次のAiの行動
     /// </summary>
-    private void AllPlayerActionable()
+    private void NextUnitAct()
     {
-        foreach (ICollector player in UnitHolder.Interface.FriendList)
-            player.GetInterface<ICharaTurn>().CanBeAct();
-    }
+        // 行動禁止中なら何もしない
+        if (ProhibitAllAction == true)
+        {
+            Debug.Log("行動禁止中");
+            return;
+        }
 
-    /// <summary>
-    /// 敵の行動済みステータスをリセット
-    /// </summary>
-    private void AllEnemyActionable()
-    {
-        foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
-            enemy.GetInterface<ICharaTurn>().CanBeAct();
+        // 行動可能なキャラがいるなら何もしない
+        foreach (var unit in m_ActionUnits)
+        {
+            if (unit.GetInterface<ICharaTurn>().CanAct == true)
+                return;
+        }
+
+        // 行動可能なキャラがいないなら、インクリメントする
+        // indexが範囲外なら新しく作る
+        if (++m_ActionIndex >= m_ActionUnits.Count)
+            CreateActionList();
+
+        // indexが範囲内なら行動させる
+        else
+        {
+            var unit = m_ActionUnits[m_ActionIndex];
+
+            // すでに行動しているなら行動させない
+            if (unit.GetInterface<ICharaLastActionHolder>().LastAction != CHARA_ACTION.NONE)
+                return;
+
+            unit.GetInterface<ICharaTurn>().CanBeAct();
+        }
     }
 }
 

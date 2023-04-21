@@ -13,13 +13,10 @@ MonoBehaviour:
   m_Name: MushroomStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 10
+    m_GivenName: "\u304D\u306E\u3053"
     m_MaxHp: 10
     m_Atk: 7
     m_Def: 3
     m_Agi: 1
-    m_Dex: 1
-    m_Eva: 0.05
-    m_CriticalRate: 0
     m_Res: 0.05
     m_Ex: 5

@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
+public interface IFriendAi : IAiAction
+{
+}
+
 /// <summary>
 /// 味方の行動タイプ
 /// </summary>
@@ -15,10 +19,11 @@ public enum FRIEND_STATE
     ATTACKING,
 }
 
-public partial class FriendAi : ActorComponentBase, IAiAction
+public partial class FriendAi : ActorComponentBase, IFriendAi
 {
     private ICharaMove m_CharaMove;
     private ICharaBattle m_CharaBattle;
+    private ICharaTurn m_CharaTurn;
 
     private ReactiveProperty<FRIEND_STATE> m_CurrentState = new ReactiveProperty<FRIEND_STATE>();
 
@@ -28,27 +33,28 @@ public partial class FriendAi : ActorComponentBase, IAiAction
     {
         base.Register(owner);
         owner.Register<IAiAction>(this);
+        owner.Register<IFriendAi>(this);
     }
 
     protected override void Initialize()
     {
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ =>
+        {
+            if (m_CharaTurn.CanAct == true)
+                DecideAndExecuteAction();
+        });
     }
 
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    private async Task<bool> DecideAndExecuteAction()
+    public bool DecideAndExecuteAction()
     {
         var result = false;
-
-        // 死んでいるなら行動しない
-        if (Owner.RequireInterface<ICharaStatus>(out var status) == true && status.IsDead == true)
-        {
-            Debug.Log("死亡しているので行動しません。");
-            return true;
-        }
 
         FriendActionClue clue = ConsiderAction(m_CharaMove.Position);
 
@@ -56,21 +62,22 @@ public partial class FriendAi : ActorComponentBase, IAiAction
         {
             case FRIEND_STATE.ATTACKING:
                 Face(clue.TargetList);
-                result = await NormalAttack();
+                result = m_CharaBattle.NormalAttack(m_CharaMove.Direction, m_Target);
                 break;
 
             case FRIEND_STATE.CHASING:
-                Chase();
-                result = true;
+                result = Chase();
                 break;
         }
 
-        Debug.Log(clue.State);
-        m_CurrentState.Value = clue.State;
+        if (result == true)
+        {
+            m_CurrentState.Value = clue.State;
+            m_CharaTurn.TurnEnd();
+        }
+
         return result;
     }
-
-    async Task<bool> IAiAction.DecideAndExecuteAction() => await DecideAndExecuteAction();
 
     /// <summary>
     /// ターゲットの方を向く 主に攻撃前
@@ -86,21 +93,37 @@ public partial class FriendAi : ActorComponentBase, IAiAction
         return target;
     }
 
-    private Task<bool> NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, CHARA_TYPE.PLAYER);
-
     /// <summary>
     /// プレイヤーを追いかける
+    /// 移動の可否に関わらずtrue
     /// </summary>
-    private void Chase()
+    /// <returns></returns>
+    private bool Chase()
     {
         var target = UnitHolder.Interface.Player;
-        var dir = Positional.CalculateDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
+        var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
         if (m_CharaMove.Move(dir) == false)
-            m_CharaMove.Wait();
+            if (CompromiseMove(dir) == false)
+                m_CharaMove.Wait();
+
+        return true;
     }
 
-    // TODO:妥協移動の実装
-    private void CompromiseMove(Vector3 direction) { }
+    /// <summary>
+    /// 妥協した移動
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    private bool CompromiseMove(DIRECTION direction)
+    {
+        var dirs = direction.NearDirection();
+        foreach (var dir in dirs)
+        {
+            if (m_CharaMove.Move(dir) == true)
+                return true;
+        }
+        return false;
+    }
 }
 
 public partial class FriendAi

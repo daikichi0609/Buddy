@@ -13,13 +13,10 @@ MonoBehaviour:
   m_Name: CatWitchStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: 12
+    m_GivenName: "\u30CD\u30B3\u9B54\u5973"
     m_MaxHp: 15
     m_Atk: 20
     m_Def: 5
     m_Agi: 1
-    m_Dex: 1
-    m_Eva: 0.05
-    m_CriticalRate: 0
-    m_Res: 0.05
+    m_Res: 0.1
     m_Ex: 10

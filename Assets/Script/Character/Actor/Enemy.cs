@@ -10,6 +10,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharaStatus))]
 [RequireComponent(typeof(CharaTurn))]
 [RequireComponent(typeof(CharaTypeHolder))]
+[RequireComponent(typeof(CharaLastActionHolder))]
 
 [RequireComponent(typeof(EnemyAi))]
 

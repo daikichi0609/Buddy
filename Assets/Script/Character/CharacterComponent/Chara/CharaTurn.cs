@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using NaughtyAttributes;
 using System.Threading;
+using ModestTree.Util;
 
 public interface ICharaTurn : IActorInterface
 {
@@ -20,22 +21,26 @@ public interface ICharaTurn : IActorInterface
     bool IsActing { get; }
 
     /// <summary>
-    /// 行動登録
+    /// 行動開始
     /// </summary>
     /// <returns></returns>
     IDisposable RegisterActing();
-
-    /// <summary>
-    /// ターン終了
-    /// </summary>
-    /// <param name="hasCheck">セルイベントのチェック</param>
-    void TurnEnd(bool hasCheck = false);
 
     /// <summary>
     /// ターン開始
     /// </summary>
     void CanBeAct();
 
+    /// <summary>
+    /// ターン終了
+    /// </summary>
+    void TurnEnd();
+
+    /// <summary>
+    /// Acting = false を待って発火
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
     Task WaitFinishActing(Action action);
 }
 
@@ -55,12 +60,13 @@ public interface ICharaTurnEvent : IActorEvent
 public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
 {
     private ICharaBattle m_CharaBattle;
+    private ICharaLastActionHolder m_CharaLastCharaActionHolder;
 
     /// <summary>
     /// 行動済みステータス
     /// </summary>
     [SerializeField, ReadOnly]
-    private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>(true);
+    private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>(false);
     bool ICharaTurn.CanAct => m_CanAct.Value;
 
     /// <summary>
@@ -92,6 +98,7 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     {
         base.Initialize();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
+        m_CharaLastCharaActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
     }
 
     /// <summary>
@@ -108,21 +115,34 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// ターン終了
     /// </summary>
-    async void ICharaTurn.TurnEnd(bool hasCheck)
+    void ICharaTurn.TurnEnd()
     {
-        if (hasCheck == true && Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
-            if (await checker.CheckCurrentCell() == true)
-                return;
+        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
+        {
+            var lastAction = m_CharaLastCharaActionHolder.LastAction;
+            if (lastAction == CHARA_ACTION.NONE)
+                Debug.LogAssertion("アクションしていないのにターン終了しようとしています");
+
+            bool check = lastAction switch
+            {
+                CHARA_ACTION.MOVE => true,
+                _ => false
+            };
+
+            if (check == true)
+                checker.CheckCurrentCell();
+        }
 
         m_CanAct.Value = false;
-        if (Owner.RequireInterface<ICharaTypeHolder>(out var type) == true && type.Type == CHARA_TYPE.PLAYER)
-            TurnManager.Interface.StartAiAct();
     }
 
     /// <summary>
     /// ターン開始
     /// </summary>
-    void ICharaTurn.CanBeAct() => m_CanAct.Value = true;
+    void ICharaTurn.CanBeAct()
+    {
+        m_CanAct.Value = true;
+    }
 
     async Task ICharaTurn.WaitFinishActing(Action action)
     {

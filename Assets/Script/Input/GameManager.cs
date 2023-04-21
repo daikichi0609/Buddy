@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 public interface IGameManager : ISingleton
 {
     CharacterSetup Leader { get; }
+    CharacterSetup Friend { get; }
 
     IObservable<Unit> GetInitEvent { get; }
     IObservable<Unit> GetUpdateEvent { get; }
@@ -22,7 +23,14 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     /// </summary>
     [SerializeField]
     private CharacterSetup m_Leader;
-    public CharacterSetup Leader => m_Leader;
+    CharacterSetup IGameManager.Leader => m_Leader;
+
+    /// <summary>
+    /// フレンドセットアップ
+    /// </summary>
+    [SerializeField]
+    private CharacterSetup m_Friend;
+    CharacterSetup IGameManager.Friend => m_Friend;
 
     /// <summary>
     /// 初期化処理メソッドまとめ

@@ -2727,6 +2727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Leader: {fileID: 11400000, guid: 9c3685c5fbc27477cbb015226f46a1c5, type: 2}
+  m_Friend: {fileID: 11400000, guid: a47e46b6407684368874d3e1d978e777, type: 2}
 --- !u!114 &1184686346
 MonoBehaviour:
   m_ObjectHideFlags: 0

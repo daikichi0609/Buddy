@@ -39,14 +39,3 @@ public enum TRAP_TYPE
     BOMB,
 
 }
-
-/// <summary>
-/// キャラタイプ
-/// </summary>
-public enum CHARA_TYPE
-{
-    NONE,
-    PLAYER,
-    FRIEND,
-    ENEMY,
-}

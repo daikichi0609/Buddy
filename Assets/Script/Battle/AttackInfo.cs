@@ -12,7 +12,7 @@ public readonly struct AttackInfo
     /// <summary>
     /// 攻撃者（名前）
     /// </summary>
-    public CHARA_NAME Name { get; }
+    public string Name { get; }
 
     /// <summary>
     /// 攻撃力
@@ -29,7 +29,7 @@ public readonly struct AttackInfo
     /// </summary>
     public DIRECTION Direction { get; }
 
-    public AttackInfo(ICollector attacker, CHARA_NAME name, int atk, float dex, DIRECTION dir)
+    public AttackInfo(ICollector attacker, string name, int atk, float dex, DIRECTION dir)
     {
         Attacker = attacker;
         Name = name;

@@ -85,14 +85,12 @@ public class CharaLog : ActorComponentBase, ICharaLog
     {
         var sb = new StringBuilder();
 
-        string defender = result.Name.ToString();
+        string defender = result.Name;
         string damage = result.Damage.ToString();
 
         if (result.IsHit == false)
         {
-            if (result.Name != CHARA_NAME.NONE)
-                sb.Append("しかし" + defender + "には当たらなかった");
-
+            sb.Append("しかし" + defender + "には当たらなかった");
             return sb.ToString();
         }
 
@@ -120,7 +118,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    private string CreatePutItemLog(CHARA_NAME name, IItem item)
+    private string CreatePutItemLog(string name, IItem item)
     {
         var sb = new StringBuilder();
 

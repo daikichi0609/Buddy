@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 public interface ITrapHandler : IActorInterface
 {
     /// <summary>
+    /// 罠があるかどうか
+    /// </summary>
+    /// <returns></returns>
+    bool HasTrap { get; }
+
+    /// <summary>
     /// 罠作動、あるなら
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    Task<bool> ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around);
+    bool ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around);
 
     /// <summary>
     /// 罠設置
@@ -48,6 +54,7 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// 罠機能
     /// </summary>
     private ITrap m_Trap;
+    bool ITrapHandler.HasTrap => m_Trap != null;
 
     /// <summary>
     /// 罠が見えているか
@@ -60,7 +67,7 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    async Task<bool> ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around)
+    bool ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around)
     {
         if (m_Trap == null)
             return false;
@@ -68,13 +75,11 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
         var disposable = TurnManager.Interface.RequestProhibitAction();
 
         var turn = stepper.GetInterface<ICharaTurn>();
-        while (turn.IsActing == true)
-            await Task.Delay(1);
 
         m_GameObject.SetActive(true);
         IsVisible = true;
 
-        await m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position);
+        Task.Run(() => m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position));
         disposable.Dispose();
         return true;
     }

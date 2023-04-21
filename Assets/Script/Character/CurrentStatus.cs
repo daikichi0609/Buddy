@@ -15,13 +15,11 @@ public class CurrentStatus
         Atk = param.Atk;
         Def = param.Def;
         Agi = param.Agi;
-        Dex = param.Dex;
-        Eva = param.Eva;
-        CriticalRate = param.CriticalRate;
         Res = param.Res;
     }
 
-    public CHARA_NAME Name { get; }
+    [ShowNativeProperty]
+    public string Name { get; }
 
     // レベル
     [ShowNativeProperty]
@@ -42,18 +40,6 @@ public class CurrentStatus
     // 速さ
     [ShowNativeProperty]
     public int Agi { get; set; }
-
-    // 命中率補正
-    [ShowNativeProperty]
-    public float Dex { get; set; }
-
-    // 回避率補正
-    [ShowNativeProperty]
-    public float Eva { get; set; }
-
-    // 会心率補正
-    [ShowNativeProperty]
-    public float CriticalRate { get; set; }
 
     // 抵抗率
     [ShowNativeProperty]

@@ -9,14 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9d4f014c492457d93ba5c385e0996e, type: 3}
-  m_Name: CrystalGolemStatus
+  m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
+  m_Name: BerrySetup
   m_EditorClassIdentifier: 
-  m_Param:
-    m_GivenName: "\u30B4\u30FC\u30EC\u30E0"
-    m_MaxHp: 20
-    m_Atk: 15
-    m_Def: 10
-    m_Agi: 1
-    m_Res: 0.1
-    m_Ex: 10
+  m_Prefab: {fileID: 6903897731796311978, guid: f8512884c11474b63871b278e64aebaf,
+    type: 3}
+  m_Status: {fileID: 11400000, guid: 034c8b91d93d848c284dd6e1cb436328, type: 2}

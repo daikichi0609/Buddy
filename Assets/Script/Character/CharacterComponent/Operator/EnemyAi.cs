@@ -7,7 +7,11 @@ using UnityEngine;
 
 public interface IAiAction : IActorInterface
 {
-    Task<bool> DecideAndExecuteAction();
+    bool DecideAndExecuteAction();
+}
+
+public interface IEnemyAi : IAiAction
+{
 }
 
 /// <summary>
@@ -21,10 +25,11 @@ public enum ENEMY_STATE
     ATTACKING
 }
 
-public partial class EnemyAi : ActorComponentBase, IAiAction
+public partial class EnemyAi : ActorComponentBase, IEnemyAi
 {
     private ICharaMove m_CharaMove;
     private ICharaBattle m_CharaBattle;
+    private ICharaTurn m_CharaTurn;
 
     private ReactiveProperty<ENEMY_STATE> m_CurrentState = new ReactiveProperty<ENEMY_STATE>();
 
@@ -36,33 +41,34 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
     {
         base.Register(owner);
         owner.Register<IAiAction>(this);
+        owner.Register<IEnemyAi>(this);
     }
 
     protected override void Initialize()
     {
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // ステート更新で目的地リセット
         m_CurrentState.Subscribe(_ =>
         {
             DestinationCell = null;
         }).AddTo(CompositeDisposable);
+
+        GameManager.Interface.GetUpdateEvent.Subscribe(_ =>
+        {
+            if (m_CharaTurn.CanAct == true)
+                DecideAndExecuteAction();
+        });
     }
 
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    private async Task<bool> DecideAndExecuteAction()
+    public bool DecideAndExecuteAction()
     {
         var result = false;
-
-        // 死んでいるなら行動しない
-        if (Owner.RequireInterface<ICharaStatus>(out var status) == true && status.IsDead == true)
-        {
-            Debug.Log("死亡しているので行動しません。");
-            return true;
-        }
 
         EnemyActionClue clue = ConsiderAction(m_CharaMove.Position);
 
@@ -70,26 +76,26 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
         {
             case ENEMY_STATE.ATTACKING:
                 RandomFace(clue.TargetList);
-                result = await NormalAttack();
+                result = m_CharaBattle.NormalAttack(m_CharaMove.Direction, m_Target);
                 break;
 
             case ENEMY_STATE.CHASING:
-                Chase(clue.TargetList);
-                result = true;
+                result = Chase(clue.TargetList);
                 break;
 
             case ENEMY_STATE.SEARCHING:
-                SearchPlayer();
-                result = true;
+                result = SearchPlayer();
                 break;
         }
 
-        Debug.Log(clue.State);
-        m_CurrentState.Value = clue.State;
+        if (result == true)
+        {
+            m_CurrentState.Value = clue.State;
+            m_CharaTurn.TurnEnd();
+        }
+
         return result;
     }
-
-    async Task<bool> IAiAction.DecideAndExecuteAction() => await DecideAndExecuteAction();
 
     /// <summary>
     /// ターゲットの方を向く 主に攻撃前
@@ -105,13 +111,13 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
         return target;
     }
 
-    private Task<bool> NormalAttack() => m_CharaBattle.NormalAttack(m_CharaMove.Direction, CHARA_TYPE.PLAYER);
-
     /// <summary>
-    /// 追いかける
+    /// プレイヤーを追いかける
+    /// 移動の可否に関わらずtrue
     /// </summary>
     /// <param name="targets"></param>
-    private void Chase(List<ICollector> targets)
+    /// <returns></returns>
+    private bool Chase(List<ICollector> targets)
     {
         targets.Shuffle();
         List<ICollector> candidates = new List<ICollector>();
@@ -133,15 +139,23 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
         }
 
         var target = candidates[0];
-        var dir = Positional.CalculateDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
-        if (m_CharaMove.Move(dir) == false)
-            m_CharaMove.Wait();
+        var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
+
+        if (m_CharaMove.Move(dir) == true)
+            return true;
+
+        if (CompromiseMove(dir) == true)
+            return true;
+
+        return m_CharaMove.Wait();
     }
 
     /// <summary>
     /// プレイヤーを探して歩く
+    /// 移動の可否に関わらずtrue
     /// </summary>
-    private void SearchPlayer()
+    /// <returns></returns>
+    private bool SearchPlayer()
     {
         int currentRoomId = DungeonHandler.Interface.GetRoomId(m_CharaMove.Position);
 
@@ -172,17 +186,13 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
             Utility.Shuffle(candidateDir);
 
             if (m_CharaMove.Move(candidateDir[0]) == true)
-                return;
+                return true;
 
             if (m_CharaMove.Move(oppDirection) == true)
-            {
-                return;
-            }
+                return true;
 
             Debug.Log("移動失敗");
-            m_CharaMove.Wait();
-
-            return;
+            return m_CharaMove.Wait();
         }
 
         //新しくSEARCHINGステートになった場合、目標となる部屋の入り口を設定する
@@ -235,26 +245,39 @@ public partial class EnemyAi : ActorComponentBase, IAiAction
             {
                 Debug.Log("部屋から出る");
                 DestinationCell = null;
-                return;
+                return true;
             }
 
             // 出られないなら待つ
-            m_CharaMove.Wait();
-            return;
+            return m_CharaMove.Wait();
         }
 
         //通路出入り口へ向かう
-        var dir = Positional.CalculateDirection(m_CharaMove.Position, DestinationCell.Position);
-        if (m_CharaMove.Move(dir) == false)
-        {
-            //移動できなかった場合の処理
-            // TODO: 妥協移動の実装
-            m_CharaMove.Wait();
-            Debug.LogAssertion("妥協移動");
-        }
+        var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, DestinationCell.Position);
+        if (m_CharaMove.Move(dir) == true)
+            return true;
+
+        if (CompromiseMove(dir) == true)
+            return true;
+
+        return m_CharaMove.Wait();
     }
 
-    private void CompromiseMove(Vector3 direction) { }
+    /// <summary>
+    /// 妥協した移動
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    private bool CompromiseMove(DIRECTION direction)
+    {
+        var dirs = direction.NearDirection();
+        foreach (var dir in dirs)
+        {
+            if (m_CharaMove.Move(dir) == true)
+                return true;
+        }
+        return false;
+    }
 }
 
 public partial class EnemyAi

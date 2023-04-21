@@ -44,16 +44,11 @@ public static class Calculator
         return hp;
     }
 
-    public static bool JudgeHit(float dex, float eva)
+    public static bool JudgeHit(float dex)
     {
-        if (UnityEngine.Random.Range(1, 101) >= dex * 100)
-        {
+        if (UnityEngine.Random.Range(0, 1f) >= dex)
             return false;
-        }
-        if (UnityEngine.Random.Range(1, 101) <= eva * 100)
-        {
-            return false;
-        }
+
         return true;
     }
 }

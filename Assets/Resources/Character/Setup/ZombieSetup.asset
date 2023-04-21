@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
   m_Name: ZombieSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 0}
+  m_Prefab: {fileID: 1625630016818689178, guid: 2f37ad43529974d3a84d3088a70f2860,
+    type: 3}
   m_Status: {fileID: 11400000, guid: 117235bf368c7407c839be62878a0867, type: 2}

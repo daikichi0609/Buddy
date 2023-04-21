@@ -17,7 +17,7 @@ public readonly struct AttackResult
     /// <summary>
     /// 被攻撃者の名前
     /// </summary>
-    public CHARA_NAME Name { get; }
+    public string Name { get; }
 
     /// <summary>
     /// ヒットしたかどうか
