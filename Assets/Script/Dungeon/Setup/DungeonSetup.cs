@@ -12,7 +12,7 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// ダンジョン名
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("ダンジョン名")]
     [ResizableTextArea]
     private string m_DungeonName;
     public string DungeonName => m_DungeonName;
@@ -20,7 +20,7 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// 階数
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("フロア数")]
     [Range(0, 100)]
     private int m_FloorCount;
     public int FloorCount => m_FloorCount;
@@ -28,14 +28,14 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// ダンジョンの広さ
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("ダンジョンの広さ")]
     private Vector2Int m_MapSize;
     public Vector2Int MapSize => m_MapSize;
 
     /// <summary>
     /// 部屋の数の範囲
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("部屋の数")]
     [MinMaxSlider(0, 20)]
     private Vector2Int m_RoomCountRange;
     public int RoomCountMin => m_RoomCountRange.x;
@@ -44,14 +44,14 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// 敵の出現テーブル
     /// </summary>
-    [SerializeField, Expandable]
+    [SerializeField, Expandable, Header("敵の出現テーブル")]
     private EnemyTableSetup m_EnemyTable;
     public EnemyTableSetup EnemyTable => m_EnemyTable;
 
     /// <summary>
     /// 敵の数の範囲
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("敵の数")]
     [MinMaxSlider(0, 20)]
     private Vector2Int m_EnemyCountRange;
     public int EnemyCountMin => m_EnemyCountRange.x;
@@ -60,7 +60,7 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// モンスターハウス確率
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("モンスターハウス確率（フロアごと）")]
     [Range(0f, 1f)]
     private float m_MonsterHouseRate;
     public float MonsterHouseRate => m_MonsterHouseRate;
@@ -68,15 +68,24 @@ public class DungeonSetup : ScriptableObject
     /// <summary>
     /// 罠の確率
     /// </summary>
-    [SerializeField, Range(0f, 1f)]
+    [SerializeField, Header("罠の確率（セルごと）")]
+    [Range(0f, 1f)]
     private float m_TrapProb;
     public float TrapProb => m_TrapProb;
 
     /// <summary>
     /// アイテムの数
     /// </summary>
-    [SerializeField, MinMaxSlider(0, 10)]
+    [SerializeField, Header("アイテムの数")]
+    [MinMaxSlider(0, 10)]
     private Vector2Int m_ItemCountRange;
     public int ItemCountMin => m_ItemCountRange.x;
     public int ItemCountMax => m_ItemCountRange.y;
+
+    /// <summary>
+    /// BGM
+    /// </summary>
+    [SerializeField, Header("BGM")]
+    private GameObject m_BGM;
+    public GameObject BGM => m_BGM;
 }

@@ -44,14 +44,6 @@ public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
     private Subject<Unit> m_Update = new Subject<Unit>();
     IObservable<Unit> IGameManager.GetUpdateEvent => m_Update;
 
-    protected override void Awake()
-    {
-        m_Initialize.Subscribe(_ =>
-        {
-            SoundManager.Instance.BlueCrossBGM.Play();
-        }).AddTo(this);
-    }
-
     //初期化処理呼び出し
     private void Start()
     {

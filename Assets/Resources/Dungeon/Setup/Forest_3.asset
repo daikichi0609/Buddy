@@ -19,5 +19,6 @@ MonoBehaviour:
   m_EnemyTable: {fileID: 11400000, guid: e14b30015173b4c5c8e74c7d65280d3d, type: 2}
   m_EnemyCountRange: {x: 5, y: 7}
   m_MonsterHouseRate: 0
-  m_TrapProb: 0
+  m_TrapProb: 0.02
   m_ItemCountRange: {x: 5, y: 7}
+  m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}

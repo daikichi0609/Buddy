@@ -73,6 +73,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     player.Initialize();
                     if (player.RequireInterface<ICharaStatus>(out var p) == true)
                         p.SetStatus(GameManager.Interface.Leader.Status);
+                    CameraHandler.Interface.SetParent(content);
                     UnitHolder.Interface.AddPlayer(player);
                     break;
 
@@ -152,6 +153,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         Deploy(CONTENTS_TYPE.FRIEND);
         Deploy(CONTENTS_TYPE.ENEMY, DungeonProgressManager.Interface.CurrentDungeonSetup.EnemyCountMax);
         Deploy(CONTENTS_TYPE.ITEM, DungeonProgressManager.Interface.CurrentDungeonSetup.ItemCountMax);
+        BGMHandler.Interface.SetBGM(Instantiate(DungeonProgressManager.Interface.CurrentDungeonSetup.BGM));
     }
     void IDungeonContentsDeployer.Deploy() => DeployAll();
 

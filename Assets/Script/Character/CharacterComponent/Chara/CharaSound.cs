@@ -10,6 +10,23 @@ public interface ICharaSound : IActorInterface
 
 public class CharaSound : ActorComponentBase, ICharaSound
 {
+    private static bool ms_IsSet = false;
+
+    /// <summary>
+    /// 攻撃
+    /// </summary>
+    private static AudioSource ms_AttackSound;
+
+    /// <summary>
+    /// 空振り
+    /// </summary>
+    private static AudioSource ms_MissSound;
+
+    /// <summary>
+    /// 被ダメージ
+    /// </summary>
+    private static AudioSource ms_DamageSound;
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -20,6 +37,15 @@ public class CharaSound : ActorComponentBase, ICharaSound
     {
         base.Initialize();
 
+        if (ms_IsSet == false)
+        {
+            ms_IsSet = true;
+            var attack = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.AttackSound);
+            ms_AttackSound = attack.GetComponent<AudioSource>();
+            ms_MissSound = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
+            ms_DamageSound = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
+        }
+
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             battle.OnAttackStart.Subscribe(_ =>
@@ -27,7 +53,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 // 攻撃音
                 StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, () =>
                 {
-                    SoundManager.Instance.Attack_Sword.Play();
+                    ms_AttackSound.Play();
                 }));
             }).AddTo(CompositeDisposable);
 
@@ -36,14 +62,14 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 if (result.IsHit == false)
                 {
                     // 空振り音
-                    SoundManager.Instance.Miss.Play();
+                    ms_MissSound.Play();
                 }
             }).AddTo(CompositeDisposable);
 
             battle.OnDamageEnd.Subscribe(_ =>
             {
                 // ダメージ音
-                SoundManager.Instance.Damage_Small.Play();
+                ms_DamageSound.Play();
             }).AddTo(CompositeDisposable);
         }
 

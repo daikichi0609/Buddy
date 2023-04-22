@@ -91,7 +91,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     }
 
     /// <summary>
-    /// アイテムチェック
+    /// 罠チェック
     /// </summary>
     /// <returns></returns>
     private bool CheckTrap()

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79717ffa27cba4e868a8d365873a9be3, type: 3}
+  m_Name: New Character Master Setup
+  m_EditorClassIdentifier: 
+  m_AttackSound: {fileID: 2573996989346612756, guid: 76a9212cd8aa94688b5e8f19bbe4cc2e,
+    type: 3}
+  m_DamageSound: {fileID: 8713785440656138478, guid: 368dd7a29e15845f88bfa7d00ade6606,
+    type: 3}
+  m_MissSound: {fileID: 5087174154848842170, guid: 9acd612c7b095473db42d39e9d4ca660,
+    type: 3}

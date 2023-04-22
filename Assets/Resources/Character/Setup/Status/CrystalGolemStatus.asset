@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Param:
     m_GivenName: "\u30B4\u30FC\u30EC\u30E0"
-    m_MaxHp: 20
+    m_MaxHp: 15
     m_Atk: 15
-    m_Def: 10
+    m_Def: 8
     m_Agi: 1
     m_Res: 0.1
     m_Ex: 10

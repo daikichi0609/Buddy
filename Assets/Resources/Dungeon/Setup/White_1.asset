@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DungeonName: "\u767D\u306E\u5854"
   m_FloorCount: 8
-  m_MaxRoomCount: 10
-  m_MaxEnemyCount: 15
+  m_MapSize: {x: 0, y: 0}
+  m_RoomCountRange: {x: 0, y: 0}
+  m_EnemyTable: {fileID: 0}
+  m_EnemyCountRange: {x: 0, y: 0}
   m_MonsterHouseRate: 0.1
+  m_TrapProb: 0
+  m_ItemCountRange: {x: 0, y: 0}
+  m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}

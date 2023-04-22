@@ -127,6 +127,14 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+
+        m_OnAttackEnd.Subscribe(result =>
+        {
+            if (result.IsHit == true)
+                BattleUiManager.Interface.Damage(result);
+            else
+                BattleUiManager.Interface.Miss(result);
+        }).AddTo(this);
     }
 
     /// <summary>
