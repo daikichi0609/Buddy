@@ -153,6 +153,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (TurnManager.Interface.NoOneActing == false)
             return false;
 
+        m_CharaMove.Face(direction);
         var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, direction);
         m_OnAttackStart.OnNext(attackInfo);
 

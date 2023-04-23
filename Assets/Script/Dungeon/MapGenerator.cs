@@ -256,7 +256,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
             // 部屋リストへ追加
             Range room = new Range(startX, startY, endX, endY);
-            DungeonManager.Interface.RangeList.Add(room);
+            DungeonDeployer.Interface.RangeList.Add(room);
             m_RoomList.Add(room);
 
             // 通路を作る

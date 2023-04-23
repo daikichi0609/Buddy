@@ -167,11 +167,11 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     private void RebuildDungeon()
     {
         // ダンジョン撤去
-        DungeonManager.Interface.RemoveDungeon();
+        DungeonDeployer.Interface.RemoveDungeon();
         DungeonContentsDeployer.Interface.Remove();
 
         // ダンジョン再構築
-        DungeonManager.Interface.DeployDungeon();
+        DungeonDeployer.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.Deploy();
     }
 }

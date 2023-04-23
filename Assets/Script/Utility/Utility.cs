@@ -5,15 +5,10 @@ using System;
 
 public static class Utility
 {
-    public static void Shuffle<T>(this IList<T> list)
+    public static T RandomLottery<T>(this IList<T> list)
     {
-        for (int i = list.Count - 1; i > 0; i--)
-        {
-            int j = UnityEngine.Random.Range(0, i + 1);
-            var tmp = list[i];
-            list[i] = list[j];
-            list[j] = tmp;
-        }
+        var index = UnityEngine.Random.Range(0, list.Count);
+        return list[index];
     }
 }
 

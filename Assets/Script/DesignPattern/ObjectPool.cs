@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool: Singleton<ObjectPool>
+public class ObjectPool : Singleton<ObjectPool>
 {
     public Dictionary<string, List<GameObject>> ObjectPoolDictionary { get; } = new Dictionary<string, List<GameObject>>();
 
@@ -10,11 +10,8 @@ public class ObjectPool: Singleton<ObjectPool>
     {
         gameObject = null;
 
-        ObjectPoolDictionary.TryGetValueEx(key, new List<GameObject>());
-        if (ObjectPoolDictionary[key] == null || ObjectPoolDictionary[key].Count == 0)
-        {
+        if (ObjectPoolDictionary.TryGetValue(key, out var gameObjects) == false || gameObjects.Count == 0)
             return false;
-        }
 
         List<GameObject> list = ObjectPoolDictionary[key];
         gameObject = list[list.Count - 1];
@@ -25,16 +22,12 @@ public class ObjectPool: Singleton<ObjectPool>
 
     public void SetObject(string key, GameObject gameObject)
     {
-        ObjectPoolDictionary.TryGetValueEx(key, new List<GameObject>());
+        if (ObjectPoolDictionary.TryGetValue(key, out var list) == false)
+            ObjectPoolDictionary.Add(key, new List<GameObject>());
+
         gameObject.SetActive(false);
         gameObject.transform.position = new Vector3(0, 0, 0);
 
-        List<GameObject> list = ObjectPoolDictionary[key];
-        if (list == null)
-        {
-            list = new List<GameObject>();
-            ObjectPoolDictionary.Add(key, list);
-        }
         list.Add(gameObject);
     }
 }

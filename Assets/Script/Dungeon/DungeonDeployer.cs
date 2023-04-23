@@ -6,7 +6,7 @@ using UniRx;
 /// https://note.com/motibe_tsukuru/n/nbe75bb690bcc
 /// </summary>
 
-public interface IDungeonManager : ISingleton
+public interface IDungeonDeployer : ISingleton
 {
     CELL_ID[,] IdMap { get; }
     List<List<ICollector>> CellMap { get; }
@@ -43,13 +43,13 @@ public enum CELL_ID
 z
  x → → →
 */
-public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDungeonManager
+public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDungeonDeployer
 {
     /// <summary>
     /// マップ
     /// </summary>
     private CELL_ID[,] m_IdMap;
-    CELL_ID[,] IDungeonManager.IdMap => m_IdMap;
+    CELL_ID[,] IDungeonDeployer.IdMap => m_IdMap;
 
     private void OverWriteCellId(CELL_ID value, int x, int z) => m_IdMap[x, z] = value;
 
@@ -57,7 +57,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// インスタンス
     /// </summary>
     private List<List<ICollector>> m_CellMap = new List<List<ICollector>>();
-    List<List<ICollector>> IDungeonManager.CellMap => m_CellMap;
+    List<List<ICollector>> IDungeonDeployer.CellMap => m_CellMap;
 
     private void SetCell(ICollector cell, int x, int z)
     {
@@ -78,7 +78,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    List<ICollector> IDungeonManager.GetRoomCellList(int roomId) => m_RoomCellList[roomId];
+    List<ICollector> IDungeonDeployer.GetRoomCellList(int roomId) => m_RoomCellList[roomId];
 
     private ICollector GetRoomCell(int id, int num) => m_RoomCellList[id][num];
 
@@ -104,7 +104,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
     /// 消したいかも
     /// </summary>
     private List<Range> m_RangeList = new List<Range>();
-    List<Range> IDungeonManager.RangeList => m_RangeList;
+    List<Range> IDungeonDeployer.RangeList => m_RangeList;
 
     protected override void Awake()
     {
@@ -122,7 +122,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
         CreateRoomCellList();
         RegisterRoomID();
     }
-    void IDungeonManager.DeployDungeon() => DeployDungeon();
+    void IDungeonDeployer.DeployDungeon() => DeployDungeon();
 
     public void RemoveDungeon()
     {
@@ -139,7 +139,7 @@ public class DungeonManager : Singleton<DungeonManager, IDungeonManager>, IDunge
 
         InitializeAllList();
     }
-    void IDungeonManager.RemoveDungeon() => RemoveDungeon();
+    void IDungeonDeployer.RemoveDungeon() => RemoveDungeon();
 
     private void InitializeAllList()
     {

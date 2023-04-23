@@ -103,7 +103,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         if (roomId <= 0)
             return false;
 
-        var roomList = DungeonManager.Interface.GetRoomCellList(roomId);
+        var roomList = DungeonDeployer.Interface.GetRoomCellList(roomId);
 
         if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
         {
