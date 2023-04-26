@@ -90,7 +90,7 @@ public abstract class UiBase : IUiBase
         OptionMethods = element.OptionMethods;
 
         // 選択肢テキスト初期化
-        for (int i = 0; i < element.OptionMethods?.Length; i++)
+        for (int i = 0; i < Texts.Count; i++)
             Texts[i].text = element.OptionTexts[i];
 
         // 有効中の選択肢初期化

@@ -7,42 +7,25 @@ using UniRx.Triggers;
 using System;
 using System.Threading.Tasks;
 
-public interface IGameManager : ISingleton
+public interface IPlayerLoop : ISingleton
 {
-    CharacterSetup Leader { get; }
-    CharacterSetup Friend { get; }
-
     IObservable<Unit> GetInitEvent { get; }
     IObservable<Unit> GetUpdateEvent { get; }
 }
 
-public class GameManager : Singleton<GameManager, IGameManager>, IGameManager
+public class PlayerLoopManager : Singleton<PlayerLoopManager, IPlayerLoop>, IPlayerLoop
 {
-    /// <summary>
-    /// リーダーセットアップ
-    /// </summary>
-    [SerializeField]
-    private CharacterSetup m_Leader;
-    CharacterSetup IGameManager.Leader => m_Leader;
-
-    /// <summary>
-    /// フレンドセットアップ
-    /// </summary>
-    [SerializeField]
-    private CharacterSetup m_Friend;
-    CharacterSetup IGameManager.Friend => m_Friend;
-
     /// <summary>
     /// 初期化処理メソッドまとめ
     /// </summary>
     private Subject<Unit> m_Initialize = new Subject<Unit>();
-    IObservable<Unit> IGameManager.GetInitEvent => m_Initialize;
+    IObservable<Unit> IPlayerLoop.GetInitEvent => m_Initialize;
 
     /// <summary>
     /// 毎F処理メソッドまとめ
     /// </summary>
     private Subject<Unit> m_Update = new Subject<Unit>();
-    IObservable<Unit> IGameManager.GetUpdateEvent => m_Update;
+    IObservable<Unit> IPlayerLoop.GetUpdateEvent => m_Update;
 
     //初期化処理呼び出し
     private void Start()

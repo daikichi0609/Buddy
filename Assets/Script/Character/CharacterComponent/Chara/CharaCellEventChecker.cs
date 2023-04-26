@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UniRx;
 using static UnityEditor.Progress;
+using System;
 
 public interface ICharaCellEventChecker : IActorInterface
 {
@@ -82,7 +83,8 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             Vector3Int itemPos = item.Position;
             if (m_CharaMove.Position == itemPos)
             {
-                m_CharaTurn.WaitFinishActing(() => m_CharaInventory.Put(item));
+                var disposable = TurnManager.Interface.RequestProhibitAction();
+                m_CharaTurn.WaitFinishActing(() => m_CharaInventory.Put(item, disposable));
                 return true;
             }
         }
@@ -103,7 +105,8 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
         if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
             if (handler.HasTrap == true)
             {
-                m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, UnitFinder.Interface, cell.GetAroundCell()));
+                var disposable = TurnManager.Interface.RequestProhibitAction();
+                m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, UnitFinder.Interface, cell.GetAroundCell(), disposable));
                 return true;
             }
 

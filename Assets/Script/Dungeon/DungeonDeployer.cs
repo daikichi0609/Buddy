@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UniRx;
+using System;
 
 /// <summary>
 /// https://note.com/motibe_tsukuru/n/nbe75bb690bcc
@@ -8,15 +9,42 @@ using UniRx;
 
 public interface IDungeonDeployer : ISingleton
 {
+    /// <summary>
+    /// マップ
+    /// </summary>
     CELL_ID[,] IdMap { get; }
+
+    /// <summary>
+    /// マップ（コレクター）
+    /// </summary>
     List<List<ICollector>> CellMap { get; }
 
+    /// <summary>
+    /// 任意の部屋Idのセルを入手
+    /// </summary>
+    /// <param name="roomId"></param>
+    /// <returns></returns>
     List<ICollector> GetRoomCellList(int roomId);
 
+    /// <summary>
+    /// 消したい
+    /// </summary>
     List<Range> RangeList { get; }
 
-    void RemoveDungeon();
+    /// <summary>
+    /// ダンジョンデプロイ
+    /// </summary>
     void DeployDungeon();
+
+    /// <summary>
+    /// ダンジョンリムーブ
+    /// </summary>
+    void RemoveDungeon();
+
+    /// <summary>
+    /// ダンジョン配置イベント
+    /// </summary>
+    IObservable<Unit> OnDungeonInitialize { get; }
 }
 
 public enum CELL_ID
@@ -106,13 +134,22 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     private List<Range> m_RangeList = new List<Range>();
     List<Range> IDungeonDeployer.RangeList => m_RangeList;
 
+    /// <summary>
+    /// ダンジョン初期化イベント
+    /// </summary>
+    private Subject<Unit> m_OnDungeonInitialize = new Subject<Unit>();
+    IObservable<Unit> IDungeonDeployer.OnDungeonInitialize => m_OnDungeonInitialize;
+
     protected override void Awake()
     {
         base.Awake();
-        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon()).AddTo(this);
+        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon()).AddTo(this);
     }
 
-    private void DeployDungeon()
+    /// <summary>
+    /// ダンジョン初期化
+    /// </summary>
+    private void DeployDungeon(bool init = true)
     {
         m_IdMap = MapGenerator.Instance.GenerateMap(DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x, DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y, DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax);
         Debug.Log("Map Reload");
@@ -121,10 +158,16 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         DeployStairs();
         CreateRoomCellList();
         RegisterRoomID();
+
+        if (init == true)
+            m_OnDungeonInitialize.OnNext(Unit.Default);
     }
     void IDungeonDeployer.DeployDungeon() => DeployDungeon();
 
-    public void RemoveDungeon()
+    /// <summary>
+    /// ダンジョン撤去
+    /// </summary>
+    private void RemoveDungeon()
     {
         foreach (var list in m_CellMap)
         {
@@ -141,6 +184,9 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     }
     void IDungeonDeployer.RemoveDungeon() => RemoveDungeon();
 
+    /// <summary>
+    /// リスト初期化
+    /// </summary>
     private void InitializeAllList()
     {
         m_CellMap.Clear();
@@ -148,6 +194,9 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         m_RangeList.Clear();
     }
 
+    /// <summary>
+    /// ダンジョンの地形を配置
+    /// </summary>
     private void DeployDungeonTerrain()
     {
         for (int i = 0; i < m_IdMap.GetLength(0) - 1; i++)
@@ -215,7 +264,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 // 部屋なら罠抽選
                 if (info.CellId == CELL_ID.ROOM)
                 {
-                    var prob = Random.Range(0f, 1f);
+                    var prob = UnityEngine.Random.Range(0f, 1f);
                     if (prob <= DungeonProgressManager.Interface.CurrentDungeonSetup.TrapProb)
                         DeployTrap(cell, pos);
                 }

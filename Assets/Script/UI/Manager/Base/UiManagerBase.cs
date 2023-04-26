@@ -115,7 +115,12 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
         UiInterface.Initialize(m_Disposables, CreateOptionElement());
         UiInterface.SetActive(IsActive);
 
+        // バトルログは消す
         BattleLogManager.Interface.Deactive();
+
+        // キャラの行動許可
+        var disposable = TurnManager.Interface.RequestProhibitAction();
+        m_Disposables.Add(disposable);
     }
     void IUiManager.Activate() => Activate();
 
@@ -124,9 +129,13 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     /// </summary>
     protected virtual void Deactivate()
     {
+        // Ui非表示
         UiInterface.SetActive(false);
+
+        // 入力購読終わり
         m_Disposables.Clear();
 
+        // イベント
         CloseUiEvent?.Invoke();
         CloseUiEvent = null;
     }

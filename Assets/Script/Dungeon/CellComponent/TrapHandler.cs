@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 using System.Threading.Tasks;
+using System;
 
 public interface ITrapHandler : IActorInterface
 {
@@ -17,7 +18,7 @@ public interface ITrapHandler : IActorInterface
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    bool ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around);
+    Task ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around, IDisposable disposable);
 
     /// <summary>
     /// 罠設置
@@ -67,21 +68,21 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    bool ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around)
+    async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around, IDisposable disposable)
     {
         if (m_Trap == null)
-            return false;
-
-        var disposable = TurnManager.Interface.RequestProhibitAction();
+        {
+            Debug.LogAssertion("罠がありません");
+            return;
+        }
 
         var turn = stepper.GetInterface<ICharaTurn>();
 
         m_GameObject.SetActive(true);
         IsVisible = true;
 
-        Task.Run(() => m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position));
+        await m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position);
         disposable.Dispose();
-        return true;
     }
 
     /// <summary>

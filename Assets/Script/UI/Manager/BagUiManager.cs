@@ -21,18 +21,32 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
         int itemCount = items.Length;
 
         var effects = new Action[itemCount];
-        var names = new string[itemCount];
 
-        for (int i = 0; i < itemCount; i++)
+        int itemTextCount = m_UiInterface.ItemElementCount;
+        var names = new string[itemTextCount];
+
+        int index = 0;
+        for (index = 0; index < itemCount; index++)
         {
-            var item = items[i];
+            var item = items[index];
             var name = item.Name;
             var effect = ItemEffect.GetEffect(name);
-            effects[i] = () => effect.Effect(player, item);
-            names[i] = name.ToString();
+            effects[index] = () => effect.Effect(player, item);
+            names[index] = name.ToString();
+        }
+        while (index < itemTextCount)
+        {
+            names[index] = "----------";
+            index++;
         }
 
         return new OptionElement(effects, names);
+    }
+
+    protected override void Deactivate()
+    {
+        base.Deactivate();
+        MenuUiManager.Interface.Activate();
     }
 
     public class BagUi : UiBase
@@ -46,5 +60,10 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
         /// 操作するテキストUi
         /// </summary>
         protected override List<Text> Texts => UiHolder.Instance.ItemTexts;
+
+        /// <summary>
+        /// アイテムの要素数
+        /// </summary>
+        public int ItemElementCount => Texts.Count;
     }
 }

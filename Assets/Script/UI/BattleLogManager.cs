@@ -37,7 +37,7 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
     {
         base.Awake();
 
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
+        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
     }
 
     /// <summary>

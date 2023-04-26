@@ -65,4 +65,10 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
         base.Register(owner);
         owner.Register<ICellInfoHolder>(this);
     }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        m_RoomId = -1;
+    }
 }

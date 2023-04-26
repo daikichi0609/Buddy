@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System;
 
 public enum CONTENTS_TYPE
 {
@@ -22,6 +23,11 @@ public interface IDungeonContentsDeployer : ISingleton
     /// コンテンツ撤去
     /// </summary>
     void Remove();
+
+    /// <summary>
+    /// ダンジョン配置イベント
+    /// </summary>
+    IObservable<Unit> OnContentsInitialize { get; }
 }
 
 public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDungeonContentsDeployer>, IDungeonContentsDeployer
@@ -29,8 +35,14 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     protected override void Awake()
     {
         base.Awake();
-        GameManager.Interface.GetInitEvent.Subscribe(_ => DeployAll()).AddTo(this);
+        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => DeployAll()).AddTo(this);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private Subject<Unit> m_OnContentsInitialize = new Subject<Unit>();
+    IObservable<Unit> IDungeonContentsDeployer.OnContentsInitialize => m_OnContentsInitialize;
 
     /// <summary>
     /// キャラオブジェクト取得
@@ -67,12 +79,12 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                         RedeployPlayer(cell);
                         break;
                     }
-                    content = CharaObject(GameManager.Interface.Leader);
+                    content = CharaObject(OutGameInfoHolder.Interface.Leader);
                     content.transform.position = new Vector3(info.X, CharaMove.OFFSET_Y, info.Z);
                     var player = content.GetComponent<ICollector>();
                     player.Initialize();
                     if (player.RequireInterface<ICharaStatus>(out var p) == true)
-                        p.SetStatus(GameManager.Interface.Leader.Status);
+                        p.SetStatus(OutGameInfoHolder.Interface.Leader.Status);
                     CameraHandler.Interface.SetParent(content);
                     UnitHolder.Interface.AddPlayer(player);
                     break;
@@ -95,12 +107,12 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                         }
                     }
                     var pos = playerPos + dir.ToV3Int() + new Vector3(0f, CharaMove.OFFSET_Y, 0f);
-                    content = CharaObject(GameManager.Interface.Friend);
+                    content = CharaObject(OutGameInfoHolder.Interface.Friend);
                     content.transform.position = pos;
                     var friend = content.GetComponent<ICollector>();
                     friend.Initialize();
                     if (friend.RequireInterface<ICharaStatus>(out var f) == true)
-                        f.SetStatus(GameManager.Interface.Friend.Status);
+                        f.SetStatus(OutGameInfoHolder.Interface.Friend.Status);
                     UnitHolder.Interface.AddPlayer(friend);
                     break;
 
@@ -153,7 +165,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         Deploy(CONTENTS_TYPE.FRIEND);
         Deploy(CONTENTS_TYPE.ENEMY, DungeonProgressManager.Interface.CurrentDungeonSetup.EnemyCountMax);
         Deploy(CONTENTS_TYPE.ITEM, DungeonProgressManager.Interface.CurrentDungeonSetup.ItemCountMax);
-        BGMHandler.Interface.SetBGM(Instantiate(DungeonProgressManager.Interface.CurrentDungeonSetup.BGM));
+
+        m_OnContentsInitialize.OnNext(Unit.Default);
     }
     void IDungeonContentsDeployer.Deploy() => DeployAll();
 

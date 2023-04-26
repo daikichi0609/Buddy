@@ -6,11 +6,6 @@ using NaughtyAttributes;
 public interface IBGMHandler : ISingleton
 {
     /// <summary>
-    /// BGMセット
-    /// </summary>
-    void SetBGM(GameObject bgm, bool play = true);
-
-    /// <summary>
     /// BGMスタート
     /// </summary>
     void Start();
@@ -27,11 +22,18 @@ public class BGMHandler : Singleton<BGMHandler, IBGMHandler>, IBGMHandler
     private GameObject m_BGM;
     private AudioSource m_Audio;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        var bgm = Instantiate(DungeonProgressManager.Interface.CurrentDungeonSetup.BGM);
+        SetBGM(bgm);
+    }
+
     /// <summary>
     /// BGMセット
     /// </summary>
     /// <param name="bgm"></param>
-    void IBGMHandler.SetBGM(GameObject bgm, bool play)
+    private void SetBGM(GameObject bgm, bool play = true)
     {
         if (m_BGM != null)
             Destroy(m_BGM);

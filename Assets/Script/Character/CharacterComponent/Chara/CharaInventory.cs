@@ -16,7 +16,7 @@ public interface ICharaInventory : IActorInterface
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool Put(IItem item);
+    bool Put(IItem item, IDisposable disposable);
 
     /// <summary>
     /// アイテムを消費する
@@ -67,8 +67,10 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool ICharaInventory.Put(IItem item)
+    bool ICharaInventory.Put(IItem item, IDisposable disposable)
     {
+        disposable.Dispose();
+
         if (m_ItemList.Count < InventoryCount)
         {
             m_ItemList.Add(item);

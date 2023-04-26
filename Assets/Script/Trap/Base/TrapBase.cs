@@ -44,9 +44,6 @@ public abstract class TrapBase : ITrap
         // ----- ログ終わり ----- //
 
         await EffectInternal(stepper, unitFinder, aroundCell, effect, pos);
-
-        var turn = stepper.GetInterface<ICharaTurn>();
-        turn.TurnEnd();
         return true;
     }
 }

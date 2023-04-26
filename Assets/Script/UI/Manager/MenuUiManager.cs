@@ -40,7 +40,9 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
         m_OpenMenuDisposable = InputManager.Interface.InputStartEvent.Subscribe(input =>
         {
             if (IsActive == false && TurnManager.Interface.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
+            {
                 Activate();
+            }
         }).AddTo(this);
     }
 
@@ -68,6 +70,8 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
     private void OpenBag()
     {
         Deactivate();
+
+        // 新しくUiを開く
         BagUiManager.Interface.Activate();
     }
 

@@ -30,7 +30,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ =>
+        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ =>
         {
             if (m_CharaTurn.CanAct == true)
                 DecideAndExecuteAction();

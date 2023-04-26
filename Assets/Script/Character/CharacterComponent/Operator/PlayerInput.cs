@@ -28,7 +28,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     protected override void Initialize()
     {
         base.Initialize();
-        CharaUiManager.Interface.InitializeCharacterUi(this.Owner);
 
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();

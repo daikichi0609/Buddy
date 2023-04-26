@@ -42,8 +42,8 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         base.Awake();
 
-        GameManager.Interface.GetInitEvent.Subscribe(_ => CreateActionList()).AddTo(this);
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
+        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => CreateActionList()).AddTo(this);
+        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
     }
 
     /// <summary>
@@ -65,7 +65,8 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// <summary>
     /// 全ての行動を禁じる
     /// </summary>
-    private readonly Queue<ProhibitRequest> m_ProhibitAllAction = new Queue<ProhibitRequest>();
+    private Queue<ProhibitRequest> m_ProhibitAllAction = new Queue<ProhibitRequest>();
+    [ShowNativeProperty]
     private bool ProhibitAllAction => m_ProhibitAllAction.Count != 0;
 
     /// <summary>
@@ -165,7 +166,13 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     }
 }
 
+[Serializable]
 public readonly struct ProhibitRequest
 {
+    public ProhibitRequest(GameObject requester)
+    {
+        Requester = requester;
+    }
 
+    private GameObject Requester { get; }
 }

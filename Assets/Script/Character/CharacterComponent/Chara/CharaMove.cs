@@ -93,7 +93,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         var pos = MoveObject.transform.position;
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
-        GameManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
+        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
     }
 
     /// <summary>
