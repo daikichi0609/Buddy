@@ -123,11 +123,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         Vector3Int destinationPos = Position + direction.ToV3Int();
 
-        // 他ユニットがいる場合
+        // 他ユニットがいる場合の入れ違い処理
         if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
         {
-            var type = unit.GetInterface<ICharaTypeHolder>().Type;
-            if (type != m_Type.Type)
+            // プレイヤーキャラでないなら、もしくは相手がプレイヤーキャラでないなら入れ違わない
+            if (m_Type.Type != CHARA_TYPE.PLAYER || unit.GetInterface<ICharaTypeHolder>().Type != CHARA_TYPE.PLAYER)
                 return false;
             else
             {

@@ -9,15 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
-  m_Name: Apple
+  m_Script: {fileID: 11500000, guid: 82115a0dcc007449ebf76ea859182252, type: 3}
+  m_Name: BombTrap
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 6302350960553940057, guid: 2a306aa7abfe440b1b32da659129e3ba,
+  m_Prefab: {fileID: 220792909776218635, guid: 1bb49f74d10384641b4672752e992d68, type: 3}
+  m_TrapName: "\u7206\u5F3E\u30C8\u30E9\u30C3\u30D7"
+  m_EffectObject: {fileID: 1150934714579380, guid: 779aa8c25fbd0e1488637639c9fff976,
     type: 3}
-  m_ItemName: "\u308A\u3093\u3054"
-  m_Effect: {fileID: 4643006505588422760}
-  m_Type: SatisfyHungryDesire
---- !u!114 &4643006505588422760
+  m_TrapEffect: {fileID: 3069249077738780471}
+  m_Type: BombTrap
+--- !u!114 &3069249077738780471
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -26,7 +27,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da35f8c2a4ade452388e0fcec1d06a6a, type: 3}
-  m_Name: SatisfyHungryDesire
+  m_Script: {fileID: 11500000, guid: 56af38472fa3c4682b7a8b5b8c568dd3, type: 3}
+  m_Name: BombTrap
   m_EditorClassIdentifier: 
-  m_Recover: 40
+  m_DamageRatio: 0.5

@@ -9,20 +9,20 @@ public interface ICharaInventory : IActorInterface
     /// <summary>
     /// 所持しているアイテム
     /// </summary>
-    IItem[] Items { get; }
+    IItemHandler[] Items { get; }
 
     /// <summary>
     /// アイテムをしまう
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool Put(IItem item, IDisposable disposable);
+    bool Put(IItemHandler item, IDisposable disposable);
 
     /// <summary>
     /// アイテムを消費する
     /// </summary>
     /// <param name="item"></param>
-    void Consume(IItem item);
+    void Consume(IItemHandler item);
 }
 
 public interface ICharaInventoryEvent : IActorInterface
@@ -36,9 +36,9 @@ public interface ICharaInventoryEvent : IActorInterface
 public readonly struct ItemPutInfo
 {
     public ICollector Owner { get; }
-    public IItem Item { get; }
+    public IItemHandler Item { get; }
 
-    public ItemPutInfo(ICollector owner, IItem item)
+    public ItemPutInfo(ICollector owner, IItemHandler item)
     {
         Owner = owner;
         Item = item;
@@ -49,8 +49,8 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
 {
     private static readonly int InventoryCount = 9;
 
-    private List<IItem> m_ItemList = new List<IItem>();
-    IItem[] ICharaInventory.Items => m_ItemList.ToArray();
+    private List<IItemHandler> m_ItemList = new List<IItemHandler>();
+    IItemHandler[] ICharaInventory.Items => m_ItemList.ToArray();
 
     Subject<ItemPutInfo> m_OnPutItem = new Subject<ItemPutInfo>();
     IObservable<ItemPutInfo> ICharaInventoryEvent.OnPutItem => m_OnPutItem;
@@ -67,14 +67,14 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool ICharaInventory.Put(IItem item, IDisposable disposable)
+    bool ICharaInventory.Put(IItemHandler item, IDisposable disposable)
     {
         disposable.Dispose();
 
         if (m_ItemList.Count < InventoryCount)
         {
             m_ItemList.Add(item);
-            ObjectPool.Instance.SetObject(item.Name.ToString(), item.ItemObject);
+            ObjectPool.Instance.SetObject(item.Setup.ItemName, item.ItemObject);
             ItemManager.Interface.RemoveItem(item);
 
             m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
@@ -90,7 +90,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// <summary>
     /// アイテムを消費する
     /// </summary>
-    void ICharaInventory.Consume(IItem item)
+    void ICharaInventory.Consume(IItemHandler item)
     {
         m_ItemList.Remove(item);
     }

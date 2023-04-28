@@ -11,7 +11,7 @@ public class CharacterSetup : ScriptableObject
     /// <summary>
     /// プレハブ
     /// </summary>
-    [SerializeField]
+    [SerializeField, Header("プレハブ")]
     private GameObject m_Prefab;
     public GameObject Prefab => m_Prefab;
 

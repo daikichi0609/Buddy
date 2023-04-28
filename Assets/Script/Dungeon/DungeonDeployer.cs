@@ -301,19 +301,9 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployTrap(ICollector cell, Vector3Int pos)
     {
-        var trap = GetRandomTrap();
+        var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
         var trapHolder = cell.GetInterface<ITrapHandler>();
-        trapHolder.SetTrap(trap.Item1, trap.Item2, pos);
-    }
-
-    /// <summary>
-    /// ランダムな罠インスタンスを返す
-    /// </summary>
-    /// <returns></returns>
-    private (TrapSetup, ITrap) GetRandomTrap()
-    {
-        var setup = (TrapSetup)Resources.Load("Trap/Setup/TrapBomb");
-        return (setup, new BombTrap());
+        trapHolder.SetTrap(trap, pos);
     }
 
 

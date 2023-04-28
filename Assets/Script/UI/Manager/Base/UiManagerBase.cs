@@ -119,7 +119,7 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
         BattleLogManager.Interface.Deactive();
 
         // キャラの行動許可
-        var disposable = TurnManager.Interface.RequestProhibitAction();
+        var disposable = TurnManager.Interface.RequestProhibitAction(null);
         m_Disposables.Add(disposable);
     }
     void IUiManager.Activate() => Activate();

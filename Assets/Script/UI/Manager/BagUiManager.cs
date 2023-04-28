@@ -29,8 +29,8 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
         for (index = 0; index < itemCount; index++)
         {
             var item = items[index];
-            var name = item.Name;
-            var effect = ItemEffect.GetEffect(name);
+            var name = item.Setup.ItemName;
+            var effect = item.Setup.Effect;
             effects[index] = () => effect.Effect(player, item);
             names[index] = name.ToString();
         }

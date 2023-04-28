@@ -23,7 +23,7 @@ public interface ITurnManager : ISingleton
     /// <summary>
     /// アクション禁止フラグ
     /// </summary>
-    IDisposable RequestProhibitAction();
+    IDisposable RequestProhibitAction(ICollector requester);
 
     /// <summary>
     /// 誰もアクションしていない
@@ -73,9 +73,9 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// 禁止リクエスト
     /// </summary>
     /// <returns></returns>
-    IDisposable ITurnManager.RequestProhibitAction()
+    IDisposable ITurnManager.RequestProhibitAction(ICollector requester)
     {
-        m_ProhibitAllAction.Enqueue(new ProhibitRequest());
+        m_ProhibitAllAction.Enqueue(new ProhibitRequest(requester));
         return Disposable.Create(() => m_ProhibitAllAction.Dequeue());
     }
 
@@ -136,19 +136,39 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         // 行動禁止中なら何もしない
         if (ProhibitAllAction == true)
         {
-            Debug.Log("行動禁止中");
+#if DEBUG
+            foreach (var req in m_ProhibitAllAction)
+            {
+                if (req.Requester.RequireInterface<ICharaStatus>(out var status) == true)
+                {
+                    Debug.Log(status.CurrentStatus.Name + "は行動禁止要請中");
+                }
+                else
+                {
+                    Debug.Log("差出人不明な行動禁止");
+                }
+            }
+#endif
             return;
         }
 
         // 行動可能なキャラがいるなら何もしない
         foreach (var unit in m_ActionUnits)
         {
+            // 死んでるキャラは除外する
+            if (unit.GetInterface<ICharaStatus>().IsDead == true)
+            {
+                m_ActionUnits.Remove(unit);
+                return;
+            }
+
+            // 行動可能なキャラの行動を待つ
             if (unit.GetInterface<ICharaTurn>().CanAct == true)
                 return;
         }
 
         // 行動可能なキャラがいないなら、インクリメントする
-        // indexが範囲外なら新しく作る
+        // indexが範囲外なら新しくキューを作る
         if (++m_ActionIndex >= m_ActionUnits.Count)
             CreateActionList();
 
@@ -169,10 +189,10 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 [Serializable]
 public readonly struct ProhibitRequest
 {
-    public ProhibitRequest(GameObject requester)
+    public ProhibitRequest(ICollector requester)
     {
         Requester = requester;
     }
 
-    private GameObject Requester { get; }
+    public ICollector Requester { get; }
 }

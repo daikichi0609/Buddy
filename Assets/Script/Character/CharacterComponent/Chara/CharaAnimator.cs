@@ -84,7 +84,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        m_CancelRequest = TurnManager.Interface.RequestProhibitAction();
+                        m_CancelRequest = TurnManager.Interface.RequestProhibitAction(Owner);
                         return;
                 }
 

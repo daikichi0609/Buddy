@@ -24,7 +24,7 @@ public interface ITrapHandler : IActorInterface
     /// 罠設置
     /// </summary>
     /// <param name="trap"></param>
-    void SetTrap(TrapSetup setup, ITrap trap, Vector3Int pos);
+    void SetTrap(TrapSetup setup, Vector3Int pos);
 
     /// <summary>
     /// 罠が見えるかどうか
@@ -89,10 +89,10 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// 罠取得
     /// </summary>
     /// <param name="trap"></param>
-    void ITrapHandler.SetTrap(TrapSetup setup, ITrap trap, Vector3Int pos)
+    void ITrapHandler.SetTrap(TrapSetup setup, Vector3Int pos)
     {
         m_Setup = setup;
-        m_Trap = trap;
+        m_Trap = setup.TrapEffect;
 
         var v3 = pos + new Vector3(0f, OFFSET_Y, 0f);
 
@@ -100,7 +100,7 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
         {
             m_GameObject = Instantiate(m_Setup.Prefab);
             m_GameObject.SetActive(false);
-            var effect = Instantiate(m_Setup.Effect);
+            var effect = Instantiate(m_Setup.EffectObject);
             m_Effect = new EffectHadler(effect);
         }
         m_GameObject.transform.position = v3;

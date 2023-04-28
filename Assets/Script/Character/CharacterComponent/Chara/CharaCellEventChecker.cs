@@ -78,12 +78,12 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     private bool CheckItem()
     {
         //アイテムチェック
-        foreach (IItem item in ItemManager.Interface.ItemList)
+        foreach (IItemHandler item in ItemManager.Interface.ItemList)
         {
             Vector3Int itemPos = item.Position;
             if (m_CharaMove.Position == itemPos)
             {
-                var disposable = TurnManager.Interface.RequestProhibitAction();
+                var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
                 m_CharaTurn.WaitFinishActing(() => m_CharaInventory.Put(item, disposable));
                 return true;
             }
@@ -105,7 +105,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
         if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
             if (handler.HasTrap == true)
             {
-                var disposable = TurnManager.Interface.RequestProhibitAction();
+                var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
                 m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, UnitFinder.Interface, cell.GetAroundCell(), disposable));
                 return true;
             }

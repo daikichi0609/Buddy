@@ -159,7 +159,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int();
 
-        var disposable = TurnManager.Interface.RequestProhibitAction();
+        var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
         // 非同期で内部処理走らせる
         StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
 

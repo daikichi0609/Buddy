@@ -118,11 +118,11 @@ public class CharaLog : ActorComponentBase, ICharaLog
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    private string CreatePutItemLog(string name, IItem item)
+    private string CreatePutItemLog(string name, IItemHandler item)
     {
         var sb = new StringBuilder();
 
-        sb.Append(name + "は" + item.Name + "を拾った");
+        sb.Append(name + "は" + item.Setup.ItemName + "を拾った");
 
         return sb.ToString();
     }

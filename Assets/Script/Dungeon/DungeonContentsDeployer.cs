@@ -129,10 +129,10 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
                 case CONTENTS_TYPE.ITEM:
                     var itemSetup = DungeonProgressManager.Interface.GetRandomItemSetup();
-                    content = itemSetup.Prefab;
-                    content.transform.position = new Vector3(info.X, Item.OFFSET_Y, info.Z);
+                    content = Instantiate(itemSetup.Prefab);
+                    content.transform.position = new Vector3(info.X, ItemHandler.OFFSET_Y, info.Z);
                     content.transform.eulerAngles = new Vector3(45f, 0f, 0f);
-                    IItem item = content.GetComponent<Item>();
+                    IItemHandler item = content.GetComponent<ItemHandler>();
                     item.Position = info.Position;
                     ItemManager.Interface.AddItem(item);
                     break;
@@ -191,7 +191,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         // ----- Item ----- //
         foreach (var item in ItemManager.Interface.ItemList)
         {
-            string name = item.Name.ToString();
+            string name = item.Setup.ItemName;
             ObjectPool.Instance.SetObject(name, item.ItemObject);
         }
         ItemManager.Interface.ItemList.Clear();

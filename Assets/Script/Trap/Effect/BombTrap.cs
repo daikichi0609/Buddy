@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class BombTrap : TrapBase
+public class BombTrap : TrapEffectBase
 {
-    private static readonly float DAMAGE_RATIO = 0.5f;
+    [SerializeField, Header("削る割合")]
+    [Range(0f, 1f)]
+    private float m_DamageRatio;
 
     protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
     {
         effect.Play(pos);
 
         // 範囲内の敵に割合ダメージ
-        await stepper.GetInterface<ICharaBattle>().DamagePercentage(DAMAGE_RATIO);
+        await stepper.GetInterface<ICharaBattle>().DamagePercentage(m_DamageRatio);
 
         foreach (var cell in aroundCell.Cells.Values)
         {
@@ -21,7 +23,7 @@ public class BombTrap : TrapBase
                 continue;
 
             var battle = unit.GetInterface<ICharaBattle>();
-            await battle.DamagePercentage(DAMAGE_RATIO);
+            await battle.DamagePercentage(m_DamageRatio);
         }
     }
 }

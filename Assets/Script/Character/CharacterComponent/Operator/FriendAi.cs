@@ -51,8 +51,10 @@ public partial class FriendAi : CharaAi, IFriendAi
             case FRIEND_STATE.CHASING:
                 // 部屋でPlayerと隣り合ってるかチェック
                 bool isNeighborOn = false;
-                // 部屋にいるなら
-                if (DungeonHandler.Interface.TryGetRoomId(m_CharaMove.Position, out var _))
+                // 自分とリーダーが同じ部屋にいるなら
+                if (DungeonHandler.Interface.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
+                    DungeonHandler.Interface.TryGetRoomId(UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position, out var playerId) &&
+                    myId == playerId)
                 {
                     var playerPos = UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position;
                     var aroundCell = DungeonHandler.Interface.GetAroundCell(playerPos);

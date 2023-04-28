@@ -17,7 +17,7 @@ public interface ITrap
     Task<bool> Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos);
 }
 
-public abstract class TrapBase : ITrap
+public class TrapEffectBase : ScriptableObject, ITrap
 {
     private static readonly float UNEXPLODE_RATE = 0.1f;
 
@@ -31,7 +31,7 @@ public abstract class TrapBase : ITrap
         // ----- ログ ----- //
         var sb = new StringBuilder();
         var charaName = stepper.GetInterface<ICharaStatus>().CurrentStatus.Name;
-        sb.Append(charaName + "は" + trap.Type + "を踏んだ！");
+        sb.Append(charaName + "は" + trap.TrapName + "を踏んだ！");
         BattleLogManager.Interface.Log(sb.ToString());
 
         await Task.Delay(500);

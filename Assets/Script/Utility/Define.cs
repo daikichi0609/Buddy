@@ -23,14 +23,6 @@ public enum CHARA_NAME
 }
 
 /// <summary>
-/// アイテム名
-/// </summary>
-public enum ITEM_NAME
-{
-    APPLE,
-}
-
-/// <summary>
 /// 罠種類
 /// </summary>
 public enum TRAP_TYPE

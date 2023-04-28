@@ -7,9 +7,9 @@ using System.Linq;
 
 public interface IItemManager : ISingleton
 {
-    List<IItem> ItemList { get; }
-    void AddItem(IItem item);
-    void RemoveItem(IItem item);
+    List<IItemHandler> ItemList { get; }
+    void AddItem(IItemHandler item);
+    void RemoveItem(IItemHandler item);
 }
 
 public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
@@ -17,9 +17,9 @@ public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
     /// <summary>
     /// 落ちているアイテムリスト
     /// </summary>
-    private List<IItem> m_ItemList = new List<IItem>();
-    List<IItem> IItemManager.ItemList => m_ItemList;
+    private List<IItemHandler> m_ItemList = new List<IItemHandler>();
+    List<IItemHandler> IItemManager.ItemList => m_ItemList;
 
-    void IItemManager.AddItem(IItem item) => m_ItemList.Add(item);
-    void IItemManager.RemoveItem(IItem item) => m_ItemList.Remove(item);
+    void IItemManager.AddItem(IItemHandler item) => m_ItemList.Add(item);
+    void IItemManager.RemoveItem(IItemHandler item) => m_ItemList.Remove(item);
 }
