@@ -12,12 +12,12 @@ public interface IItemHandler
     /// <summary>
     /// アイテム位置
     /// </summary>
-    Vector3Int Position { get; set; }
+    Vector3Int Position { get; }
 
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(ItemSetup setup, GameObject gameObject);
+    void Initialize(ItemSetup setup, GameObject gameObject, Vector3 pos);
 }
 
 public class ItemHandler : MonoBehaviour, IItemHandler
@@ -35,7 +35,6 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     /// <summary>
     /// ゲームオブジェクト
     /// </summary>
-    [SerializeField]
     private GameObject m_ItemObject;
     GameObject IItemHandler.ItemObject => m_ItemObject;
 
@@ -44,15 +43,14 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     /// </summary>
     [SerializeField, ReadOnly]
     private Vector3Int m_Position;
-    Vector3Int IItemHandler.Position
-    {
-        get => m_Position;
-        set => m_Position = value;
-    }
+    Vector3Int IItemHandler.Position => m_Position;
 
-    void IItemHandler.Initialize(ItemSetup setup, GameObject gameObject)
+    void IItemHandler.Initialize(ItemSetup setup, GameObject gameObject, Vector3 pos)
     {
         m_Setup = setup;
         m_ItemObject = gameObject;
+        m_ItemObject.SetActive(true);
+        m_ItemObject.transform.position = pos;
+        m_ItemObject.transform.eulerAngles = new Vector3(45f, 0f, 0f);
     }
 }

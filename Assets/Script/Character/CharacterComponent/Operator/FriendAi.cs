@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using NaughtyAttributes;
 
 public interface IFriendAi : IAiAction
 {
@@ -22,6 +23,8 @@ public enum FRIEND_STATE
 public partial class FriendAi : CharaAi, IFriendAi
 {
     private ReactiveProperty<FRIEND_STATE> m_CurrentState = new ReactiveProperty<FRIEND_STATE>();
+    [ShowNativeProperty]
+    private FRIEND_STATE CurrentState => m_CurrentState.Value;
 
     protected override CHARA_TYPE Target => CHARA_TYPE.ENEMY;
 

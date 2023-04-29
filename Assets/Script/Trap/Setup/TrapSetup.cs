@@ -6,15 +6,8 @@ using NaughtyAttributes;
 using UnityEditor;
 
 [CreateAssetMenu(menuName = "MyScriptable/Trap/Setup")]
-public class TrapSetup : ScriptableObject
+public class TrapSetup : PrefabSetup
 {
-    /// <summary>
-    /// プレハブ
-    /// </summary>
-    [SerializeField, Header("プレハブ")]
-    private GameObject m_Prefab;
-    public GameObject Prefab => m_Prefab;
-
     /// <summary>
     /// トラップ名
     /// </summary>

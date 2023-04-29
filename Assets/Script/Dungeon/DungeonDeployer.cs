@@ -176,7 +176,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 var info = cell.GetInterface<ICellInfoHolder>();
                 CELL_ID id = info.CellId;
                 string key = id.ToString();
-                ObjectPool.Instance.SetObject(key, info.CellObject);
+                ObjectPoolController.Interface.SetObject(key, info.CellObject);
             }
         }
 
@@ -213,7 +213,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 switch (id)
                 {
                     case CELL_ID.WALL: // 0
-                        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.WALL.ToString(), out cellObject) == false)
+                        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.WALL.ToString(), out cellObject) == false)
                             cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Wall, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
@@ -222,7 +222,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         break;
 
                     case CELL_ID.PATH_WAY: // 1
-                        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
+                        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
                             cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Path, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
@@ -236,7 +236,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         {
                             m_IdMap[i, j] = CELL_ID.GATE; // 入口なら設定し直す
 
-                            if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.GATE.ToString(), out cellObject) == false)
+                            if (ObjectPoolController.Interface.TryGetObject(CELL_ID.GATE.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
@@ -245,7 +245,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         }
                         else
                         {
-                            if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
+                            if (ObjectPoolController.Interface.TryGetObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
@@ -284,7 +284,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
 
         OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
 
-        if (ObjectPool.Instance.TryGetPoolObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
+        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
             cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);

@@ -139,6 +139,9 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 #if DEBUG
             foreach (var req in m_ProhibitAllAction)
             {
+                if (req.Requester == null)
+                    continue;
+
                 if (req.Requester.RequireInterface<ICharaStatus>(out var status) == true)
                 {
                     Debug.Log(status.CurrentStatus.Name + "は行動禁止要請中");
@@ -155,9 +158,13 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         // 行動可能なキャラがいるなら何もしない
         foreach (var unit in m_ActionUnits)
         {
+            var status = unit.GetInterface<ICharaStatus>();
             // 死んでるキャラは除外する
-            if (unit.GetInterface<ICharaStatus>().IsDead == true)
+            if (status.IsDead == true)
             {
+#if DEBUG
+                Debug.Log(status.CurrentStatus.Name + "は死亡しているのでアクションリストから除外しました");
+#endif
                 m_ActionUnits.Remove(unit);
                 return;
             }

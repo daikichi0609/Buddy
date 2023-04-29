@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using NaughtyAttributes;
 
 public interface IEnemyAi : IAiAction
 {
@@ -24,7 +24,10 @@ public enum ENEMY_STATE
 public partial class EnemyAi : CharaAi, IEnemyAi
 {
     private ReactiveProperty<ENEMY_STATE> m_CurrentState = new ReactiveProperty<ENEMY_STATE>();
+    [ShowNativeProperty]
+    private ENEMY_STATE CurrentState => m_CurrentState.Value;
 
+    [ShowNativeProperty]
     private ICellInfoHolder DestinationCell { get; set; }
 
     protected override CHARA_TYPE Target => CHARA_TYPE.PLAYER;

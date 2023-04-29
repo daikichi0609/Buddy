@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ForestItemDeploySetup
   m_EditorClassIdentifier: 
   m_ItemPacks:
-  - m_Setup: {fileID: 11400000, guid: 8bc805cc402b449b095e3e1aac25cbdf, type: 2}
+  - m_Setup: {fileID: 11400000, guid: 57c3da565d3de46cd8cb39ce1b7fa034, type: 2}
     m_Weight: 100

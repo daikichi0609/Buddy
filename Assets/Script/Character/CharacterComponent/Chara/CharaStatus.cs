@@ -7,11 +7,16 @@ using NaughtyAttributes;
 public interface ICharaStatus : IActorInterface
 {
     /// <summary>
+    /// セットアップ
+    /// </summary>
+    CharacterSetup Setup { get; }
+
+    /// <summary>
     /// ステータスセット
     /// </summary>
     /// <param name="param"></param>
     /// <returns></returns>
-    bool SetStatus<T>(T status);
+    bool SetStatus(CharacterSetup setup);
 
     /// <summary>
     /// 現在のステータス
@@ -31,6 +36,12 @@ public interface ICharaStatus : IActorInterface
 
 public class CharaStatus : ActorComponentBase, ICharaStatus
 {
+    /// <summary>
+    /// セットアップ
+    /// </summary>
+    private CharacterSetup m_Setup;
+    CharacterSetup ICharaStatus.Setup => m_Setup;
+
     /// <summary>
     /// 元パラメータ
     /// </summary>
@@ -52,13 +63,16 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         owner.Register(this);
     }
 
-    bool ICharaStatus.SetStatus<T>(T status)
+    bool ICharaStatus.SetStatus(CharacterSetup setup)
     {
-        if (m_Parameter != null)
+        if (m_Setup != null)
         {
             Debug.Log("すでにステータスがセットされています。");
             return false;
         }
+
+        m_Setup = setup;
+        var status = m_Setup.Status;
 
         if (status is PlayerStatus)
         {

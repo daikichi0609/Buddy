@@ -6,15 +6,8 @@ using System;
 
 [CreateAssetMenu(menuName = "MyScriptable/Character/CharacterSetup")]
 [Serializable]
-public class CharacterSetup : ScriptableObject
+public class CharacterSetup : PrefabSetup
 {
-    /// <summary>
-    /// プレハブ
-    /// </summary>
-    [SerializeField, Header("プレハブ")]
-    private GameObject m_Prefab;
-    public GameObject Prefab => m_Prefab;
-
     /// <summary>
     /// ステータス
     /// </summary>

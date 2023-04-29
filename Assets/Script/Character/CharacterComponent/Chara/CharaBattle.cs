@@ -267,6 +267,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         Owner.Dispose();
         UnitHolder.Interface.RemoveUnit(Owner);
         TurnManager.Interface.RemoveUnit(Owner);
-        ObjectPool.Instance.SetObject(m_CharaStatus.CurrentStatus.Name.ToString(), m_CharaObjectHolder.MoveObject);
+        ObjectPoolController.Interface.SetObject(m_CharaStatus.Setup, m_CharaObjectHolder.MoveObject);
     }
 }

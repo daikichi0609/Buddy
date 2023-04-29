@@ -145,6 +145,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         return true;
     }
 
+    /// <summary>
+    /// 移動処理
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <param name="dir"></param>
     private void MoveInternal(Vector3Int dest, DIRECTION dir)
     {
         // 座標設定
@@ -164,6 +169,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE);
     }
 
+    /// <summary>
+    /// 強制的に移動
+    /// 入れ替わり用
+    /// </summary>
+    /// <param name="dir"></param>
     void ICharaMove.ForcedMove(DIRECTION dir)
     {
         Face(dir);
