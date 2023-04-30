@@ -15,3 +15,4 @@ MonoBehaviour:
   m_Prefab: {fileID: 8497573164149189218, guid: 7ad8cdb04ab8d4f82af6403f6a9f0dca,
     type: 3}
   m_Status: {fileID: 11400000, guid: 00a59bb3ded4a4befb11dd63b7a74242, type: 2}
+  m_OutGamePrefab: {fileID: 165820, guid: 99c9c0d2ada6f7e4880c9ac1f64e28ef, type: 3}

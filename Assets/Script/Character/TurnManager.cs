@@ -44,6 +44,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 
         PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => CreateActionList()).AddTo(this);
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
+        DungeonDeployer.Interface.OnDungeonInitialize.Subscribe(_ => m_ActionUnits.Clear()).AddTo(this);
     }
 
     /// <summary>

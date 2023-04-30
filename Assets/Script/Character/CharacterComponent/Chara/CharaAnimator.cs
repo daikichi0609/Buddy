@@ -165,7 +165,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    private string GetKey(ANIMATION_TYPE type)
+    public static string GetKey(ANIMATION_TYPE type)
     {
         string key = type switch
         {

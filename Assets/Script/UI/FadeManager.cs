@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 public interface IFadeManager : ISingleton
 {
-    Task NextFloor(Action blackOutEvent, int nextFloor, string dungeonName);
+    Task StartFade(Action blackOutEvent, string dungeonName, string where);
+    Task EndFade(Action fadeInCompleteEvent, string dungeonName, string where);
 }
 
 public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
@@ -43,10 +44,10 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     /// </summary>
     /// <param name="blackOutEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.NextFloor(Action blackOutEvent, int nextFloor, string dungeonName)
+    async Task IFadeManager.StartFade(Action blackOutEvent, string dungeonName, string where)
     {
-        m_FloorText.text = nextFloor.ToString() + "F";
         m_DungeonName.text = dungeonName;
+        m_FloorText.text = where;
 
         FadeOutScreen();
         await Task.Delay(1000);
@@ -57,6 +58,25 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         await Task.Delay(1000);
         FadeInScreen();
         await Task.Delay(1000);
+    }
+
+    /// <summary>
+    /// ダンジョン -> チェックポイント
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.EndFade(Action fadeInCompleteEvent, string dungeonName, string where)
+    {
+        m_DungeonName.text = dungeonName;
+        m_FloorText.text = where;
+
+        FadeInText();
+        await Task.Delay(1000);
+        FadeOutText();
+        await Task.Delay(1000);
+        FadeInScreen();
+        await Task.Delay(1000);
+        fadeInCompleteEvent?.Invoke();
     }
 
     private void FadeOutScreen() => m_BlackScreen.DOFade(1f, FADE_SPEED);

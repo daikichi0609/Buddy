@@ -88,4 +88,12 @@ public class DungeonSetup : ScriptableObject
     [SerializeField, Header("BGM")]
     private GameObject m_BGM;
     public GameObject BGM => m_BGM;
+
+    /// <summary>
+    /// チェックポイント
+    /// </summary>
+    [SerializeField, Header("チェックポイント")]
+    [Expandable]
+    private CheckPointSetup m_CheckPointSetup;
+    public CheckPointSetup CheckPointSetup => m_CheckPointSetup;
 }
