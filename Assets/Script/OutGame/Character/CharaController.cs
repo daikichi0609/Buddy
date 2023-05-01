@@ -3,13 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Threading.Tasks;
+using UniRx;
 
-public interface ICharaController
+/// <summary>
+/// ステート
+/// </summary>
+public enum CHARA_STATE
+{
+    IDLE,
+    MOVE,
+    TALK,
+}
+
+public interface ICharaController : IActorInterface
 {
     /// <summary>
-    /// 操作可能
+    /// 座標
     /// </summary>
-    bool CanOperate { get; set; }
+    Vector3 Position { get; }
 
     /// <summary>
     /// 方向転換
@@ -18,14 +29,32 @@ public interface ICharaController
     void Face(Vector3 dest);
 
     /// <summary>
-    /// 移動
+    /// 定点移動
     /// </summary>
     /// <param name="dest"></param>
     Task Move(Vector3 dest, float duration);
+
+    /// <summary>
+    /// ワープ
+    /// </summary>
+    /// <param name="pos"></param>
+    void Wrap(Vector3 pos);
+
+    /// <summary>
+    /// 移動
+    /// </summary>
+    /// <param name="dir"></param>
+    void Move(Vector3 dir);
 }
 
-public class CharaController : MonoBehaviour, ICharaController
+public partial class CharaController : ActorComponentBase, ICharaController
 {
+    /// <summary>
+    /// スピード
+    /// </summary>
+    [SerializeField]
+    private float m_Speed;
+
     /// <summary>
     /// 動かすゲームオブジェクト
     /// </summary>
@@ -39,10 +68,15 @@ public class CharaController : MonoBehaviour, ICharaController
     private Animator m_CharaAnimator;
 
     /// <summary>
-    /// 操作可能
+    /// 座標
     /// </summary>
-    private bool m_CanOperate;
-    bool ICharaController.CanOperate { get => m_CanOperate; set => m_CanOperate = value; }
+    Vector3 ICharaController.Position => m_MoveObject.transform.position;
+
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ICharaController>(this);
+    }
 
     /// <summary>
     /// 向き直す
@@ -62,7 +96,10 @@ public class CharaController : MonoBehaviour, ICharaController
     /// <returns></returns>
     async Task ICharaController.Move(Vector3 dest, float duration)
     {
+        // 移動方向を向く
         Face(dest);
+
+        // 定点移動
         m_MoveObject.transform.DOMove(dest, duration);
         await PlayAnimation(ANIMATION_TYPE.MOVE, (int)duration * 1000);
     }
@@ -90,4 +127,30 @@ public class CharaController : MonoBehaviour, ICharaController
     /// </summary>
     /// <param name="type"></param>
     private void StopAnimation(ANIMATION_TYPE type) => m_CharaAnimator.SetBool(CharaAnimator.GetKey(type), false);
+
+    /// <summary>
+    /// ワープ
+    /// </summary>
+    /// <param name="pos"></param>
+    void ICharaController.Wrap(Vector3 pos) => m_MoveObject.transform.position = pos;
+}
+
+
+public partial class CharaController
+{
+    /// <summary>
+    /// プレイヤー操作による移動
+    /// </summary>
+    /// <param name="dir"></param>
+    void ICharaController.Move(Vector3 dir)
+    {
+        // 移動方向を向く
+        Face(dir.ToV3Int());
+
+        // アニメーション開始
+        PlayAnimation(ANIMATION_TYPE.MOVE);
+
+        // 移動
+        m_MoveObject.transform.position += dir * m_Speed * Time.deltaTime;
+    }
 }

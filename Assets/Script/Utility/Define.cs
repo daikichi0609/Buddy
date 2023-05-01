@@ -21,13 +21,3 @@ public enum CHARA_NAME
     CAT_WITCH, // 猫魔女
     CRYSTAL_GOLEM // クリスタルゴーレム
 }
-
-/// <summary>
-/// 罠種類
-/// </summary>
-public enum TRAP_TYPE
-{
-    NONE,
-    BOMB,
-
-}

@@ -14,15 +14,22 @@ public class CheckPointController : Singleton<CheckPointController>
     private static readonly Vector3 FRIEND_START_POS = new Vector3(1f, OFFSET_Y, -5f);
     private static readonly Vector3 FRIEND_END_POS = new Vector3(1f, OFFSET_Y, 0f);
 
+    private static readonly Vector3 FRIEND_POS = new Vector3(1f, OFFSET_Y, 7.5f);
+
     /// <summary>
     /// リーダーインスタンス
     /// </summary>
-    private GameObject m_Leader;
+    private ICollector m_Leader;
 
     /// <summary>
     /// バディインスタンス
     /// </summary>
-    private GameObject m_Friend;
+    private ICollector m_Friend;
+
+    /// <summary>
+    /// Fungusフロー
+    /// </summary>
+    private GameObject m_FungusFlow;
 
     protected override void Awake()
     {
@@ -33,6 +40,9 @@ public class CheckPointController : Singleton<CheckPointController>
         }).AddTo(this);
     }
 
+    /// <summary>
+    /// スタート処理
+    /// </summary>
     private void OnStart()
     {
         // 明転
@@ -44,27 +54,61 @@ public class CheckPointController : Singleton<CheckPointController>
         var checkPoint = currentDungeon.CheckPointSetup;
         Instantiate(checkPoint.Stage);
 
-        // キャラクター生成
+        // 会話フロー生成
+        m_FungusFlow = Instantiate(checkPoint.FungusFlow);
+
+        // ----- キャラクター生成 ----- //
+        // リーダー
         var leader = OutGameInfoHolder.Interface.Leader;
-        m_Leader = Instantiate(leader.OutGamePrefab);
-        m_Leader.transform.position = LEADER_START_POS;
+        var l = Instantiate(leader.OutGamePrefab);
+        l.transform.position = LEADER_START_POS;
+        m_Leader = l.GetComponent<ActorComponentCollector>();
+
+        // バディ
         var friend = OutGameInfoHolder.Interface.Friend;
-        m_Friend = Instantiate(friend.OutGamePrefab);
-        m_Friend.transform.position = FRIEND_START_POS;
+        var f = Instantiate(friend.OutGamePrefab);
+        f.transform.position = FRIEND_START_POS;
+        m_Friend = f.GetComponent<ActorComponentCollector>();
+        // ---------- //
     }
 
+    /// <summary>
+    /// 会話開始前
+    /// </summary>
     private async void StartTimeline()
     {
         // コントローラー取得
-        ICharaController leader = m_Leader.GetComponent<CharaController>();
-        ICharaController friend = m_Friend.GetComponent<CharaController>();
+        ICharaController leader = m_Leader.GetInterface<ICharaController>();
+        ICharaController friend = m_Friend.GetInterface<ICharaController>();
 
         // 定点移動
         var _ = leader.Move(LEADER_END_POS, 3f);
         await friend.Move(FRIEND_END_POS, 3f);
 
         // 向き合う
-        leader.Face(m_Friend.transform.position);
-        friend.Face(m_Leader.transform.position);
+        leader.Face(friend.Position);
+        friend.Face(friend.Position);
+
+        // 会話開始
+        m_FungusFlow.SetActive(true);
+    }
+
+    /// <summary>
+    /// 会話終了後
+    /// </summary>
+    public void OnEndDialog() => FadeManager.Interface.StartFade(() => ReadyToPlayable(), string.Empty, string.Empty);
+
+    /// <summary>
+    /// 操作可能にする
+    /// </summary>
+    private void ReadyToPlayable()
+    {
+        // リーダー
+        m_Leader.GetInterface<ICharaController>().Wrap(new Vector3(0f, OFFSET_Y, 0f));
+        IOutGamePlayerInput leader = m_Leader.GetInterface<IOutGamePlayerInput>();
+        leader.CanOperate = true;
+
+        // バディ
+        m_Friend.GetInterface<ICharaController>().Wrap(FRIEND_POS);
     }
 }

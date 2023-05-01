@@ -79,14 +79,28 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         fadeInCompleteEvent?.Invoke();
     }
 
+    /// <summary>
+    /// スクリーン暗転
+    /// </summary>
     private void FadeOutScreen() => m_BlackScreen.DOFade(1f, FADE_SPEED);
+
+    /// <summary>
+    /// スクリーン明転
+    /// </summary>
     private void FadeInScreen() => m_BlackScreen.DOFade(0f, FADE_SPEED);
 
+    /// <summary>
+    /// テキスト表示
+    /// </summary>
     private void FadeInText()
     {
         m_FloorText.DOFade(1f, FADE_SPEED);
         m_DungeonName.DOFade(1f, FADE_SPEED);
     }
+
+    /// <summary>
+    /// テキスト非表示
+    /// </summary>
     private void FadeOutText()
     {
         m_FloorText.DOFade(0f, FADE_SPEED);
