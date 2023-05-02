@@ -8,7 +8,7 @@ public interface IOutGamePlayerInput : IActorInterface
     /// <summary>
     /// 操作可能か
     /// </summary>
-    bool CanOperate { get; set; }
+    bool CanOperate { set; }
 }
 
 public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
@@ -22,7 +22,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
     /// 操作可能か
     /// </summary>
     private bool m_CanOperate;
-    bool IOutGamePlayerInput.CanOperate { get => m_CanOperate; set => m_CanOperate = value; }
+    bool IOutGamePlayerInput.CanOperate { set => m_CanOperate = value; }
 
     protected override void Register(ICollector owner)
     {
@@ -33,6 +33,8 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
     protected override void Initialize()
     {
         base.Initialize();
+
+        m_CharaController = Owner.GetInterface<ICharaController>();
 
         // 入力購読
         InputManager.Interface.InputEvent.Subscribe(input =>
@@ -52,7 +54,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
             return;
 
         // 移動検知
-        DetectInput(flag);
+        DetectInputMove(flag);
     }
 
     /// <summary>
@@ -81,7 +83,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
             return false;
 
         // 移動
-        m_CharaController.Move(direction);
+        m_CharaController.Move(direction.ToDirEnum());
         return true;
     }
 }

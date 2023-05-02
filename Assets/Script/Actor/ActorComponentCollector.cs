@@ -41,8 +41,8 @@ public interface ICollector : IDisposable
 [Serializable]
 public class ActorComponentCollector : MonoBehaviour, ICollector
 {
-    private List<IActorInterface> m_Interfaces = new List<IActorInterface>();
-    private List<IActorEvent> m_Events = new List<IActorEvent>();
+    private HashSet<IActorInterface> m_Interfaces = new HashSet<IActorInterface>();
+    private HashSet<IActorEvent> m_Events = new HashSet<IActorEvent>();
 
     /// <summary>
     /// 初期化

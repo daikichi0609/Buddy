@@ -164,7 +164,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         if (m_CurrentFloor.Value >= maxFloor)
         {
             m_CurrentFloor.Value = 0;
-            await FadeManager.Interface.StartFade(() => NextProgress(), string.Empty, string.Empty);
+            await FadeManager.Interface.LoadScene(SCENE_CHECKPOINT);
             return;
         }
 
@@ -188,13 +188,5 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // ダンジョン再構築
         DungeonDeployer.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.Deploy();
-    }
-
-    /// <summary>
-    /// 次の進行度へ
-    /// </summary>
-    private void NextProgress()
-    {
-        SceneManager.LoadSceneAsync(SCENE_CHECKPOINT);
     }
 }

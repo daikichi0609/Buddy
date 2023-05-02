@@ -29,7 +29,7 @@ public class CheckPointController : Singleton<CheckPointController>
     /// <summary>
     /// Fungusフロー
     /// </summary>
-    private GameObject m_FungusFlow;
+    private Fungus.Flowchart m_FungusFlowChart;
 
     protected override void Awake()
     {
@@ -55,7 +55,7 @@ public class CheckPointController : Singleton<CheckPointController>
         Instantiate(checkPoint.Stage);
 
         // 会話フロー生成
-        m_FungusFlow = Instantiate(checkPoint.FungusFlow);
+        m_FungusFlowChart = Instantiate(checkPoint.FungusFlow).GetComponent<Fungus.Flowchart>();
 
         // ----- キャラクター生成 ----- //
         // リーダー
@@ -63,12 +63,14 @@ public class CheckPointController : Singleton<CheckPointController>
         var l = Instantiate(leader.OutGamePrefab);
         l.transform.position = LEADER_START_POS;
         m_Leader = l.GetComponent<ActorComponentCollector>();
+        m_Leader.Initialize();
 
         // バディ
         var friend = OutGameInfoHolder.Interface.Friend;
         var f = Instantiate(friend.OutGamePrefab);
         f.transform.position = FRIEND_START_POS;
         m_Friend = f.GetComponent<ActorComponentCollector>();
+        m_Friend.Initialize();
         // ---------- //
     }
 
@@ -86,29 +88,28 @@ public class CheckPointController : Singleton<CheckPointController>
         await friend.Move(FRIEND_END_POS, 3f);
 
         // 向き合う
-        leader.Face(friend.Position);
-        friend.Face(friend.Position);
+        leader.Face(friend.Position - leader.Position);
+        friend.Face(leader.Position - friend.Position);
 
         // 会話開始
-        m_FungusFlow.SetActive(true);
+        m_FungusFlowChart.SendFungusMessage(CHECK_POINT);
     }
-
-    /// <summary>
-    /// 会話終了後
-    /// </summary>
-    public void OnEndDialog() => FadeManager.Interface.StartFade(() => ReadyToPlayable(), string.Empty, string.Empty);
 
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    private void ReadyToPlayable()
+    public void ReadyToPlayable()
     {
         // リーダー
-        m_Leader.GetInterface<ICharaController>().Wrap(new Vector3(0f, OFFSET_Y, 0f));
+        var leaderController = m_Leader.GetInterface<ICharaController>();
+        leaderController.Wrap(new Vector3(0f, OFFSET_Y, 0f));
         IOutGamePlayerInput leader = m_Leader.GetInterface<IOutGamePlayerInput>();
-        leader.CanOperate = true;
+        leader.CanOperate = true; // 操作可能
 
         // バディ
         m_Friend.GetInterface<ICharaController>().Wrap(FRIEND_POS);
+
+        // カメラをリーダーに追従させる
+        CameraHandler.Interface.SetParent(leaderController.MoveObject);
     }
 }

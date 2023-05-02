@@ -4,11 +4,39 @@ using UniRx;
 using System;
 using DG.Tweening;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public interface IFadeManager : ISingleton
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    Task StartFade();
+
+    /// <summary>
+    /// 暗転中にイベント
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
     Task StartFade(Action blackOutEvent, string dungeonName, string where);
+
+    /// <summary>
+    /// 暗転終了後にイベント
+    /// </summary>
+    /// <param name="fadeInCompleteEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
     Task EndFade(Action fadeInCompleteEvent, string dungeonName, string where);
+
+    /// <summary>
+    /// 暗転中にシーンをロード
+    /// </summary>
+    /// <returns></returns>
+    Task LoadScene(string sceneName);
 }
 
 public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
@@ -34,9 +62,17 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     // フェイド速度
     private static readonly float FADE_SPEED = 1f;
 
-    protected override void Awake()
+    /// <summary>
+    /// 暗転
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.StartFade()
     {
-        base.Awake();
+        FadeOutScreen();
+        await Task.Delay(1000);
+        FadeInScreen();
+        await Task.Delay(1000);
     }
 
     /// <summary>
@@ -77,6 +113,25 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         FadeInScreen();
         await Task.Delay(1000);
         fadeInCompleteEvent?.Invoke();
+    }
+
+    /// <summary>
+    /// 暗転中にシーンロード
+    /// </summary>
+    /// <param name="sceneName"></param>
+    /// <returns></returns>
+    async Task IFadeManager.LoadScene(string sceneName)
+    {
+        // 読み込み開始
+        var task = SceneManager.LoadSceneAsync(sceneName);
+        task.allowSceneActivation = false;
+
+        // 暗転
+        FadeOutScreen();
+        await Task.Delay(1000);
+
+        // シーン切り替え
+        task.allowSceneActivation = true;
     }
 
     /// <summary>

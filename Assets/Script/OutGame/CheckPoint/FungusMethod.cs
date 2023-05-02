@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class FungusMethod : MonoBehaviour
 {
-    public void OnEndDialog() => CheckPointController.Instance.OnEndDialog();
+    public void Fade() => FadeManager.Interface.StartFade(() => CheckPointController.Instance.ReadyToPlayable(), string.Empty, string.Empty);
 }

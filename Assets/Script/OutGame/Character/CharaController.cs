@@ -18,6 +18,11 @@ public enum CHARA_STATE
 public interface ICharaController : IActorInterface
 {
     /// <summary>
+    /// GameObject
+    /// </summary>
+    GameObject MoveObject { get; }
+
+    /// <summary>
     /// 座標
     /// </summary>
     Vector3 Position { get; }
@@ -44,7 +49,7 @@ public interface ICharaController : IActorInterface
     /// 移動
     /// </summary>
     /// <param name="dir"></param>
-    void Move(Vector3 dir);
+    void Move(DIRECTION dir);
 }
 
 public partial class CharaController : ActorComponentBase, ICharaController
@@ -52,14 +57,20 @@ public partial class CharaController : ActorComponentBase, ICharaController
     /// <summary>
     /// スピード
     /// </summary>
-    [SerializeField]
-    private float m_Speed;
+    private static readonly float ms_Speed = 3f;
 
     /// <summary>
     /// 動かすゲームオブジェクト
     /// </summary>
     [SerializeField]
     private GameObject m_MoveObject;
+    GameObject ICharaController.MoveObject => m_MoveObject;
+
+    /// <summary>
+    /// キャラ
+    /// </summary>
+    [SerializeField]
+    private GameObject m_CharaObject;
 
     /// <summary>
     /// アニメーター
@@ -81,10 +92,10 @@ public partial class CharaController : ActorComponentBase, ICharaController
     /// <summary>
     /// 向き直す
     /// </summary>
-    /// <param name="dest"></param>
-    private void Face(Vector3 dest)
+    /// <param name="dir"></param>
+    private void Face(Vector3 dir)
     {
-        m_MoveObject.transform.LookAt(dest);
+        m_CharaObject.transform.rotation = Quaternion.LookRotation(dir);
     }
     void ICharaController.Face(Vector3 dest) => Face(dest);
 
@@ -97,10 +108,11 @@ public partial class CharaController : ActorComponentBase, ICharaController
     async Task ICharaController.Move(Vector3 dest, float duration)
     {
         // 移動方向を向く
-        Face(dest);
+        var dir = dest - m_MoveObject.transform.position;
+        Face(dir);
 
         // 定点移動
-        m_MoveObject.transform.DOMove(dest, duration);
+        m_MoveObject.transform.DOMove(dest, duration).SetEase(Ease.Linear);
         await PlayAnimation(ANIMATION_TYPE.MOVE, (int)duration * 1000);
     }
 
@@ -142,7 +154,7 @@ public partial class CharaController
     /// プレイヤー操作による移動
     /// </summary>
     /// <param name="dir"></param>
-    void ICharaController.Move(Vector3 dir)
+    void ICharaController.Move(DIRECTION dir)
     {
         // 移動方向を向く
         Face(dir.ToV3Int());
@@ -151,6 +163,6 @@ public partial class CharaController
         PlayAnimation(ANIMATION_TYPE.MOVE);
 
         // 移動
-        m_MoveObject.transform.position += dir * m_Speed * Time.deltaTime;
+        m_MoveObject.transform.position += (Vector3)dir.ToV3Int() * ms_Speed * Time.deltaTime;
     }
 }

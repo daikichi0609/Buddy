@@ -60,7 +60,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     private bool IsMoving { get; set; }
 
-    private static readonly float SPEED_MAG = 1.5f;
+    private static readonly float SPEED_MAG = 3.0f;
     public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
