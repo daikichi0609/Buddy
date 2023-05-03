@@ -9,12 +9,6 @@ using UnityEngine.SceneManagement;
 public interface IFadeManager : ISingleton
 {
     /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    Task StartFade();
-
-    /// <summary>
     /// 暗転中にイベント
     /// </summary>
     /// <param name="blackOutEvent"></param>
@@ -24,13 +18,21 @@ public interface IFadeManager : ISingleton
     Task StartFade(Action blackOutEvent, string dungeonName, string where);
 
     /// <summary>
-    /// 暗転終了後にイベント
+    /// 明転
     /// </summary>
-    /// <param name="fadeInCompleteEvent"></param>
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task EndFade(Action fadeInCompleteEvent, string dungeonName, string where);
+    Task TurnBright(string dungeonName, string where);
+
+    /// <summary>
+    /// 明転終了後にイベント
+    /// </summary>
+    /// <param name="completeEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    Task TurnBright(Action completeEvent, string dungeonName, string where);
 
     /// <summary>
     /// 暗転中にシーンをロード
@@ -63,19 +65,6 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     private static readonly float FADE_SPEED = 1f;
 
     /// <summary>
-    /// 暗転
-    /// </summary>
-    /// <param name="blackOutEvent"></param>
-    /// <returns></returns>
-    async Task IFadeManager.StartFade()
-    {
-        FadeOutScreen();
-        await Task.Delay(1000);
-        FadeInScreen();
-        await Task.Delay(1000);
-    }
-
-    /// <summary>
     /// 階移動暗転
     /// </summary>
     /// <param name="blackOutEvent"></param>
@@ -97,14 +86,15 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     }
 
     /// <summary>
-    /// ダンジョン -> チェックポイント
+    /// チェックポイント -> ダンジョン
     /// </summary>
     /// <param name="blackOutEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.EndFade(Action fadeInCompleteEvent, string dungeonName, string where)
+    async Task IFadeManager.TurnBright(string dungeonName, string where)
     {
         m_DungeonName.text = dungeonName;
         m_FloorText.text = where;
+        m_BlackScreen.DOFade(1f, 0.001f);
 
         FadeInText();
         await Task.Delay(1000);
@@ -112,7 +102,26 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         await Task.Delay(1000);
         FadeInScreen();
         await Task.Delay(1000);
-        fadeInCompleteEvent?.Invoke();
+    }
+
+    /// <summary>
+    /// ダンジョン -> チェックポイント
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.TurnBright(Action completeEvent, string dungeonName, string where)
+    {
+        m_DungeonName.text = dungeonName;
+        m_FloorText.text = where;
+        m_BlackScreen.DOFade(1f, 0.001f);
+
+        FadeInText();
+        await Task.Delay(1000);
+        FadeOutText();
+        await Task.Delay(1000);
+        FadeInScreen();
+        await Task.Delay(1000);
+        completeEvent?.Invoke();
     }
 
     /// <summary>

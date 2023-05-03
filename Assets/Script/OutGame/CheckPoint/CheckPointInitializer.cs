@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 
-public class CheckPointController : Singleton<CheckPointController>
+public class CheckPointInitializer : Singleton<CheckPointInitializer>
 {
     private static readonly string CHECK_POINT = "CheckPoint";
 
@@ -37,10 +37,7 @@ public class CheckPointController : Singleton<CheckPointController>
     protected override void Awake()
     {
         base.Awake();
-        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ =>
-        {
-            OnStart();
-        }).AddTo(this);
+        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => OnStart()).AddTo(this);
     }
 
     /// <summary>
@@ -52,7 +49,7 @@ public class CheckPointController : Singleton<CheckPointController>
         var checkPoint = currentDungeon.CheckPointSetup;
 
         // 明転
-        FadeManager.Interface.EndFade(() => StartTimeline(), checkPoint.CheckPointName, "チェックポイント");
+        FadeManager.Interface.TurnBright(() => StartTimeline(), checkPoint.CheckPointName, "チェックポイント");
 
         // ステージ生成
         Instantiate(checkPoint.Stage);

@@ -18,12 +18,12 @@ public interface IDungeonContentsDeployer : ISingleton
     /// <summary>
     /// コンテンツ全部配置
     /// </summary>
-    void Deploy();
+    void DeployAll();
 
     /// <summary>
     /// コンテンツ撤去
     /// </summary>
-    void Remove();
+    void RemoveAll();
 
     /// <summary>
     /// ダンジョン配置イベント
@@ -33,14 +33,8 @@ public interface IDungeonContentsDeployer : ISingleton
 
 public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDungeonContentsDeployer>, IDungeonContentsDeployer
 {
-    protected override void Awake()
-    {
-        base.Awake();
-        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => DeployAll()).AddTo(this);
-    }
-
     /// <summary>
-    /// 
+    /// イベント
     /// </summary>
     private Subject<Unit> m_OnContentsInitialize = new Subject<Unit>();
     IObservable<Unit> IDungeonContentsDeployer.OnContentsInitialize => m_OnContentsInitialize;
@@ -54,7 +48,6 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     {
         for (int i = 0; i < count; i++)
         {
-
             // ゲームオブジェクト取得
             switch (type)
             {
@@ -221,6 +214,9 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         }
     }
 
+    /// <summary>
+    /// 全て配置
+    /// </summary>
     private void DeployAll()
     {
         Debug.Log("Deploy Contents");
@@ -231,9 +227,11 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
         m_OnContentsInitialize.OnNext(Unit.Default);
     }
-    void IDungeonContentsDeployer.Deploy() => DeployAll();
+    void IDungeonContentsDeployer.DeployAll() => DeployAll();
 
-    //ダンジョンコンテンツ撤去
+    /// <summary>
+    /// ダンジョンコンテンツ全て撤去
+    /// </summary>
     private void RemoveAll()
     {
         // ----- Player ----- //
@@ -259,9 +257,5 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         }
         ItemManager.Interface.ItemList.Clear();
     }
-
-    void IDungeonContentsDeployer.Remove()
-    {
-        RemoveAll();
-    }
+    void IDungeonContentsDeployer.RemoveAll() => RemoveAll();
 }

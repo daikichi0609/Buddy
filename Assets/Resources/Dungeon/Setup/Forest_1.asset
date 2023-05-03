@@ -22,4 +22,4 @@ MonoBehaviour:
   m_TrapProb: 0
   m_ItemCountRange: {x: 5, y: 7}
   m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
-  m_CheckPointSetup: {fileID: 0}
+  m_CheckPointSetup: {fileID: 11400000, guid: b5cd06100822449e885fd1eecc2bbe71, type: 2}

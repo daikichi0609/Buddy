@@ -50,6 +50,7 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
         {
             GameObject obj = Instantiate(UiHolder.Instance.CharacterUi);
             obj.transform.SetParent(UiHolder.Instance.Canvas.transform, false);
+            obj.transform.SetAsFirstSibling();
             CharaUi ui = obj.GetComponent<CharaUi>();
             CharacterUiList.Add(ui);
             ui.Initialize(unit);

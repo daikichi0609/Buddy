@@ -7,7 +7,7 @@ public class FungusMethod : MonoBehaviour
     /// <summary>
     /// チェックポイント到達会話フロー終了時
     /// </summary>
-    public void OnFinishCheckPointFlow() => FadeManager.Interface.StartFade(() => CheckPointController.Instance.ReadyToOperatable(), string.Empty, string.Empty);
+    public void OnFinishCheckPointFlow() => FadeManager.Interface.StartFade(() => CheckPointInitializer.Instance.ReadyToOperatable(), string.Empty, string.Empty);
 
     /// <summary>
     /// ダンジョンシーンをロード

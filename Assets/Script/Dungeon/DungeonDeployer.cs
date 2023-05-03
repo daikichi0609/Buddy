@@ -40,11 +40,6 @@ public interface IDungeonDeployer : ISingleton
     /// ダンジョンリムーブ
     /// </summary>
     void RemoveDungeon();
-
-    /// <summary>
-    /// ダンジョン配置イベント
-    /// </summary>
-    IObservable<Unit> OnDungeonInitialize { get; }
 }
 
 public enum CELL_ID
@@ -135,18 +130,6 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     List<Range> IDungeonDeployer.RangeList => m_RangeList;
 
     /// <summary>
-    /// ダンジョン初期化イベント
-    /// </summary>
-    private Subject<Unit> m_OnDungeonInitialize = new Subject<Unit>();
-    IObservable<Unit> IDungeonDeployer.OnDungeonInitialize => m_OnDungeonInitialize;
-
-    protected override void Awake()
-    {
-        base.Awake();
-        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => DeployDungeon()).AddTo(this);
-    }
-
-    /// <summary>
     /// ダンジョン初期化
     /// </summary>
     private void DeployDungeon(bool init = true)
@@ -158,9 +141,6 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         DeployStairs();
         CreateRoomCellList();
         RegisterRoomID();
-
-        if (init == true)
-            m_OnDungeonInitialize.OnNext(Unit.Default);
     }
     void IDungeonDeployer.DeployDungeon() => DeployDungeon();
 

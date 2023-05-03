@@ -25,17 +25,6 @@ public interface IDungeonProgressManager : ISingleton
     DUNGEON_THEME CurrentDungeonTheme { set; }
 
     /// <summary>
-    /// 現在のダンジョン進行度
-    /// </summary>
-    int CurrentProgress { set; }
-
-    /// <summary>
-    /// 次の階層へ
-    /// </summary>
-    Task NextFloor();
-    IObservable<int> FloorChanged { get; }
-
-    /// <summary>
     /// ランダムな敵キャラクターセットアップを取得
     /// </summary>
     /// <returns></returns>
@@ -52,6 +41,17 @@ public interface IDungeonProgressManager : ISingleton
     /// </summary>
     /// <returns></returns>
     TrapSetup GetRandomTrapSetup();
+
+    /// <summary>
+    /// ダンジョン初期化
+    /// </summary>
+    void InitializeDungeon();
+
+    /// <summary>
+    /// 次の階層へ
+    /// </summary>
+    Task NextFloor();
+    IObservable<int> FloorChanged { get; }
 }
 
 /// <summary>
@@ -88,7 +88,6 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// </summary>
     [ShowNonSerializedField]
     private int m_CurrentProgress;
-    int IDungeonProgressManager.CurrentProgress { set => m_CurrentProgress = value; }
 
     /// <summary>
     /// 現在の階層
@@ -148,6 +147,21 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     }
 
     /// <summary>
+    /// ダンジョン初期化
+    /// </summary>
+    void IDungeonProgressManager.InitializeDungeon()
+    {
+        var currentDungeon = DungeonProgressManager.Interface.CurrentDungeonSetup;
+        string where = m_CurrentFloor.Value.ToString() + "F";
+        // 明転
+        FadeManager.Interface.TurnBright(currentDungeon.DungeonName, where);
+
+        DungeonDeployer.Interface.DeployDungeon();
+        DungeonContentsDeployer.Interface.DeployAll();
+        TurnManager.Interface.CreateActionList();
+    }
+
+    /// <summary>
     /// 次の階
     /// </summary>
     /// <returns></returns>
@@ -178,11 +192,14 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     {
         // ダンジョン撤去
         DungeonDeployer.Interface.RemoveDungeon();
-        DungeonContentsDeployer.Interface.Remove();
+        DungeonContentsDeployer.Interface.RemoveAll();
 
         // ダンジョン再構築
         DungeonDeployer.Interface.DeployDungeon();
-        DungeonContentsDeployer.Interface.Deploy();
+        DungeonContentsDeployer.Interface.DeployAll();
+
+        // アクションリスト作成
+        TurnManager.Interface.CreateActionList();
     }
 
     /// <summary>
@@ -191,7 +208,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <returns></returns>
     async private Task ToCheckPoint()
     {
-        m_CurrentFloor.Value = 0;
+        m_CurrentFloor.Value = 1;
         m_CurrentProgress++;
         await FadeManager.Interface.LoadScene(SceneName.SCENE_CHECKPOINT);
     }

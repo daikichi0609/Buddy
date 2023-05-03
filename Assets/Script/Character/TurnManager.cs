@@ -21,14 +21,19 @@ public interface ITurnManager : ISingleton
     IObservable<int> OnTurnEnd { get; }
 
     /// <summary>
+    /// 誰もアクションしていない
+    /// </summary>
+    bool NoOneActing { get; }
+
+    /// <summary>
     /// アクション禁止フラグ
     /// </summary>
     IDisposable RequestProhibitAction(ICollector requester);
 
     /// <summary>
-    /// 誰もアクションしていない
+    /// アクションリスト作成
     /// </summary>
-    bool NoOneActing { get; }
+    void CreateActionList();
 
     /// <summary>
     /// ユニット除去
@@ -42,9 +47,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         base.Awake();
 
-        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => CreateActionList()).AddTo(this);
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
-        DungeonDeployer.Interface.OnDungeonInitialize.Subscribe(_ => m_ActionUnits.Clear()).AddTo(this);
     }
 
     /// <summary>
@@ -53,7 +56,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private List<ICollector> m_ActionUnits = new List<ICollector>();
     [SerializeField, NaughtyAttributes.ReadOnly]
     private int m_ActionIndex;
-    void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
 
     /// <summary>
     /// 累計ターン数
@@ -101,15 +103,21 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     bool ITurnManager.NoOneActing => NoOneActing;
 
     /// <summary>
-    /// アクションリスト作成
+    /// 階段チェック
     /// </summary>
-    private void CreateActionList()
+    private void CheckStairsCell()
     {
         // 階段チェック
         var player = UnitHolder.Interface.Player;
         var checker = player.GetInterface<ICharaCellEventChecker>();
         checker.CheckStairsCell();
+    }
 
+    /// <summary>
+    /// アクションリスト作成
+    /// </summary>
+    private void CreateActionList()
+    {
         m_ActionUnits.Clear();
 
         foreach (var friend in UnitHolder.Interface.FriendList)
@@ -128,6 +136,8 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         m_ActionIndex = 0;
         m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
     }
+    void ITurnManager.CreateActionList() => CreateActionList();
+    void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
 
     /// <summary>
     /// 次のAiの行動
@@ -178,8 +188,10 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る
         if (++m_ActionIndex >= m_ActionUnits.Count)
+        {
+            CheckStairsCell();
             CreateActionList();
-
+        }
         // indexが範囲内なら行動させる
         else
         {

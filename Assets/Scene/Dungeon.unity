@@ -277,7 +277,7 @@ Transform:
   m_Children:
   - {fileID: 2098093390}
   m_Father: {fileID: 1893539774}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &126201893
 GameObject:
@@ -310,7 +310,7 @@ Transform:
   - {fileID: 983778204}
   - {fileID: 167415124}
   m_Father: {fileID: 1893539774}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &167415123
 GameObject:
@@ -399,10 +399,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 171049428}
+  - component: {fileID: 171049434}
   - component: {fileID: 171049432}
   - component: {fileID: 171049431}
-  - component: {fileID: 171049429}
   - component: {fileID: 171049433}
+  - component: {fileID: 171049429}
   m_Layer: 0
   m_Name: DungeonManager
   m_TagString: Untagged
@@ -471,6 +472,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3a8d542fbc064006957e9c2c6409e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &171049434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171049427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 866401a7db17f498f8f80cd3677c23e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &246840967
@@ -1214,7 +1227,7 @@ RectTransform:
   - {fileID: 1920987464}
   - {fileID: 277792058}
   m_Father: {fileID: 1893539774}
-  m_RootOrder: 0
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2387,7 +2400,7 @@ Transform:
   m_Children:
   - {fileID: 419455398}
   m_Father: {fileID: 1893539774}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1665778377
 GameObject:
@@ -2579,7 +2592,7 @@ Transform:
   m_Children:
   - {fileID: 730000014}
   m_Father: {fileID: 1893539774}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1843765660
 GameObject:
@@ -2753,11 +2766,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 602078754}
   - {fileID: 1726400550}
   - {fileID: 126201894}
   - {fileID: 1644732872}
   - {fileID: 123289188}
+  - {fileID: 602078754}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
