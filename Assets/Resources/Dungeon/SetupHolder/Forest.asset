@@ -18,6 +18,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cc24c723dfabf48fa9d21ae232b09c1a, type: 2}
   m_ElementSetup: {fileID: 11400000, guid: e11b7897cdff04e95be6de9d877149fa, type: 2}
   m_TrapDeploySetup: {fileID: 11400000, guid: 853d48d3bd7704cfdb27c094419a7946, type: 2}
-  m_TrapProb: 0
   m_ItemDeploySetup: {fileID: 11400000, guid: bdfee312987de49f1b80e4872a8075c3, type: 2}
-  m_ItemCountRange: {x: 5, y: 7}
+  m_BossBattleSetup: {fileID: 11400000, guid: 44513a85b101b44b990d8cd8e028a21f, type: 2}
