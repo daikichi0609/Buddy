@@ -72,7 +72,7 @@ public partial class FriendAi : CharaAi, IFriendAi
                         if (collector == Owner)
                         {
                             isNeighborOn = true; // 隣り合ってるフラグオン
-                            dir = pair.Key.ToOppsiteDir(); // プレイヤーの方を向く
+                            dir = pair.Key.ToOppositeDir(); // プレイヤーの方を向く
                             break;
                         }
                     }

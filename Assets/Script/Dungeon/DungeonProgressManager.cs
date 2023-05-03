@@ -67,10 +67,6 @@ public enum DUNGEON_THEME
 
 public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeonProgressManager>, IDungeonProgressManager
 {
-    private static readonly string SCENE_HOME = "Home";
-    private static readonly string SCENE_DUNGEON = "Dungeon";
-    private static readonly string SCENE_CHECKPOINT = "CheckPoint";
-
     /// <summary>
     /// ダンジョンセットアップ集
     /// </summary>
@@ -163,8 +159,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // すでに最上階にいるならチェックポイントへ
         if (m_CurrentFloor.Value >= maxFloor)
         {
-            m_CurrentFloor.Value = 0;
-            await FadeManager.Interface.LoadScene(SCENE_CHECKPOINT);
+            await ToCheckPoint();
             return;
         }
 
@@ -188,5 +183,16 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // ダンジョン再構築
         DungeonDeployer.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.Deploy();
+    }
+
+    /// <summary>
+    /// チェックポイントへ
+    /// </summary>
+    /// <returns></returns>
+    async private Task ToCheckPoint()
+    {
+        m_CurrentFloor.Value = 0;
+        m_CurrentProgress++;
+        await FadeManager.Interface.LoadScene(SceneName.SCENE_CHECKPOINT);
     }
 }

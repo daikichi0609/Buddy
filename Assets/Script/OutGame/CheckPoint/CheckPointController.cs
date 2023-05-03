@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System.Threading.Tasks;
 
 public class CheckPointController : Singleton<CheckPointController>
 {
-    private static readonly string CHECK_POINT = "チェックポイント";
+    private static readonly string CHECK_POINT = "CheckPoint";
+
     private static readonly float OFFSET_Y = 0.5f;
 
     private static readonly Vector3 LEADER_START_POS = new Vector3(-1f, OFFSET_Y, -5f);
@@ -29,7 +31,8 @@ public class CheckPointController : Singleton<CheckPointController>
     /// <summary>
     /// Fungusフロー
     /// </summary>
-    private Fungus.Flowchart m_FungusFlowChart;
+    private Fungus.Flowchart m_ArrivalFlowChart;
+    private Fungus.Flowchart m_DeparturedFlowChart;
 
     protected override void Awake()
     {
@@ -45,17 +48,18 @@ public class CheckPointController : Singleton<CheckPointController>
     /// </summary>
     private void OnStart()
     {
-        // 明転
         var currentDungeon = DungeonProgressManager.Interface.CurrentDungeonSetup;
-        var dungeonName = currentDungeon.DungeonName;
-        FadeManager.Interface.EndFade(() => StartTimeline(), dungeonName, CHECK_POINT);
+        var checkPoint = currentDungeon.CheckPointSetup;
+
+        // 明転
+        FadeManager.Interface.EndFade(() => StartTimeline(), checkPoint.CheckPointName, "チェックポイント");
 
         // ステージ生成
-        var checkPoint = currentDungeon.CheckPointSetup;
         Instantiate(checkPoint.Stage);
 
         // 会話フロー生成
-        m_FungusFlowChart = Instantiate(checkPoint.FungusFlow).GetComponent<Fungus.Flowchart>();
+        m_ArrivalFlowChart = Instantiate(checkPoint.ArrivalFlow).GetComponent<Fungus.Flowchart>();
+        m_DeparturedFlowChart = Instantiate(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
 
         // ----- キャラクター生成 ----- //
         // リーダー
@@ -84,21 +88,22 @@ public class CheckPointController : Singleton<CheckPointController>
         ICharaController friend = m_Friend.GetInterface<ICharaController>();
 
         // 定点移動
-        var _ = leader.Move(LEADER_END_POS, 3f);
-        await friend.Move(FRIEND_END_POS, 3f);
+        var leaderMove = leader.MoveToPoint(LEADER_END_POS, 3f);
+        var friendMove = friend.MoveToPoint(FRIEND_END_POS, 3f);
+        await Task.WhenAll(leaderMove, friendMove);
 
         // 向き合う
         leader.Face(friend.Position - leader.Position);
         friend.Face(leader.Position - friend.Position);
 
         // 会話開始
-        m_FungusFlowChart.SendFungusMessage(CHECK_POINT);
+        m_ArrivalFlowChart.SendFungusMessage(CHECK_POINT);
     }
 
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public void ReadyToPlayable()
+    public void ReadyToOperatable()
     {
         // リーダー
         var leaderController = m_Leader.GetInterface<ICharaController>();
@@ -107,7 +112,14 @@ public class CheckPointController : Singleton<CheckPointController>
         leader.CanOperate = true; // 操作可能
 
         // バディ
-        m_Friend.GetInterface<ICharaController>().Wrap(FRIEND_POS);
+        var friendConroller = m_Friend.GetInterface<ICharaController>();
+        friendConroller.Wrap(FRIEND_POS);
+        friendConroller.Rigidbody.constraints = RigidbodyConstraints.FreezeAll; // 位置固定
+
+        // バディに会話フローを持たせる
+        var friendTalk = m_Friend.GetInterface<ICharaTalk>();
+        friendTalk.FlowChart = m_DeparturedFlowChart;
+        ConversationManager.Interface.Register(friendTalk);
 
         // カメラをリーダーに追従させる
         CameraHandler.Interface.SetParent(leaderController.MoveObject);

@@ -62,11 +62,12 @@ public static class Positional
     /// </summary>
     /// <param name="dir"></param>
     /// <returns></returns>
-    public static DIRECTION ToOppsiteDir(this DIRECTION dir)
+    public static Vector3 ToOppositeDir(this Vector3 dir) => dir * -1;
+    public static Vector3Int ToOppositeDir(this Vector3Int dir) => dir * -1;
+    public static DIRECTION ToOppositeDir(this DIRECTION dir)
     {
         var v3 = dir.ToV3Int();
-        v3 *= -1;
-        return v3.ToDirEnum();
+        return v3.ToOppositeDir().ToDirEnum();
     }
 
     public static DIRECTION[] NearDirection(this DIRECTION dir)

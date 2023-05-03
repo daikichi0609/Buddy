@@ -213,7 +213,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (isHit == false)
             return result;
 
-        m_CharaMove.Face(attackInfo.Direction.ToOppsiteDir());
+        m_CharaMove.Face(attackInfo.Direction.ToOppositeDir());
         m_OnDamageStart.OnNext(result);
 
         // awaitしない

@@ -21,3 +21,10 @@ public enum CHARA_NAME
     CAT_WITCH, // 猫魔女
     CRYSTAL_GOLEM // クリスタルゴーレム
 }
+
+public static class SceneName
+{
+    public static readonly string SCENE_HOME = "Home";
+    public static readonly string SCENE_DUNGEON = "Dungeon";
+    public static readonly string SCENE_CHECKPOINT = "CheckPoint";
+}

@@ -28,7 +28,7 @@ GameObject:
   - component: {fileID: 2154561391718769466}
   - component: {fileID: 73505029999395020}
   m_Layer: 0
-  m_Name: ForestCheckPoint01
+  m_Name: ForestCheckPoint_A01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,8 +76,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 5498602457853490413}
-  selectedCommands: []
+  - {fileID: 7147907686087265552}
+  selectedCommands:
+  - {fileID: 1623549289404647091}
   variables: []
   description: 
   stepPause: 0
@@ -255,7 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentBlock: {fileID: 5498602457853490413}
   suppressBlockAutoSelect: 0
-  message: "\u30C1\u30A7\u30C3\u30AF\u30DD\u30A4\u30F3\u30C8"
+  message: CheckPoint
 --- !u!114 &7432612872535895951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -436,8 +437,8 @@ MonoBehaviour:
     PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
   targetComponentText: FungusMethod
-  targetMethod: Fade
-  targetMethodText: 'Fade (): Void'
+  targetMethod: OnFinishCheckPointFlow
+  targetMethodText: 'OnFinishCheckPointFlow (): Void'
   methodParameters: []
   saveReturnValue: 0
   returnValueVariableKey: 

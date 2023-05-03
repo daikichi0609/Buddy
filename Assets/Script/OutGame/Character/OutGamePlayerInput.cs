@@ -13,10 +13,8 @@ public interface IOutGamePlayerInput : IActorInterface
 
 public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
 {
-    /// <summary>
-    /// キャラコン
-    /// </summary>
     private ICharaController m_CharaController;
+    private ICharaTalk m_CharaTalk;
 
     /// <summary>
     /// 操作可能か
@@ -35,6 +33,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
         base.Initialize();
 
         m_CharaController = Owner.GetInterface<ICharaController>();
+        m_CharaTalk = Owner.GetInterface<ICharaTalk>();
 
         // 入力購読
         InputManager.Interface.InputEvent.Subscribe(input =>
@@ -53,8 +52,28 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
         if (m_CanOperate == false)
             return;
 
+        // 話す
+        if (DetectInputTalk(flag) == true)
+            return;
+
         // 移動検知
-        DetectInputMove(flag);
+        if (DetectInputMove(flag) == true)
+            return;
+        else
+            m_CharaController.StopAnimation(ANIMATION_TYPE.MOVE); // 移動アニメーション終了
+    }
+
+    /// <summary>
+    /// 会話
+    /// </summary>
+    /// <param name="flag"></param>
+    /// <returns></returns>
+    private bool DetectInputTalk(KeyCodeFlag flag)
+    {
+        if (flag.HasBitFlag(KeyCodeFlag.E))
+            return m_CharaTalk.TryTalk();
+
+        return false;
     }
 
     /// <summary>

@@ -4,16 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Threading.Tasks;
 using UniRx;
-
-/// <summary>
-/// ステート
-/// </summary>
-public enum CHARA_STATE
-{
-    IDLE,
-    MOVE,
-    TALK,
-}
+using NaughtyAttributes;
 
 public interface ICharaController : IActorInterface
 {
@@ -28,6 +19,16 @@ public interface ICharaController : IActorInterface
     Vector3 Position { get; }
 
     /// <summary>
+    /// Rigidbody
+    /// </summary>
+    Rigidbody Rigidbody { get; }
+
+    /// <summary>
+    /// アニメーションキャンセル
+    /// </summary>
+    void StopAnimation(ANIMATION_TYPE type);
+
+    /// <summary>
     /// 方向転換
     /// </summary>
     /// <param name="dest"></param>
@@ -37,7 +38,7 @@ public interface ICharaController : IActorInterface
     /// 定点移動
     /// </summary>
     /// <param name="dest"></param>
-    Task Move(Vector3 dest, float duration);
+    Task MoveToPoint(Vector3 dest, float duration);
 
     /// <summary>
     /// ワープ
@@ -81,7 +82,14 @@ public partial class CharaController : ActorComponentBase, ICharaController
     /// <summary>
     /// 座標
     /// </summary>
+    [ShowNativeProperty]
     Vector3 ICharaController.Position => m_MoveObject.transform.position;
+
+    /// <summary>
+    /// Rigidbody
+    /// </summary>
+    private Rigidbody m_RigidBody;
+    Rigidbody ICharaController.Rigidbody => m_RigidBody;
 
     protected override void Register(ICollector owner)
     {
@@ -89,14 +97,17 @@ public partial class CharaController : ActorComponentBase, ICharaController
         owner.Register<ICharaController>(this);
     }
 
+    protected override void Initialize()
+    {
+        base.Initialize();
+        m_RigidBody = m_MoveObject.GetComponent<Rigidbody>();
+    }
+
     /// <summary>
     /// 向き直す
     /// </summary>
     /// <param name="dir"></param>
-    private void Face(Vector3 dir)
-    {
-        m_CharaObject.transform.rotation = Quaternion.LookRotation(dir);
-    }
+    private void Face(Vector3 dir) => m_CharaObject.transform.rotation = Quaternion.LookRotation(dir);
     void ICharaController.Face(Vector3 dest) => Face(dest);
 
     /// <summary>
@@ -105,7 +116,7 @@ public partial class CharaController : ActorComponentBase, ICharaController
     /// <param name="dest"></param>
     /// <param name="duration"></param>
     /// <returns></returns>
-    async Task ICharaController.Move(Vector3 dest, float duration)
+    async Task ICharaController.MoveToPoint(Vector3 dest, float duration)
     {
         // 移動方向を向く
         var dir = dest - m_MoveObject.transform.position;
@@ -139,6 +150,7 @@ public partial class CharaController : ActorComponentBase, ICharaController
     /// </summary>
     /// <param name="type"></param>
     private void StopAnimation(ANIMATION_TYPE type) => m_CharaAnimator.SetBool(CharaAnimator.GetKey(type), false);
+    void ICharaController.StopAnimation(ANIMATION_TYPE type) => StopAnimation(type);
 
     /// <summary>
     /// ワープ

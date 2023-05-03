@@ -137,7 +137,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
                     return false; // 入れ違いできないなら移動不可
 
                 var move = unit.GetInterface<ICharaMove>();
-                move.ForcedMove(direction.ToOppsiteDir());
+                move.ForcedMove(direction.ToOppositeDir());
             }
         }
 

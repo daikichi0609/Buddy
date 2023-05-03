@@ -140,6 +140,7 @@ GameObject:
   - component: {fileID: 13617910}
   - component: {fileID: 8852460349147457803}
   - component: {fileID: 8854055667507150274}
+  - component: {fileID: 4501332025286296450}
   - component: {fileID: 9028268187270503837}
   m_Layer: 0
   m_Name: fogaman
@@ -242,6 +243,18 @@ MonoBehaviour:
   m_MoveObject: {fileID: 133122}
   m_CharaObject: {fileID: 133122}
   m_CharaAnimator: {fileID: 9586150}
+--- !u!114 &4501332025286296450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4650989ecc5e24e7582be5c6084dd549, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9028268187270503837
 MonoBehaviour:
   m_ObjectHideFlags: 0
