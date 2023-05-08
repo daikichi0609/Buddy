@@ -18,6 +18,15 @@ public interface IFadeManager : ISingleton
     Task StartFade(Action blackOutEvent, string dungeonName, string where);
 
     /// <summary>
+    /// ホワイトアウト中にイベント
+    /// </summary>
+    /// <param name="whiteOutEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    Task StartFadeWhite(Action whiteOutEvent);
+
+    /// <summary>
     /// 明転
     /// </summary>
     /// <param name="dungeonName"></param>
@@ -50,6 +59,12 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     private Image m_BlackScreen;
 
     /// <summary>
+    /// 白画面
+    /// </summary>
+    [SerializeField]
+    private Image m_WhiteScreen;
+
+    /// <summary>
     /// 階層
     /// </summary>
     [SerializeField]
@@ -74,14 +89,28 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         m_DungeonName.text = dungeonName;
         m_FloorText.text = where;
 
-        FadeOutScreen();
+        FadeOutScreen(m_BlackScreen);
         await Task.Delay(1000);
         FadeInText();
         blackOutEvent?.Invoke();
         await Task.Delay(1000);
         FadeOutText();
         await Task.Delay(1000);
-        FadeInScreen();
+        FadeInScreen(m_BlackScreen);
+        await Task.Delay(1000);
+    }
+
+    /// <summary>
+    /// 階移動暗転
+    /// </summary>
+    /// <param name="whiteOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.StartFadeWhite(Action whiteOutEvent)
+    {
+        FadeOutScreen(m_WhiteScreen);
+        await Task.Delay(1000);
+        whiteOutEvent?.Invoke();
+        FadeInScreen(m_WhiteScreen);
         await Task.Delay(1000);
     }
 
@@ -100,7 +129,7 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         await Task.Delay(1000);
         FadeOutText();
         await Task.Delay(1000);
-        FadeInScreen();
+        FadeInScreen(m_BlackScreen);
         await Task.Delay(1000);
     }
 
@@ -119,7 +148,7 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         await Task.Delay(1000);
         FadeOutText();
         await Task.Delay(1000);
-        FadeInScreen();
+        FadeInScreen(m_BlackScreen);
         await Task.Delay(1000);
         completeEvent?.Invoke();
     }
@@ -136,7 +165,7 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
         task.allowSceneActivation = false;
 
         // 暗転
-        FadeOutScreen();
+        FadeOutScreen(m_BlackScreen);
         await Task.Delay(1000);
 
         // シーン切り替え
@@ -146,12 +175,12 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     /// <summary>
     /// スクリーン暗転
     /// </summary>
-    private void FadeOutScreen() => m_BlackScreen.DOFade(1f, FADE_SPEED);
+    private void FadeOutScreen(Image screen) => screen.DOFade(1f, FADE_SPEED);
 
     /// <summary>
     /// スクリーン明転
     /// </summary>
-    private void FadeInScreen() => m_BlackScreen.DOFade(0f, FADE_SPEED);
+    private void FadeInScreen(Image screen) => screen.DOFade(0f, FADE_SPEED);
 
     /// <summary>
     /// テキスト表示

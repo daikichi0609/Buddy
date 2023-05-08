@@ -33,6 +33,7 @@ public interface ICharaController : IActorInterface
     /// </summary>
     /// <param name="dest"></param>
     void Face(Vector3 dest);
+    void Face(DIRECTION dir);
 
     /// <summary>
     /// 定点移動
@@ -104,11 +105,21 @@ public partial class CharaController : ActorComponentBase, ICharaController
     }
 
     /// <summary>
+    /// オブジェクト破壊
+    /// </summary>
+    protected override void Dispose()
+    {
+        Destroy(m_MoveObject);
+        base.Dispose();
+    }
+
+    /// <summary>
     /// 向き直す
     /// </summary>
-    /// <param name="dir"></param>
-    private void Face(Vector3 dir) => m_CharaObject.transform.rotation = Quaternion.LookRotation(dir);
-    void ICharaController.Face(Vector3 dest) => Face(dest);
+    /// <param name="lookPos"></param>
+    private void Face(Vector3 lookPos) => m_CharaObject.transform.rotation = Quaternion.LookRotation(lookPos);
+    void ICharaController.Face(Vector3 lookPos) => Face(lookPos);
+    void ICharaController.Face(DIRECTION dir) => m_CharaObject.transform.rotation = Quaternion.LookRotation(dir.ToV3Int());
 
     /// <summary>
     /// 定点移動　

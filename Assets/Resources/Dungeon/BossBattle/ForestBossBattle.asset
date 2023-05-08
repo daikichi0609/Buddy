@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbef0049f419f4198a21fcf0f6bea551, type: 3}
-  m_Name: ForestBoss
+  m_Name: ForestBossBattle
   m_EditorClassIdentifier: 
   m_BossBattleName: "\u59CB\u307E\u308A\u306E\u68EE"
   m_Stage: {fileID: 3540316845140651053, guid: c22c5c38bc03249988ec5f0700fc9673, type: 3}

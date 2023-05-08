@@ -71,6 +71,18 @@ public class RogueUtils
 
 }
 
+public class MapInfo
+{
+    public MapInfo(CELL_ID[,] map, List<Range> rangeList)
+    {
+        Map = map;
+        RangeList = rangeList;
+    }
+
+    public CELL_ID[,] Map { get; }
+    public List<Range> RangeList { get; }
+}
+
 public class MapGenerator : Singleton<MapGenerator>
 {
 
@@ -85,7 +97,7 @@ public class MapGenerator : Singleton<MapGenerator>
     private List<Range> m_PassList = new List<Range>();
     private List<Range> m_RoomPassList = new List<Range>();
 
-    public CELL_ID[,] GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
+    public MapInfo GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
     {
         this.m_MapSizeX = mapSizeX;
         this.m_MapSizeY = mapSizeY;
@@ -131,7 +143,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
         TrimPassList(ref map);
 
-        return map;
+        return new MapInfo(map, m_RangeList);
     }
 
     private void Initialize()
@@ -256,7 +268,6 @@ public class MapGenerator : Singleton<MapGenerator>
 
             // 部屋リストへ追加
             Range room = new Range(startX, startY, endX, endY);
-            DungeonDeployer.Interface.RangeList.Add(room);
             m_RoomList.Add(room);
 
             // 通路を作る

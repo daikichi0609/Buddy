@@ -20,16 +20,17 @@ public interface IDungeonDeployer : ISingleton
     List<List<ICollector>> CellMap { get; }
 
     /// <summary>
-    /// 任意の部屋Idのセルを入手
+    /// 任意の部屋を入手
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    List<ICollector> GetRoomCellList(int roomId);
+    Room GetRoom(int roomId);
 
     /// <summary>
-    /// 消したい
+    /// ランダムな部屋を取得
     /// </summary>
-    List<Range> RangeList { get; }
+    /// <returns></returns>
+    Room GetRandomRoom();
 
     /// <summary>
     /// ダンジョンデプロイ
@@ -40,6 +41,45 @@ public interface IDungeonDeployer : ISingleton
     /// ダンジョンリムーブ
     /// </summary>
     void RemoveDungeon();
+
+    /// <summary>
+    /// ダンジョンデプロイ
+    /// </summary>
+    /// <param name="map"></param>
+    /// <param name="range"></param>
+    void DeployDungeon(CELL_ID[,] map, Range range);
+}
+
+/// <summary>
+/// 部屋クラス
+/// </summary>
+public class Room
+{
+    public Room(List<ICollector> cells, Range range)
+    {
+        Cells = cells;
+        Range = range;
+    }
+
+    /// <summary>
+    /// 部屋のセル
+    /// </summary>
+    public List<ICollector> Cells { get; }
+
+    /// <summary>
+    /// 部屋の範囲
+    /// </summary>
+    public Range Range { get; }
+
+    /// <summary>
+    /// ランダムなセルを返す
+    /// </summary>
+    /// <returns></returns>
+    public ICollector GetRandomCell()
+    {
+        var index = UnityEngine.Random.Range(0, Cells.Count);
+        return Cells[index];
+    }
 }
 
 public enum CELL_ID
@@ -94,55 +134,72 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// インスタンス（ルーム限定）
     /// </summary>
-    private List<List<ICollector>> m_RoomCellList = new List<List<ICollector>>();
+    private List<Room> m_RoomCellList = new List<Room>();
 
     /// <summary>
-    /// 部屋IDの部屋オブジェクトリストを取得
+    /// 部屋取得
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    List<ICollector> IDungeonDeployer.GetRoomCellList(int roomId) => m_RoomCellList[roomId];
-
-    private ICollector GetRoomCell(int id, int num) => m_RoomCellList[id][num];
+    Room IDungeonDeployer.GetRoom(int roomId) => m_RoomCellList[roomId];
+    Room IDungeonDeployer.GetRandomRoom() => m_RoomCellList[UnityEngine.Random.Range(0, m_RoomCellList.Count)];
 
     /// <summary>
     /// <see cref="m_RoomCellList"/> 初期化
     /// </summary>
-    private void CreateRoomCellList()
+    private void CreateRoomCellList(List<Range> rangeList)
     {
-        m_RoomCellList = new List<List<ICollector>>();
-        foreach (Range range in m_RangeList)
+        m_RoomCellList = new List<Room>();
+        int roomId = 0;
+        foreach (Range range in rangeList)
         {
             var list = new List<ICollector>();
 
             for (int x = range.Start.X; x <= range.End.X; x++)
                 for (int z = range.Start.Y; z <= range.End.Y; z++)
-                    list.Add(m_CellMap[x][z]);
+                {
+                    var cell = m_CellMap[x][z];
+                    var info = cell.GetInterface<ICellInfoHolder>();
+                    info.RoomId = roomId;
+                    list.Add(cell);
+                }
 
-            m_RoomCellList.Add(list);
+            var room = new Room(list, range);
+            m_RoomCellList.Add(room);
+            roomId++;
         }
     }
 
     /// <summary>
-    /// 消したいかも
+    /// ダンジョン配備
     /// </summary>
-    private List<Range> m_RangeList = new List<Range>();
-    List<Range> IDungeonDeployer.RangeList => m_RangeList;
-
-    /// <summary>
-    /// ダンジョン初期化
-    /// </summary>
-    private void DeployDungeon(bool init = true)
+    private void DeployDungeon()
     {
-        m_IdMap = MapGenerator.Instance.GenerateMap(DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x, DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y, DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax);
+        var x = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x;
+        var y = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y;
+        var roomCount = DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax;
+        var mapInfo = MapGenerator.Instance.GenerateMap(x, y, roomCount);
+        m_IdMap = mapInfo.Map;
         Debug.Log("Map Reload");
 
         DeployDungeonTerrain();
         DeployStairs();
-        CreateRoomCellList();
-        RegisterRoomID();
+        CreateRoomCellList(mapInfo.RangeList);
     }
     void IDungeonDeployer.DeployDungeon() => DeployDungeon();
+
+    /// <summary>
+    /// ダンジョン配備（マップ指定）
+    /// </summary>
+    /// <param name="map"></param>
+    /// <param name="range"></param>
+    void IDungeonDeployer.DeployDungeon(CELL_ID[,] map, Range range)
+    {
+        m_IdMap = map;
+        var rangeList = new List<Range>();
+        rangeList.Add(range);
+        CreateRoomCellList(rangeList);
+    }
 
     /// <summary>
     /// ダンジョン撤去
@@ -171,7 +228,6 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     {
         m_CellMap.Clear();
         m_RoomCellList.Clear();
-        m_RangeList.Clear();
     }
 
     /// <summary>
@@ -257,10 +313,9 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployStairs() //階段配置
     {
-        var emp = DungeonHandler.Interface.GetRandomRoomEmptyCell(); // 何もない部屋座標を取得
-        var info = emp.GetInterface<ICellInfoHolder>();
-        var x = info.Position.x;
-        var z = info.Position.z;
+        var pos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); // 何もない部屋座標を取得
+        var x = pos.x;
+        var z = pos.z;
 
         OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
 
@@ -270,7 +325,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
             cellObject.transform.position = new Vector3(x, 0, z);
 
         var cell = cellObject.GetComponent<ICollector>();
-        info = cell.GetInterface<ICellInfoHolder>();
+        var info = cell.GetInterface<ICellInfoHolder>();
         info.CellObject = cellObject;
         info.CellId = CELL_ID.STAIRS;
         SetCell(cell, x, z); // 既存のオブジェクトの代わりに代入
@@ -284,23 +339,6 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
         var trapHolder = cell.GetInterface<ITrapHandler>();
         trapHolder.SetTrap(trap, pos);
-    }
-
-
-    /// <summary>
-    /// 部屋Id登録
-    /// </summary>
-    public void RegisterRoomID()
-    {
-        for (int id = 0; id < m_RoomCellList.Count; id++)
-        {
-            for (int num = 0; num < m_RoomCellList[id].Count; num++)
-            {
-                var cell = GetRoomCell(id, num);
-                var info = cell.GetInterface<ICellInfoHolder>();
-                info.RoomId = id;
-            }
-        }
     }
 
     /// <summary>

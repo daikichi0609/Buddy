@@ -15,11 +15,27 @@ public class BossBattleSetup : ScriptableObject
     public string BossBattleName => m_BossBattleName;
 
     /// <summary>
+    /// ステージ名 2行目
+    /// </summary>
+    [SerializeField, Header("ステージ名 2行目")]
+    [ResizableTextArea]
+    private string m_WhereName;
+    public string WhereName => m_WhereName;
+
+    /// <summary>
     /// ステージ
     /// </summary>
     [SerializeField, Header("ステージ")]
     private GameObject m_Stage;
     public GameObject Stage => m_Stage;
+
+    /// <summary>
+    /// ボスキャラクター
+    /// </summary>
+    [SerializeField, Header("ボスキャラクター")]
+    [Expandable]
+    private CharacterSetup m_BossCharacterSetup;
+    public CharacterSetup BossCharacterSetup => m_BossCharacterSetup;
 
     /// <summary>
     /// 到着時会話フロー
@@ -32,6 +48,6 @@ public class BossBattleSetup : ScriptableObject
     /// 撃破時会話フロー
     /// </summary>
     [SerializeField, Header("撃破時会話フロー")]
-    private GameObject m_DefeatFlow;
-    public GameObject DefeatFlow => m_DefeatFlow;
+    private GameObject m_DefeatedFlow;
+    public GameObject DefeatedFlow => m_DefeatedFlow;
 }

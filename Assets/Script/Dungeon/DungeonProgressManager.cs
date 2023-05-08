@@ -20,6 +20,11 @@ public interface IDungeonProgressManager : ISingleton
     DungeonElementSetup CurrentElementSetup { get; }
 
     /// <summary>
+    /// ボスバトル設定
+    /// </summary>
+    BossBattleSetup CurrentBossBattleSetup { get; }
+
+    /// <summary>
     /// 現在のダンジョンテーマ
     /// </summary>
     DUNGEON_THEME CurrentDungeonTheme { set; }
@@ -75,6 +80,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     private DungeonSetupHolder CurrentDungeonSetupHolder => m_DungeonSetupHolders[(int)m_CurrentDungeonTheme];
     public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress];
     DungeonElementSetup IDungeonProgressManager.CurrentElementSetup => CurrentDungeonSetupHolder.ElementSetup;
+    BossBattleSetup IDungeonProgressManager.CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
 
     /// <summary>
     /// 現在のダンジョンテーマ

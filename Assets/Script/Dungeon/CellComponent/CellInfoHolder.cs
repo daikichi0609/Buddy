@@ -41,8 +41,8 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
     /// Position
     /// </summary>
     [SerializeField]
-    private Vector3Int Position => gameObject.transform.position.ToV3Int();
-    Vector3Int ICellInfoHolder.Position => Position;
+    private Vector3 ObjectPosition => gameObject.transform.position.ToV3Int();
+    public Vector3Int Position => new Vector3Int((int)ObjectPosition.x, 0, (int)ObjectPosition.z);
     int ICellInfoHolder.X => Position.x;
     int ICellInfoHolder.Z => Position.z;
 

@@ -52,22 +52,17 @@ public interface IDungeonHandler : ISingleton
 
     /// <summary>
     /// 任意の位置の部屋Id取得
+    /// -1 は不正
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
     bool TryGetRoomId(Vector3Int pos, out int id);
 
     /// <summary>
-    /// ランダムな部屋のセルを取得
+    /// ランダムな何もない部屋セルの座標を返す
     /// </summary>
     /// <returns></returns>
-    ICollector GetRandomRoomCell();
-
-    /// <summary>
-    /// ランダムな部屋の何もないセルを取得
-    /// </summary>
-    /// <returns></returns>
-    ICollector GetRandomRoomEmptyCell();
+    Vector3Int GetRandomRoomEmptyCellPosition();
 }
 
 public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>, IDungeonHandler
@@ -183,7 +178,8 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     List<ICollector> IDungeonHandler.GetGateWayCells(int roomId)
     {
-        List<ICollector> roomList = DungeonDeployer.Interface.GetRoomCellList(roomId);
+        var room = DungeonDeployer.Interface.GetRoom(roomId);
+        List<ICollector> roomList = room.Cells;
         List<ICollector> list = new List<ICollector>();
         foreach (ICollector cell in roomList)
             if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
@@ -214,43 +210,41 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private ICollector GetRandamRoomCell()
     {
-        var id = CELL_ID.INVALID;
-        int x = -1;
-        int z = -1;
-
-        while (id != CELL_ID.ROOM)
-        {
-            x = Random.Range(0, IdMap.GetLength(0));
-            z = Random.Range(0, IdMap.GetLength(1));
-            id = IdMap[x, z];
-        }
-
-        return DungeonDeployer.Interface.CellMap[x][z];
+        var room = DungeonDeployer.Interface.GetRandomRoom();
+        return room.GetRandomCell();
     }
-    ICollector IDungeonHandler.GetRandomRoomCell() => GetRandamRoomCell();
 
     /// <summary>
-    /// ランダムな何も乗っていない部屋セルを返す
+    /// ランダムな何もない部屋セルを返す
     /// </summary>
     /// <returns></returns>
-    ICollector IDungeonHandler.GetRandomRoomEmptyCell()
+    private ICollector GetRandomRoomEmptyCell()
     {
         ICollector cell = null;
-        bool isEmpty = false;
-        while (isEmpty == false)
+        while (cell == null)
         {
             var temp = GetRandamRoomCell();
             if (temp.RequireInterface<ICellInfoHolder>(out var info) == false)
                 continue;
 
             if (IsNothingThere(info.Position) == true)
-            {
-                isEmpty = true;
                 cell = temp;
-            }
         }
         return cell;
     }
+
+    /// <summary>
+    /// ランダムな何もないセルの座標を返す
+    /// </summary>
+    /// <returns></returns>
+    private Vector3Int GetRandomRoomEmptyCellPosition()
+    {
+        // 初期化
+        var cell = GetRandomRoomEmptyCell(); //何もない部屋座標を取得
+        var info = cell.GetInterface<ICellInfoHolder>();
+        return info.Position;
+    }
+    Vector3Int IDungeonHandler.GetRandomRoomEmptyCellPosition() => GetRandomRoomEmptyCellPosition();
 }
 
 /// <summary>

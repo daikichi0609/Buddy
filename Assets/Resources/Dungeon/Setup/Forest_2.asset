@@ -17,9 +17,9 @@ MonoBehaviour:
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 3, y: 4}
   m_EnemyTable: {fileID: 11400000, guid: e14b30015173b4c5c8e74c7d65280d3d, type: 2}
-  m_EnemyCountRange: {x: 4, y: 6}
+  m_EnemyCountRange: {x: 2, y: 4}
   m_MonsterHouseRate: 0
   m_TrapProb: 0
-  m_ItemCountRange: {x: 5, y: 7}
+  m_ItemCountRange: {x: 3, y: 5}
   m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
-  m_CheckPointSetup: {fileID: 11400000, guid: b5cd06100822449e885fd1eecc2bbe71, type: 2}
+  m_CheckPointSetup: {fileID: 11400000, guid: 7470815e978cb4770a2fa6b949871471, type: 2}
