@@ -31,7 +31,7 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
             .Subscribe(_ => UpdateCharaUi()).AddTo(this);
 
         // Ui初期化
-        DungeonContentsDeployer.Interface.OnContentsInitialize.Subscribe(_ =>
+        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ =>
         {
             var units = UnitHolder.Interface.FriendList.ToArray();
             InitializeCharacterUi(units);

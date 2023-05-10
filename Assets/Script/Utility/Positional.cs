@@ -42,7 +42,17 @@ public static class Positional
     /// </summary>
     /// <param name="dir"></param>
     /// <returns></returns>
-    public static Vector3Int ToV3Int(this DIRECTION dir) => Direction[(int)dir];
+    public static Vector3Int ToV3Int(this DIRECTION dir)
+    {
+        switch (dir)
+        {
+            case DIRECTION.NONE:
+            case DIRECTION.MAX:
+                return new Vector3Int(0, 0, 0);
+        }
+
+        return Direction[(int)dir];
+    }
 
     /// <summary>
     /// V3Int -> Enum

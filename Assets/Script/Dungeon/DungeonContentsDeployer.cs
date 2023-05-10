@@ -34,18 +34,29 @@ public interface IDungeonContentsDeployer : ISingleton
     void RemoveAll();
 
     /// <summary>
-    /// ダンジョン配置イベント
+    /// コンテンツ配置イベント
     /// </summary>
-    IObservable<Unit> OnContentsInitialize { get; }
+    IObservable<Unit> OnDeployContents { get; }
+
+    /// <summary>
+    /// コンテンツ撤去イベント
+    /// </summary>
+    IObservable<Unit> OnRemoveContents { get; }
 }
 
 public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDungeonContentsDeployer>, IDungeonContentsDeployer
 {
     /// <summary>
-    /// イベント
+    /// デプロイイベント
     /// </summary>
-    private Subject<Unit> m_OnContentsInitialize = new Subject<Unit>();
-    IObservable<Unit> IDungeonContentsDeployer.OnContentsInitialize => m_OnContentsInitialize;
+    private Subject<Unit> m_OnDeployContents = new Subject<Unit>();
+    IObservable<Unit> IDungeonContentsDeployer.OnDeployContents => m_OnDeployContents;
+
+    /// <summary>
+    /// 撤去イベント
+    /// </summary>
+    private Subject<Unit> m_RemoveContents = new Subject<Unit>();
+    IObservable<Unit> IDungeonContentsDeployer.OnRemoveContents => m_RemoveContents;
 
     /// <summary>
     /// 全て配置
@@ -57,6 +68,8 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         Deploy(CONTENTS_TYPE.FRIEND);
         Deploy(CONTENTS_TYPE.ENEMY, DungeonProgressManager.Interface.CurrentDungeonSetup.EnemyCountMax);
         Deploy(CONTENTS_TYPE.ITEM, DungeonProgressManager.Interface.CurrentDungeonSetup.ItemCountMax);
+
+        m_OnDeployContents.OnNext(Unit.Default);
     }
     void IDungeonContentsDeployer.DeployAll() => DeployAll();
 
@@ -72,7 +85,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
         DeployFriend(info.FriendPos);
         DeployBoss(info.BossPos, info.BossCharacterSetup);
 
-        m_OnContentsInitialize.OnNext(Unit.Default);
+        m_OnDeployContents.OnNext(Unit.Default);
     }
 
     /// <summary>
@@ -82,26 +95,17 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     {
         // ----- Player ----- //
         foreach (var player in UnitHolder.Interface.FriendList)
-        {
             player.Dispose();
-        }
 
         // ----- Enemy ----- //
         foreach (var enemy in UnitHolder.Interface.EnemyList)
-        {
-            string name = enemy.GetInterface<ICharaStatus>().Parameter.GivenName.ToString();
-            ObjectPoolController.Interface.SetObject(name, enemy.GetInterface<ICharaObjectHolder>().MoveObject);
             enemy.Dispose();
-        }
-        UnitHolder.Interface.EnemyList.Clear();
 
         // ----- Item ----- //
         foreach (var item in ItemManager.Interface.ItemList)
-        {
-            string name = item.Setup.ItemName;
-            ObjectPoolController.Interface.SetObject(name, item.ItemObject);
-        }
-        ItemManager.Interface.ItemList.Clear();
+            item.Dispose();
+
+        m_RemoveContents.OnNext(Unit.Default);
     }
     void IDungeonContentsDeployer.RemoveAll() => RemoveAll();
 
@@ -118,29 +122,16 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
             switch (type)
             {
                 case CONTENTS_TYPE.PLAYER:
-                    // 再配置
-                    if (UnitHolder.Interface.FriendList.Count != 0)
-                        RedeployPlayer();
-                    else
-                    {
-                        // 配置位置決め
-                        var cellPos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
-                        var pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z);
-                        gameObject.transform.position = pos;
-
-                        DeployPlayer(pos);
-                    }
+                    // 配置位置決め
+                    var cellPos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
+                    var pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z);
+                    DeployPlayer(pos);
                     break;
 
                 case CONTENTS_TYPE.FRIEND:
-                    // 再配置
-                    if (UnitHolder.Interface.FriendList.Count >= 2)
-                        RedeployFriend();
-                    else
-                    {
-                        var pos = PlayerAroundPos();
-                        DeployFriend(pos);
-                    }
+                    // 配置位置決め
+                    var nearPos = PlayerAroundPos();
+                    DeployFriend(nearPos);
                     break;
 
                 case CONTENTS_TYPE.ENEMY:
@@ -151,22 +142,6 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     DeployItem();
                     break;
             }
-        }
-
-        // プレイヤー再配置
-        void RedeployPlayer()
-        {
-            // 使うもの
-            var player = UnitHolder.Interface.Player;
-            var gameObject = player.GetInterface<ICharaObjectHolder>().MoveObject;
-
-            // 配置
-            var cellPos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
-            var pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z);
-            gameObject.transform.position = pos;
-
-            // 初期化
-            player.Initialize();
         }
 
         // プレイヤーの周囲マスを取得
@@ -183,22 +158,13 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
                     break;
                 }
             }
+#if DEBUG
+            if (dir == DIRECTION.NONE)
+                Debug.Log("プレイヤーの近くのセルを取得できません");
+#endif
+
             var nearPos = playerPos + dir.ToV3Int() + new Vector3(0f, CharaMove.OFFSET_Y, 0f);
             return nearPos;
-        }
-
-        // バディ再配置
-        void RedeployFriend()
-        {
-            // 使うもの
-            var friend = UnitHolder.Interface.FriendList[1];
-            var gameObject = friend.GetInterface<ICharaObjectHolder>().MoveObject;
-
-            // 配置
-            gameObject.transform.position = PlayerAroundPos();
-
-            // 初期化
-            friend.Initialize();
         }
 
         // 敵配置
@@ -249,16 +215,18 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     {
         // 使うもの
         var setup = OutGameInfoHolder.Interface.Leader;
-        var gameObject = ObjectPoolController.Interface.GetObject(setup);
+        var playerObject = ObjectPoolController.Interface.GetObject(setup);
+
+        // 配置
+        playerObject.transform.position = pos;
 
         // 初期化
-        var player = gameObject.GetComponent<ICollector>();
+        var player = playerObject.GetComponent<ICollector>();
         if (player.RequireInterface<ICharaStatus>(out var p) == true)
-            p.SetStatus(setup as CharacterSetup);
-        player.Initialize();
+            if (p.Setup == null)
+                p.SetStatus(setup as CharacterSetup);
 
-        // カメラセット
-        CameraHandler.Interface.SetParent(gameObject);
+        player.Initialize();
 
         // 追加
         UnitHolder.Interface.AddPlayer(player);
@@ -272,15 +240,17 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
     {
         // 使うもの
         var setup = OutGameInfoHolder.Interface.Friend;
-        var gameObject = ObjectPoolController.Interface.GetObject(setup);
+        var friendObject = ObjectPoolController.Interface.GetObject(setup);
 
         // 配置
-        gameObject.transform.position = pos;
+        friendObject.transform.position = pos;
 
         // 初期化
-        var friend = gameObject.GetComponent<ICollector>();
+        var friend = friendObject.GetComponent<ICollector>();
         if (friend.RequireInterface<ICharaStatus>(out var f) == true)
-            f.SetStatus(setup as CharacterSetup);
+            if (f.Setup == null)
+                f.SetStatus(setup as CharacterSetup);
+
         friend.Initialize();
 
         // 追加

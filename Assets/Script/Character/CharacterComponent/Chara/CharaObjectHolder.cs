@@ -34,7 +34,6 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     [SerializeField]
     private SkinnedMeshRenderer m_MeshRenderer;
 
-
     private static readonly Color DEFAULT_COLOR = new Color(1f, 1f, 1f, 1f);
     private static readonly Color RED_COLOR = new Color(1f, 0.4f, 0.4f, 1f);
     private static readonly float FLASH_SPEED = 0.1f;
@@ -42,6 +41,8 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     protected override void Initialize()
     {
         base.Initialize();
+
+        m_CharaObject.SetActive(true);
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
@@ -53,6 +54,13 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     {
         base.Register(owner);
         owner.Register<ICharaObjectHolder>(this);
+    }
+
+    protected override void Dispose()
+    {
+        var setup = Owner.GetInterface<ICharaStatus>().Setup;
+        ObjectPoolController.Interface.SetObject(setup, m_MoveObject);
+        base.Dispose();
     }
 
     /// <summary>

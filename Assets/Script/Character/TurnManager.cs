@@ -31,11 +31,6 @@ public interface ITurnManager : ISingleton
     IDisposable RequestProhibitAction(ICollector requester);
 
     /// <summary>
-    /// アクションリスト作成
-    /// </summary>
-    void CreateActionList();
-
-    /// <summary>
     /// ユニット除去
     /// </summary>
     void RemoveUnit(ICollector unit);
@@ -48,6 +43,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         base.Awake();
 
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
+        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ => CreateActionList());
     }
 
     /// <summary>
@@ -103,6 +99,12 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     bool ITurnManager.NoOneActing => NoOneActing;
 
     /// <summary>
+    /// 任意のユニットを除く
+    /// </summary>
+    /// <param name="unit"></param>
+    void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
+
+    /// <summary>
     /// 階段チェック
     /// </summary>
     private void CheckStairsCell()
@@ -136,8 +138,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         m_ActionIndex = 0;
         m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
     }
-    void ITurnManager.CreateActionList() => CreateActionList();
-    void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
 
     /// <summary>
     /// 次のAiの行動

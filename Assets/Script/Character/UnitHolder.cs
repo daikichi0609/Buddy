@@ -55,6 +55,15 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     /// リストのクリア
     /// </summary>
 
+    protected override void Awake()
+    {
+        base.Awake();
+        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
+        {
+            ClearList();
+        });
+    }
+
     /// <summary>
     /// Playerのコレクターリスト
     /// </summary>
@@ -103,5 +112,14 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
                 return;
             }
         }
+    }
+
+    /// <summary>
+    /// 全てのリストクリア
+    /// </summary>
+    private void ClearList()
+    {
+        m_FriendList.Clear();
+        m_EnemyList.Clear();
     }
 }

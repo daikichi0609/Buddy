@@ -41,7 +41,7 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
     /// Position
     /// </summary>
     [SerializeField]
-    private Vector3 ObjectPosition => gameObject.transform.position.ToV3Int();
+    private Vector3 ObjectPosition => gameObject.transform.position;
     public Vector3Int Position => new Vector3Int((int)ObjectPosition.x, 0, (int)ObjectPosition.z);
     int ICellInfoHolder.X => Position.x;
     int ICellInfoHolder.Z => Position.z;
@@ -70,5 +70,13 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
     {
         base.Initialize();
         m_RoomId = -1;
+    }
+
+    protected override void Dispose()
+    {
+        var key = m_CellId.ToString();
+        ObjectPoolController.Interface.SetObject(key, m_CellObject);
+
+        base.Dispose();
     }
 }

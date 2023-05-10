@@ -1,11 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class EffectHadler
+public interface IEffectHandler : IDisposable
 {
-    public EffectHadler(GameObject effect) => SetEffect(effect);
+    Task Play(Vector3 pos, float time = 1f);
+}
+
+public class EffectHandler : IEffectHandler
+{
+    public EffectHandler(GameObject effect) => SetEffect(effect);
 
     /// <summary>
     /// エフェクトプレハブ
@@ -23,7 +29,7 @@ public class EffectHadler
         m_Effect.SetActive(false);
     }
 
-    public async void Play(Vector3 pos, float time = 1f)
+    async Task IEffectHandler.Play(Vector3 pos, float time)
     {
         await PlayInternal(pos, time);
     }
@@ -37,4 +43,6 @@ public class EffectHadler
 
         m_Effect.SetActive(false);
     }
+
+    void IDisposable.Dispose() => MonoBehaviour.Destroy(m_Effect);
 }

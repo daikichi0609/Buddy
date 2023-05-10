@@ -186,6 +186,11 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
                 if (info.CellId == CELL_ID.GATE)
                     list.Add(cell);
 
+#if DEBUG
+        if (list.Count == 0)
+            Debug.Log("ゲートセルが存在しない部屋です");
+#endif
+
         return list;
     }
 

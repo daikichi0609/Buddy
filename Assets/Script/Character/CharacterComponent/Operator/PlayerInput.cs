@@ -34,6 +34,9 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaLastAction = Owner.GetInterface<ICharaLastActionHolder>();
 
+        if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
+            CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+
         InputManager.Interface.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);

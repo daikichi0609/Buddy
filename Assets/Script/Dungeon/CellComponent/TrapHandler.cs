@@ -49,7 +49,7 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// <summary>
     /// エフェクト
     /// </summary>
-    private EffectHadler m_Effect;
+    private IEffectHandler m_Effect;
 
     /// <summary>
     /// 罠機能
@@ -98,10 +98,10 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
 
         if (m_GameObject == null)
         {
-            m_GameObject = Instantiate(m_Setup.Prefab);
+            m_GameObject = ObjectPoolController.Interface.GetObject(m_Setup);
             m_GameObject.SetActive(false);
             var effect = Instantiate(m_Setup.EffectObject);
-            m_Effect = new EffectHadler(effect);
+            m_Effect = new EffectHandler(effect);
         }
         m_GameObject.transform.position = v3;
     }
@@ -114,7 +114,12 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
 
     protected override void Dispose()
     {
-        m_GameObject.SetActive(false);
+        if (m_GameObject != null)
+        {
+            ObjectPoolController.Interface.SetObject(m_Setup, m_GameObject);
+            m_Effect.Dispose();
+        }
+
         base.Dispose();
     }
 }

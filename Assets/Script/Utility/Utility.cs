@@ -64,6 +64,9 @@ public static class DictionaryExtensions
     /// </summary>
     public static TV GetOrDefault<TK, TV>(this Dictionary<TK, TV> dic, TK key, TV defaultValue = default(TV))
     {
-        return dic.TryGetValue(key, out var result) ? result : defaultValue;
+        if (dic.ContainsKey(key) == false)
+            dic.Add(key, defaultValue);
+
+        return dic[key];
     }
 }

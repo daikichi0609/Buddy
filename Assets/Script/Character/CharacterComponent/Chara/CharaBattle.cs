@@ -131,9 +131,9 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackEnd.Subscribe(result =>
         {
             if (result.IsHit == true)
-                BattleUiManager.Interface.Damage(result);
+                AttackResultUiManager.Interface.Damage(result);
             else
-                BattleUiManager.Interface.Miss(result);
+                AttackResultUiManager.Interface.Miss(result);
         }).AddTo(this);
     }
 
@@ -264,9 +264,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     {
         m_OnDead.OnNext(Unit.Default);
 
-        Owner.Dispose();
         UnitHolder.Interface.RemoveUnit(Owner);
         TurnManager.Interface.RemoveUnit(Owner);
-        ObjectPoolController.Interface.SetObject(m_CharaStatus.Setup, m_CharaObjectHolder.MoveObject);
+        Owner.Dispose();
     }
 }

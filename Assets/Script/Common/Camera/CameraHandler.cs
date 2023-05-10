@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using System;
 
 public interface ICameraHandler : ISingleton
 {
@@ -19,10 +21,25 @@ public class CameraHandler : Singleton<CameraHandler, ICameraHandler>, ICameraHa
 
     private static readonly Vector3 ms_Angle = new Vector3(60f, 0, 0);
 
+    /// <summary>
+    /// 親子関係構築
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <returns></returns>
     void ICameraHandler.SetParent(GameObject parent)
     {
         m_MainCamera.transform.SetParent(parent.transform);
         m_MainCamera.transform.localPosition = ms_KeepPos;
         m_MainCamera.transform.eulerAngles = ms_Angle;
+
+        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
+        {
+            CancelParent();
+        }).AddTo(this);
     }
+
+    /// <summary>
+    /// 親子関係キャンセル
+    /// </summary>
+    private void CancelParent() => m_MainCamera.transform.parent = null;
 }

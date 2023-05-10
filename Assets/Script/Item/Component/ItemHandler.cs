@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using NaughtyAttributes;
 
-public interface IItemHandler
+public interface IItemHandler : IDisposable
 {
     ItemSetup Setup { get; }
     GameObject ItemObject { get; }
@@ -18,6 +18,11 @@ public interface IItemHandler
     /// 初期化
     /// </summary>
     void Initialize(ItemSetup setup, GameObject gameObject, Vector3 pos);
+
+    /// <summary>
+    /// インベントリに入ったとき
+    /// </summary>
+    void OnPut();
 }
 
 public class ItemHandler : MonoBehaviour, IItemHandler
@@ -52,5 +57,16 @@ public class ItemHandler : MonoBehaviour, IItemHandler
         m_ItemObject.SetActive(true);
         m_ItemObject.transform.position = pos;
         m_ItemObject.transform.eulerAngles = new Vector3(45f, 0f, 0f);
+    }
+
+    void IItemHandler.OnPut()
+    {
+        ItemManager.Interface.RemoveItem(this);
+        ObjectPoolController.Interface.SetObject(m_Setup, m_ItemObject);
+    }
+
+    void IDisposable.Dispose()
+    {
+        ObjectPoolController.Interface.SetObject(m_Setup, m_ItemObject);
     }
 }

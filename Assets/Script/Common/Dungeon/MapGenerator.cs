@@ -25,19 +25,12 @@ public class Position
 
 public class Range
 {
-
     public Position Start { get; set; }
     public Position End { get; set; }
 
-    public int GetWidthX()
-    {
-        return End.X - Start.X + 1;
-    }
+    public int GetWidthX() => End.X - Start.X + 1;
 
-    public int GetWidthY()
-    {
-        return End.Y - Start.Y + 1;
-    }
+    public int GetWidthY() => End.Y - Start.Y + 1;
 
     public Range(Position start, Position end)
     {
@@ -58,7 +51,6 @@ public class Range
 
 public class RogueUtils
 {
-
     public static int GetRandomInt(int min, int max)
     {
         return min + Mathf.FloorToInt(Random.value * (max - min + 1));
@@ -68,7 +60,6 @@ public class RogueUtils
     {
         return Random.value < rate;
     }
-
 }
 
 public class MapInfo
@@ -83,24 +74,24 @@ public class MapInfo
     public List<Range> RangeList { get; }
 }
 
-public class MapGenerator : Singleton<MapGenerator>
+public static class MapGenerator
 {
 
     private const int MINIMUM_RANGE_WIDTH = 6;
 
-    private int m_MapSizeX;
-    private int m_MapSizeY;
-    private int m_MaxRoom;
+    private static int m_MapSizeX;
+    private static int m_MapSizeY;
+    private static int m_MaxRoom;
 
-    private List<Range> m_RoomList = new List<Range>();
-    private List<Range> m_RangeList = new List<Range>();
-    private List<Range> m_PassList = new List<Range>();
-    private List<Range> m_RoomPassList = new List<Range>();
+    private static List<Range> m_RoomList = new List<Range>();
+    private static List<Range> m_RangeList = new List<Range>();
+    private static List<Range> m_PassList = new List<Range>();
+    private static List<Range> m_RoomPassList = new List<Range>();
 
-    public MapInfo GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
+    public static MapInfo GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
     {
-        this.m_MapSizeX = mapSizeX;
-        this.m_MapSizeY = mapSizeY;
+        m_MapSizeX = mapSizeX;
+        m_MapSizeY = mapSizeY;
 
         CELL_ID[,] map = new CELL_ID[mapSizeX, mapSizeY];
 
@@ -143,10 +134,10 @@ public class MapGenerator : Singleton<MapGenerator>
 
         TrimPassList(ref map);
 
-        return new MapInfo(map, m_RangeList);
+        return new MapInfo(map, m_RoomList);
     }
 
-    private void Initialize()
+    private static void Initialize()
     {
         m_RoomList = new List<Range>();
         m_RangeList = new List<Range>();
@@ -154,7 +145,7 @@ public class MapGenerator : Singleton<MapGenerator>
         m_RoomPassList = new List<Range>();
     }
 
-    public void CreateRange(int maxRoom)
+    public static void CreateRange(int maxRoom)
     {
         // 区画のリストの初期値としてマップ全体を入れる
         m_RangeList.Add(new Range(0, 0, m_MapSizeX - 1, m_MapSizeY - 1));
@@ -175,7 +166,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
     }
 
-    public bool DevideRange(bool isVertical)
+    public static bool DevideRange(bool isVertical)
     {
         bool isDevided = false;
 
@@ -236,7 +227,7 @@ public class MapGenerator : Singleton<MapGenerator>
         return isDevided;
     }
 
-    private void CreateRoom()
+    private static void CreateRoom()
     {
         // 部屋のない区画が偏らないようにリストをシャッフルする
         m_RangeList.Sort((a, b) => RogueUtils.GetRandomInt(0, 1) - 1);
@@ -275,7 +266,7 @@ public class MapGenerator : Singleton<MapGenerator>
         }
     }
 
-    private void CreatePass(Range range, Range room)
+    private static void CreatePass(Range range, Range room)
     {
         List<int> directionList = new List<int>();
         if (range.Start.X != 0)
@@ -345,7 +336,7 @@ public class MapGenerator : Singleton<MapGenerator>
 
     }
 
-    private void TrimPassList(ref CELL_ID[,] map)
+    private static void TrimPassList(ref CELL_ID[,] map)
     {
         // どの部屋通路からも接続されなかった通路を削除する
         for (int i = m_PassList.Count - 1; i >= 0; i--)

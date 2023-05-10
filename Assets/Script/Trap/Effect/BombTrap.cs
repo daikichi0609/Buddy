@@ -9,9 +9,9 @@ public class BombTrap : TrapEffectBase
     [Range(0f, 1f)]
     private float m_DamageRatio;
 
-    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
+    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, IEffectHandler effect, Vector3 pos)
     {
-        effect.Play(pos);
+        await effect.Play(pos);
 
         // 範囲内の敵に割合ダメージ
         await stepper.GetInterface<ICharaBattle>().DamagePercentage(m_DamageRatio);

@@ -40,7 +40,7 @@ public class ObjectPoolController : Singleton<ObjectPoolController, IObjectPoolC
     /// <returns></returns>
     GameObject IObjectPoolController.GetObject<T>(T setup)
     {
-        if (m_ObjectPool.TryGetPoolObject(setup.name, out var chara) == false)
+        if (m_ObjectPool.TryGetPoolObject(setup.ToString(), out var chara) == false)
             chara = Instantiate(setup.Prefab);
 
         return chara;

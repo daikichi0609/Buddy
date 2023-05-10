@@ -63,14 +63,14 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         owner.Register(this);
     }
 
+    /// <summary>
+    /// ステータスセット
+    /// プレイヤーの場合、すでにセット済みならセットしない
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
     bool ICharaStatus.SetStatus(CharacterSetup setup)
     {
-        if (m_Setup != null)
-        {
-            Debug.Log("すでにステータスがセットされています。");
-            return false;
-        }
-
         m_Setup = setup;
         var status = m_Setup.Status;
 

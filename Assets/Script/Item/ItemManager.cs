@@ -14,6 +14,15 @@ public interface IItemManager : ISingleton
 
 public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
 {
+    protected override void Awake()
+    {
+        base.Awake();
+        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
+        {
+            m_ItemList.Clear();
+        });
+    }
+
     /// <summary>
     /// 落ちているアイテムリスト
     /// </summary>

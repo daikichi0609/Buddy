@@ -74,9 +74,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
         if (m_ItemList.Count < InventoryCount)
         {
             m_ItemList.Add(item);
-            ObjectPoolController.Interface.SetObject(item.Setup.ItemName, item.ItemObject);
-            ItemManager.Interface.RemoveItem(item);
-
+            item.OnPut();
             m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
             return true;
         }

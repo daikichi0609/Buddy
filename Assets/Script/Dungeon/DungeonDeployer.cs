@@ -80,6 +80,25 @@ public class Room
         var index = UnityEngine.Random.Range(0, Cells.Count);
         return Cells[index];
     }
+
+    /// <summary>
+    /// 代わりに入れる
+    /// </summary>
+    /// <param name="remove"></param>
+    /// <param name="cell"></param>
+    /// <returns></returns>
+    public bool TrySetCellInstead(ICollector remove, ICollector cell)
+    {
+        for (int i = 0; i < Cells.Count; i++)
+        {
+            if (Cells[i] == remove)
+            {
+                Cells[i] = cell;
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 public enum CELL_ID
@@ -122,34 +141,40 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     private List<List<ICollector>> m_CellMap = new List<List<ICollector>>();
     List<List<ICollector>> IDungeonDeployer.CellMap => m_CellMap;
 
-    private void SetCell(ICollector cell, int x, int z)
+    private void SetCellInstead(ICollector cell, int x, int z)
     {
         var remove = m_CellMap[x][z];
         m_CellMap[x].RemoveAt(z);
-        var info = remove.GetInterface<ICellInfoHolder>();
-        Destroy(info.CellObject);
         m_CellMap[x].Insert(z, cell);
+
+        foreach (var room in m_RoomList)
+        {
+            if (room.TrySetCellInstead(remove, cell) == true)
+                break;
+        }
+
+        remove.Dispose();
     }
 
     /// <summary>
     /// インスタンス（ルーム限定）
     /// </summary>
-    private List<Room> m_RoomCellList = new List<Room>();
+    private List<Room> m_RoomList = new List<Room>();
 
     /// <summary>
     /// 部屋取得
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    Room IDungeonDeployer.GetRoom(int roomId) => m_RoomCellList[roomId];
-    Room IDungeonDeployer.GetRandomRoom() => m_RoomCellList[UnityEngine.Random.Range(0, m_RoomCellList.Count)];
+    Room IDungeonDeployer.GetRoom(int roomId) => m_RoomList[roomId];
+    Room IDungeonDeployer.GetRandomRoom() => m_RoomList[UnityEngine.Random.Range(0, m_RoomList.Count)];
 
     /// <summary>
-    /// <see cref="m_RoomCellList"/> 初期化
+    /// <see cref="m_RoomList"/> 初期化
     /// </summary>
     private void CreateRoomCellList(List<Range> rangeList)
     {
-        m_RoomCellList = new List<Room>();
+        m_RoomList = new List<Room>();
         int roomId = 0;
         foreach (Range range in rangeList)
         {
@@ -165,7 +190,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 }
 
             var room = new Room(list, range);
-            m_RoomCellList.Add(room);
+            m_RoomList.Add(room);
             roomId++;
         }
     }
@@ -178,13 +203,13 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var x = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x;
         var y = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y;
         var roomCount = DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax;
-        var mapInfo = MapGenerator.Instance.GenerateMap(x, y, roomCount);
+        var mapInfo = MapGenerator.GenerateMap(x, y, roomCount);
         m_IdMap = mapInfo.Map;
         Debug.Log("Map Reload");
 
         DeployDungeonTerrain();
-        DeployStairs();
         CreateRoomCellList(mapInfo.RangeList);
+        DeployStairs();
     }
     void IDungeonDeployer.DeployDungeon() => DeployDungeon();
 
@@ -207,15 +232,8 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     private void RemoveDungeon()
     {
         foreach (var list in m_CellMap)
-        {
             foreach (var cell in list)
-            {
-                var info = cell.GetInterface<ICellInfoHolder>();
-                CELL_ID id = info.CellId;
-                string key = id.ToString();
-                ObjectPoolController.Interface.SetObject(key, info.CellObject);
-            }
-        }
+                cell.Dispose();
 
         InitializeAllList();
     }
@@ -227,7 +245,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     private void InitializeAllList()
     {
         m_CellMap.Clear();
-        m_RoomCellList.Clear();
+        m_RoomList.Clear();
     }
 
     /// <summary>
@@ -306,6 +324,30 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 }
             }
         }
+
+        /// <summary>
+        /// 部屋の入り口になっているかどうかを調べる
+        /// </summary>
+        /// <param name="aroundGrid"></param>
+        /// <returns></returns>
+        bool CheckGateWay(AroundCellId aroundGrid)
+        {
+            var cells = aroundGrid.Cells;
+
+            if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
+                return true;
+
+            if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
+                return true;
+
+            if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
+                return true;
+
+            if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
+                return true;
+
+            return false;
+        }
     }
 
     /// <summary>
@@ -328,7 +370,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var info = cell.GetInterface<ICellInfoHolder>();
         info.CellObject = cellObject;
         info.CellId = CELL_ID.STAIRS;
-        SetCell(cell, x, z); // 既存のオブジェクトの代わりに代入
+        SetCellInstead(cell, x, z); // 既存のオブジェクトの代わりに代入
     }
 
     /// <summary>
@@ -339,29 +381,5 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
         var trapHolder = cell.GetInterface<ITrapHandler>();
         trapHolder.SetTrap(trap, pos);
-    }
-
-    /// <summary>
-    /// 部屋の入り口になっているかどうかを調べる
-    /// </summary>
-    /// <param name="aroundGrid"></param>
-    /// <returns></returns>
-    private bool CheckGateWay(AroundCellId aroundGrid)
-    {
-        var cells = aroundGrid.Cells;
-
-        if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
-            return true;
-
-        if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
-            return true;
-
-        if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
-            return true;
-
-        if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
-            return true;
-
-        return false;
     }
 }

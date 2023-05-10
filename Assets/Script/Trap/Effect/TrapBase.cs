@@ -14,19 +14,19 @@ public interface ITrap
     /// <param name="stepper"></param>
     /// <param name="unitFinder"></param>
     /// <returns></returns>
-    Task<bool> Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos);
+    Task<bool> Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, IEffectHandler effect, Vector3 pos);
 }
 
 public class TrapEffectBase : ScriptableObject, ITrap
 {
     private static readonly float UNEXPLODE_RATE = 0.1f;
 
-    async protected virtual Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
+    async protected virtual Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, IEffectHandler effect, Vector3 pos)
     {
 
     }
 
-    async Task<bool> ITrap.Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, EffectHadler effect, Vector3 pos)
+    async Task<bool> ITrap.Effect(TrapSetup trap, ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, IEffectHandler effect, Vector3 pos)
     {
         // ----- ログ ----- //
         var sb = new StringBuilder();

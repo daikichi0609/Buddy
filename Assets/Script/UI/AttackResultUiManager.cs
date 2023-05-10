@@ -6,13 +6,13 @@ using UnityEngine.UI;
 using UniRx;
 using DG.Tweening;
 
-public interface IBattleUiManager : ISingleton
+public interface IAttackResultUiManager : ISingleton
 {
     void Damage(AttackResult result);
     void Miss(AttackResult result);
 }
 
-public class BattleUiManager : Singleton<BattleUiManager, IBattleUiManager>, IBattleUiManager
+public class AttackResultUiManager : Singleton<AttackResultUiManager, IAttackResultUiManager>, IAttackResultUiManager
 {
     // フェイド速度
     private static readonly float FADE_SPEED = 1f;
@@ -37,7 +37,7 @@ public class BattleUiManager : Singleton<BattleUiManager, IBattleUiManager>, IBa
     /// ダメージ表示
     /// </summary>
     /// <param name="result"></param>
-    void IBattleUiManager.Damage(AttackResult result)
+    void IAttackResultUiManager.Damage(AttackResult result)
     {
         // 透明度操作 //
         string damage = result.Damage.ToString();
@@ -56,7 +56,7 @@ public class BattleUiManager : Singleton<BattleUiManager, IBattleUiManager>, IBa
     /// Miss表示
     /// </summary>
     /// <param name="result"></param>
-    void IBattleUiManager.Miss(AttackResult result)
+    void IAttackResultUiManager.Miss(AttackResult result)
     {
         // 透明度操作 //
         m_MissText.DOFade(1f, 0.001f);

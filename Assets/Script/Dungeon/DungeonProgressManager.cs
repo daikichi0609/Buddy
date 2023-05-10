@@ -157,14 +157,15 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// </summary>
     void IDungeonProgressManager.InitializeDungeon()
     {
-        var currentDungeon = DungeonProgressManager.Interface.CurrentDungeonSetup;
         string where = m_CurrentFloor.Value.ToString() + "F";
         // 明転
-        FadeManager.Interface.TurnBright(currentDungeon.DungeonName, where);
+        FadeManager.Interface.TurnBright(CurrentDungeonSetup.DungeonName, where);
 
         DungeonDeployer.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.DeployAll();
-        TurnManager.Interface.CreateActionList();
+
+        var bgm = Instantiate(CurrentDungeonSetup.BGM);
+        BGMHandler.Interface.SetBGM(bgm);
     }
 
     /// <summary>
@@ -203,9 +204,6 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // ダンジョン再構築
         DungeonDeployer.Interface.DeployDungeon();
         DungeonContentsDeployer.Interface.DeployAll();
-
-        // アクションリスト作成
-        TurnManager.Interface.CreateActionList();
     }
 
     /// <summary>
