@@ -116,6 +116,12 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
         }
     }
 
+    protected override void Dispose()
+    {
+        m_CancelRequest?.Dispose();
+        base.Dispose();
+    }
+
     /// <summary>
     /// モーション流す
     /// </summary>

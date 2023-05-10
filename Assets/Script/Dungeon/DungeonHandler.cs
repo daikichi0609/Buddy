@@ -232,6 +232,10 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
             if (temp.RequireInterface<ICellInfoHolder>(out var info) == false)
                 continue;
 
+            // GATEやSTAIRSの可能性があるのでチェック
+            if (info.CellId != CELL_ID.ROOM)
+                continue;
+
             if (IsNothingThere(info.Position) == true)
                 cell = temp;
         }

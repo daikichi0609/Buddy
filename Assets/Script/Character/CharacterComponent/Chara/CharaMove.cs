@@ -88,12 +88,17 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_Type = Owner.GetInterface<ICharaTypeHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
 
+        // ----- 初期化 ----- //
         Direction = DIRECTION.UNDER;
         LastMoveDirection = DIRECTION.UNDER;
         var pos = MoveObject.transform.position;
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
+        // 移動処理
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
+
+        // アクション登録
+        m_OnMoveStart.Subscribe(_ => m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
     }
 
     /// <summary>
@@ -164,9 +169,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         // フラグオン
         IsMoving = true;
-
-        // アクション登録
-        m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE);
     }
 
     /// <summary>

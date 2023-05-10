@@ -128,13 +128,27 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
 
+        // 攻撃時、アクション登録
+        m_OnAttackStart.Subscribe(attackInfo =>
+        {
+            m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
+        }).AddTo(CompositeDisposable);
+
+        // 攻撃終了時、Ui表示
         m_OnAttackEnd.Subscribe(result =>
         {
             if (result.IsHit == true)
                 AttackResultUiManager.Interface.Damage(result);
             else
                 AttackResultUiManager.Interface.Miss(result);
-        }).AddTo(this);
+        }).AddTo(CompositeDisposable);
+
+        // 死亡時、リストから抜ける
+        m_OnDead.Subscribe(_ =>
+        {
+            UnitHolder.Interface.RemoveUnit(Owner);
+            TurnManager.Interface.RemoveUnit(Owner);
+        });
     }
 
     /// <summary>
@@ -160,10 +174,9 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         var attackPos = m_CharaMove.Position + direction.ToV3Int();
 
         var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
+
         // 非同期で内部処理走らせる
         StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
-
-        m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
         return true;
     }
 
@@ -176,12 +189,14 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <param name="target"></param>
     private AttackResult AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo, IDisposable disposable)
     {
+        // 行動禁止解除
+        disposable.Dispose();
+
         // 角抜け確認
         if (DungeonHandler.Interface.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
             UnitFinder.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
             collector.RequireInterface<ICharaBattle>(out var battle) == false)
         {
-            disposable.Dispose();
             return AttackResult.Invalid;
         }
 
@@ -190,7 +205,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         //モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
 
-        disposable.Dispose();
         return result;
     }
 
@@ -263,9 +277,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private void Dead()
     {
         m_OnDead.OnNext(Unit.Default);
-
-        UnitHolder.Interface.RemoveUnit(Owner);
-        TurnManager.Interface.RemoveUnit(Owner);
         Owner.Dispose();
     }
 }
