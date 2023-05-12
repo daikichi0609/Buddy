@@ -43,8 +43,17 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         base.Awake();
 
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
-        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ => CreateActionList());
+        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ =>
+        {
+            CreateActionList();
+            m_IsActive = true;
+        });
     }
+
+    /// <summary>
+    /// 有効かどうか
+    /// </summary>
+    private bool m_IsActive;
 
     /// <summary>
     /// 行動するキャラ
@@ -144,6 +153,10 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private void NextUnitAct()
     {
+        // ダンジョンデプロイを待つ
+        if (m_IsActive == false)
+            return;
+
         // 行動禁止中なら何もしない
         if (ProhibitAllAction == true)
         {

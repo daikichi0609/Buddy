@@ -7,15 +7,15 @@ using Zenject.SpaceFighter;
 
 public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
 {
-    protected override string FungusMessage => "BossBattle";
+    protected override string FungusMessage => "BossBattleStart";
 
-    protected override Vector3 LeaderStartPos => new Vector3(4f, OFFSET_Y, 0f);
-    protected override Vector3 LeaderEndPos => new Vector3(4f, OFFSET_Y, 5f);
+    protected override Vector3 LeaderStartPos => new Vector3(9f, OFFSET_Y, 5f);
+    protected override Vector3 LeaderEndPos => new Vector3(9f, OFFSET_Y, 10f);
 
-    protected override Vector3 FriendStartPos => new Vector3(6f, OFFSET_Y, 0f);
-    protected override Vector3 FriendEndPos => new Vector3(6f, OFFSET_Y, 5f);
+    protected override Vector3 FriendStartPos => new Vector3(11f, OFFSET_Y, 5f);
+    protected override Vector3 FriendEndPos => new Vector3(11f, OFFSET_Y, 10f);
 
-    private static readonly Vector3 BOSS_POS = new Vector3(5f, OFFSET_Y, 8f);
+    private static readonly Vector3 BOSS_POS = new Vector3(15f, OFFSET_Y, 13f);
 
     /// <summary>
     /// ボスインスタンス

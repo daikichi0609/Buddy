@@ -92,7 +92,8 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <summary>
     /// 現在のダンジョン進行度
     /// </summary>
-    [ShowNonSerializedField]
+    // [ShowNonSerializedField]
+    [SerializeField]
     private int m_CurrentProgress;
 
     /// <summary>
@@ -213,7 +214,10 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     async private Task ToCheckPoint()
     {
         m_CurrentFloor.Value = 1;
-        m_CurrentProgress++;
-        await FadeManager.Interface.LoadScene(SceneName.SCENE_CHECKPOINT);
+        int maxProgress = CurrentDungeonSetupHolder.DungeonSetup.Length;
+        // 最終進行度ならボスバトルに移動
+        string sceneName = ++m_CurrentProgress < maxProgress ? SceneName.SCENE_CHECKPOINT : SceneName.SCENE_BOSS_BATTLE;
+
+        await FadeManager.Interface.LoadScene(sceneName);
     }
 }

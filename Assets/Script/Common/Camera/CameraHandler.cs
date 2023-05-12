@@ -6,7 +6,7 @@ using System;
 
 public interface ICameraHandler : ISingleton
 {
-    void SetParent(GameObject parent);
+    IDisposable SetParent(GameObject parent);
 }
 
 public class CameraHandler : Singleton<CameraHandler, ICameraHandler>, ICameraHandler
@@ -26,16 +26,13 @@ public class CameraHandler : Singleton<CameraHandler, ICameraHandler>, ICameraHa
     /// </summary>
     /// <param name="parent"></param>
     /// <returns></returns>
-    void ICameraHandler.SetParent(GameObject parent)
+    IDisposable ICameraHandler.SetParent(GameObject parent)
     {
         m_MainCamera.transform.SetParent(parent.transform);
         m_MainCamera.transform.localPosition = ms_KeepPos;
         m_MainCamera.transform.eulerAngles = ms_Angle;
 
-        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
-        {
-            CancelParent();
-        }).AddTo(this);
+        return Disposable.Create(() => CancelParent());
     }
 
     /// <summary>

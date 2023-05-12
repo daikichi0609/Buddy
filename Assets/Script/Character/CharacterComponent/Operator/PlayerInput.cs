@@ -35,7 +35,11 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaLastAction = Owner.GetInterface<ICharaLastActionHolder>();
 
         if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
-            CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+        {
+            var diposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+            DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ => diposable.Dispose());
+        }
+
 
         InputManager.Interface.InputEvent.Subscribe(input =>
         {

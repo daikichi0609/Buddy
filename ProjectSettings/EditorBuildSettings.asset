@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/CheckPoint.unity
     guid: a93cbbd91798744379be0b03f79268ce
+  - enabled: 1
+    path: Assets/Scene/BossBattle.unity
+    guid: b7688c2299685473abac303518b54994
   m_configObjects: {}
