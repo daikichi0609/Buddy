@@ -15,11 +15,6 @@ public interface IDungeonProgressManager : ISingleton
     DungeonSetup CurrentDungeonSetup { get; }
 
     /// <summary>
-    /// ダンジョンエレメント設定
-    /// </summary>
-    DungeonElementSetup CurrentElementSetup { get; }
-
-    /// <summary>
     /// ボスバトル設定
     /// </summary>
     BossBattleSetup CurrentBossBattleSetup { get; }
@@ -79,7 +74,6 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     private DungeonSetupHolder[] m_DungeonSetupHolders = new DungeonSetupHolder[0];
     private DungeonSetupHolder CurrentDungeonSetupHolder => m_DungeonSetupHolders[(int)m_CurrentDungeonTheme];
     public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress];
-    DungeonElementSetup IDungeonProgressManager.CurrentElementSetup => CurrentDungeonSetupHolder.ElementSetup;
     BossBattleSetup IDungeonProgressManager.CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
 
     /// <summary>
@@ -162,7 +156,8 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // 明転
         FadeManager.Interface.TurnBright(CurrentDungeonSetup.DungeonName, where);
 
-        DungeonDeployer.Interface.DeployDungeon();
+        var elementSetup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
+        DungeonDeployer.Interface.DeployDungeon(elementSetup);
         DungeonContentsDeployer.Interface.DeployAll();
 
         var bgm = Instantiate(CurrentDungeonSetup.BGM);
@@ -203,7 +198,8 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         DungeonContentsDeployer.Interface.RemoveAll();
 
         // ダンジョン再構築
-        DungeonDeployer.Interface.DeployDungeon();
+        var setup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
+        DungeonDeployer.Interface.DeployDungeon(setup);
         DungeonContentsDeployer.Interface.DeployAll();
     }
 

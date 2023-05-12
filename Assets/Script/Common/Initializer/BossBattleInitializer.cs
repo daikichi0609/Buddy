@@ -59,7 +59,9 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
             for (int y = range.Start.Y; y <= range.End.Y; y++)
                 cellMap[x, y] = CELL_ID.ROOM;
 
-        DungeonDeployer.Interface.DeployDungeon(cellMap, range);
+        var elementSetup = bossBattleSetup.ElementSetup;
+
+        DungeonDeployer.Interface.DeployDungeon(cellMap, range, elementSetup);
     }
 
     /// <summary>

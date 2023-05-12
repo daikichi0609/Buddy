@@ -35,19 +35,19 @@ public interface IDungeonDeployer : ISingleton
     /// <summary>
     /// ダンジョンデプロイ
     /// </summary>
-    void DeployDungeon();
-
-    /// <summary>
-    /// ダンジョンリムーブ
-    /// </summary>
-    void RemoveDungeon();
+    void DeployDungeon(DungeonElementSetup setup);
 
     /// <summary>
     /// ダンジョンデプロイ
     /// </summary>
     /// <param name="map"></param>
     /// <param name="range"></param>
-    void DeployDungeon(CELL_ID[,] map, Range range);
+    void DeployDungeon(CELL_ID[,] map, Range range, DungeonElementSetup setup);
+
+    /// <summary>
+    /// ダンジョンリムーブ
+    /// </summary>
+    void RemoveDungeon();
 }
 
 /// <summary>
@@ -198,7 +198,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// ダンジョン配備
     /// </summary>
-    private void DeployDungeon()
+    private void DeployDungeon(DungeonElementSetup setup)
     {
         var x = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x;
         var y = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y;
@@ -207,24 +207,24 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         m_IdMap = mapInfo.Map;
         Debug.Log("Map Reload");
 
-        DeployDungeonTerrain();
+        DeployDungeonTerrain(setup);
         CreateRoomCellList(mapInfo.RangeList);
-        DeployStairs();
+        DeployStairs(setup);
         DeployTrap();
     }
-    void IDungeonDeployer.DeployDungeon() => DeployDungeon();
+    void IDungeonDeployer.DeployDungeon(DungeonElementSetup setup) => DeployDungeon(setup);
 
     /// <summary>
     /// ダンジョン配備（マップ指定）
     /// </summary>
     /// <param name="map"></param>
     /// <param name="range"></param>
-    void IDungeonDeployer.DeployDungeon(CELL_ID[,] map, Range range)
+    void IDungeonDeployer.DeployDungeon(CELL_ID[,] map, Range range, DungeonElementSetup setup)
     {
         m_IdMap = map;
         var rangeList = new List<Range>();
         rangeList.Add(range);
-        DeployDungeonTerrain();
+        DeployDungeonTerrain(setup);
         CreateRoomCellList(rangeList);
     }
 
@@ -253,7 +253,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// ダンジョンの地形を配置
     /// </summary>
-    private void DeployDungeonTerrain()
+    private void DeployDungeonTerrain(DungeonElementSetup setup)
     {
         for (int i = 0; i < m_IdMap.GetLength(0) - 1; i++)
         {
@@ -264,14 +264,14 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 var id = m_IdMap[i, j]; // 古いId
                 CELL_ID type = CELL_ID.INVALID; // 新Id
                 GameObject cellObject = null; // GameObject
-                Vector3Int pos = new Vector3Int(i, 0, j);
+                Vector3 pos = new Vector3Int(i, 0, j);
 
                 switch (id)
                 {
                     case CELL_ID.WALL: // 0
-                        pos += new Vector3Int(0, 1, 0);
+                        pos += new Vector3(0, 0.8f, 0);
                         if (ObjectPoolController.Interface.TryGetObject(CELL_ID.WALL.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Wall, pos, Quaternion.identity);
+                            cellObject = Instantiate(setup.Wall, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
@@ -280,7 +280,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
 
                     case CELL_ID.PATH_WAY: // 1
                         if (ObjectPoolController.Interface.TryGetObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Path, pos, Quaternion.identity);
+                            cellObject = Instantiate(setup.Path, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
@@ -294,7 +294,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                             m_IdMap[i, j] = CELL_ID.GATE; // 入口なら設定し直す
 
                             if (ObjectPoolController.Interface.TryGetObject(CELL_ID.GATE.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
+                                cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
@@ -303,7 +303,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         else
                         {
                             if (ObjectPoolController.Interface.TryGetObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Room, pos, Quaternion.identity);
+                                cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
@@ -348,7 +348,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// 4 -> 階段
     /// </summary>
-    private void DeployStairs() //階段配置
+    private void DeployStairs(DungeonElementSetup setup) //階段配置
     {
         var pos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); // 何もない部屋座標を取得
         var x = pos.x;
@@ -356,8 +356,10 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
 
         OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
 
+        var currentDungeonSetup = DungeonProgressManager.Interface.CurrentDungeonSetup;
+
         if (ObjectPoolController.Interface.TryGetObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
-            cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
+            cellObject = Instantiate(setup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);
 
@@ -373,7 +375,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployTrap()
     {
-        var count = UnityEngine.Random.Range(0, DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCount + 1);
+        var count = UnityEngine.Random.Range(DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCountMin, DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCountMax + 1);
 
         for (int i = 0; i < count; i++)
         {

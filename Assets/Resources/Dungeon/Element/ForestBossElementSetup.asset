@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8263aef5c37924790ba6f886d77050e0, type: 3}
-  m_Name: ForestElement
+  m_Name: ForestBossElementSetup
   m_EditorClassIdentifier: 
-  m_Room: {fileID: 1360919824113597614, guid: 45165db6163ec4d76a735801de90ce4f, type: 3}
+  m_Room: {fileID: 6286310497864102225, guid: ee2374b35845c4f06a38dd2ca7b50223, type: 3}
   m_Path: {fileID: 3820241247379512989, guid: 7e8c4de57fd7a45d8b28282285c622ec, type: 3}
-  m_Wall: {fileID: 6286310497864102225, guid: ee2374b35845c4f06a38dd2ca7b50223, type: 3}
+  m_Wall: {fileID: 1360919824113597614, guid: 45165db6163ec4d76a735801de90ce4f, type: 3}
   m_Stairs: {fileID: 5665641618207039357, guid: 316a3089f8356466f89167544edcd98f,
     type: 3}

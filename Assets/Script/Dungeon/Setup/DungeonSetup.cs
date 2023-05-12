@@ -70,8 +70,9 @@ public class DungeonSetup : ScriptableObject
     /// </summary>
     [SerializeField, Header("罠の数")]
     [MinMaxSlider(0, 10)]
-    private float m_TrapCount;
-    public float TrapCount => m_TrapCount;
+    private Vector2Int m_TrapCountRange;
+    public int TrapCountMin => m_TrapCountRange.x;
+    public int TrapCountMax => m_TrapCountRange.y;
 
     /// <summary>
     /// アイテムの数
@@ -88,6 +89,14 @@ public class DungeonSetup : ScriptableObject
     [SerializeField, Header("BGM")]
     private GameObject m_BGM;
     public GameObject BGM => m_BGM;
+
+    /// <summary>
+    /// エレメント設定
+    /// </summary>
+    [SerializeField, Expandable]
+    [Header("構築物設定")]
+    private DungeonElementSetup m_ElementSetup;
+    public DungeonElementSetup ElementSetup => m_ElementSetup;
 
     /// <summary>
     /// チェックポイント

@@ -22,6 +22,14 @@ public class BossBattleSetup : ScriptableObject
     private string m_WhereName;
     public string WhereName => m_WhereName;
 
+    /// <summary>
+    /// エレメント設定
+    /// </summary>
+    [SerializeField, Expandable]
+    [Header("構築物設定")]
+    private DungeonElementSetup m_ElementSetup;
+    public DungeonElementSetup ElementSetup => m_ElementSetup;
+
     /*
     /// <summary>
     /// ステージ

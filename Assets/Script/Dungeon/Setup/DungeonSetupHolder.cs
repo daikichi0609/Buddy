@@ -16,14 +16,6 @@ public class DungeonSetupHolder : ScriptableObject
     public DungeonSetup[] DungeonSetup => m_DungeonSetup;
 
     /// <summary>
-    /// エレメント設定
-    /// </summary>
-    [SerializeField, Expandable]
-    [Header("構築物設定")]
-    private DungeonElementSetup m_ElementSetup;
-    public DungeonElementSetup ElementSetup => m_ElementSetup;
-
-    /// <summary>
     /// 罠設定
     /// </summary>
     [SerializeField, Expandable]
