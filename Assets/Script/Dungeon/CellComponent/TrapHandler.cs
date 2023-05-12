@@ -24,7 +24,7 @@ public interface ITrapHandler : IActorInterface
     /// 罠設置
     /// </summary>
     /// <param name="trap"></param>
-    void SetTrap(TrapSetup setup, Vector3Int pos);
+    void SetTrap(TrapSetup setup);
 
     /// <summary>
     /// 罠が見えるかどうか
@@ -89,11 +89,12 @@ public class TrapHandler : ActorComponentBase, ITrapHandler
     /// 罠取得
     /// </summary>
     /// <param name="trap"></param>
-    void ITrapHandler.SetTrap(TrapSetup setup, Vector3Int pos)
+    void ITrapHandler.SetTrap(TrapSetup setup)
     {
         m_Setup = setup;
         m_Trap = setup.TrapEffect;
 
+        var pos = Owner.GetInterface<ICellInfoHolder>().Position;
         var v3 = pos + new Vector3(0f, OFFSET_Y, 0f);
 
         if (m_GameObject == null)

@@ -15,7 +15,7 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
     protected override Vector3 FriendStartPos => new Vector3(11f, OFFSET_Y, 5f);
     protected override Vector3 FriendEndPos => new Vector3(11f, OFFSET_Y, 10f);
 
-    private static readonly Vector3 BOSS_POS = new Vector3(15f, OFFSET_Y, 13f);
+    private static readonly Vector3 BOSS_POS = new Vector3(10f, OFFSET_Y, 13f);
 
     /// <summary>
     /// ボスインスタンス
@@ -37,9 +37,6 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
         // 明転
         FadeManager.Interface.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
 
-        // ステージ生成
-        Instantiate(bossBattleSetup.Stage);
-
         // 会話フロー生成
         m_ArrivalFlowChart = Instantiate(bossBattleSetup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
         m_DefeatedFlowChart = Instantiate(bossBattleSetup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
@@ -53,6 +50,16 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
         m_Boss = b.GetComponent<ActorComponentCollector>();
         var controller = m_Boss.GetInterface<ICharaController>();
         controller.Face(DIRECTION.UNDER);
+
+        // ダンジョン
+        var cellMap = new CELL_ID[21, 21];
+        Range range = new Range(6, 6, 16, 16);
+
+        for (int x = range.Start.X; x <= range.End.X; x++)
+            for (int y = range.Start.Y; y <= range.End.Y; y++)
+                cellMap[x, y] = CELL_ID.ROOM;
+
+        DungeonDeployer.Interface.DeployDungeon(cellMap, range);
     }
 
     /// <summary>
@@ -119,22 +126,16 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
             };
         */
 
-        var cellMap = new CELL_ID[21, 21];
-        Range range = new Range(6, 6, 16, 16);
-
-        for (int x = range.Start.X; x <= range.End.X; x++)
-            for (int y = range.Start.Y; x <= range.End.Y; y++)
-            {
-                cellMap[x, y] = CELL_ID.ROOM;
-            }
-
-        DungeonDeployer.Interface.DeployDungeon(cellMap, range);
         // ボス
         var bossBattleSetup = DungeonProgressManager.Interface.CurrentBossBattleSetup;
         var boss = bossBattleSetup.BossCharacterSetup;
         var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderEndPos, FriendEndPos, BOSS_POS, boss);
 
         DungeonContentsDeployer.Interface.DeployBossBattleContents(bossBattleDeployInfo);
+
+        // BGM
+        var bgm = Instantiate(bossBattleSetup.BGM);
+        BGMHandler.Interface.SetBGM(bgm);
     }
 }
 

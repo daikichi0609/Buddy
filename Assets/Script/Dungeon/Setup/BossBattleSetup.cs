@@ -22,12 +22,14 @@ public class BossBattleSetup : ScriptableObject
     private string m_WhereName;
     public string WhereName => m_WhereName;
 
+    /*
     /// <summary>
     /// ステージ
     /// </summary>
     [SerializeField, Header("ステージ")]
     private GameObject m_Stage;
     public GameObject Stage => m_Stage;
+    */
 
     /// <summary>
     /// ボスキャラクター
@@ -50,4 +52,11 @@ public class BossBattleSetup : ScriptableObject
     [SerializeField, Header("撃破時会話フロー")]
     private GameObject m_DefeatedFlow;
     public GameObject DefeatedFlow => m_DefeatedFlow;
+
+    /// <summary>
+    /// BGM
+    /// </summary>
+    [SerializeField, Header("BGM")]
+    private GameObject m_BGM;
+    public GameObject BGM => m_BGM;
 }

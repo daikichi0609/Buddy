@@ -210,6 +210,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         DeployDungeonTerrain();
         CreateRoomCellList(mapInfo.RangeList);
         DeployStairs();
+        DeployTrap();
     }
     void IDungeonDeployer.DeployDungeon() => DeployDungeon();
 
@@ -223,6 +224,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         m_IdMap = map;
         var rangeList = new List<Range>();
         rangeList.Add(range);
+        DeployDungeonTerrain();
         CreateRoomCellList(rangeList);
     }
 
@@ -267,6 +269,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 switch (id)
                 {
                     case CELL_ID.WALL: // 0
+                        pos += new Vector3Int(0, 1, 0);
                         if (ObjectPoolController.Interface.TryGetObject(CELL_ID.WALL.ToString(), out cellObject) == false)
                             cellObject = Instantiate(DungeonProgressManager.Interface.CurrentElementSetup.Wall, pos, Quaternion.identity);
                         else
@@ -314,14 +317,6 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 info.CellObject = cellObject;
                 info.CellId = type;
                 m_CellMap[i].Add(cell);
-
-                // 部屋なら罠抽選
-                if (info.CellId == CELL_ID.ROOM)
-                {
-                    var prob = UnityEngine.Random.Range(0f, 1f);
-                    if (prob <= DungeonProgressManager.Interface.CurrentDungeonSetup.TrapProb)
-                        DeployTrap(cell, pos);
-                }
             }
         }
 
@@ -376,10 +371,17 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// トラップ
     /// </summary>
-    private void DeployTrap(ICollector cell, Vector3Int pos)
+    private void DeployTrap()
     {
-        var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
-        var trapHolder = cell.GetInterface<ITrapHandler>();
-        trapHolder.SetTrap(trap, pos);
+        var count = UnityEngine.Random.Range(0, DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCount + 1);
+
+        for (int i = 0; i < count; i++)
+        {
+            // 初期化
+            var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
+            var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
+            var trapHolder = cell.GetInterface<ITrapHandler>();
+            trapHolder.SetTrap(trap);
+        }
     }
 }

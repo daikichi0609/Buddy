@@ -100,7 +100,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     private bool TryGetSpecifiedRoomUnitList(int roomId, CHARA_TYPE target, out List<ICollector> val)
     {
         val = new List<ICollector>();
-        if (roomId <= 0)
+        if (roomId < 0)
             return false;
 
         var roomList = DungeonDeployer.Interface.GetRoom(roomId).Cells;

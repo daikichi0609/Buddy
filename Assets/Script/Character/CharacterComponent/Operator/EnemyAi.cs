@@ -237,12 +237,10 @@ public partial class EnemyAi
     {
         targets = new List<ICollector>();
 
-        if (DungeonHandler.Interface.TryGetRoomId(pos, out var roomId))
+        if (DungeonHandler.Interface.TryGetRoomId(pos, out var roomId) == false)
             return false;
 
-        UnitFinder.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
-
-        return targets.Count != 0;
+        return UnitFinder.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
     }
 }
 

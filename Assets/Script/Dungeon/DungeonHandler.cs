@@ -59,6 +59,12 @@ public interface IDungeonHandler : ISingleton
     bool TryGetRoomId(Vector3Int pos, out int id);
 
     /// <summary>
+    /// ランダムな何もないセルを返す
+    /// </summary>
+    /// <returns></returns>
+    ICollector GetRandomRoomEmptyCell();
+
+    /// <summary>
     /// ランダムな何もない部屋セルの座標を返す
     /// </summary>
     /// <returns></returns>
@@ -241,6 +247,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         }
         return cell;
     }
+    ICollector IDungeonHandler.GetRandomRoomEmptyCell() => GetRandomRoomEmptyCell();
 
     /// <summary>
     /// ランダムな何もないセルの座標を返す

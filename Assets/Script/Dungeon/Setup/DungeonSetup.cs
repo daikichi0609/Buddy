@@ -66,12 +66,12 @@ public class DungeonSetup : ScriptableObject
     public float MonsterHouseRate => m_MonsterHouseRate;
 
     /// <summary>
-    /// 罠の確率
+    /// 罠の数
     /// </summary>
-    [SerializeField, Header("罠の確率（セルごと）")]
-    [Range(0f, 1f)]
-    private float m_TrapProb;
-    public float TrapProb => m_TrapProb;
+    [SerializeField, Header("罠の数")]
+    [MinMaxSlider(0, 10)]
+    private float m_TrapCount;
+    public float TrapCount => m_TrapCount;
 
     /// <summary>
     /// アイテムの数
