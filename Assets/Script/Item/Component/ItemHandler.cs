@@ -17,7 +17,7 @@ public interface IItemHandler : IDisposable
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(ItemSetup setup, GameObject gameObject, Vector3 pos);
+    void Initialize(ItemSetup setup, GameObject gameObject, Vector3Int pos);
 
     /// <summary>
     /// インベントリに入ったとき
@@ -50,12 +50,19 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     private Vector3Int m_Position;
     Vector3Int IItemHandler.Position => m_Position;
 
-    void IItemHandler.Initialize(ItemSetup setup, GameObject gameObject, Vector3 pos)
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <param name="gameObject"></param>
+    /// <param name="pos"></param>
+    void IItemHandler.Initialize(ItemSetup setup, GameObject gameObject, Vector3Int pos)
     {
         m_Setup = setup;
         m_ItemObject = gameObject;
         m_ItemObject.SetActive(true);
-        m_ItemObject.transform.position = pos;
+        m_Position = pos;
+        m_ItemObject.transform.position = pos + new Vector3(0f, OFFSET_Y, 0f);
         m_ItemObject.transform.eulerAngles = new Vector3(45f, 0f, 0f);
     }
 

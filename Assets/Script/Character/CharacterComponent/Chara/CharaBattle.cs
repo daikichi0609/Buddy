@@ -148,7 +148,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         {
             UnitHolder.Interface.RemoveUnit(Owner);
             TurnManager.Interface.RemoveUnit(Owner);
-        });
+        }).AddTo(CompositeDisposable);
     }
 
     /// <summary>

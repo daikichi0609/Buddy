@@ -114,41 +114,6 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
 
     /// <summary>
-    /// 階段チェック
-    /// </summary>
-    private void CheckStairsCell()
-    {
-        // 階段チェック
-        var player = UnitHolder.Interface.Player;
-        var checker = player.GetInterface<ICharaCellEventChecker>();
-        checker.CheckStairsCell();
-    }
-
-    /// <summary>
-    /// アクションリスト作成
-    /// </summary>
-    private void CreateActionList()
-    {
-        m_ActionUnits.Clear();
-
-        foreach (var friend in UnitHolder.Interface.FriendList)
-        {
-            friend.GetInterface<ICharaLastActionHolder>().Reset();
-            m_ActionUnits.Add(friend);
-        }
-
-        foreach (var enemy in UnitHolder.Interface.EnemyList)
-        {
-            enemy.GetInterface<ICharaLastActionHolder>().Reset();
-            m_ActionUnits.Add(enemy);
-        }
-
-        // indexリセット
-        m_ActionIndex = 0;
-        m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
-    }
-
-    /// <summary>
     /// 次のAiの行動
     /// </summary>
     private void NextUnitAct()
@@ -201,10 +166,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る
         if (++m_ActionIndex >= m_ActionUnits.Count)
-        {
-            CheckStairsCell();
-            CreateActionList();
-        }
+            NextTurn();
         // indexが範囲内なら行動させる
         else
         {
@@ -216,6 +178,51 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 
             unit.GetInterface<ICharaTurn>().CanBeAct();
         }
+    }
+
+    /// <summary>
+    /// 次のターン
+    /// </summary>
+    private void NextTurn()
+    {
+        m_TotalTurnCount.Value++;
+        CheckStairsCell();
+        CreateActionList();
+    }
+
+    /// <summary>
+    /// アクションリスト作成
+    /// </summary>
+    private void CreateActionList()
+    {
+        m_ActionUnits.Clear();
+
+        foreach (var friend in UnitHolder.Interface.FriendList)
+        {
+            friend.GetInterface<ICharaLastActionHolder>().Reset();
+            m_ActionUnits.Add(friend);
+        }
+
+        foreach (var enemy in UnitHolder.Interface.EnemyList)
+        {
+            enemy.GetInterface<ICharaLastActionHolder>().Reset();
+            m_ActionUnits.Add(enemy);
+        }
+
+        // indexリセット
+        m_ActionIndex = 0;
+        m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
+    }
+
+    /// <summary>
+    /// 階段チェック
+    /// </summary>
+    private void CheckStairsCell()
+    {
+        // 階段チェック
+        var player = UnitHolder.Interface.Player;
+        var checker = player.GetInterface<ICharaCellEventChecker>();
+        checker.CheckStairsCell();
     }
 }
 

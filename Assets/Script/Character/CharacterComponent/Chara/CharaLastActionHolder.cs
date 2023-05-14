@@ -15,7 +15,7 @@ public enum CHARA_ACTION
     ATTACK,
     MOVE,
     WAIT,
-    ITEM
+    ITEM_USE,
 }
 
 public interface ICharaLastActionHolder : IActorInterface

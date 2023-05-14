@@ -123,10 +123,13 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (direction == new Vector3Int(0, 0, 0))
             return false;
 
-        // 斜め入力限定
-        bool diagonal = flag.HasBitFlag(KeyCodeFlag.Right_Shift);
-        if (diagonal == true && JudgeDirectionDiagonal(direction) == false)
-            return false;
+        // 方向転換だけ
+        bool onlyFace = flag.HasBitFlag(KeyCodeFlag.Right_Shift);
+        if (onlyFace == true)
+        {
+            m_CharaMove.Face(direction.ToDirEnum());
+            return false; // ターン消費しない
+        }
 
         return m_CharaMove.Move(direction.ToDirEnum());
     }

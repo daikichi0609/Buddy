@@ -108,8 +108,9 @@ public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
     async Task IFadeManager.StartFadeWhite(Action whiteOutEvent)
     {
         FadeOutScreen(m_WhiteScreen);
-        await Task.Delay(1500);
+        await Task.Delay(1000);
         whiteOutEvent?.Invoke();
+        await Task.Delay(1000);
         FadeInScreen(m_WhiteScreen);
         await Task.Delay(500);
     }

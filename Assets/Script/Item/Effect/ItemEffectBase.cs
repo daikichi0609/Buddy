@@ -41,6 +41,10 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         if (owner.RequireInterface<ICharaInventory>(out var inventory) == true)
             inventory.Consume(item);
 
+        // アイテム消費
+        if (owner.RequireInterface<ICharaLastActionHolder>(out var last) == true)
+            last.RegisterAction(CHARA_ACTION.ITEM_USE);
+
         // ターン消費
         if (owner.RequireInterface<ICharaTurn>(out var turn) == true)
             turn.TurnEnd();

@@ -198,7 +198,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
 
             // 初期化
             var cellPos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
-            var pos = new Vector3(cellPos.x, ItemHandler.OFFSET_Y, cellPos.z);
+            var pos = new Vector3Int(cellPos.x, 0, cellPos.z);
             IItemHandler item = content.GetComponent<ItemHandler>();
             item.Initialize(setup as ItemSetup, content, pos);
 
