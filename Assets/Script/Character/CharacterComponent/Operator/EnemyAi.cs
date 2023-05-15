@@ -121,16 +121,16 @@ public partial class EnemyAi : CharaAi, IEnemyAi
             var candidateDir = new List<DIRECTION>();
             var oppDirection = (-1 * lastDirection.ToV3Int()).ToDirEnum();
 
-            if (cells[DIRECTION.UP] > CELL_ID.WALL && DIRECTION.UP != oppDirection)
+            if (cells[DIRECTION.UP] > TERRAIN_ID.WALL && DIRECTION.UP != oppDirection)
                 candidateDir.Add(DIRECTION.UP);
 
-            if (cells[DIRECTION.UNDER] > CELL_ID.WALL && DIRECTION.UNDER != oppDirection)
+            if (cells[DIRECTION.UNDER] > TERRAIN_ID.WALL && DIRECTION.UNDER != oppDirection)
                 candidateDir.Add(DIRECTION.UNDER);
 
-            if (cells[DIRECTION.LEFT] > CELL_ID.WALL && DIRECTION.LEFT != oppDirection)
+            if (cells[DIRECTION.LEFT] > TERRAIN_ID.WALL && DIRECTION.LEFT != oppDirection)
                 candidateDir.Add(DIRECTION.LEFT);
 
-            if (cells[DIRECTION.RIGHT] > CELL_ID.WALL && DIRECTION.RIGHT != oppDirection)
+            if (cells[DIRECTION.RIGHT] > TERRAIN_ID.WALL && DIRECTION.RIGHT != oppDirection)
                 candidateDir.Add(DIRECTION.RIGHT);
 
             if (candidateDir.Count == 0)
@@ -181,16 +181,16 @@ public partial class EnemyAi : CharaAi, IEnemyAi
             // 通路への方向
             var pathDir = DIRECTION.NONE;
 
-            if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.UP] == TERRAIN_ID.PATH_WAY)
                 pathDir = DIRECTION.UP;
 
-            if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.UNDER] == TERRAIN_ID.PATH_WAY)
                 pathDir = DIRECTION.UNDER;
 
-            if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.LEFT] == TERRAIN_ID.PATH_WAY)
                 pathDir = DIRECTION.LEFT;
 
-            if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.RIGHT] == TERRAIN_ID.PATH_WAY)
                 pathDir = DIRECTION.RIGHT;
 
             if (m_CharaMove.Move(pathDir) == true)

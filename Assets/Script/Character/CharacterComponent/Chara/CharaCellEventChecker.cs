@@ -60,7 +60,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     private bool CheckStairsCell()
     {
         //階段チェック
-        if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == CELL_ID.STAIRS)
+        if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == TERRAIN_ID.STAIRS)
         {
             YesorNoQuestionUiManager.Interface.SetQuestion(QUESTION_TYPE.STAIRS);
             m_CharaTurn.WaitFinishActing(() => YesorNoQuestionUiManager.Interface.Activate());

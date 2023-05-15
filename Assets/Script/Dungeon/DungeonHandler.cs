@@ -16,7 +16,7 @@ public interface IDungeonHandler : ISingleton
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    CELL_ID GetCellId(Vector3Int pos);
+    TERRAIN_ID GetCellId(Vector3Int pos);
 
     /// <summary>
     /// 周りのセル取得
@@ -76,7 +76,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <summary>
     /// マップ
     /// </summary>
-    private CELL_ID[,] IdMap => DungeonDeployer.Interface.IdMap;
+    private TERRAIN_ID[,] IdMap => DungeonDeployer.Interface.IdMap;
     private List<List<ICollector>> CellMap => DungeonDeployer.Interface.CellMap;
 
     /// <summary>
@@ -92,8 +92,8 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private CELL_ID GetCellId(Vector3Int pos) => DungeonDeployer.Interface.IdMap[pos.x, pos.z];
-    CELL_ID IDungeonHandler.GetCellId(Vector3Int pos) => GetCellId(pos);
+    private TERRAIN_ID GetCellId(Vector3Int pos) => DungeonDeployer.Interface.IdMap[pos.x, pos.z];
+    TERRAIN_ID IDungeonHandler.GetCellId(Vector3Int pos) => GetCellId(pos);
 
     /// <summary>
     /// 周囲のセル取得
@@ -155,7 +155,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     {
         var id = IdMap[pos.x, pos.z];
 
-        if (id == CELL_ID.PATH_WAY || id == CELL_ID.ROOM || id == CELL_ID.GATE || id == CELL_ID.STAIRS)
+        if (id == TERRAIN_ID.PATH_WAY || id == TERRAIN_ID.ROOM || id == TERRAIN_ID.GATE || id == TERRAIN_ID.STAIRS)
             return true;
 
         return false;
@@ -171,7 +171,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private bool CanMoveDiagonal(Vector3Int pos, Vector3Int dir)
     {
-        if (IdMap[pos.x + dir.x, pos.z] == CELL_ID.WALL || IdMap[pos.x, pos.z + dir.z] == CELL_ID.WALL)
+        if (IdMap[pos.x + dir.x, pos.z] == TERRAIN_ID.WALL || IdMap[pos.x, pos.z + dir.z] == TERRAIN_ID.WALL)
             return false;
 
         return true;
@@ -189,7 +189,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         List<ICollector> list = new List<ICollector>();
         foreach (ICollector cell in roomList)
             if (cell.RequireInterface<ICellInfoHolder>(out var info) == true)
-                if (info.CellId == CELL_ID.GATE)
+                if (info.CellId == TERRAIN_ID.GATE)
                     list.Add(cell);
 
 #if DEBUG
@@ -239,7 +239,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
                 continue;
 
             // GATEやSTAIRSの可能性があるのでチェック
-            if (info.CellId != CELL_ID.ROOM)
+            if (info.CellId != TERRAIN_ID.ROOM)
                 continue;
 
             if (IsNothingThere(info.Position) == true)
@@ -268,13 +268,13 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
 /// </summary>
 public readonly struct AroundCellId
 {
-    public CELL_ID BaseCell { get; }
-    public Dictionary<DIRECTION, CELL_ID> Cells { get; }
+    public TERRAIN_ID BaseCell { get; }
+    public Dictionary<DIRECTION, TERRAIN_ID> Cells { get; }
 
-    public AroundCellId(CELL_ID[,] map, int x, int z)
+    public AroundCellId(TERRAIN_ID[,] map, int x, int z)
     {
         BaseCell = map[x, z];
-        Cells = new Dictionary<DIRECTION, CELL_ID>();
+        Cells = new Dictionary<DIRECTION, TERRAIN_ID>();
 
         // 左
         if (x - 1 >= 0 && z - 1 >= 0)

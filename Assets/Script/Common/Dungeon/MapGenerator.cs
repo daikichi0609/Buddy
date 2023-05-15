@@ -64,13 +64,13 @@ public class RogueUtils
 
 public class MapInfo
 {
-    public MapInfo(CELL_ID[,] map, List<Range> rangeList)
+    public MapInfo(TERRAIN_ID[,] map, List<Range> rangeList)
     {
         Map = map;
         RangeList = rangeList;
     }
 
-    public CELL_ID[,] Map { get; }
+    public TERRAIN_ID[,] Map { get; }
     public List<Range> RangeList { get; }
 }
 
@@ -93,7 +93,7 @@ public static class MapGenerator
         m_MapSizeX = mapSizeX;
         m_MapSizeY = mapSizeY;
 
-        CELL_ID[,] map = new CELL_ID[mapSizeX, mapSizeY];
+        TERRAIN_ID[,] map = new TERRAIN_ID[mapSizeX, mapSizeY];
 
         Initialize();
 
@@ -107,7 +107,7 @@ public static class MapGenerator
             {
                 for (int y = pass.Start.Y; y <= pass.End.Y; y++)
                 {
-                    map[x, y] = CELL_ID.PATH_WAY;
+                    map[x, y] = TERRAIN_ID.PATH_WAY;
                 }
             }
         }
@@ -117,7 +117,7 @@ public static class MapGenerator
             {
                 for (int y = roomPass.Start.Y; y <= roomPass.End.Y; y++)
                 {
-                    map[x, y] = CELL_ID.PATH_WAY;
+                    map[x, y] = TERRAIN_ID.PATH_WAY;
                 }
             }
         }
@@ -127,7 +127,7 @@ public static class MapGenerator
             {
                 for (int y = room.Start.Y; y <= room.End.Y; y++)
                 {
-                    map[x, y] = CELL_ID.ROOM;
+                    map[x, y] = TERRAIN_ID.ROOM;
                 }
             }
         }
@@ -336,7 +336,7 @@ public static class MapGenerator
 
     }
 
-    private static void TrimPassList(ref CELL_ID[,] map)
+    private static void TrimPassList(ref TERRAIN_ID[,] map)
     {
         // どの部屋通路からも接続されなかった通路を削除する
         for (int i = m_PassList.Count - 1; i >= 0; i--)
@@ -352,7 +352,7 @@ public static class MapGenerator
                 int x = pass.Start.X;
                 for (int y = pass.Start.Y; y <= pass.End.Y; y++)
                 {
-                    if (map[x - 1, y] == CELL_ID.PATH_WAY || map[x + 1, y] == CELL_ID.PATH_WAY)
+                    if (map[x - 1, y] == TERRAIN_ID.PATH_WAY || map[x + 1, y] == TERRAIN_ID.PATH_WAY)
                     {
                         isTrimTarget = false;
                         break;
@@ -364,7 +364,7 @@ public static class MapGenerator
                 int y = pass.Start.Y;
                 for (int x = pass.Start.X; x <= pass.End.X; x++)
                 {
-                    if (map[x, y - 1] == CELL_ID.PATH_WAY || map[x, y + 1] == CELL_ID.PATH_WAY)
+                    if (map[x, y - 1] == TERRAIN_ID.PATH_WAY || map[x, y + 1] == TERRAIN_ID.PATH_WAY)
                     {
                         isTrimTarget = false;
                         break;
@@ -401,22 +401,22 @@ public static class MapGenerator
         // 上下基準
         for (int x = 0; x < m_MapSizeX - 1; x++)
         {
-            if (map[x, 0] == CELL_ID.PATH_WAY)
+            if (map[x, 0] == TERRAIN_ID.PATH_WAY)
             {
                 for (int y = 0; y < m_MapSizeY; y++)
                 {
-                    if (map[x - 1, y] == CELL_ID.PATH_WAY || map[x + 1, y] == CELL_ID.PATH_WAY)
+                    if (map[x - 1, y] == TERRAIN_ID.PATH_WAY || map[x + 1, y] == TERRAIN_ID.PATH_WAY)
                     {
                         break;
                     }
                     map[x, y] = 0;
                 }
             }
-            if (map[x, m_MapSizeY - 1] == CELL_ID.PATH_WAY)
+            if (map[x, m_MapSizeY - 1] == TERRAIN_ID.PATH_WAY)
             {
                 for (int y = m_MapSizeY - 1; y >= 0; y--)
                 {
-                    if (map[x - 1, y] == CELL_ID.PATH_WAY || map[x + 1, y] == CELL_ID.PATH_WAY)
+                    if (map[x - 1, y] == TERRAIN_ID.PATH_WAY || map[x + 1, y] == TERRAIN_ID.PATH_WAY)
                     {
                         break;
                     }
@@ -427,22 +427,22 @@ public static class MapGenerator
         // 左右基準
         for (int y = 0; y < m_MapSizeY - 1; y++)
         {
-            if (map[0, y] == CELL_ID.PATH_WAY)
+            if (map[0, y] == TERRAIN_ID.PATH_WAY)
             {
                 for (int x = 0; x < m_MapSizeY; x++)
                 {
-                    if (map[x, y - 1] == CELL_ID.PATH_WAY || map[x, y + 1] == CELL_ID.PATH_WAY)
+                    if (map[x, y - 1] == TERRAIN_ID.PATH_WAY || map[x, y + 1] == TERRAIN_ID.PATH_WAY)
                     {
                         break;
                     }
                     map[x, y] = 0;
                 }
             }
-            if (map[m_MapSizeX - 1, y] == CELL_ID.PATH_WAY)
+            if (map[m_MapSizeX - 1, y] == TERRAIN_ID.PATH_WAY)
             {
                 for (int x = m_MapSizeX - 1; x >= 0; x--)
                 {
-                    if (map[x, y - 1] == CELL_ID.PATH_WAY || map[x, y + 1] == CELL_ID.PATH_WAY)
+                    if (map[x, y - 1] == TERRAIN_ID.PATH_WAY || map[x, y + 1] == TERRAIN_ID.PATH_WAY)
                     {
                         break;
                     }

@@ -52,12 +52,12 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
         controller.Face(DIRECTION.UNDER);
 
         // ダンジョン
-        var cellMap = new CELL_ID[21, 21];
+        var cellMap = new TERRAIN_ID[21, 21];
         Range range = new Range(6, 6, 16, 16);
 
         for (int x = range.Start.X; x <= range.End.X; x++)
             for (int y = range.Start.Y; y <= range.End.Y; y++)
-                cellMap[x, y] = CELL_ID.ROOM;
+                cellMap[x, y] = TERRAIN_ID.ROOM;
 
         /*
         // https://blog.xin9le.net/entry/2013/12/14/033519

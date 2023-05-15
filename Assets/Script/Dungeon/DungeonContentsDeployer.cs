@@ -152,7 +152,7 @@ public class DungeonContentsDeployer : Singleton<DungeonContentsDeployer, IDunge
             var dir = DIRECTION.NONE;
             foreach (var near in around.Cells)
             {
-                if (near.Value == CELL_ID.ROOM)
+                if (near.Value == TERRAIN_ID.ROOM)
                 {
                     dir = near.Key;
                     break;

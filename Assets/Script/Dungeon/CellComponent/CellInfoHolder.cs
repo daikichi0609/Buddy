@@ -25,7 +25,7 @@ public interface ICellInfoHolder : IActorInterface
     /// <summary>
     /// CellId
     /// </summary>
-    CELL_ID CellId { get; set; }
+    TERRAIN_ID CellId { get; set; }
 }
 
 public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
@@ -50,8 +50,8 @@ public class CellInfoHolder : ActorComponentBase, ICellInfoHolder
     /// CellId
     /// </summary>
     [SerializeField, ReadOnly]
-    private CELL_ID m_CellId;
-    CELL_ID ICellInfoHolder.CellId { get => m_CellId; set => m_CellId = value; }
+    private TERRAIN_ID m_CellId;
+    TERRAIN_ID ICellInfoHolder.CellId { get => m_CellId; set => m_CellId = value; }
 
     /// <summary>
     /// 部屋Id

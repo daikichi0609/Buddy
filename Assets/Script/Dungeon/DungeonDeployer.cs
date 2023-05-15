@@ -12,7 +12,7 @@ public interface IDungeonDeployer : ISingleton
     /// <summary>
     /// マップ
     /// </summary>
-    CELL_ID[,] IdMap { get; }
+    TERRAIN_ID[,] IdMap { get; }
 
     /// <summary>
     /// マップ（コレクター）
@@ -42,7 +42,7 @@ public interface IDungeonDeployer : ISingleton
     /// </summary>
     /// <param name="map"></param>
     /// <param name="range"></param>
-    void DeployDungeon(CELL_ID[,] map, Range range, DungeonElementSetup setup);
+    void DeployDungeon(TERRAIN_ID[,] map, Range range, DungeonElementSetup setup);
 
     /// <summary>
     /// ダンジョンリムーブ
@@ -101,7 +101,7 @@ public class Room
     }
 }
 
-public enum CELL_ID
+public enum TERRAIN_ID
 {
     INVALID = -1,
     WALL = 0,
@@ -130,10 +130,10 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// <summary>
     /// マップ
     /// </summary>
-    private CELL_ID[,] m_IdMap;
-    CELL_ID[,] IDungeonDeployer.IdMap => m_IdMap;
+    private TERRAIN_ID[,] m_IdMap;
+    TERRAIN_ID[,] IDungeonDeployer.IdMap => m_IdMap;
 
-    private void OverWriteCellId(CELL_ID value, int x, int z) => m_IdMap[x, z] = value;
+    private void OverWriteCellId(TERRAIN_ID value, int x, int z) => m_IdMap[x, z] = value;
 
     /// <summary>
     /// インスタンス
@@ -219,7 +219,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     /// <param name="map"></param>
     /// <param name="range"></param>
-    void IDungeonDeployer.DeployDungeon(CELL_ID[,] map, Range range, DungeonElementSetup setup)
+    void IDungeonDeployer.DeployDungeon(TERRAIN_ID[,] map, Range range, DungeonElementSetup setup)
     {
         m_IdMap = map;
         var rangeList = new List<Range>();
@@ -262,52 +262,52 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
             for (int j = 0; j < m_IdMap.GetLength(1) - 1; j++)
             {
                 var id = m_IdMap[i, j]; // 古いId
-                CELL_ID type = CELL_ID.INVALID; // 新Id
+                TERRAIN_ID type = TERRAIN_ID.INVALID; // 新Id
                 GameObject cellObject = null; // GameObject
                 Vector3 pos = new Vector3Int(i, 0, j);
 
                 switch (id)
                 {
-                    case CELL_ID.WALL: // 0
+                    case TERRAIN_ID.WALL: // 0
                         pos += new Vector3(0, 0.8f, 0);
-                        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.WALL.ToString(), out cellObject) == false)
+                        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.WALL.ToString(), out cellObject) == false)
                             cellObject = Instantiate(setup.Wall, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
-                        type = CELL_ID.WALL;
+                        type = TERRAIN_ID.WALL;
                         break;
 
-                    case CELL_ID.PATH_WAY: // 1
-                        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.PATH_WAY.ToString(), out cellObject) == false)
+                    case TERRAIN_ID.PATH_WAY: // 1
+                        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.PATH_WAY.ToString(), out cellObject) == false)
                             cellObject = Instantiate(setup.Path, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
-                        type = CELL_ID.PATH_WAY;
+                        type = TERRAIN_ID.PATH_WAY;
                         break;
 
-                    case CELL_ID.ROOM: // 2
+                    case TERRAIN_ID.ROOM: // 2
                         AroundCellId aroundId = DungeonHandler.Interface.GetAroundCellId(i, j);
                         if (CheckGateWay(aroundId) == true)
                         {
-                            m_IdMap[i, j] = CELL_ID.GATE; // 入口なら設定し直す
+                            m_IdMap[i, j] = TERRAIN_ID.GATE; // 入口なら設定し直す
 
-                            if (ObjectPoolController.Interface.TryGetObject(CELL_ID.GATE.ToString(), out cellObject) == false)
+                            if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.GATE.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
-                            type = CELL_ID.GATE;
+                            type = TERRAIN_ID.GATE;
                         }
                         else
                         {
-                            if (ObjectPoolController.Interface.TryGetObject(CELL_ID.ROOM.ToString(), out cellObject) == false)
+                            if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.ROOM.ToString(), out cellObject) == false)
                                 cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
-                            type = CELL_ID.ROOM;
+                            type = TERRAIN_ID.ROOM;
                         }
                         break;
                 }
@@ -329,16 +329,16 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         {
             var cells = aroundGrid.Cells;
 
-            if (cells[DIRECTION.UP] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.UP] == TERRAIN_ID.PATH_WAY)
                 return true;
 
-            if (cells[DIRECTION.UNDER] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.UNDER] == TERRAIN_ID.PATH_WAY)
                 return true;
 
-            if (cells[DIRECTION.LEFT] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.LEFT] == TERRAIN_ID.PATH_WAY)
                 return true;
 
-            if (cells[DIRECTION.RIGHT] == CELL_ID.PATH_WAY)
+            if (cells[DIRECTION.RIGHT] == TERRAIN_ID.PATH_WAY)
                 return true;
 
             return false;
@@ -354,11 +354,11 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var x = pos.x;
         var z = pos.z;
 
-        OverWriteCellId(CELL_ID.STAIRS, x, z); // マップに階段を登録
+        OverWriteCellId(TERRAIN_ID.STAIRS, x, z); // マップに階段を登録
 
         var currentDungeonSetup = DungeonProgressManager.Interface.CurrentDungeonSetup;
 
-        if (ObjectPoolController.Interface.TryGetObject(CELL_ID.STAIRS.ToString(), out var cellObject) == false)
+        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.STAIRS.ToString(), out var cellObject) == false)
             cellObject = Instantiate(setup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);
@@ -366,7 +366,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
         var cell = cellObject.GetComponent<ICollector>();
         var info = cell.GetInterface<ICellInfoHolder>();
         info.CellObject = cellObject;
-        info.CellId = CELL_ID.STAIRS;
+        info.CellId = TERRAIN_ID.STAIRS;
         SetCellInstead(cell, x, z); // 既存のオブジェクトの代わりに代入
     }
 
