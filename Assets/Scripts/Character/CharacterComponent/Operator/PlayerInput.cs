@@ -34,18 +34,30 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaLastAction = Owner.GetInterface<ICharaLastActionHolder>();
 
-        // 
-        if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
-        {
-            var diposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
-            DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ => diposable.Dispose());
-        }
-
-        //  入力購読
+        // 入力購読
         InputManager.Interface.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);
         }).AddTo(CompositeDisposable);
+
+
+        // ----- 別のとこに移した方が良い ----- //
+        // カメラ追従
+        if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
+        {
+            var diposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+            DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ => diposable.Dispose()).AddTo(CompositeDisposable);
+        }
+
+        // ミニマップ更新
+        if (Owner.RequireEvent<ICharaTurnEvent>(out var e) == true)
+        {
+            e.OnTurnEndPost.Subscribe(_ =>
+            {
+
+            }).AddTo(CompositeDisposable);
+        }
+        // ----- //
     }
 
     /// <summary>
