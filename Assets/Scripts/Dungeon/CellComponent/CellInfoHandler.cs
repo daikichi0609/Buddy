@@ -35,7 +35,7 @@ public class CellInfoHandler : ActorComponentBase, ICellInfoHandler
     /// <summary>
     /// GameObject
     /// </summary>
-    [SerializeField]
+    [SerializeField, ReadOnly]
     private GameObject m_CellObject;
     GameObject ICellInfoHandler.CellObject { get => m_CellObject; set => m_CellObject = value; }
 

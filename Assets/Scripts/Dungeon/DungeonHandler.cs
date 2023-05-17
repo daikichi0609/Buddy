@@ -69,6 +69,11 @@ public interface IDungeonHandler : ISingleton
     /// </summary>
     /// <returns></returns>
     Vector3Int GetRandomRoomEmptyCellPosition();
+
+    /// <summary>
+    /// 探索済みとしてマーク
+    /// </summary>
+    void MarkExplored(Vector3Int pos);
 }
 
 public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>, IDungeonHandler
@@ -120,13 +125,14 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IDungeonHandler.TryGetRoomId(Vector3Int pos, out int id)
+    private bool TryGetRoomId(Vector3Int pos, out int id)
     {
         var cell = DungeonDeployer.Interface.CellMap[pos.x][pos.z];
         var info = cell.GetInterface<ICellInfoHandler>();
         id = info.RoomId;
         return id != -1;
     }
+    bool IDungeonHandler.TryGetRoomId(Vector3Int pos, out int id) => TryGetRoomId(pos, out id);
 
     /// <summary>
     /// 移動可能か
@@ -261,87 +267,32 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         return info.Position;
     }
     Vector3Int IDungeonHandler.GetRandomRoomEmptyCellPosition() => GetRandomRoomEmptyCellPosition();
-}
 
-/// <summary>
-/// 周囲のセルId
-/// </summary>
-public readonly struct AroundCellId
-{
-    public TERRAIN_ID BaseCell { get; }
-    public Dictionary<DIRECTION, TERRAIN_ID> Cells { get; }
-
-    public AroundCellId(TERRAIN_ID[,] map, int x, int z)
+    /// <summary>
+    /// 探索済みとしてマーク
+    /// </summary>
+    /// <param name="pos"></param>
+    void IDungeonHandler.MarkExplored(Vector3Int pos)
     {
-        BaseCell = map[x, z];
-        Cells = new Dictionary<DIRECTION, TERRAIN_ID>();
+        // 部屋の中にいるなら部屋全体を探索済みとする
+        if (TryGetRoomId(pos, out var id) == true)
+        {
+            var room = DungeonDeployer.Interface.GetRoom(id);
+            foreach (var cell in room.Cells)
+                MarkExploredInternal(cell);
+        }
+        // 部屋にいないなら周囲のセルを探索済みとする
+        else
+        {
+            var around = NewAroundCell(pos.x, pos.z);
+            foreach (var cell in around.Cells.Values)
+                MarkExploredInternal(cell);
+        }
 
-        // 左
-        if (x - 1 >= 0 && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_LEFT, map[x - 1, z - 1]);
-
-        if (x - 1 >= 0)
-            Cells.Add(DIRECTION.LEFT, map[x - 1, z]);
-
-        if (x - 1 >= 0 && z + 1 < map.Length)
-            Cells.Add(DIRECTION.UPPER_LEFT, map[x - 1, z + 1]);
-
-        // 上
-        if (z + 1 < map.Length)
-            Cells.Add(DIRECTION.UP, map[x, z + 1]);
-
-        if (x + 1 < map.Length && z + 1 < map.Length)
-            Cells.Add(DIRECTION.UPPER_RIGHT, map[x + 1, z + 1]);
-
-        // 右
-        if (x + 1 < map.Length)
-            Cells.Add(DIRECTION.RIGHT, map[x + 1, z]);
-
-        if (x + 1 < map.Length && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_RIGHT, map[x + 1, z - 1]);
-
-        // 下
-        if (z - 1 >= 0)
-            Cells.Add(DIRECTION.UNDER, map[x, z - 1]);
-    }
-}
-
-public readonly struct AroundCell
-{
-    public ICollector BaseCell { get; } //基準
-    public Dictionary<DIRECTION, ICollector> Cells { get; }
-
-    public AroundCell(List<List<ICollector>> cellList, int x, int z)
-    {
-        BaseCell = cellList[x][z];
-        Cells = new Dictionary<DIRECTION, ICollector>();
-
-        // 左
-        if (x - 1 >= 0 && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_LEFT, cellList[x - 1][z - 1]);
-
-        if (x - 1 >= 0)
-            Cells.Add(DIRECTION.LEFT, cellList[x - 1][z]);
-
-        if (x - 1 >= 0 && z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UPPER_LEFT, cellList[x - 1][z + 1]);
-
-        // 上
-        if (z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UP, cellList[x][z + 1]);
-
-        if (x + 1 < cellList.Count && z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UPPER_RIGHT, cellList[x + 1][z + 1]);
-
-        // 右
-        if (x + 1 < cellList.Count)
-            Cells.Add(DIRECTION.RIGHT, cellList[x + 1][z]);
-
-        if (x + 1 < cellList.Count && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_RIGHT, cellList[x + 1][z - 1]);
-
-        // 下
-        if (z - 1 >= 0)
-            Cells.Add(DIRECTION.UNDER, cellList[x][z - 1]);
+        void MarkExploredInternal(ICollector cell)
+        {
+            var state = cell.GetInterface<ICellStateChanger>();
+            state.IsExplored = true;
+        }
     }
 }

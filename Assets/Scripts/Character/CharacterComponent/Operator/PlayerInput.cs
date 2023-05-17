@@ -49,12 +49,13 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ => diposable.Dispose()).AddTo(CompositeDisposable);
         }
 
-        // ミニマップ更新
+        // 探索済みとしてマーク
         if (Owner.RequireEvent<ICharaTurnEvent>(out var e) == true)
         {
             e.OnTurnEndPost.Subscribe(_ =>
             {
-
+                var pos = m_CharaMove.Position;
+                DungeonHandler.Interface.MarkExplored(pos);
             }).AddTo(CompositeDisposable);
         }
         // ----- //

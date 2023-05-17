@@ -52,14 +52,14 @@ public partial class FriendAi : CharaAi, IFriendAi
                 break;
 
             case FRIEND_STATE.CHASING:
-                // 部屋でPlayerと隣り合ってるかチェック
+                // 同じ部屋でPlayerと隣り合ってるかチェック
                 bool isNeighborOn = false;
+                var playerPos = UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position;
                 // 自分とリーダーが同じ部屋にいるなら
                 if (DungeonHandler.Interface.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
-                    DungeonHandler.Interface.TryGetRoomId(UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position, out var playerId) &&
+                    DungeonHandler.Interface.TryGetRoomId(playerPos, out var playerId) == true &&
                     myId == playerId)
                 {
-                    var playerPos = UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position;
                     var aroundCell = DungeonHandler.Interface.GetAroundCell(playerPos);
                     foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
                     {
@@ -69,6 +69,7 @@ public partial class FriendAi : CharaAi, IFriendAi
                         if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.PLAYER) == false)
                             continue;
 
+                        // 隣にいるなら
                         if (collector == Owner)
                         {
                             isNeighborOn = true; // 隣り合ってるフラグオン
@@ -78,16 +79,17 @@ public partial class FriendAi : CharaAi, IFriendAi
                     }
                 }
 
-                // 隣り合ってないなら追いかける
-                if (isNeighborOn == false)
-                    result = Chase(UnitHolder.Interface.Player);
-                // 隣り合ってるなら待つ
-                else
+                // 隣り合っているならプレイヤーを見る
+                if (isNeighborOn == true)
                 {
                     m_CharaMove.Face(dir);
                     result = m_CharaMove.Wait();
                 }
-
+                // 隣り合っていないなら追いかける AstarPath
+                else
+                {
+                    result = FollowAstarPath(UnitHolder.Interface.Player);
+                }
                 break;
         }
 

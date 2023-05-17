@@ -316,6 +316,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 var info = cell.GetInterface<ICellInfoHandler>();
                 info.CellObject = cellObject;
                 info.CellId = type;
+                cell.Initialize();
                 m_CellMap[i].Add(cell);
             }
         }

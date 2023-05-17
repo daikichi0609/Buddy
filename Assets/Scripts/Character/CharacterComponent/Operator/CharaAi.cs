@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using static AStarSearch;
 
 public interface IAiAction : IActorInterface
 {
@@ -54,6 +55,21 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     }
 
     /// <summary>
+    /// 移動する
+    /// 妥協移動も含める
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    protected bool Move(DIRECTION dir)
+    {
+        if (m_CharaMove.Move(dir) == false)
+            if (CompromiseMove(dir) == false)
+                return m_CharaMove.Wait();
+
+        return true;
+    }
+
+    /// <summary>
     /// プレイヤーを追いかける
     /// 移動の可否に関わらずtrue
     /// </summary>
@@ -61,11 +77,24 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected bool Chase(ICollector target)
     {
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
-        if (m_CharaMove.Move(dir) == false)
-            if (CompromiseMove(dir) == false)
-                m_CharaMove.Wait();
+        return Move(dir);
+    }
 
-        return true;
+    /// <summary>
+    /// Astarパスで最初のノードを辿る
+    /// </summary>
+    protected bool FollowAstarPath(ICollector target)
+    {
+        var currentPos = m_CharaMove.Position; // 自分の位置
+        var targetPos = target.GetInterface<ICharaMove>().Position; // 相手の位置
+        var grid = DungeonDeployer.Interface.IdMap.AstarGrid(); // マップ生成
+
+        // パス生成
+        var path = AStarSearch.FindPath(new Vector2Int(currentPos.x, currentPos.z), new Vector2Int(targetPos.x, targetPos.z), grid);
+        var first = path[0];
+        var firstPos = new Vector3Int(first.X, 0, first.Y);
+        var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, firstPos);
+        return Move(dir);
     }
 
     /// <summary>
