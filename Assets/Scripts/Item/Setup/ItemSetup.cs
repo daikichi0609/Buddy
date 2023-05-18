@@ -34,6 +34,7 @@ public class ItemSetup : PrefabSetup
         {
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
             { "空腹値回復", typeof(SatisfyHungryDesire).FullName },
+            { "直線投擲", typeof(ThrowStraight).FullName },
         };
     }
 
@@ -70,6 +71,10 @@ public class ItemSetup : PrefabSetup
         // 空腹値回復
         if (type == typeof(SatisfyHungryDesire))
             m_Effect = ScriptableObject.CreateInstance<SatisfyHungryDesire>();
+
+        // 直線投擲
+        if (type == typeof(ThrowStraight))
+            m_Effect = ScriptableObject.CreateInstance<ThrowStraight>();
 
 
         if (m_Effect == null)

@@ -26,8 +26,6 @@ public partial class FriendAi : CharaAi, IFriendAi
     [ShowNativeProperty]
     private FRIEND_STATE CurrentState => m_CurrentState.Value;
 
-    protected override CHARA_TYPE Target => CHARA_TYPE.ENEMY;
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -48,7 +46,7 @@ public partial class FriendAi : CharaAi, IFriendAi
         {
             case FRIEND_STATE.ATTACKING:
                 dir = LotteryDirection(clue.TargetList);
-                result = m_CharaBattle.NormalAttack(dir, Target);
+                result = m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
                 break;
 
             case FRIEND_STATE.CHASING:

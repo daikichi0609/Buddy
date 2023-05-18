@@ -63,7 +63,6 @@ public class ItemHandler : MonoBehaviour, IItemHandler
         m_ItemObject.SetActive(true);
         m_Position = pos;
         m_ItemObject.transform.position = pos + new Vector3(0f, OFFSET_Y, 0f);
-        m_ItemObject.transform.eulerAngles = new Vector3(45f, 0f, 0f);
     }
 
     void IItemHandler.OnPut()

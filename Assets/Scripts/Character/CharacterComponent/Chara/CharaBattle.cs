@@ -168,7 +168,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return false;
 
         m_CharaMove.Face(direction);
-        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, direction);
+        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, false, direction);
         m_OnAttackStart.OnNext(attackInfo);
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int();

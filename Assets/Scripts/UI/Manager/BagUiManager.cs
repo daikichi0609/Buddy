@@ -43,10 +43,11 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
         return new OptionElement(effects, names);
     }
 
-    protected override void Deactivate()
+    protected override void Deactivate(bool back)
     {
         base.Deactivate();
-        MenuUiManager.Interface.Activate();
+        if (back == true)
+            MenuUiManager.Interface.Activate();
     }
 
     public class BagUi : UiBase

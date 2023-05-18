@@ -30,8 +30,6 @@ public partial class EnemyAi : CharaAi, IEnemyAi
     [ShowNativeProperty]
     private ICellInfoHandler DestinationCell { get; set; }
 
-    protected override CHARA_TYPE Target => CHARA_TYPE.PLAYER;
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -63,7 +61,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         {
             case ENEMY_STATE.ATTACKING:
                 dir = LotteryDirection(clue.TargetList);
-                result = m_CharaBattle.NormalAttack(dir, Target);
+                result = m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
                 break;
 
             case ENEMY_STATE.CHASING:
@@ -227,7 +225,7 @@ public partial class EnemyAi
         if (TryGetCandidateAttack(aroundCell, out var attack) == true)
             return new EnemyActionClue(ENEMY_STATE.ATTACKING, attack);
 
-        if (TryGetCandidateChase(currentPos, Target, out var chase) == true)
+        if (TryGetCandidateChase(currentPos, m_TypeHolder.TargetType, out var chase) == true)
             return new EnemyActionClue(ENEMY_STATE.CHASING, chase);
 
         return new EnemyActionClue(ENEMY_STATE.SEARCHING, null);

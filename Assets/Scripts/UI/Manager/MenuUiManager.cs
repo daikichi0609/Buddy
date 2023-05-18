@@ -58,7 +58,7 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
     /// <summary>
     /// メニュー開く再購読
     /// </summary>
-    protected override void Deactivate()
+    protected override void Deactivate(bool back = true)
     {
         base.Deactivate();
         SubscribeMenuOpen();

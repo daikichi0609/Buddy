@@ -25,16 +25,22 @@ public readonly struct AttackInfo
     public float Dex { get; }
 
     /// <summary>
+    /// 防御無視
+    /// </summary>
+    public bool IgnoreDefence { get; }
+
+    /// <summary>
     /// 攻撃方向
     /// </summary>
     public DIRECTION Direction { get; }
 
-    public AttackInfo(ICollector attacker, string name, int atk, float dex, DIRECTION dir)
+    public AttackInfo(ICollector attacker, string name, int atk, float dex, bool ignoreDeffence, DIRECTION dir)
     {
         Attacker = attacker;
         Name = name;
         Atk = atk;
         Dex = dex;
+        IgnoreDefence = ignoreDeffence;
         Direction = dir;
     }
 }

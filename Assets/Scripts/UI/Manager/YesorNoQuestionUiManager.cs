@@ -69,7 +69,7 @@ public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, 
         UiHolder.Instance.QuestionText.text = s;
     }
 
-    protected override void Deactivate()
+    protected override void Deactivate(bool back = true)
     {
         base.Deactivate();
     }

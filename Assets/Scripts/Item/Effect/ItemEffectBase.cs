@@ -35,13 +35,13 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     private void PostEffect(ICollector owner, IItemHandler item)
     {
         // Ui非有効化
-        BagUiManager.Interface.Deactive();
+        BagUiManager.Interface.Deactive(false);
 
         // アイテム消費
         if (owner.RequireInterface<ICharaInventory>(out var inventory) == true)
             inventory.Consume(item);
 
-        // アイテム消費
+        // アクション登録
         if (owner.RequireInterface<ICharaLastActionHolder>(out var last) == true)
             last.RegisterAction(CHARA_ACTION.ITEM_USE);
 

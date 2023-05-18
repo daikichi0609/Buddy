@@ -16,8 +16,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected ICharaMove m_CharaMove;
     protected ICharaBattle m_CharaBattle;
     protected ICharaTurn m_CharaTurn;
-
-    protected abstract CHARA_TYPE Target { get; }
+    protected ICharaTypeHolder m_TypeHolder;
 
     protected override void Register(ICollector owner)
     {
@@ -30,6 +29,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
 
         PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ =>
         {
@@ -130,7 +130,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
             var info = pair.Value.GetInterface<ICellInfoHandler>();
 
             // Unit存在判定
-            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, Target) == false)
+            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, m_TypeHolder.TargetType) == false)
                 continue;
 
             // 壁抜け判定

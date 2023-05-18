@@ -17,7 +17,15 @@ public enum CHARA_TYPE
 
 public interface ICharaTypeHolder : IActorInterface
 {
+    /// <summary>
+    /// 自分のタイプ
+    /// </summary>
     CHARA_TYPE Type { get; set; }
+
+    /// <summary>
+    /// 敵対タイプ
+    /// </summary>
+    CHARA_TYPE TargetType { get; set; }
 }
 
 public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
@@ -29,6 +37,13 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
     private CHARA_TYPE m_Type = CHARA_TYPE.NONE;
     CHARA_TYPE ICharaTypeHolder.Type { get => m_Type; set => m_Type = value; }
 
+    /// <summary>
+    /// ターゲット
+    /// </summary>
+    [SerializeField, NaughtyAttributes.ReadOnly]
+    private CHARA_TYPE m_TargetType = CHARA_TYPE.NONE;
+    CHARA_TYPE ICharaTypeHolder.TargetType { get => m_TargetType; set => m_TargetType = value; }
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -39,9 +54,23 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
     {
         base.Initialize();
 
-        if (Owner.RequireInterface<IEnemyAi>(out var enemy) == true)
-            m_Type = CHARA_TYPE.ENEMY;
-        else
+        // プレイヤー
+        if (Owner.RequireInterface<IPlayerInput>(out var _) == true)
+        {
             m_Type = CHARA_TYPE.PLAYER;
+            m_TargetType = CHARA_TYPE.ENEMY;
+        }
+        // バディ
+        else if (Owner.RequireInterface<IFriendAi>(out var _) == true)
+        {
+            m_Type = CHARA_TYPE.PLAYER;
+            m_TargetType = CHARA_TYPE.ENEMY;
+        }
+        // 敵
+        else if (Owner.RequireInterface<IEnemyAi>(out var _) == true)
+        {
+            m_Type = CHARA_TYPE.ENEMY;
+            m_TargetType = CHARA_TYPE.PLAYER;
+        }
     }
 }

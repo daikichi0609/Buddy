@@ -29,8 +29,15 @@ public readonly struct OptionElement
 
 public interface IUiManager : ISingleton
 {
+    /// <summary>
+    /// UI表示
+    /// </summary>
     void Activate();
-    void Deactive();
+
+    /// <summary>
+    /// UI非表示
+    /// </summary>
+    void Deactive(bool back = true);
 }
 
 /// <summary>
@@ -127,7 +134,7 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     /// <summary>
     /// Ui無効化
     /// </summary>
-    protected virtual void Deactivate()
+    protected virtual void Deactivate(bool back = true)
     {
         // Ui非表示
         UiInterface.SetActive(false);
@@ -139,7 +146,7 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
         CloseUiEvent?.Invoke();
         CloseUiEvent = null;
     }
-    void IUiManager.Deactive() => Deactivate();
+    void IUiManager.Deactive(bool back) => Deactivate(back);
 
     private void SubscribeDetectInput()
     {
