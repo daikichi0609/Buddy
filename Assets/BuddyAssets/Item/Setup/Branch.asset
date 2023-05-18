@@ -26,7 +26,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
   m_Name: Branch
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 1329430274803916, guid: 8c8c7d8f829a2d24ebe78eddb5eaff57, type: 3}
+  m_Prefab: {fileID: 7947475297059854699, guid: f40cbfeb9d7494c65937ecc0d58021fd,
+    type: 3}
   m_ItemName: "\u304D\u306E\u3048\u3060"
   m_Effect: {fileID: -6714860420790942788}
   m_Type: ThrowStraight

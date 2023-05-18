@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
   m_Name: Apple
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 1829371231341652, guid: 426b44a7575f71e479fab4f4e8431989, type: 3}
+  m_Prefab: {fileID: 6568815780372088427, guid: 6c787c06da5394bdd9c4a8ccd6295b43,
+    type: 3}
   m_ItemName: "\u308A\u3093\u3054"
   m_Effect: {fileID: 4643006505588422760}
   m_Type: SatisfyHungryDesire
