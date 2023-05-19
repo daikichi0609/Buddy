@@ -138,6 +138,14 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
         // BGM
         var bgm = Instantiate(bossBattleSetup.BGM);
         BGMHandler.Interface.SetBGM(bgm);
+
+        // 敵がいなくなったら終了
+        UnitHolder.Interface.OnEnemyRemove.Subscribe(count =>
+        {
+            if (count != 0)
+                return;
+            DungeonProgressManager.Interface.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+        }).AddTo(this);
     }
 }
 

@@ -40,6 +40,11 @@ public interface IUnitHolder : ISingleton
     /// </summary>
     /// <param name="unit"></param>
     void RemoveUnit(ICollector unit);
+
+    /// <summary>
+    /// 敵リムーブ時イベント
+    /// </summary>
+    IObservable<int> OnEnemyRemove { get; }
 }
 
 public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
@@ -54,6 +59,9 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
     /// 要素の移動
     /// リストのクリア
     /// </summary>
+
+    private Subject<int> m_OnEnemyRemove = new Subject<int>();
+    IObservable<int> IUnitHolder.OnEnemyRemove => m_OnEnemyRemove;
 
     protected override void Awake()
     {
@@ -109,6 +117,7 @@ public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
             if (enemy == unit)
             {
                 m_EnemyList.Remove(unit);
+                m_OnEnemyRemove.OnNext(EnemyCount);
                 return;
             }
         }

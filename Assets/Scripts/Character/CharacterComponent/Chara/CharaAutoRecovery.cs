@@ -35,7 +35,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
                 int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
 
                 // 回復インターバル
-                if (currentTurn % RECOVER_TURN == 0)
+                if (currentTurn % RECOVER_TURN != 0)
                     return;
 
                 if (Owner.RequireInterface<ICharaStatus>(out var status) == false)

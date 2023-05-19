@@ -186,6 +186,10 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <returns></returns>
     async Task IDungeonProgressManager.NextFloor()
     {
+        // ユニット停止
+        TurnManager.Interface.StopUnitAct();
+
+        // UI非表示
         YesorNoQuestionUiManager.Interface.Deactive();
 
         int maxFloor = CurrentDungeonSetup.FloorCount;

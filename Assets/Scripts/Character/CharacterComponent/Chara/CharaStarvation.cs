@@ -97,7 +97,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
 
         // ダメージインターバル
-        if (currentTurn % STARVATION_TURN == 0)
+        if (currentTurn % STARVATION_TURN != 0)
             return;
 
         if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
@@ -115,7 +115,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
 
         // 空腹インターバル
-        if (currentTurn % HUNGRY_TURN == 0)
+        if (currentTurn % HUNGRY_TURN != 0)
             return;
 
         if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
