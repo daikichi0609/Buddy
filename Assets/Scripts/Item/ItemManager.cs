@@ -7,9 +7,29 @@ using System.Linq;
 
 public interface IItemManager : ISingleton
 {
+    /// <summary>
+    /// 全てのアイテム
+    /// </summary>
     List<IItemHandler> ItemList { get; }
+
+    /// <summary>
+    /// アイテム追加
+    /// </summary>
+    /// <param name="item"></param>
     void AddItem(IItemHandler item);
+
+    /// <summary>
+    /// アイテム削除
+    /// </summary>
+    /// <param name="item"></param>
     void RemoveItem(IItemHandler item);
+
+    /// <summary>
+    /// アイテムがあるか
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    bool IsItemOn(Vector3Int pos);
 }
 
 public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
@@ -31,4 +51,19 @@ public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
 
     void IItemManager.AddItem(IItemHandler item) => m_ItemList.Add(item);
     void IItemManager.RemoveItem(IItemHandler item) => m_ItemList.Remove(item);
+
+    /// <summary>
+    /// アイテムがあるか
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    bool IItemManager.IsItemOn(Vector3Int pos)
+    {
+        foreach (var item in m_ItemList)
+        {
+            if (item.Position == pos)
+                return true;
+        }
+        return false;
+    }
 }

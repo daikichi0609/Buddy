@@ -211,12 +211,15 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private bool IsNothingThere(Vector3 pos)
+    private bool IsNothingThere(Vector3Int pos)
     {
+        // ユニット
         if (UnitFinder.Interface.IsUnitOn(pos) == true)
             return false;
 
-        // TODO:アイテム
+        // アイテム
+        if (ItemManager.Interface.IsItemOn(pos) == true)
+            return false;
 
         return true;
     }

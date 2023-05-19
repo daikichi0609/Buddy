@@ -30,21 +30,21 @@ public interface IUnitFinder : ISingleton
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IsUnitOn(Vector3 pos);
+    bool IsUnitOn(Vector3Int pos);
 
     /// <summary>
     /// プレイヤーいるか
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IsPlayerOn(Vector3 pos);
+    bool IsPlayerOn(Vector3Int pos);
 
     /// <summary>
     /// 敵いるか
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IsEnemyOn(Vector3 pos);
+    bool IsEnemyOn(Vector3Int pos);
 }
 
 public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
@@ -143,7 +143,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IUnitFinder.IsUnitOn(Vector3 pos)
+    bool IUnitFinder.IsUnitOn(Vector3Int pos)
     {
         if (IsPlayerOn(pos) == true)
             return true;
@@ -159,7 +159,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private bool IsPlayerOn(Vector3 pos)
+    private bool IsPlayerOn(Vector3Int pos)
     {
         foreach (ICollector player in UnitHolder.Interface.FriendList)
         {
@@ -170,14 +170,14 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         return false;
     }
 
-    bool IUnitFinder.IsPlayerOn(Vector3 pos) => IsPlayerOn(pos);
+    bool IUnitFinder.IsPlayerOn(Vector3Int pos) => IsPlayerOn(pos);
 
     /// <summary>
     /// 敵が存在するかを返す
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private bool IsEnemyOn(Vector3 pos) //指定座標に敵がいるかどうかを調べる
+    private bool IsEnemyOn(Vector3Int pos) //指定座標に敵がいるかどうかを調べる
     {
         foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
         {
@@ -188,5 +188,5 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         return false;
     }
 
-    bool IUnitFinder.IsEnemyOn(Vector3 pos) => IsEnemyOn(pos);
+    bool IUnitFinder.IsEnemyOn(Vector3Int pos) => IsEnemyOn(pos);
 }

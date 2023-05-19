@@ -29,7 +29,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
         {
             turn.OnTurnEndPost.Subscribe(_ =>
             {
-                if (Owner.RequireInterface<ICharaStarvation>(out var starvation) == false || starvation.IsStarvate == true)
+                if (Owner.RequireInterface<ICharaStarvation>(out var starvation) == true && starvation.IsStarvate == true)
                     return;
 
                 int currentTurn = TurnManager.Interface.TotalTurnCount + 1;

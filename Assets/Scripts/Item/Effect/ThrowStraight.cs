@@ -53,7 +53,9 @@ public class ThrowStraight : ItemEffectBase
         if (hit != null)
         {
             var battle = hit.GetInterface<ICharaBattle>();
-            battle.Damage(new AttackInfo(owner, status.CurrentStatus.Name, m_Damage, 100f, true, dir));
+            var result = battle.Damage(new AttackInfo(owner, status.CurrentStatus.Name, m_Damage, 100f, true, dir));
+            var log = CharaLog.CreateAttackResultLog(result);
+            BattleLogManager.Interface.Log(log);
         }
         // ヒットしていないならアイテムを落とす
         else

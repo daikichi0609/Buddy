@@ -167,15 +167,15 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (TurnManager.Interface.NoOneActing == false)
             return false;
 
-        m_CharaMove.Face(direction);
-        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, false, direction);
-        m_OnAttackStart.OnNext(attackInfo);
+        m_CharaMove.Face(direction); // 向く
+        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, false, direction); // 攻撃情報　
+        m_OnAttackStart.OnNext(attackInfo); // Event発火
 
-        var attackPos = m_CharaMove.Position + direction.ToV3Int();
+        var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
 
-        var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
+        var disposable = TurnManager.Interface.RequestProhibitAction(Owner); // 行動禁止
 
-        // 非同期で内部処理走らせる
+        // モーション終わりに
         StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
         return true;
     }
@@ -216,11 +216,19 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
     {
         var isHit = Calculator.JudgeHit(attackInfo.Dex);
+        int damage = 0;
+        bool isDead = false;
 
-        //ダメージ処理
-        int damage = Calculator.CalculateDamage(attackInfo.Atk, Status.Def);
-        Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
-        bool isDead = Status.Hp == 0;
+        // ダメージ処理
+        if (isHit == true)
+        {
+            if (attackInfo.IgnoreDefence == false)
+                damage = Calculator.CalculateDamage(attackInfo.Atk, Status.Def);
+            else
+                damage = attackInfo.Atk; // 防御無視
+            Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
+            isDead = Status.Hp == 0;
+        }
 
         var result = new AttackResult(attackInfo, Owner, isHit, damage, Status.Hp, isDead);
 

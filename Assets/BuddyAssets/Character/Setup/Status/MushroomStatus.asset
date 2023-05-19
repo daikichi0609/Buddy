@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Param:
     m_GivenName: "\u304D\u306E\u3053"
     m_MaxHp: 10
-    m_Atk: 7
+    m_Atk: 15
     m_Def: 3
     m_Agi: 1
     m_Res: 0.05

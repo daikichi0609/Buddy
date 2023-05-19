@@ -131,7 +131,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     /// </summary>
     private void NextUnitAct()
     {
-        // ダンジョンデプロイを待つ
+        // 有効化中でない
         if (m_IsActive == false)
             return;
 
