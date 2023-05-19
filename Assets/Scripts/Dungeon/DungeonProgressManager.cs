@@ -6,9 +6,15 @@ using UniRx;
 using System;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using UnityEngine.Analytics;
 
 public interface IDungeonProgressManager : ISingleton
 {
+    /// <summary>
+    /// ダンジョン初期化
+    /// </summary>
+    void InitializeDungeon();
+
     /// <summary>
     /// 進行度に応じた現在のダンジョン設定
     /// </summary>
@@ -43,15 +49,16 @@ public interface IDungeonProgressManager : ISingleton
     TrapSetup GetRandomTrapSetup();
 
     /// <summary>
-    /// ダンジョン初期化
-    /// </summary>
-    void InitializeDungeon();
-
-    /// <summary>
     /// 次の階層へ
     /// </summary>
     Task NextFloor();
     IObservable<int> FloorChanged { get; }
+
+    /// <summary>
+    /// ゲーム終了
+    /// </summary>
+    /// <param name="reason">理由</param>
+    void FinishDungeon(FINISH_REASON reason);
 }
 
 /// <summary>
@@ -63,6 +70,15 @@ public enum DUNGEON_THEME
     ROCK = 1,
     CRYSTAL = 2,
     WHITE = 3,
+}
+
+/// <summary>
+/// ゲーム終了理由
+/// </summary>
+public enum FINISH_REASON
+{
+    PLAYER_DEAD,
+    BOSS_DEAD,
 }
 
 public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeonProgressManager>, IDungeonProgressManager
@@ -95,6 +111,23 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// </summary>
     private ReactiveProperty<int> m_CurrentFloor = new ReactiveProperty<int>(1);
     IObservable<int> IDungeonProgressManager.FloorChanged => m_CurrentFloor;
+
+    /// <summary>
+    /// ダンジョン初期化
+    /// </summary>
+    void IDungeonProgressManager.InitializeDungeon()
+    {
+        string where = m_CurrentFloor.Value.ToString() + "F";
+        // 明転
+        FadeManager.Interface.TurnBright(CurrentDungeonSetup.DungeonName, where);
+
+        var elementSetup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
+        DungeonDeployer.Interface.DeployDungeon(elementSetup);
+        DungeonContentsDeployer.Interface.DeployAll();
+
+        var bgm = Instantiate(CurrentDungeonSetup.BGM);
+        BGMHandler.Interface.SetBGM(bgm);
+    }
 
     /// <summary>
     /// ランダムな敵キャラセットアップを重み抽選
@@ -148,23 +181,6 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     }
 
     /// <summary>
-    /// ダンジョン初期化
-    /// </summary>
-    void IDungeonProgressManager.InitializeDungeon()
-    {
-        string where = m_CurrentFloor.Value.ToString() + "F";
-        // 明転
-        FadeManager.Interface.TurnBright(CurrentDungeonSetup.DungeonName, where);
-
-        var elementSetup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
-        DungeonDeployer.Interface.DeployDungeon(elementSetup);
-        DungeonContentsDeployer.Interface.DeployAll();
-
-        var bgm = Instantiate(CurrentDungeonSetup.BGM);
-        BGMHandler.Interface.SetBGM(bgm);
-    }
-
-    /// <summary>
     /// 次の階
     /// </summary>
     /// <returns></returns>
@@ -176,7 +192,9 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
         // すでに最上階にいるならチェックポイントへ
         if (m_CurrentFloor.Value >= maxFloor)
         {
-            await ToCheckPoint();
+            // 進行度+1
+            m_CurrentProgress++;
+            await MoveScene();
             return;
         }
 
@@ -204,16 +222,39 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     }
 
     /// <summary>
-    /// チェックポイントへ
+    /// 進行度に合わせたシーン移動
     /// </summary>
     /// <returns></returns>
-    async private Task ToCheckPoint()
+    async private Task MoveScene()
     {
         m_CurrentFloor.Value = 1;
         int maxProgress = CurrentDungeonSetupHolder.DungeonSetup.Length;
-        // 最終進行度ならボスバトルに移動
-        string sceneName = ++m_CurrentProgress < maxProgress ? SceneName.SCENE_CHECKPOINT : SceneName.SCENE_BOSS_BATTLE;
+        // シーン名
+        string sceneName = "";
+        if (m_CurrentProgress == 0)
+            sceneName = SceneName.SCENE_HOME;
+        else if (m_CurrentProgress == maxProgress)
+            sceneName = SceneName.SCENE_BOSS_BATTLE;
+        else
+            sceneName = SceneName.SCENE_CHECKPOINT;
 
         await FadeManager.Interface.LoadScene(sceneName);
+    }
+
+    /// <summary>
+    /// イベントによるシーン移動
+    /// </summary>
+    /// <param name="reason"></param>
+    async void IDungeonProgressManager.FinishDungeon(FINISH_REASON reason)
+    {
+        TurnManager.Interface.StopUnitAct();
+
+        if (reason == FINISH_REASON.PLAYER_DEAD)
+            await MoveScene();
+        else if (reason == FINISH_REASON.BOSS_DEAD)
+        {
+            m_CurrentProgress = 0;
+            await FadeManager.Interface.LoadScene(SceneName.SCENE_HOME);
+        }
     }
 }

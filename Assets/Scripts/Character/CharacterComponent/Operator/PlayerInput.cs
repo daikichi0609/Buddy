@@ -4,6 +4,8 @@ using System.Xml.Linq;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using Zenject;
+using System;
 
 public interface IPlayerInput : IActorInterface
 {
@@ -45,8 +47,14 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         // カメラ追従
         if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
         {
-            var diposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
-            DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ => diposable.Dispose()).AddTo(CompositeDisposable);
+            var disposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+
+            // 死亡時
+            var battle = Owner.GetEvent<ICharaBattleEvent>();
+            battle.OnDead.Subscribe(_ => disposable.Dispose()).AddTo(CompositeDisposable);
+
+            // その他
+            CompositeDisposable.Add(disposable);
         }
 
         // 探索済みとしてマーク

@@ -50,7 +50,7 @@ public abstract class UiBase : IUiBase
     private IObservable<int> OptionIdChanged => m_OptionId;
     void IUiBase.AddOptionId(int add)
     {
-        int option = Mathf.Clamp(m_OptionId.Value + add, 0, OptionCount);
+        int option = Mathf.Clamp(m_OptionId.Value + add, 0, OptionCount - 1);
         m_OptionId.Value = option;
     }
 

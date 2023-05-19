@@ -72,5 +72,12 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
             m_Type = CHARA_TYPE.ENEMY;
             m_TargetType = CHARA_TYPE.PLAYER;
         }
+
+        // プレイヤーなら死亡時にゲーム終了の処理
+        if (m_Type == CHARA_TYPE.PLAYER)
+        {
+            var battle = Owner.GetEvent<ICharaBattleEvent>();
+            battle.OnDead.Subscribe(_ => DungeonProgressManager.Interface.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
+        }
     }
 }

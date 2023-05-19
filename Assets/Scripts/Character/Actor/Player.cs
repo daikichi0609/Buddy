@@ -15,5 +15,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharaCellEventChecker))]
 [RequireComponent(typeof(CharaInventory))]
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(CharaAutoRecovery))]
+[RequireComponent(typeof(CharaStarvation))]
 
 public class Player : MonoBehaviour { }

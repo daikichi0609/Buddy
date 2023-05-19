@@ -15,5 +15,6 @@ using UnityEngine;
 [RequireComponent(typeof(CharaCellEventChecker))]
 [RequireComponent(typeof(CharaInventory))]
 [RequireComponent(typeof(FriendAi))]
+[RequireComponent(typeof(CharaAutoRecovery))]
 
 public class Friend : MonoBehaviour { }

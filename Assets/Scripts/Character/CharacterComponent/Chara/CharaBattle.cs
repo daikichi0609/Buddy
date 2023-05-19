@@ -244,6 +244,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     {
         await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
         m_OnDamageEnd.OnNext(result);
+
+        // 死亡
         if (result.IsDead == true)
             Dead();
     }

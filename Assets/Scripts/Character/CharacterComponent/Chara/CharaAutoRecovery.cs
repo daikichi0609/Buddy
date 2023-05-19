@@ -13,7 +13,7 @@ public interface ICharaAutoRecovery : IActorInterface
 /// </summary>
 public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 {
-    private static readonly int RECOVER_TURN = 5;
+    private static readonly int RECOVER_TURN = 10;
 
     protected override void Register(ICollector owner)
     {

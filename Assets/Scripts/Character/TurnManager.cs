@@ -34,6 +34,11 @@ public interface ITurnManager : ISingleton
     /// ユニット除去
     /// </summary>
     void RemoveUnit(ICollector unit);
+
+    /// <summary>
+    /// ユニット行動ストップ
+    /// </summary>
+    void StopUnitAct();
 }
 
 public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
@@ -47,13 +52,21 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         {
             CreateActionList();
             m_IsActive = true;
-        });
+        }).AddTo(this);
     }
 
     /// <summary>
     /// 有効かどうか
     /// </summary>
     private bool m_IsActive;
+
+    /// <summary>
+    /// ユニットアクト停止
+    /// </summary>
+    void ITurnManager.StopUnitAct()
+    {
+        m_IsActive = false;
+    }
 
     /// <summary>
     /// 行動するキャラ
@@ -167,6 +180,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
         // indexが範囲外なら新しくキューを作る
         if (++m_ActionIndex >= m_ActionUnits.Count)
             NextTurn();
+
         // indexが範囲内なら行動させる
         else
         {
