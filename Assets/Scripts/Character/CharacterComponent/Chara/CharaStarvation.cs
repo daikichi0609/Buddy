@@ -5,7 +5,15 @@ using System.Collections.Generic;
 
 public interface ICharaStarvation : IActorInterface
 {
+    /// <summary>
+    /// 空腹状態かどうか
+    /// </summary>
     bool IsStarvate { get; }
+
+    /// <summary>
+    /// 空腹値減少
+    /// </summary>
+    /// <param name="add"></param>
     void RecoverHungry(int add);
 }
 
@@ -32,14 +40,14 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// <summary>
     /// 空腹値半分
     /// </summary>
-    private int HALF => (int)(MAX_HUNGRY * 0.5f);
+    private int HUNGRY_08 => (int)(MAX_HUNGRY * 0.8f);
     /// <summary>
     /// 空腹値
     /// </summary>
-    private int QUARTER => (int)(MAX_HUNGRY * 0.25f);
+    private int HUNGRY_09 => (int)(MAX_HUNGRY * 0.9f);
 
-    private static readonly string HALF_MESSAGE = "おなかが減ってきた…。";
-    private static readonly string QUARTER_MESSAGE = "おなかがグルグルと鳴っている…。";
+    private static readonly string MESSAGE_08 = "おなかが減ってきた…。";
+    private static readonly string MESSAGE_09 = "空腹で目がまわってきた…。";
     private int StarvateIndex { get; set; } = 0;
     private static readonly string[] STARVATE_MESSAGE = new string[3]
     {
@@ -51,7 +59,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// <summary>
     /// 空腹値減少インターバル
     /// </summary>
-    private static readonly int HUNGRY_TURN = 10;
+    private static readonly int HUNGRY_TURN = 5;
 
     /// <summary>
     /// 空腹による体力減少インターバル
@@ -86,7 +94,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// <param name="add"></param>
     void ICharaStarvation.RecoverHungry(int add)
     {
-        m_Hungry += add;
+        m_Hungry -= add;
     }
 
     /// <summary>
@@ -104,7 +112,13 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
             return;
 
         // 死亡はしない
-        Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.Parameter.MaxHp);
+        status.CurrentStatus.Hp = Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.Parameter.MaxHp);
+
+        if (StarvateIndex < STARVATE_MESSAGE.Length)
+        {
+            BattleLogManager.Interface.Log(STARVATE_MESSAGE[StarvateIndex]);
+            StarvateIndex++;
+        }
     }
 
     /// <summary>
@@ -121,23 +135,12 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
             return;
 
-        Mathf.Clamp(++m_Hungry, 0, MAX_HUNGRY);
+        m_Hungry = Mathf.Clamp(++m_Hungry, 0, MAX_HUNGRY);
 
-        if (m_Hungry == HALF)
-            BattleLogManager.Interface.Log(HALF_MESSAGE);
+        if (m_Hungry == HUNGRY_08)
+            BattleLogManager.Interface.Log(MESSAGE_08);
 
-        if (m_Hungry == QUARTER)
-            BattleLogManager.Interface.Log(QUARTER_MESSAGE);
-
-        if (m_Hungry == MAX_HUNGRY)
-        {
-            if (StarvateIndex >= STARVATE_MESSAGE.Length)
-                return;
-
-            BattleLogManager.Interface.Log(STARVATE_MESSAGE[StarvateIndex]);
-            StarvateIndex++;
-        }
-        else
-            StarvateIndex = 0;
+        if (m_Hungry == HUNGRY_09)
+            BattleLogManager.Interface.Log(MESSAGE_09);
     }
 }
