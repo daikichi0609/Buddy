@@ -1,13 +1,20 @@
 using UnityEngine;
 using System.Threading.Tasks;
 using UniRx;
-using static UnityEditor.Progress;
 using System;
 
 public interface ICharaCellEventChecker : IActorInterface
 {
+    /// <summary>
+    /// セルイベントチェック
+    /// </summary>
+    /// <returns></returns>
     bool CheckCurrentCell();
 
+    /// <summary>
+    /// 階段マスチェック
+    /// </summary>
+    /// <returns></returns>
     bool CheckStairsCell();
 }
 

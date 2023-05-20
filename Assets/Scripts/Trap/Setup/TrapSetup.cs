@@ -38,6 +38,7 @@ public class TrapSetup : PrefabSetup
     [Dropdown("GetTrapEffectType")]
     private string m_Type;
 
+#if UNITY_EDITOR
     /// <summary>
     /// トラップタイプ取得
     /// </summary>
@@ -91,4 +92,5 @@ public class TrapSetup : PrefabSetup
 
         m_TrapEffect.name = type.ToString();
     }
+#endif
 }

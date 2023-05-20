@@ -21,7 +21,9 @@ public class CharaUi : MonoBehaviour
     {
         if (m_Target == null || m_Target.Parameter == null)
         {
+#if DEBUG
             Debug.Log("パラメタがnullです");
+#endif
             return;
         }
 

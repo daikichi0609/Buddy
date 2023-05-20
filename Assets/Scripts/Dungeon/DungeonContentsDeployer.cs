@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
-using static UnityEditor.PlayerSettings;
 
 public enum CONTENTS_TYPE
 {

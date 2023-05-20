@@ -28,6 +28,8 @@ public class ItemSetup : PrefabSetup
     [Dropdown("GetItemEffectType")]
     private string m_Type;
 
+#if UNITY_EDITOR
+
     private DropdownList<string> GetItemEffectType()
     {
         return new DropdownList<string>()
@@ -82,4 +84,5 @@ public class ItemSetup : PrefabSetup
 
         m_Effect.name = type.ToString();
     }
+#endif
 }

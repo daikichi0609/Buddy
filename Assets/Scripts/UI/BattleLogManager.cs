@@ -7,7 +7,15 @@ using UniRx;
 
 public interface IBattleLogManager : ISingleton
 {
+    /// <summary>
+    /// ログを出す
+    /// </summary>
+    /// <param name="log"></param>
     void Log(string log);
+
+    /// <summary>
+    /// ログを非表示
+    /// </summary>
     void Deactive();
 }
 
@@ -63,7 +71,10 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
         }
 
         m_Text.text = sb.ToString();
+
+#if DEBUG
         Debug.Log("バトルログ：" + log);
+#endif
 
         m_Timer = 0f;
         m_BattleLog.SetActive(true);

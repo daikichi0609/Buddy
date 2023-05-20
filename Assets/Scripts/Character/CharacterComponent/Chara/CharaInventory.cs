@@ -80,7 +80,9 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
         }
         else
         {
+#if DEBUG
             Debug.Log("アイテムがいっぱいです");
+#endif
             return false;
         }
     }

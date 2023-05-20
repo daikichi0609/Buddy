@@ -131,8 +131,10 @@ public partial class EnemyAi : CharaAi, IEnemyAi
             if (cells[DIRECTION.RIGHT] > TERRAIN_ID.WALL && DIRECTION.RIGHT != oppDirection)
                 candidateDir.Add(DIRECTION.RIGHT);
 
+#if DEBUG
             if (candidateDir.Count == 0)
                 Debug.LogAssertion("行き先候補がない");
+#endif
 
             Utility.RandomLottery(candidateDir);
 
@@ -142,7 +144,9 @@ public partial class EnemyAi : CharaAi, IEnemyAi
             if (m_CharaMove.Move(oppDirection) == true)
                 return true;
 
+#if DEBUG
             Debug.Log("移動失敗");
+#endif
             return m_CharaMove.Wait();
         }
 
@@ -193,7 +197,9 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 
             if (m_CharaMove.Move(pathDir) == true)
             {
+#if DEBUG
                 Debug.Log("部屋から出る");
+#endif
                 DestinationCell = null;
                 return true;
             }
