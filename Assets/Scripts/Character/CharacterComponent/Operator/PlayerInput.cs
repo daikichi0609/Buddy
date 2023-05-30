@@ -19,7 +19,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
-    private ICharaLastActionHolder m_CharaLastAction;
 
     protected override void Register(ICollector owner)
     {
@@ -34,7 +33,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
-        m_CharaLastAction = Owner.GetInterface<ICharaLastActionHolder>();
 
         // 入力購読
         InputManager.Interface.InputEvent.Subscribe(input =>
