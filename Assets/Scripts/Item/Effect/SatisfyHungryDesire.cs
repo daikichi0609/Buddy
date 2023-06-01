@@ -12,7 +12,7 @@ public class SatisfyHungryDesire : ItemEffectBase
     {
         // Log
         if (owner.RequireInterface<ICharaStatus>(out var status) == true)
-            BattleLogManager.Interface.Log(status.CurrentStatus.Name + "は" + item.Setup.ItemName + "を食べた");
+            BattleLogManager.Interface.Log(status.CurrentStatus.OriginParam.GivenName + "は" + item.Setup.ItemName + "を食べた");
 
         if (owner.RequireInterface<ICharaStarvation>(out var starvation) == true)
             starvation.RecoverHungry(m_Recover);

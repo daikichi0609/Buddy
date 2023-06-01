@@ -43,7 +43,7 @@ public readonly struct AttackResult
     {
         AttackInfo = info;
         Defender = defender;
-        Name = Defender.GetInterface<ICharaStatus>().CurrentStatus.Name;
+        Name = Defender.GetInterface<ICharaStatus>().CurrentStatus.OriginParam.GivenName;
         IsHit = isHit;
         Damage = damage;
         RemainingHp = remainingHp;

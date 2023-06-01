@@ -76,9 +76,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     public static readonly int ms_NormalAttackHitTime = 400;
     public static readonly int ms_DamageTotalTime = 500;
 
-    /// <summary>
-    /// ステータス
-    /// </summary>
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
 
     /// <summary>
@@ -168,7 +165,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return false;
 
         m_CharaMove.Face(direction); // 向く
-        var attackInfo = new AttackInfo(Owner, Status.Name, Status.Atk, 0.95f, false, direction); // 攻撃情報　
+        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, 0.95f, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点

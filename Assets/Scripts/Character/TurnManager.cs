@@ -146,7 +146,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
 
                 if (req.Requester.RequireInterface<ICharaStatus>(out var status) == true)
                 {
-                    Debug.Log(status.CurrentStatus.Name + "は行動禁止要請中");
+                    Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は行動禁止要請中");
                 }
                 else
                 {
@@ -165,7 +165,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
             if (status.IsDead == true)
             {
 #if DEBUG
-                Debug.Log(status.CurrentStatus.Name + "は死亡しているのでアクションリストから除外しました");
+                Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は死亡しているのでアクションリストから除外しました");
 #endif
                 m_ActionUnits.Remove(unit);
                 return;

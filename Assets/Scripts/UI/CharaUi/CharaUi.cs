@@ -19,7 +19,7 @@ public class CharaUi : MonoBehaviour
 
     public void UpdateUi()
     {
-        if (m_Target == null || m_Target.Parameter == null)
+        if (m_Target == null || m_Target.CurrentStatus.OriginParam == null)
         {
 #if DEBUG
             Debug.Log("パラメタがnullです");
@@ -27,8 +27,8 @@ public class CharaUi : MonoBehaviour
             return;
         }
 
-        m_CharaName.text = m_Target.Parameter.GivenName.ToString();
-        m_HpSlider.maxValue = m_Target.Parameter.MaxHp;
+        m_CharaName.text = m_Target.CurrentStatus.OriginParam.GivenName.ToString();
+        m_HpSlider.maxValue = m_Target.CurrentStatus.OriginParam.MaxHp;
         m_HpSlider.value = m_Target.CurrentStatus.Hp;
     }
 }

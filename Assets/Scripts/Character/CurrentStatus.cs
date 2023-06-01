@@ -10,7 +10,7 @@ public class CurrentStatus
     /// <param name="param"></param>
     public CurrentStatus(BattleStatus.Parameter param)
     {
-        Name = param.GivenName;
+        OriginParam = param;
         Hp = param.MaxHp;
         Atk = param.Atk;
         Def = param.Def;
@@ -18,8 +18,9 @@ public class CurrentStatus
         Res = param.Res;
     }
 
+    // 元ステータス
     [ShowNativeProperty]
-    public string Name { get; }
+    public BattleStatus.Parameter OriginParam { get; }
 
     // レベル
     [ShowNativeProperty]

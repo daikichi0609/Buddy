@@ -24,11 +24,6 @@ public interface ICharaStatus : IActorInterface
     CurrentStatus CurrentStatus { get; }
 
     /// <summary>
-    /// 元パラメタ
-    /// </summary>
-    BattleStatus.Parameter Parameter { get; }
-
-    /// <summary>
     /// 死んでいるか
     /// </summary>
     bool IsDead { get; }
@@ -41,12 +36,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     /// </summary>
     private CharacterSetup m_Setup;
     CharacterSetup ICharaStatus.Setup => m_Setup;
-
-    /// <summary>
-    /// 元パラメータ
-    /// </summary>
-    private BattleStatus.Parameter m_Parameter;
-    BattleStatus.Parameter ICharaStatus.Parameter => m_Parameter;
 
     /// <summary>
     /// 現在のステータス
@@ -65,7 +54,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
 
     /// <summary>
     /// ステータスセット
-    /// プレイヤーの場合、すでにセット済みならセットしない
     /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
@@ -73,19 +61,20 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     {
         m_Setup = setup;
         var status = m_Setup.Status;
+        BattleStatus.Parameter param = null;
 
         if (status is PlayerStatus)
         {
             var s = status as PlayerStatus;
-            m_Parameter = new BattleStatus.Parameter(s.Param);
+            param = new BattleStatus.Parameter(s.Param);
         }
         else if (status is EnemyStatus)
         {
             var s = status as EnemyStatus;
-            m_Parameter = new BattleStatus.Parameter(s.Param);
+            param = new BattleStatus.Parameter(s.Param);
         }
 
-        m_CurrentStatus = new CurrentStatus(m_Parameter);
-        return m_Parameter != null;
+        m_CurrentStatus = new CurrentStatus(param);
+        return param != null;
     }
 }

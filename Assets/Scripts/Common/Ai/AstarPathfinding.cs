@@ -7,7 +7,7 @@ public static class AStarSearch
     /// <summary>
     /// ノード
     /// </summary>
-    public class Node : IEquatable<Node>
+    public class Node : IEquatable<Node>, IEquatable<Vector2Int>
     {
         /// <summary>
         /// X座標
@@ -22,7 +22,7 @@ public static class AStarSearch
         /// <summary>
         /// 移動コスト
         /// </summary>
-        public float MoveCost { get; }
+        private float MoveCost { get; }
 
         /// <summary>
         /// 推定コスト（ゴールまでの距離）
@@ -32,7 +32,7 @@ public static class AStarSearch
         /// <summary>
         /// 親ノードのコスト
         /// </summary>
-        public float ParentCost => Parent != null ? Parent.SumCost : 0f;
+        private float ParentCost => Parent != null ? Parent.SumCost : 0f;
 
         /// <summary>
         /// 合計コスト（総コスト = 親コスト + 移動コスト + 推定コスト）

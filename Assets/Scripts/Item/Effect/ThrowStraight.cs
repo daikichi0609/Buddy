@@ -15,7 +15,7 @@ public class ThrowStraight : ItemEffectBase
     {
         // Log
         var status = owner.GetInterface<ICharaStatus>();
-        BattleLogManager.Interface.Log(status.CurrentStatus.Name + "は" + item.Setup.ItemName + "を投げた！");
+        BattleLogManager.Interface.Log(status.CurrentStatus.OriginParam.GivenName + "は" + item.Setup.ItemName + "を投げた！");
 
         // 飛ばす方向
         var move = owner.GetInterface<ICharaMove>();
@@ -53,7 +53,7 @@ public class ThrowStraight : ItemEffectBase
         if (hit != null)
         {
             var battle = hit.GetInterface<ICharaBattle>();
-            var result = battle.Damage(new AttackInfo(owner, status.CurrentStatus.Name, m_Damage, 100f, true, dir));
+            var result = battle.Damage(new AttackInfo(owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, true, dir));
             var log = CharaLog.CreateAttackResultLog(result);
             BattleLogManager.Interface.Log(log);
         }

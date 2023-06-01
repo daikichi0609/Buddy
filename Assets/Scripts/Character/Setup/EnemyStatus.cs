@@ -4,7 +4,8 @@ using System;
 [CreateAssetMenu(menuName = "MyScriptable/Character/Status/EnemyStatus")]
 public class EnemyStatus : BattleStatus
 {
-    [SerializeField, Label("Enemyパラメータ")] private EnemyParameter m_Param;
+    [SerializeField, Label("Enemyパラメータ")]
+    private EnemyParameter m_Param;
     public EnemyParameter Param => m_Param;
 
     [Serializable]

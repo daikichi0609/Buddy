@@ -112,7 +112,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
             return;
 
         // 死亡はしない
-        status.CurrentStatus.Hp = Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.Parameter.MaxHp);
+        status.CurrentStatus.Hp = Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.CurrentStatus.OriginParam.MaxHp);
 
         if (StarvateIndex < STARVATE_MESSAGE.Length)
         {

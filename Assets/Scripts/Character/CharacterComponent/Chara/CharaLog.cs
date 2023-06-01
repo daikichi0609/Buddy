@@ -55,7 +55,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
                 if (info.Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
-                var log = CreatePutItemLog(status.CurrentStatus.Name, info.Item);
+                var log = CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
                 BattleLogManager.Interface.Log(log);
             }).AddTo(CompositeDisposable);
         }

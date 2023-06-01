@@ -30,7 +30,7 @@ public class TrapEffectBase : ScriptableObject, ITrap
     {
         // ----- ログ ----- //
         var sb = new StringBuilder();
-        var charaName = stepper.GetInterface<ICharaStatus>().CurrentStatus.Name;
+        var charaName = stepper.GetInterface<ICharaStatus>().CurrentStatus.OriginParam.GivenName;
         sb.Append(charaName + "は" + trap.TrapName + "を踏んだ！");
         BattleLogManager.Interface.Log(sb.ToString());
 
