@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using Zenject;
 
 public interface ICharaSound : IActorInterface
 {
@@ -10,6 +11,9 @@ public interface ICharaSound : IActorInterface
 
 public class CharaSound : ActorComponentBase, ICharaSound
 {
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -27,7 +31,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 // 攻撃音
                 StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, () =>
                 {
-                    SoundHolder.Interface.AttackSound.Play();
+                    m_SoundHolder.AttackSound.Play();
                 }));
             }).AddTo(CompositeDisposable);
 
@@ -36,14 +40,14 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 if (result.IsHit == false)
                 {
                     // 空振り音
-                    SoundHolder.Interface.MissSound.Play();
+                    m_SoundHolder.MissSound.Play();
                 }
             }).AddTo(CompositeDisposable);
 
             battle.OnDamageEnd.Subscribe(_ =>
             {
                 // ダメージ音
-                SoundHolder.Interface.DamageSound.Play();
+                m_SoundHolder.DamageSound.Play();
             }).AddTo(CompositeDisposable);
         }
 

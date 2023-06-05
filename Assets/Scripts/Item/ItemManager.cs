@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
+using Zenject;
 
 public interface IItemManager : ISingleton
 {
@@ -32,15 +33,12 @@ public interface IItemManager : ISingleton
     bool IsItemOn(Vector3Int pos);
 }
 
-public class ItemManager : Singleton<ItemManager, IItemManager>, IItemManager
+public class ItemManager : IItemManager
 {
-    protected override void Awake()
+    [Inject]
+    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        base.Awake();
-        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
-        {
-            m_ItemList.Clear();
-        });
+        dungeonContentsDeployer.OnRemoveContents.Subscribe(_ => m_ItemList.Clear());
     }
 
     /// <summary>

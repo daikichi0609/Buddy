@@ -4,12 +4,20 @@ using UnityEngine;
 using UniRx;
 using System;
 using UnityEngine.UI;
+using Zenject;
+
+public interface IMenuUiManager : IUiManager
+{
+}
 
 /// <summary>
 /// 左上メニューと説明のUi
 /// </summary>
-public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManager
+public class MenuUiManager : UiManagerBase, IMenuUiManager
 {
+    [Inject]
+    private IBagUiManager m_BagUiManager;
+
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
@@ -25,10 +33,8 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
     /// </summary>
     private IDisposable m_OpenMenuDisposable;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-
         SubscribeMenuOpen();
     }
 
@@ -37,12 +43,10 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
     /// </summary>
     private void SubscribeMenuOpen()
     {
-        m_OpenMenuDisposable = InputManager.Interface.InputStartEvent.Subscribe(input =>
+        m_OpenMenuDisposable = m_InputManager.InputStartEvent.Subscribe(input =>
         {
-            if (IsActive == false && TurnManager.Interface.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
-            {
+            if (IsActive == false && m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
                 Activate();
-            }
         }).AddTo(this);
     }
 
@@ -72,7 +76,7 @@ public class MenuUiManager : UiManagerBase<MenuUiManager, IUiManager>, IUiManage
         Deactivate();
 
         // 新しくUiを開く
-        BagUiManager.Interface.Activate();
+        m_BagUiManager.Activate();
     }
 
     /// <summary>

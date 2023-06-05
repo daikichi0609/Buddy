@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UniRx;
 using System;
+using Zenject;
 
 public interface ICharaCellEventChecker : IActorInterface
 {
@@ -23,6 +24,19 @@ public interface ICharaCellEventChecker : IActorInterface
 /// </summary>
 public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
 {
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IItemManager m_ItemManager;
+    [Inject]
+    private ITurnManager m_TurnManager;
+    [Inject]
+    private IUnitFinder m_UnitFinder;
+    [Inject]
+    private IYesorNoQuestionUiManager m_QuestionUiManager;
+    [Inject]
+    private IBattleLogManager m_BattleLogManager;
+
     private ICharaMove m_CharaMove;
     private ICharaInventory m_CharaInventory;
     private ICharaTurn m_CharaTurn;
@@ -67,10 +81,10 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     private bool CheckStairsCell()
     {
         //階段チェック
-        if (DungeonHandler.Interface.GetCellId(m_CharaMove.Position) == TERRAIN_ID.STAIRS)
+        if (m_DungeonHandler.GetCellId(m_CharaMove.Position) == TERRAIN_ID.STAIRS)
         {
-            YesorNoQuestionUiManager.Interface.SetQuestion(QUESTION_TYPE.STAIRS);
-            m_CharaTurn.WaitFinishActing(() => YesorNoQuestionUiManager.Interface.Activate());
+            m_QuestionUiManager.SetQuestion(QUESTION_TYPE.STAIRS);
+            m_CharaTurn.WaitFinishActing(() => m_QuestionUiManager.Activate());
             return true;
         }
 
@@ -85,12 +99,12 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     private bool CheckItem()
     {
         //アイテムチェック
-        foreach (IItemHandler item in ItemManager.Interface.ItemList)
+        foreach (IItemHandler item in m_ItemManager.ItemList)
         {
             Vector3Int itemPos = item.Position;
             if (m_CharaMove.Position == itemPos)
             {
-                var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
+                var disposable = m_TurnManager.RequestProhibitAction(Owner);
                 m_CharaTurn.WaitFinishActing(() => m_CharaInventory.Put(item, disposable));
                 return true;
             }
@@ -108,12 +122,12 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
         if (m_TypeHolder.Type != CHARA_TYPE.PLAYER)
             return false;
 
-        var cell = DungeonHandler.Interface.GetCell(m_CharaMove.Position);
+        var cell = m_DungeonHandler.GetCell(m_CharaMove.Position);
         if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
             if (handler.HasTrap == true)
             {
-                var disposable = TurnManager.Interface.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, UnitFinder.Interface, cell.GetAroundCell(), disposable));
+                var disposable = m_TurnManager.RequestProhibitAction(Owner);
+                m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager, disposable));
                 return true;
             }
 

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class AStarSearch
 {
+    private static readonly float SQUARE2 = 1.4f;
+
     /// <summary>
     /// ノード
     /// </summary>
@@ -247,7 +249,7 @@ public static class AStarSearch
     /// <param name="distanceX"></param>
     /// <param name="distanceY"></param>
     /// <returns></returns>
-    private static float GetDistance(int distanceX, int distanceY) => distanceX > distanceY ? distanceY + (distanceX - distanceY) : distanceX + (distanceY - distanceX);
+    private static float GetDistance(int distanceX, int distanceY) => distanceX > distanceY ? distanceY * SQUARE2 + (distanceX - distanceY) : distanceX * SQUARE2 + (distanceY - distanceX);
     private static float GetDistance(this Node nodeA, Node nodeB) => GetDistance(Math.Abs(nodeA.X - nodeB.X), Math.Abs(nodeA.Y - nodeB.Y));
     private static float GetDistance(this Vector2Int a, Vector2Int b) => GetDistance(Math.Abs(a.x - b.x), Math.Abs(a.y - b.y));
 }

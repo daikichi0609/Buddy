@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using UnityEngine.UI;
+using Zenject;
 
 /// <summary>
 /// 選択肢Ui作成時の情報
@@ -43,8 +44,15 @@ public interface IUiManager : ISingleton
 /// <summary>
 /// 左上メニューと説明のUi
 /// </summary>
-public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where T : MonoBehaviour, IUiManager where IT : class, IUiManager
+public abstract class UiManagerBase : MonoBehaviour, IUiManager
 {
+    [Inject]
+    protected IInputManager m_InputManager;
+    [Inject]
+    protected ITurnManager m_TurnManager;
+    [Inject]
+    protected IBattleLogManager m_BattleLogManager;
+
     /// <summary>
     /// Ui操作インターフェイス
     /// </summary>
@@ -70,17 +78,12 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     /// </summary>
     private CompositeDisposable m_Disposables = new CompositeDisposable();
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     private void DetectInput(KeyCodeFlag flag)
     {
         if (IsActive == false)
             return;
 
-        if (TurnManager.Interface.NoOneActing == false)
+        if (m_TurnManager.NoOneActing == false)
             return;
 
         // Qで閉じる
@@ -118,15 +121,15 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     protected virtual void Activate()
     {
         SubscribeDetectInput();
-        CloseUiEvent = InputManager.Interface.SetActiveUi(this.UiInterface);
+        CloseUiEvent = m_InputManager.SetActiveUi(this.UiInterface);
         UiInterface.Initialize(m_Disposables, CreateOptionElement());
         UiInterface.SetActive(IsActive);
 
         // バトルログは消す
-        BattleLogManager.Interface.Deactive();
+        m_BattleLogManager.Deactive();
 
         // キャラの行動許可
-        var disposable = TurnManager.Interface.RequestProhibitAction(null);
+        var disposable = m_TurnManager.RequestProhibitAction(null);
         m_Disposables.Add(disposable);
     }
     void IUiManager.Activate() => Activate();
@@ -151,10 +154,7 @@ public abstract class UiManagerBase<T, IT> : Singleton<T, IT>, IUiManager where 
     private void SubscribeDetectInput()
     {
         // 入力購読
-        var disposable = InputManager.Interface.InputStartEvent.Subscribe(input =>
-        {
-            DetectInput(input.KeyCodeFlag);
-        }).AddTo(this);
+        var disposable = m_InputManager.InputStartEvent.Subscribe(input => DetectInput(input.KeyCodeFlag));
 
         m_Disposables.Add(disposable);
     }

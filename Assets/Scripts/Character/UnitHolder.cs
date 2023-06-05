@@ -5,6 +5,7 @@ using UniRx;
 using System;
 using System.Linq;
 using NaughtyAttributes;
+using Zenject;
 
 public interface IUnitHolder : ISingleton
 {
@@ -47,26 +48,18 @@ public interface IUnitHolder : ISingleton
     IObservable<int> OnEnemyRemove { get; }
 }
 
-public class UnitHolder : Singleton<UnitHolder, IUnitHolder>, IUnitHolder
+public class UnitHolder : IUnitHolder
 {
     /// <summary>
-    /// ReactiveCollection
-    /// 
-    /// 要素の追加
-    /// 要素の削除
-    /// 要素数の変化
-    /// 要素の上書き
-    /// 要素の移動
-    /// リストのクリア
+    /// 敵除外イベント
     /// </summary>
-
     private Subject<int> m_OnEnemyRemove = new Subject<int>();
     IObservable<int> IUnitHolder.OnEnemyRemove => m_OnEnemyRemove;
 
-    protected override void Awake()
+    [Inject]
+    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        base.Awake();
-        DungeonContentsDeployer.Interface.OnRemoveContents.Subscribe(_ =>
+        dungeonContentsDeployer.OnRemoveContents.Subscribe(_ =>
         {
             ClearList();
         });

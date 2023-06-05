@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public interface IObjectPoolController : ISingleton
 {
@@ -23,8 +24,10 @@ public interface IObjectPoolController : ISingleton
     void SetObject<T>(T setup, GameObject gameObject) where T : PrefabSetup;
 }
 
-public class ObjectPoolController : Singleton<ObjectPoolController, IObjectPoolController>, IObjectPoolController
+public class ObjectPoolController : IObjectPoolController
 {
+    [Inject] private DiContainer m_Container;
+
     /// <summary>
     /// プールインスタンス
     /// </summary>
@@ -41,7 +44,7 @@ public class ObjectPoolController : Singleton<ObjectPoolController, IObjectPoolC
     GameObject IObjectPoolController.GetObject<T>(T setup)
     {
         if (m_ObjectPool.TryGetPoolObject(setup.ToString(), out var chara) == false)
-            chara = Instantiate(setup.Prefab);
+            chara = m_Container.InstantiatePrefab(setup.Prefab);
 
         return chara;
     }

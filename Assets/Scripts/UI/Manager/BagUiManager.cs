@@ -4,18 +4,34 @@ using UnityEngine;
 using UniRx;
 using System;
 using UnityEngine.UI;
+using Zenject;
+
+public interface IBagUiManager : IUiManager
+{
+}
 
 /// <summary>
 /// バッグUi
 /// </summary>
-public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
+public class BagUiManager : UiManagerBase, IBagUiManager
 {
+    [Inject]
+    private IMenuUiManager m_MenuUiManager;
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
+    [Inject]
+    private IUnitFinder m_UnitFinder;
+    [Inject]
+    private IBagUiManager m_BagUiManager;
+
     private BagUiManager.BagUi m_UiInterface = new BagUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
     protected override OptionElement CreateOptionElement()
     {
-        var player = UnitHolder.Interface.FriendList[0];
+        var player = m_UnitHolder.FriendList[0];
         var inventory = player.GetInterface<ICharaInventory>();
         var items = inventory.Items;
         int itemCount = items.Length;
@@ -31,7 +47,7 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
             var item = items[index];
             var name = item.Setup.ItemName;
             var effect = item.Setup.Effect;
-            effects[index] = () => effect.Effect(player, item);
+            effects[index] = () => effect.Effect(player, item, m_DungeonHandler, m_UnitFinder, m_BagUiManager, m_BattleLogManager);
             names[index] = name.ToString();
         }
         while (index < itemTextCount)
@@ -47,7 +63,7 @@ public class BagUiManager : UiManagerBase<BagUiManager, IUiManager>, IUiManager
     {
         base.Deactivate();
         if (back == true)
-            MenuUiManager.Interface.Activate();
+            m_MenuUiManager.Activate();
     }
 
     public class BagUi : UiBase

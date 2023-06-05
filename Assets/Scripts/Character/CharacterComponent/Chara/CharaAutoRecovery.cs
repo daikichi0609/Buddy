@@ -2,6 +2,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Collections.Generic;
+using Zenject;
 
 public interface ICharaAutoRecovery : IActorInterface
 {
@@ -13,6 +14,9 @@ public interface ICharaAutoRecovery : IActorInterface
 /// </summary>
 public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 {
+    [Inject]
+    private ITurnManager m_TurnManager;
+
     private static readonly int RECOVER_TURN = 10;
 
     protected override void Register(ICollector owner)
@@ -32,7 +36,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
                 if (Owner.RequireInterface<ICharaStarvation>(out var starvation) == true && starvation.IsStarvate == true)
                     return;
 
-                int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
+                int currentTurn = m_TurnManager.TotalTurnCount + 1;
 
                 // 回復インターバル
                 if (currentTurn % RECOVER_TURN != 0)

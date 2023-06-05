@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
+using Zenject;
 
 public interface IUnitFinder : ISingleton
 {
@@ -47,8 +48,13 @@ public interface IUnitFinder : ISingleton
     bool IsEnemyOn(Vector3Int pos);
 }
 
-public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
+public class UnitFinder : IUnitFinder
 {
+    [Inject]
+    private IDungeonDeployer m_DungeonDeployer;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
+
     /// <summary>
     /// 特定の座標のユニットを取得
     /// </summary>
@@ -58,7 +64,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     {
         if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector collector in UnitHolder.Interface.FriendList)
+            foreach (ICollector collector in m_UnitHolder.FriendList)
             {
                 if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
@@ -73,7 +79,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
 
         if (target == CHARA_TYPE.ENEMY || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector collector in UnitHolder.Interface.EnemyList)
+            foreach (ICollector collector in m_UnitHolder.EnemyList)
             {
                 if (collector.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
@@ -103,11 +109,11 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
         if (roomId < 0)
             return false;
 
-        var roomList = DungeonDeployer.Interface.GetRoom(roomId).Cells;
+        var roomList = m_DungeonDeployer.GetRoom(roomId).Cells;
 
         if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector unit in UnitHolder.Interface.FriendList)
+            foreach (ICollector unit in m_UnitHolder.FriendList)
             {
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
@@ -121,7 +127,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
 
         if (target == CHARA_TYPE.ENEMY || target == CHARA_TYPE.NONE)
         {
-            foreach (ICollector unit in UnitHolder.Interface.EnemyList)
+            foreach (ICollector unit in m_UnitHolder.EnemyList)
             {
                 if (unit.RequireInterface<ICharaMove>(out var move) == false)
                     continue;
@@ -161,7 +167,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// <returns></returns>
     private bool IsPlayerOn(Vector3Int pos)
     {
-        foreach (ICollector player in UnitHolder.Interface.FriendList)
+        foreach (ICollector player in m_UnitHolder.FriendList)
         {
             var move = player.GetInterface<ICharaMove>();
             if (move.Position == pos)
@@ -179,7 +185,7 @@ public class UnitFinder : Singleton<UnitFinder, IUnitFinder>, IUnitFinder
     /// <returns></returns>
     private bool IsEnemyOn(Vector3Int pos) //指定座標に敵がいるかどうかを調べる
     {
-        foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
+        foreach (ICollector enemy in m_UnitHolder.EnemyList)
         {
             var move = enemy.GetInterface<ICharaMove>();
             if (move.Position == pos)

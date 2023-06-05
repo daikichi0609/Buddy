@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e40e0ca089da64a18bd8bb8983cdc6a6, type: 3}
+  m_Name: New Common Scriptable Object Installer
+  m_EditorClassIdentifier: 
+  m_ProgressHolder: {fileID: 11400000, guid: ef237522cbeff4433967f01e611682a0, type: 2}
+  m_OutGameInfoHolder: {fileID: 11400000, guid: aa4d5e6da00a248c4aa5459c519ec4a8,
+    type: 2}
+  m_MasterData: {fileID: 11400000, guid: b5f921f56974c4d4389484cac827d904, type: 2}

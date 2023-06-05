@@ -2,6 +2,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Collections.Generic;
+using Zenject;
 
 public interface ICharaStarvation : IActorInterface
 {
@@ -22,6 +23,11 @@ public interface ICharaStarvation : IActorInterface
 /// </summary>
 public class CharaStarvation : ActorComponentBase, ICharaStarvation
 {
+    [Inject]
+    private ITurnManager m_TurnManager;
+    [Inject]
+    private IBattleLogManager m_BattleLogManager;
+
     /// <summary>
     /// 空腹値
     /// </summary>
@@ -102,7 +108,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// </summary>
     private void Starvate()
     {
-        int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
+        int currentTurn = m_TurnManager.TotalTurnCount + 1;
 
         // ダメージインターバル
         if (currentTurn % STARVATION_TURN != 0)
@@ -116,7 +122,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
 
         if (StarvateIndex < STARVATE_MESSAGE.Length)
         {
-            BattleLogManager.Interface.Log(STARVATE_MESSAGE[StarvateIndex]);
+            m_BattleLogManager.Log(STARVATE_MESSAGE[StarvateIndex]);
             StarvateIndex++;
         }
     }
@@ -126,7 +132,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// </summary>
     private void MakeHungry()
     {
-        int currentTurn = TurnManager.Interface.TotalTurnCount + 1;
+        int currentTurn = m_TurnManager.TotalTurnCount + 1;
 
         // 空腹インターバル
         if (currentTurn % HUNGRY_TURN != 0)
@@ -138,9 +144,9 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         m_Hungry = Mathf.Clamp(++m_Hungry, 0, MAX_HUNGRY);
 
         if (m_Hungry == HUNGRY_08)
-            BattleLogManager.Interface.Log(MESSAGE_08);
+            m_BattleLogManager.Log(MESSAGE_08);
 
         if (m_Hungry == HUNGRY_09)
-            BattleLogManager.Interface.Log(MESSAGE_09);
+            m_BattleLogManager.Log(MESSAGE_09);
     }
 }

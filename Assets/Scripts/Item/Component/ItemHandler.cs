@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using NaughtyAttributes;
+using Zenject;
 
 public interface IItemHandler : IDisposable
 {
@@ -27,6 +28,11 @@ public interface IItemHandler : IDisposable
 
 public class ItemHandler : MonoBehaviour, IItemHandler
 {
+    [Inject]
+    private IObjectPoolController m_ObjectPoolController;
+    [Inject]
+    private IItemManager m_ItemManager;
+
     public static readonly float OFFSET_Y = 0.75f;
 
     /// <summary>
@@ -67,12 +73,12 @@ public class ItemHandler : MonoBehaviour, IItemHandler
 
     void IItemHandler.OnPut()
     {
-        ItemManager.Interface.RemoveItem(this);
-        ObjectPoolController.Interface.SetObject(m_Setup, m_ItemObject);
+        m_ItemManager.RemoveItem(this);
+        m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
     }
 
     void IDisposable.Dispose()
     {
-        ObjectPoolController.Interface.SetObject(m_Setup, m_ItemObject);
+        m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
     }
 }

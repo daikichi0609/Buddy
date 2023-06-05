@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using Zenject;
 
 public interface IOutGamePlayerInput : IActorInterface
 {
@@ -13,6 +14,9 @@ public interface IOutGamePlayerInput : IActorInterface
 
 public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
 {
+    [Inject]
+    private IInputManager m_InputManager;
+
     private ICharaController m_CharaController;
     private ICharaTalk m_CharaTalk;
 
@@ -36,7 +40,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
         m_CharaTalk = Owner.GetInterface<ICharaTalk>();
 
         // 入力購読
-        InputManager.Interface.InputEvent.Subscribe(input =>
+        m_InputManager.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);
         }).AddTo(this);

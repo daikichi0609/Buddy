@@ -7,6 +7,7 @@ using Unity.Collections;
 using NaughtyAttributes;
 using System.Threading.Tasks;
 using static UnityEngine.UI.CanvasScaler;
+using Zenject;
 
 public interface ITurnManager : ISingleton
 {
@@ -41,18 +42,20 @@ public interface ITurnManager : ISingleton
     void StopUnitAct();
 }
 
-public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
+public class TurnManager : ITurnManager
 {
-    protected override void Awake()
-    {
-        base.Awake();
+    [Inject]
+    private IUnitHolder m_UnitHolder;
 
-        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => NextUnitAct()).AddTo(this);
-        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ =>
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager, IDungeonContentsDeployer dungeonContentsDeployer)
+    {
+        loopManager.GetUpdateEvent.Subscribe(_ => NextUnitAct());
+        dungeonContentsDeployer.OnDeployContents.Subscribe(_ =>
         {
             CreateActionList();
             m_IsActive = true;
-        }).AddTo(this);
+        });
     }
 
     /// <summary>
@@ -107,11 +110,11 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         get
         {
-            foreach (ICollector player in UnitHolder.Interface.FriendList)
+            foreach (ICollector player in m_UnitHolder.FriendList)
                 if (player.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
-            foreach (ICollector enemy in UnitHolder.Interface.EnemyList)
+            foreach (ICollector enemy in m_UnitHolder.EnemyList)
                 if (enemy.GetInterface<ICharaTurn>().IsActing == true)
                     return false;
 
@@ -211,13 +214,13 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     {
         m_ActionUnits.Clear();
 
-        foreach (var friend in UnitHolder.Interface.FriendList)
+        foreach (var friend in m_UnitHolder.FriendList)
         {
             friend.GetInterface<ICharaLastActionHolder>().Reset();
             m_ActionUnits.Add(friend);
         }
 
-        foreach (var enemy in UnitHolder.Interface.EnemyList)
+        foreach (var enemy in m_UnitHolder.EnemyList)
         {
             enemy.GetInterface<ICharaLastActionHolder>().Reset();
             m_ActionUnits.Add(enemy);
@@ -234,7 +237,7 @@ public class TurnManager : Singleton<TurnManager, ITurnManager>, ITurnManager
     private void CheckStairsCell()
     {
         // 階段チェック
-        var player = UnitHolder.Interface.Player;
+        var player = m_UnitHolder.Player;
         var checker = player.GetInterface<ICharaCellEventChecker>();
         checker.CheckStairsCell();
     }

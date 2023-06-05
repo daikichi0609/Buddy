@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using Zenject;
 
 public interface IBattleLogManager : ISingleton
 {
@@ -19,7 +20,7 @@ public interface IBattleLogManager : ISingleton
     void Deactive();
 }
 
-public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, IBattleLogManager
+public class BattleLogManager : MonoBehaviour, IBattleLogManager
 {
     [SerializeField]
     private Text m_Text;
@@ -41,11 +42,10 @@ public class BattleLogManager : Singleton<BattleLogManager, IBattleLogManager>, 
 
     private static readonly float LOG_TIME = 5f;
 
-    protected override void Awake()
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager)
     {
-        base.Awake();
-
-        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
+        loopManager.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
     }
 
     /// <summary>

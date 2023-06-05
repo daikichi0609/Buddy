@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using Zenject;
 
 /// <summary>
 /// キャラタイプ
@@ -30,6 +31,9 @@ public interface ICharaTypeHolder : IActorInterface
 
 public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
 {
+    [Inject]
+    private IDungeonProgressManager m_DungeonProgressManager;
+
     /// <summary>
     /// 味方か敵か
     /// </summary>
@@ -77,7 +81,7 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
         if (m_Type == CHARA_TYPE.PLAYER)
         {
             var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.Subscribe(_ => DungeonProgressManager.Interface.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
+            battle.OnDead.Subscribe(_ => m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
         }
     }
 }

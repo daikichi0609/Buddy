@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UniRx;
+using Zenject;
 
 public interface IDungeonHandler : ISingleton
 {
@@ -76,20 +77,27 @@ public interface IDungeonHandler : ISingleton
     void MarkExplored(Vector3Int pos);
 }
 
-public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>, IDungeonHandler
+public partial class DungeonHandler : IDungeonHandler
 {
+    [Inject]
+    private IDungeonDeployer m_DungeonDeployer;
+    [Inject]
+    private IItemManager m_ItemManager;
+    [Inject]
+    private IUnitFinder m_UnitFinder;
+
     /// <summary>
     /// マップ
     /// </summary>
-    private TERRAIN_ID[,] IdMap => DungeonDeployer.Interface.IdMap;
-    private List<List<ICollector>> CellMap => DungeonDeployer.Interface.CellMap;
+    private TERRAIN_ID[,] IdMap => m_DungeonDeployer.IdMap;
+    private List<List<ICollector>> CellMap => m_DungeonDeployer.CellMap;
 
     /// <summary>
     /// セル取得
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private ICollector GetCell(Vector3Int pos) => DungeonDeployer.Interface.CellMap[pos.x][pos.z];
+    private ICollector GetCell(Vector3Int pos) => CellMap[pos.x][pos.z];
     ICollector IDungeonHandler.GetCell(Vector3Int pos) => GetCell(pos);
 
     /// <summary>
@@ -97,7 +105,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private TERRAIN_ID GetCellId(Vector3Int pos) => DungeonDeployer.Interface.IdMap[pos.x, pos.z];
+    private TERRAIN_ID GetCellId(Vector3Int pos) => IdMap[pos.x, pos.z];
     TERRAIN_ID IDungeonHandler.GetCellId(Vector3Int pos) => GetCellId(pos);
 
     /// <summary>
@@ -127,7 +135,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private bool TryGetRoomId(Vector3Int pos, out int id)
     {
-        var cell = DungeonDeployer.Interface.CellMap[pos.x][pos.z];
+        var cell = CellMap[pos.x][pos.z];
         var info = cell.GetInterface<ICellInfoHandler>();
         id = info.RoomId;
         return id != -1;
@@ -190,7 +198,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     List<ICollector> IDungeonHandler.GetGateWayCells(int roomId)
     {
-        var room = DungeonDeployer.Interface.GetRoom(roomId);
+        var room = m_DungeonDeployer.GetRoom(roomId);
         List<ICollector> roomList = room.Cells;
         List<ICollector> list = new List<ICollector>();
         foreach (ICollector cell in roomList)
@@ -214,11 +222,11 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     private bool IsNothingThere(Vector3Int pos)
     {
         // ユニット
-        if (UnitFinder.Interface.IsUnitOn(pos) == true)
+        if (m_UnitFinder.IsUnitOn(pos) == true)
             return false;
 
         // アイテム
-        if (ItemManager.Interface.IsItemOn(pos) == true)
+        if (m_ItemManager.IsItemOn(pos) == true)
             return false;
 
         return true;
@@ -230,7 +238,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
     /// <returns></returns>
     private ICollector GetRandamRoomCell()
     {
-        var room = DungeonDeployer.Interface.GetRandomRoom();
+        var room = m_DungeonDeployer.GetRandomRoom();
         return room.GetRandomCell();
     }
 
@@ -280,7 +288,7 @@ public partial class DungeonHandler : Singleton<DungeonHandler, IDungeonHandler>
         // 部屋の中にいるなら部屋全体を探索済みとする
         if (TryGetRoomId(pos, out var id) == true)
         {
-            var room = DungeonDeployer.Interface.GetRoom(id);
+            var room = m_DungeonDeployer.GetRoom(id);
             foreach (var cell in room.Cells)
                 MarkExploredInternal(cell);
         }

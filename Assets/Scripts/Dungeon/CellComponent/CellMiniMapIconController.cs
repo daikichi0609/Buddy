@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using Zenject;
 
 public interface ICellMiniMapIconController : IActorInterface
 {
@@ -15,6 +16,9 @@ public interface ICellMiniMapIconController : IActorInterface
 [Obsolete]
 public class CellMiniMapIconController : ActorComponentBase, ICellMiniMapIconController
 {
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+
     private ICellInfoHandler m_CellInfo;
 
     /// <summary>
@@ -56,7 +60,7 @@ public class CellMiniMapIconController : ActorComponentBase, ICellMiniMapIconCon
     private void AppearAroundCellIcon()
     {
         var pos = m_CellInfo.Position;
-        var around = DungeonHandler.Interface.GetAroundCell(pos);
+        var around = m_DungeonHandler.GetAroundCell(pos);
         foreach (var cell in around.Cells.Values)
         {
             if (cell.RequireInterface<ICellInfoHandler>(out var info) == false)

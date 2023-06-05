@@ -16,6 +16,13 @@ public interface IPlayerInput : IActorInterface
 /// </summary>
 public class PlayerInput : ActorComponentBase, IPlayerInput
 {
+    [Inject]
+    private IInputManager m_InputManager;
+    [Inject]
+    private ICameraHandler m_CameraHandler;
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
@@ -35,7 +42,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 入力購読
-        InputManager.Interface.InputEvent.Subscribe(input =>
+        m_InputManager.InputEvent.Subscribe(input =>
         {
             DetectInput(input.KeyCodeFlag);
         }).AddTo(CompositeDisposable);
@@ -45,7 +52,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         // カメラ追従
         if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
         {
-            var disposable = CameraHandler.Interface.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+            var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
 
             // 死亡時
             var battle = Owner.GetEvent<ICharaBattleEvent>();
@@ -61,7 +68,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             e.OnTurnEndPost.Subscribe(_ =>
             {
                 var pos = m_CharaMove.Position;
-                DungeonHandler.Interface.MarkExplored(pos);
+                m_DungeonHandler.MarkExplored(pos);
             }).AddTo(CompositeDisposable);
         }
         // ----- //
@@ -91,7 +98,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             return false;
 
         // Ui操作中なら何もしない
-        if (InputManager.Interface.IsUiPopUp == true)
+        if (m_InputManager.IsUiPopUp == true)
             return false;
 
         // 攻撃

@@ -9,17 +9,18 @@ public class BombTrap : TrapEffectBase
     [Range(0f, 1f)]
     private float m_DamageRatio;
 
-    protected override async Task EffectInternal(ICollector stepper, IUnitFinder unitFinder, AroundCell aroundCell, IEffectHandler effect, Vector3 pos)
+    protected override async Task EffectInternal(TrapEffectContext ctx)
     {
-        await effect.Play(pos);
+        await ctx.EffectHandler.Play(ctx.EffectPos);
 
         // 範囲内の敵に割合ダメージ
-        await stepper.GetInterface<ICharaBattle>().DamagePercentage(m_DamageRatio);
+        await ctx.Owner.GetInterface<ICharaBattle>().DamagePercentage(m_DamageRatio);
 
+        var aroundCell = ctx.Cell.GetAroundCell(ctx.DungeonHandler);
         foreach (var cell in aroundCell.Cells.Values)
         {
             var unitPos = cell.GetInterface<ICellInfoHandler>().Position;
-            if (unitFinder.TryGetSpecifiedPositionUnit(unitPos, out var unit) == false)
+            if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(unitPos, out var unit) == false)
                 continue;
 
             var battle = unit.GetInterface<ICharaBattle>();

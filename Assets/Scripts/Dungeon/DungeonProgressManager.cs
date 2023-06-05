@@ -7,29 +7,10 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
+using Zenject;
 
 public interface IDungeonProgressManager : ISingleton
 {
-    /// <summary>
-    /// ダンジョン初期化
-    /// </summary>
-    void InitializeDungeon();
-
-    /// <summary>
-    /// 進行度に応じた現在のダンジョン設定
-    /// </summary>
-    DungeonSetup CurrentDungeonSetup { get; }
-
-    /// <summary>
-    /// ボスバトル設定
-    /// </summary>
-    BossBattleSetup CurrentBossBattleSetup { get; }
-
-    /// <summary>
-    /// 現在のダンジョンテーマ
-    /// </summary>
-    DUNGEON_THEME CurrentDungeonTheme { set; }
-
     /// <summary>
     /// ランダムな敵キャラクターセットアップを取得
     /// </summary>
@@ -81,30 +62,22 @@ public enum FINISH_REASON
     BOSS_DEAD,
 }
 
-public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeonProgressManager>, IDungeonProgressManager
+public class DungeonProgressManager : IDungeonProgressManager, IInitializable
 {
-    /// <summary>
-    /// ダンジョンセットアップ集
-    /// </summary>
-    [SerializeField]
-    private DungeonSetupHolder[] m_DungeonSetupHolders = new DungeonSetupHolder[0];
-    private DungeonSetupHolder CurrentDungeonSetupHolder => m_DungeonSetupHolders[(int)m_CurrentDungeonTheme];
-    public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress];
-    BossBattleSetup IDungeonProgressManager.CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
-
-    /// <summary>
-    /// 現在のダンジョンテーマ
-    /// </summary>
-    [ShowNonSerializedField]
-    private DUNGEON_THEME m_CurrentDungeonTheme;
-    DUNGEON_THEME IDungeonProgressManager.CurrentDungeonTheme { set => m_CurrentDungeonTheme = value; }
-
-    /// <summary>
-    /// 現在のダンジョン進行度
-    /// </summary>
-    // [ShowNonSerializedField]
-    [SerializeField]
-    private int m_CurrentProgress;
+    [Inject]
+    private DungeonProgressHolder m_ProgressHolder;
+    [Inject]
+    private IFadeManager m_FadeManager;
+    [Inject]
+    private IBGMHandler m_BGMHandler;
+    [Inject]
+    private IDungeonDeployer m_DungeonDeployer;
+    [Inject]
+    private IDungeonContentsDeployer m_DungeonContentsDeployer;
+    [Inject]
+    private ITurnManager m_TurnManager;
+    [Inject]
+    private IYesorNoQuestionUiManager m_QuestionManager;
 
     /// <summary>
     /// 現在の階層
@@ -112,21 +85,23 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     private ReactiveProperty<int> m_CurrentFloor = new ReactiveProperty<int>(1);
     IObservable<int> IDungeonProgressManager.FloorChanged => m_CurrentFloor;
 
+    void IInitializable.Initialize() => InitializeDungeon();
+
     /// <summary>
     /// ダンジョン初期化
     /// </summary>
-    void IDungeonProgressManager.InitializeDungeon()
+    private void InitializeDungeon()
     {
         string where = m_CurrentFloor.Value.ToString() + "F";
         // 明転
-        FadeManager.Interface.TurnBright(CurrentDungeonSetup.DungeonName, where);
+        m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
 
-        var elementSetup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
-        DungeonDeployer.Interface.DeployDungeon(elementSetup);
-        DungeonContentsDeployer.Interface.DeployAll();
+        var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
+        m_DungeonDeployer.DeployDungeon(elementSetup);
+        m_DungeonContentsDeployer.DeployAll();
 
-        var bgm = Instantiate(CurrentDungeonSetup.BGM);
-        BGMHandler.Interface.SetBGM(bgm);
+        var bgm = MonoBehaviour.Instantiate(m_ProgressHolder.CurrentDungeonSetup.BGM);
+        m_BGMHandler.SetBGM(bgm);
     }
 
     /// <summary>
@@ -135,7 +110,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <returns></returns>
     CharacterSetup IDungeonProgressManager.GetRandomEnemySetup()
     {
-        var t = CurrentDungeonSetup.EnemyTable;
+        var t = m_ProgressHolder.CurrentDungeonSetup.EnemyTable;
         int length = t.EnemyPacks.Length;
         int[] weights = new int[length];
 
@@ -152,7 +127,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <returns></returns>
     ItemSetup IDungeonProgressManager.GetRandomItemSetup()
     {
-        var d = CurrentDungeonSetupHolder.ItemDeploySetup;
+        var d = m_ProgressHolder.CurrentDungeonSetupHolder.ItemDeploySetup;
         int length = d.ItemPacks.Length;
         int[] weights = new int[length];
 
@@ -169,7 +144,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <returns></returns>
     TrapSetup IDungeonProgressManager.GetRandomTrapSetup()
     {
-        var d = CurrentDungeonSetupHolder.TrapDeploySetup;
+        var d = m_ProgressHolder.CurrentDungeonSetupHolder.TrapDeploySetup;
         int length = d.TrapPacks.Length;
         int[] weights = new int[length];
 
@@ -187,17 +162,17 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     async Task IDungeonProgressManager.NextFloor()
     {
         // ユニット停止
-        TurnManager.Interface.StopUnitAct();
+        m_TurnManager.StopUnitAct();
 
         // UI非表示
-        YesorNoQuestionUiManager.Interface.Deactive();
+        m_QuestionManager.Deactive();
 
-        int maxFloor = CurrentDungeonSetup.FloorCount;
+        int maxFloor = m_ProgressHolder.CurrentDungeonSetup.FloorCount;
         // すでに最上階にいるならチェックポイントへ
         if (m_CurrentFloor.Value >= maxFloor)
         {
             // 進行度+1
-            m_CurrentProgress++;
+            m_ProgressHolder.CurrentProgress++;
             await MoveScene();
             return;
         }
@@ -207,7 +182,7 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
 
         // 暗転 & ダンジョン再構築
         string where = m_CurrentFloor.Value.ToString() + "F";
-        await FadeManager.Interface.StartFade(() => RebuildDungeon(), CurrentDungeonSetup.DungeonName, where);
+        await m_FadeManager.StartFade(() => RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
     }
 
     /// <summary>
@@ -216,13 +191,13 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     private void RebuildDungeon()
     {
         // ダンジョン撤去
-        DungeonDeployer.Interface.RemoveDungeon();
-        DungeonContentsDeployer.Interface.RemoveAll();
+        m_DungeonDeployer.RemoveDungeon();
+        m_DungeonContentsDeployer.RemoveAll();
 
         // ダンジョン再構築
-        var setup = DungeonProgressManager.Interface.CurrentDungeonSetup.ElementSetup;
-        DungeonDeployer.Interface.DeployDungeon(setup);
-        DungeonContentsDeployer.Interface.DeployAll();
+        var setup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
+        m_DungeonDeployer.DeployDungeon(setup);
+        m_DungeonContentsDeployer.DeployAll();
     }
 
     /// <summary>
@@ -232,17 +207,16 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     async private Task MoveScene()
     {
         m_CurrentFloor.Value = 1;
-        int maxProgress = CurrentDungeonSetupHolder.DungeonSetup.Length;
         // シーン名
         string sceneName = "";
-        if (m_CurrentProgress == 0)
+        if (m_ProgressHolder.CurrentProgress == 0)
             sceneName = SceneName.SCENE_HOME;
-        else if (m_CurrentProgress == maxProgress)
+        else if (m_ProgressHolder.CurrentProgress == m_ProgressHolder.MaxProgress)
             sceneName = SceneName.SCENE_BOSS_BATTLE;
         else
             sceneName = SceneName.SCENE_CHECKPOINT;
 
-        await FadeManager.Interface.LoadScene(sceneName);
+        await m_FadeManager.LoadScene(sceneName);
     }
 
     /// <summary>
@@ -251,14 +225,14 @@ public class DungeonProgressManager : Singleton<DungeonProgressManager, IDungeon
     /// <param name="reason"></param>
     async void IDungeonProgressManager.FinishDungeon(FINISH_REASON reason)
     {
-        TurnManager.Interface.StopUnitAct();
+        m_TurnManager.StopUnitAct();
 
         if (reason == FINISH_REASON.PLAYER_DEAD)
             await MoveScene();
         else if (reason == FINISH_REASON.BOSS_DEAD)
         {
-            m_CurrentProgress = 0;
-            await FadeManager.Interface.LoadScene(SceneName.SCENE_HOME);
+            m_ProgressHolder.CurrentProgress = 0;
+            await m_FadeManager.LoadScene(SceneName.SCENE_HOME);
         }
     }
 }

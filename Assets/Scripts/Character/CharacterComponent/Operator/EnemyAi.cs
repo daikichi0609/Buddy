@@ -111,9 +111,9 @@ public partial class EnemyAi : CharaAi, IEnemyAi
     private bool SearchPlayer()
     {
         //通路にいる場合
-        if (DungeonHandler.Interface.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
+        if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
         {
-            AroundCellId around = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
+            AroundCellId around = m_DungeonHandler.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = around.Cells;
             var lastDirection = m_CharaMove.LastMoveDirection;
             var candidateDir = new List<DIRECTION>();
@@ -153,7 +153,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         //新しくSEARCHINGステートになった場合、目標となる部屋の入り口を設定する
         if (DestinationCell == null)
         {
-            var gates = DungeonHandler.Interface.GetGateWayCells(roomId);
+            var gates = m_DungeonHandler.GetGateWayCells(roomId);
 
             var candidates = new List<ICellInfoHandler>();
             var minDistance = 999f;
@@ -177,7 +177,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         //入り口についた場合、部屋を出る
         if (m_CharaMove.Position == DestinationCell.Position)
         {
-            var aroundGridID = DungeonHandler.Interface.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
+            var aroundGridID = m_DungeonHandler.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
             var cells = aroundGridID.Cells;
 
             // 通路への方向
@@ -225,7 +225,7 @@ public partial class EnemyAi
     //敵AI
     private EnemyActionClue ConsiderAction(Vector3Int currentPos)
     {
-        var aroundCell = DungeonHandler.Interface.GetAroundCell(currentPos);
+        var aroundCell = m_DungeonHandler.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, out var attack) == true)
@@ -241,10 +241,10 @@ public partial class EnemyAi
     {
         targets = new List<ICollector>();
 
-        if (DungeonHandler.Interface.TryGetRoomId(pos, out var roomId) == false)
+        if (m_DungeonHandler.TryGetRoomId(pos, out var roomId) == false)
             return false;
 
-        return UnitFinder.Interface.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
+        return m_UnitFinder.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
     }
 }
 

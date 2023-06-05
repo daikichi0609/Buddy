@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UniRx;
 using System;
+using Zenject;
+using System.Threading.Tasks;
 
 /// <summary>
 /// https://note.com/motibe_tsukuru/n/nbe75bb690bcc
@@ -125,8 +127,17 @@ public enum TERRAIN_ID
 z
  x → → →
 */
-public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDungeonDeployer
+public class DungeonDeployer : IDungeonDeployer
 {
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IObjectPoolController m_ObjectPoolController;
+    [Inject]
+    protected DungeonProgressHolder m_DungeonProgressHolder;
+    [Inject]
+    protected IDungeonProgressManager m_DungeonProgressManager;
+
     /// <summary>
     /// マップ
     /// </summary>
@@ -153,7 +164,7 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 break;
         }
 
-        remove.Dispose();
+        var _ = Task.Run(() => remove.Dispose());
     }
 
     /// <summary>
@@ -200,9 +211,9 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployDungeon(DungeonElementSetup setup)
     {
-        var x = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.x;
-        var y = DungeonProgressManager.Interface.CurrentDungeonSetup.MapSize.y;
-        var roomCount = DungeonProgressManager.Interface.CurrentDungeonSetup.RoomCountMax;
+        var x = m_DungeonProgressHolder.CurrentDungeonSetup.MapSize.x;
+        var y = m_DungeonProgressHolder.CurrentDungeonSetup.MapSize.y;
+        var roomCount = m_DungeonProgressHolder.CurrentDungeonSetup.RoomCountMax;
         var mapInfo = MapGenerator.GenerateMap(x, y, roomCount);
         m_IdMap = mapInfo.Map;
 # if DEBUG
@@ -272,8 +283,8 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                 {
                     case TERRAIN_ID.WALL: // 0
                         pos += new Vector3(0, 0.8f, 0);
-                        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.WALL.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(setup.Wall, pos, Quaternion.identity);
+                        if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.WALL.ToString(), out cellObject) == false)
+                            cellObject = MonoBehaviour.Instantiate(setup.Wall, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
@@ -281,8 +292,8 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         break;
 
                     case TERRAIN_ID.PATH_WAY: // 1
-                        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.PATH_WAY.ToString(), out cellObject) == false)
-                            cellObject = Instantiate(setup.Path, pos, Quaternion.identity);
+                        if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.PATH_WAY.ToString(), out cellObject) == false)
+                            cellObject = MonoBehaviour.Instantiate(setup.Path, pos, Quaternion.identity);
                         else
                             cellObject.transform.position = pos;
 
@@ -290,13 +301,13 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         break;
 
                     case TERRAIN_ID.ROOM: // 2
-                        AroundCellId aroundId = DungeonHandler.Interface.GetAroundCellId(i, j);
+                        AroundCellId aroundId = m_DungeonHandler.GetAroundCellId(i, j);
                         if (CheckGateWay(aroundId) == true)
                         {
                             m_IdMap[i, j] = TERRAIN_ID.GATE; // 入口なら設定し直す
 
-                            if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.GATE.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
+                            if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.GATE.ToString(), out cellObject) == false)
+                                cellObject = MonoBehaviour.Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
@@ -304,8 +315,8 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
                         }
                         else
                         {
-                            if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.ROOM.ToString(), out cellObject) == false)
-                                cellObject = Instantiate(setup.Room, pos, Quaternion.identity);
+                            if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.ROOM.ToString(), out cellObject) == false)
+                                cellObject = MonoBehaviour.Instantiate(setup.Room, pos, Quaternion.identity);
                             else
                                 cellObject.transform.position = pos;
 
@@ -353,16 +364,16 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployStairs(DungeonElementSetup setup) //階段配置
     {
-        var pos = DungeonHandler.Interface.GetRandomRoomEmptyCellPosition(); // 何もない部屋座標を取得
+        var pos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); // 何もない部屋座標を取得
         var x = pos.x;
         var z = pos.z;
 
         OverWriteCellId(TERRAIN_ID.STAIRS, x, z); // マップに階段を登録
 
-        var currentDungeonSetup = DungeonProgressManager.Interface.CurrentDungeonSetup;
+        var currentDungeonSetup = m_DungeonProgressHolder.CurrentDungeonSetup;
 
-        if (ObjectPoolController.Interface.TryGetObject(TERRAIN_ID.STAIRS.ToString(), out var cellObject) == false)
-            cellObject = Instantiate(setup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
+        if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.STAIRS.ToString(), out var cellObject) == false)
+            cellObject = MonoBehaviour.Instantiate(setup.Stairs, new Vector3(x, 0, z), Quaternion.identity); //オブジェクト生成
         else
             cellObject.transform.position = new Vector3(x, 0, z);
 
@@ -378,13 +389,13 @@ public class DungeonDeployer : Singleton<DungeonDeployer, IDungeonDeployer>, IDu
     /// </summary>
     private void DeployTrap()
     {
-        var count = UnityEngine.Random.Range(DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCountMin, DungeonProgressManager.Interface.CurrentDungeonSetup.TrapCountMax + 1);
+        var count = UnityEngine.Random.Range(m_DungeonProgressHolder.CurrentDungeonSetup.TrapCountMin, m_DungeonProgressHolder.CurrentDungeonSetup.TrapCountMax + 1);
 
         for (int i = 0; i < count; i++)
         {
             // 初期化
-            var cell = DungeonHandler.Interface.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
-            var trap = DungeonProgressManager.Interface.GetRandomTrapSetup();
+            var cell = m_DungeonHandler.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
+            var trap = m_DungeonProgressManager.GetRandomTrapSetup();
             var trapHolder = cell.GetInterface<ITrapHandler>();
             trapHolder.SetTrap(trap);
         }

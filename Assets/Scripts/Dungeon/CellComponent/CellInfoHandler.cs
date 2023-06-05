@@ -4,6 +4,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using UniRx;
 using System;
+using Zenject;
 
 public interface ICellInfoHandler : IActorInterface
 {
@@ -32,6 +33,9 @@ public interface ICellInfoHandler : IActorInterface
 
 public class CellInfoHandler : ActorComponentBase, ICellInfoHandler
 {
+    [Inject]
+    private IObjectPoolController m_ObjectPoolController;
+
     /// <summary>
     /// GameObject
     /// </summary>
@@ -85,7 +89,7 @@ public class CellInfoHandler : ActorComponentBase, ICellInfoHandler
     protected override void Dispose()
     {
         var key = m_CellId.ToString();
-        ObjectPoolController.Interface.SetObject(key, m_CellObject);
+        m_ObjectPoolController.SetObject(key, m_CellObject);
 
         base.Dispose();
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using Zenject;
 
 [Flags]
 public enum KeyCodeFlag
@@ -48,7 +49,7 @@ public interface IInputManager : ISingleton
     bool IsUiPopUp { get; }
 }
 
-public class InputManager : Singleton<InputManager, IInputManager>, IInputManager
+public class InputManager : MonoBehaviour, IInputManager
 {
     /// <summary>
     /// 入力イベント
@@ -81,12 +82,10 @@ public class InputManager : Singleton<InputManager, IInputManager>, IInputManage
     /// </summary>
     public bool IsUiPopUp => ActiveUi != null;
 
-    protected override void Awake()
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager)
     {
-        base.Awake();
-
-        PlayerLoopManager.Interface.GetUpdateEvent
-            .Subscribe(_ => DetectInput()).AddTo(this);
+        loopManager.GetUpdateEvent.Subscribe(_ => DetectInput());
     }
 
     //入力を見てメッセージ発行

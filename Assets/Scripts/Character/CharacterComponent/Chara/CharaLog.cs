@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Text;
+using Zenject;
 
 public interface ICharaLog : IActorInterface
 {
@@ -11,6 +12,9 @@ public interface ICharaLog : IActorInterface
 
 public class CharaLog : ActorComponentBase, ICharaLog
 {
+    [Inject]
+    private IBattleLogManager m_BattleLogManager;
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -27,14 +31,14 @@ public class CharaLog : ActorComponentBase, ICharaLog
             battle.OnAttackStart.Subscribe(info =>
             {
                 var log = CreateAttackLog(info);
-                BattleLogManager.Interface.Log(log);
+                m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
 
             // 攻撃結果ログ
             battle.OnAttackEnd.Subscribe(result =>
             {
                 var log = CreateAttackResultLog(result);
-                BattleLogManager.Interface.Log(log);
+                m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
 
             // 死亡ログ
@@ -44,7 +48,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
                     return;
 
                 var log = CreateDeadLog(result);
-                BattleLogManager.Interface.Log(log);
+                m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
         }
 
@@ -56,7 +60,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
                     return;
 
                 var log = CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
-                BattleLogManager.Interface.Log(log);
+                m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
         }
     }

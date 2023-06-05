@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using Zenject;
 
-public class CheckPointInitializer : SceneInitializer<CheckPointInitializer>
+public class CheckPointInitializer : SceneInitializer
 {
     protected override string FungusMessage => "CheckPoint";
 
@@ -26,11 +27,11 @@ public class CheckPointInitializer : SceneInitializer<CheckPointInitializer>
     /// </summary>
     protected override void OnStart()
     {
-        var currentDungeon = DungeonProgressManager.Interface.CurrentDungeonSetup;
+        var currentDungeon = m_DungeonProgressHolder.CurrentDungeonSetup;
         var checkPoint = currentDungeon.CheckPointSetup;
 
         // 明転
-        FadeManager.Interface.TurnBright(() => _ = OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
+        m_FadeManager.TurnBright(() => _ = OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
 
         // ステージ生成
         Instantiate(checkPoint.Stage);
@@ -87,6 +88,6 @@ public class CheckPointInitializer : SceneInitializer<CheckPointInitializer>
         ConversationManager.Interface.Register(friendTalk);
 
         // カメラをリーダーに追従させる
-        CameraHandler.Interface.SetParent(leaderController.MoveObject);
+        m_CameraHandler.SetParent(leaderController.MoveObject);
     }
 }

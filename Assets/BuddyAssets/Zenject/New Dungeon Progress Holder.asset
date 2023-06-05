@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc82cb03cb6b40cea2237021ccf9f35, type: 3}
+  m_Name: New Dungeon Progress Holder
+  m_EditorClassIdentifier: 
+  m_DungeonSetupHolders:
+  - {fileID: 11400000, guid: e209a91df6ba2475481d56520366a35c, type: 2}
+  m_CurrentDungeonTheme: 0
+  m_CurrentProgress: 0

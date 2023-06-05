@@ -50,7 +50,7 @@ public interface IFadeManager : ISingleton
     Task LoadScene(string sceneName);
 }
 
-public class FadeManager : Singleton<FadeManager, IFadeManager>, IFadeManager
+public class FadeManager : MonoBehaviour, IFadeManager
 {
     /// <summary>
     /// 黒画面

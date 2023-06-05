@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using NaughtyAttributes;
+using Zenject;
 
 public interface ICharaUiManager : ISingleton
 {
@@ -11,6 +12,11 @@ public interface ICharaUiManager : ISingleton
 
 public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, ICharaUiManager
 {
+    [Inject]
+    private IDungeonContentsDeployer m_DungeonContentsDeployer;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
+
     private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
 
     //各キャラUI格納用List（キャラUiは他とは別）
@@ -22,18 +28,22 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
         set { m_CharacterUiList = value; }
     }
 
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager)
+    {
+        // Updateで更新
+        loopManager.GetUpdateEvent
+            .Subscribe(_ => UpdateCharaUi()).AddTo(this);
+    }
+
     protected override void Awake()
     {
         base.Awake();
 
-        // Updateで更新
-        PlayerLoopManager.Interface.GetUpdateEvent
-            .Subscribe(_ => UpdateCharaUi()).AddTo(this);
-
         // Ui初期化
-        DungeonContentsDeployer.Interface.OnDeployContents.Subscribe(_ =>
+        m_DungeonContentsDeployer.OnDeployContents.Subscribe(_ =>
         {
-            var units = UnitHolder.Interface.FriendList.ToArray();
+            var units = m_UnitHolder.FriendList.ToArray();
             InitializeCharacterUi(units);
         });
     }

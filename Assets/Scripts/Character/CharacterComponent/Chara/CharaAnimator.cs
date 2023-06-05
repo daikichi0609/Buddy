@@ -5,6 +5,7 @@ using UniRx;
 using System;
 using System.Threading.Tasks;
 using NaughtyAttributes;
+using Zenject;
 
 /// <summary>
 /// アニメーションパターン定義
@@ -39,6 +40,9 @@ public interface ICharaAnimator : IActorInterface
 
 public class CharaAnimator : ActorComponentBase, ICharaAnimator
 {
+    [Inject]
+    private ITurnManager m_TurnManager;
+
     private ICharaTurn m_CharaTurn;
 
     /// <summary>
@@ -84,7 +88,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        m_CancelRequest = TurnManager.Interface.RequestProhibitAction(Owner);
+                        m_CancelRequest = m_TurnManager.RequestProhibitAction(Owner);
                         return;
                 }
 

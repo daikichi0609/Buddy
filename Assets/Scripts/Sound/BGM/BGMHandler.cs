@@ -21,7 +21,7 @@ public interface IBGMHandler : ISingleton
     void Stop();
 }
 
-public class BGMHandler : Singleton<BGMHandler, IBGMHandler>, IBGMHandler
+public class BGMHandler : MonoBehaviour, IBGMHandler
 {
     [SerializeField, ReadOnly]
     private GameObject m_BGM;
@@ -34,7 +34,7 @@ public class BGMHandler : Singleton<BGMHandler, IBGMHandler>, IBGMHandler
     void IBGMHandler.SetBGM(GameObject bgm, bool play)
     {
         if (m_BGM != null)
-            Destroy(m_BGM);
+            MonoBehaviour.Destroy(m_BGM);
 
         m_BGM = bgm;
         m_Audio = m_BGM.GetComponent<AudioSource>();

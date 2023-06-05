@@ -1,15 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 
-public interface IMasterDataHolder : ISingleton
-{
-    CharacterMasterSetup CharacterMasterSetup { get; }
-}
-
-public class MasterDataHolder : Singleton<MasterDataHolder, IMasterDataHolder>, IMasterDataHolder
+[CreateAssetMenu(menuName = "MyScriptable/Master/MasterData")]
+public class MasterDataHolder : ScriptableObject
 {
     [SerializeField]
+    [Expandable]
     private CharacterMasterSetup m_CharacterMasterSetup;
-    CharacterMasterSetup IMasterDataHolder.CharacterMasterSetup => m_CharacterMasterSetup;
+    public CharacterMasterSetup CharacterMasterSetup => m_CharacterMasterSetup;
 }

@@ -2,6 +2,7 @@
 using UniRx;
 using System;
 using NaughtyAttributes;
+using Zenject;
 
 public interface ICharaMove : IActorInterface
 {
@@ -25,6 +26,11 @@ public interface ICharaMoveEvent : IActorEvent
 
 public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 {
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IUnitFinder m_UnitFinder;
+
     private ICharaObjectHolder m_ObjectHolder;
     private GameObject CharaObject => m_ObjectHolder.CharaObject;
     private GameObject MoveObject => m_ObjectHolder.MoveObject;
@@ -75,6 +81,12 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
 
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager)
+    {
+        loopManager.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
+    }
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -93,9 +105,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         LastMoveDirection = DIRECTION.UNDER;
         var pos = MoveObject.transform.position;
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
-
-        // 移動処理
-        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
 
         // アクション登録
         m_OnMoveStart.Subscribe(_ => m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
@@ -123,13 +132,13 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Face(direction);
 
         //壁抜けはできない
-        if (DungeonHandler.Interface.CanMove(Position, direction) == false)
+        if (m_DungeonHandler.CanMove(Position, direction) == false)
             return false;
 
         Vector3Int destinationPos = Position + direction.ToV3Int();
 
         // 他ユニットがいる場合の入れ違い処理
-        if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
+        if (m_UnitFinder.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
         {
             // プレイヤーキャラでないなら、もしくは相手がプレイヤーキャラでないなら入れ違わない
             if (m_Type.Type != CHARA_TYPE.PLAYER || unit.GetInterface<ICharaTypeHolder>().Type != CHARA_TYPE.PLAYER)

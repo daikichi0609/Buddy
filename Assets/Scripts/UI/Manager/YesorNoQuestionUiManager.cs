@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System;
+using Zenject;
 
 /// <summary>
 /// 質問タイプ
@@ -23,8 +24,11 @@ public interface IYesorNoQuestionUiManager : IUiManager
 /// 選択肢と質問文のUi
 /// </summary>
 
-public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, IYesorNoQuestionUiManager>, IYesorNoQuestionUiManager
+public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 {
+    [Inject]
+    protected IDungeonProgressManager m_DungeonProgressManager;
+
     private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
     protected override IUiBase UiInterface => m_Interface;
 
@@ -33,7 +37,7 @@ public class YesorNoQuestionUiManager : UiManagerBase<YesorNoQuestionUiManager, 
         var e = m_Question switch
         {
             QUESTION_TYPE.STAIRS => new OptionElement
-            (new Action[2] { async () => await DungeonProgressManager.Interface.NextFloor(), () => Deactivate() }, OptionText),
+            (new Action[2] { async () => await m_DungeonProgressManager.NextFloor(), () => Deactivate() }, OptionText),
 
             QUESTION_TYPE.NONE => new OptionElement(),
             _ => new OptionElement()

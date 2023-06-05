@@ -4,9 +4,19 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 using Zenject.SpaceFighter;
+using Zenject;
 
-public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
+public class BossBattleInitializer : SceneInitializer
 {
+    [Inject]
+    private IDungeonDeployer m_DungeonDeployer;
+    [Inject]
+    private IDungeonContentsDeployer m_DungeonContentsDeployer;
+    [Inject]
+    protected IDungeonProgressManager m_DungeonProgressManager;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
+
     protected override string FungusMessage => "BossBattleStart";
 
     protected override Vector3 LeaderStartPos => new Vector3(10f, OFFSET_Y, 5f);
@@ -32,10 +42,10 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
     /// </summary>
     protected override void OnStart()
     {
-        var bossBattleSetup = DungeonProgressManager.Interface.CurrentBossBattleSetup;
+        var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
 
         // 明転
-        FadeManager.Interface.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
+        m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
 
         // 会話フロー生成
         m_ArrivalFlowChart = Instantiate(bossBattleSetup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
@@ -89,7 +99,7 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
 
         var elementSetup = bossBattleSetup.ElementSetup;
 
-        DungeonDeployer.Interface.DeployDungeon(cellMap, range, elementSetup);
+        m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
     }
 
     /// <summary>
@@ -116,7 +126,7 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
     /// </summary>
     public override void ReadyToOperatable()
     {
-        FadeManager.Interface.StartFadeWhite(() => ReadyToBossBattle());
+        m_FadeManager.StartFadeWhite(() => ReadyToBossBattle());
     }
 
     /// <summary>
@@ -129,22 +139,22 @@ public class BossBattleInitializer : SceneInitializer<BossBattleInitializer>
         m_Boss.Dispose();
 
         // ボス
-        var bossBattleSetup = DungeonProgressManager.Interface.CurrentBossBattleSetup;
+        var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
         var boss = bossBattleSetup.BossCharacterSetup;
         var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderEndPos, FriendEndPos, BOSS_POS, boss);
 
-        DungeonContentsDeployer.Interface.DeployBossBattleContents(bossBattleDeployInfo);
+        m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
 
         // BGM
         var bgm = Instantiate(bossBattleSetup.BGM);
-        BGMHandler.Interface.SetBGM(bgm);
+        m_BGMHandler.SetBGM(bgm);
 
         // 敵がいなくなったら終了
-        UnitHolder.Interface.OnEnemyRemove.Subscribe(count =>
+        m_UnitHolder.OnEnemyRemove.Subscribe(count =>
         {
             if (count != 0)
                 return;
-            DungeonProgressManager.Interface.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+            m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
         }).AddTo(this);
     }
 }

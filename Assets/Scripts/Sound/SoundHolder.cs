@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using Zenject;
 
 public interface ISoundHolder : ISingleton
 {
@@ -10,23 +11,10 @@ public interface ISoundHolder : ISingleton
     AudioSource DamageSound { get; }
 }
 
-public class SoundHolder : Singleton<SoundHolder, ISoundHolder>, ISoundHolder
+public class SoundHolder : ISoundHolder
 {
-    protected override void Awake()
-    {
-        base.Awake();
-        PlayerLoopManager.Interface.GetInitEvent.Subscribe(_ => Initialize()).AddTo(this);
-    }
-
-    /// <summary>
-    /// インスタンス生成
-    /// </summary>
-    private void Initialize()
-    {
-        m_AttackSound = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.AttackSound).GetComponent<AudioSource>();
-        m_MissSound = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
-        m_DamageSound = Instantiate(MasterDataHolder.Interface.CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
-    }
+    [Inject]
+    private MasterDataHolder m_MasterDataHolder;
 
     /// <summary>
     /// 攻撃
@@ -45,4 +33,20 @@ public class SoundHolder : Singleton<SoundHolder, ISoundHolder>, ISoundHolder
     /// </summary>
     private AudioSource m_DamageSound;
     AudioSource ISoundHolder.DamageSound => m_DamageSound;
+
+    [Inject]
+    public void Construct(IPlayerLoopManager loopManager)
+    {
+        loopManager.GetInitEvent.Subscribe(_ => Initialize());
+    }
+
+    /// <summary>
+    /// インスタンス生成
+    /// </summary>
+    private void Initialize()
+    {
+        m_AttackSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.AttackSound).GetComponent<AudioSource>();
+        m_MissSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
+        m_DamageSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
+    }
 }

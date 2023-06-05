@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using Zenject;
 using static AStarSearch;
 
 public interface IAiAction : IActorInterface
@@ -13,6 +14,17 @@ public interface IAiAction : IActorInterface
 
 public abstract partial class CharaAi : ActorComponentBase, IAiAction
 {
+    [Inject]
+    protected IDungeonDeployer m_DungeonDeployer;
+    [Inject]
+    protected IDungeonHandler m_DungeonHandler;
+    [Inject]
+    protected IPlayerLoopManager m_LoopManager;
+    [Inject]
+    protected IUnitHolder m_UnitHolder;
+    [Inject]
+    protected IUnitFinder m_UnitFinder;
+
     protected ICharaMove m_CharaMove;
     protected ICharaBattle m_CharaBattle;
     protected ICharaTurn m_CharaTurn;
@@ -31,11 +43,11 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
 
-        PlayerLoopManager.Interface.GetUpdateEvent.Subscribe(_ =>
+        m_LoopManager.GetUpdateEvent.Subscribe(_ =>
         {
             if (m_CharaTurn.CanAct == true)
                 DecideAndExecuteAction();
-        });
+        }).AddTo(this);
     }
 
     /// <summary>
@@ -87,7 +99,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     {
         var currentPos = m_CharaMove.Position; // 自分の位置
         var targetPos = target.GetInterface<ICharaMove>().Position; // 相手の位置
-        var grid = DungeonDeployer.Interface.IdMap.AstarGrid(); // マップ生成
+        var grid = m_DungeonDeployer.IdMap.AstarGrid(); // マップ生成
 
         // パス生成
         var path = AStarSearch.FindPath(new Vector2Int(currentPos.x, currentPos.z), new Vector2Int(targetPos.x, targetPos.z), grid);
@@ -130,11 +142,11 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
             var info = pair.Value.GetInterface<ICellInfoHandler>();
 
             // Unit存在判定
-            if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, m_TypeHolder.TargetType) == false)
+            if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, m_TypeHolder.TargetType) == false)
                 continue;
 
             // 壁抜け判定
-            if (DungeonHandler.Interface.CanMove(baseInfo.Position, pair.Key) == false)
+            if (m_DungeonHandler.CanMove(baseInfo.Position, pair.Key) == false)
                 continue;
 
             targets.Add(collector);

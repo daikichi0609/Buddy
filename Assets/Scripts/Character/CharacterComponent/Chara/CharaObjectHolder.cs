@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 using DG.Tweening;
+using Zenject;
 
 public interface ICharaObjectHolder : IActorInterface
 {
@@ -14,6 +15,9 @@ public interface ICharaObjectHolder : IActorInterface
 
 public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
 {
+    [Inject]
+    private IObjectPoolController m_ObjectPoolController;
+
     /// <summary>
     /// キャラのオブジェクト
     /// </summary>
@@ -59,7 +63,7 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     protected override void Dispose()
     {
         var setup = Owner.GetInterface<ICharaStatus>().Setup;
-        ObjectPoolController.Interface.SetObject(setup, m_MoveObject);
+        m_ObjectPoolController.SetObject(setup, m_MoveObject);
         base.Dispose();
     }
 

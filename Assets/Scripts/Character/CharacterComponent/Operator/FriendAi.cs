@@ -52,19 +52,19 @@ public partial class FriendAi : CharaAi, IFriendAi
             case FRIEND_STATE.CHASING:
                 // 同じ部屋でPlayerと隣り合ってるかチェック
                 bool isNeighborOn = false;
-                var playerPos = UnitHolder.Interface.Player.GetInterface<ICharaMove>().Position;
+                var playerPos = m_UnitHolder.Player.GetInterface<ICharaMove>().Position;
                 // 自分とリーダーが同じ部屋にいるなら
-                if (DungeonHandler.Interface.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
-                    DungeonHandler.Interface.TryGetRoomId(playerPos, out var playerId) == true &&
+                if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
+                    m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
                     myId == playerId)
                 {
-                    var aroundCell = DungeonHandler.Interface.GetAroundCell(playerPos);
+                    var aroundCell = m_DungeonHandler.GetAroundCell(playerPos);
                     foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
                     {
                         var info = pair.Value.GetInterface<ICellInfoHandler>();
 
                         // Unit存在判定
-                        if (UnitFinder.Interface.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.PLAYER) == false)
+                        if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.PLAYER) == false)
                             continue;
 
                         // 隣にいるなら
@@ -86,7 +86,7 @@ public partial class FriendAi : CharaAi, IFriendAi
                 // 隣り合っていないなら追いかける AstarPath
                 else
                 {
-                    result = FollowAstarPath(UnitHolder.Interface.Player);
+                    result = FollowAstarPath(m_UnitHolder.Player);
                 }
                 break;
         }
@@ -106,7 +106,7 @@ public partial class FriendAi
     //味方AI
     private FriendActionClue ConsiderAction(Vector3Int currentPos)
     {
-        var aroundCell = DungeonHandler.Interface.GetAroundCell(currentPos);
+        var aroundCell = m_DungeonHandler.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, out var attack) == true)

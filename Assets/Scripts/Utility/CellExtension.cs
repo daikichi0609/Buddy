@@ -10,10 +10,10 @@ public static class CellExtension
     /// </summary>
     /// <param name="cell"></param>
     /// <returns></returns>
-    public static AroundCellId GetAroundCellId(this ICollector cell)
+    public static AroundCellId GetAroundCellId(this ICollector cell, IDungeonHandler dungeonHandler)
     {
         var pos = cell.GetInterface<ICellInfoHandler>();
-        return DungeonHandler.Interface.GetAroundCellId(pos.Position);
+        return dungeonHandler.GetAroundCellId(pos.Position);
     }
 
     /// <summary>
@@ -21,10 +21,10 @@ public static class CellExtension
     /// </summary>
     /// <param name="cell"></param>
     /// <returns></returns>
-    public static AroundCell GetAroundCell(this ICollector cell)
+    public static AroundCell GetAroundCell(this ICollector cell, IDungeonHandler dungeonHandler)
     {
         var pos = cell.GetInterface<ICellInfoHandler>();
-        return DungeonHandler.Interface.GetAroundCell(pos.Position);
+        return dungeonHandler.GetAroundCell(pos.Position);
     }
 
     /// <summary>

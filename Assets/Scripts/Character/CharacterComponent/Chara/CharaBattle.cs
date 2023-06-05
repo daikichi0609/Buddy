@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using Zenject;
 
 public interface ICharaBattle : IActorInterface
 {
@@ -66,6 +67,17 @@ public interface ICharaBattleEvent : IActorEvent
 
 public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 {
+    [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private ITurnManager m_TurnManager;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
+    [Inject]
+    private IUnitFinder m_UnitFinder;
+    [Inject]
+    private IBattleLogManager m_BattleLogManager;
+
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
@@ -143,8 +155,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         // 死亡時、リストから抜ける
         m_OnDead.Subscribe(_ =>
         {
-            UnitHolder.Interface.RemoveUnit(Owner);
-            TurnManager.Interface.RemoveUnit(Owner);
+            m_UnitHolder.RemoveUnit(Owner);
+            m_TurnManager.RemoveUnit(Owner);
         }).AddTo(CompositeDisposable);
     }
 
@@ -161,7 +173,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private bool NormalAttack(DIRECTION direction, CHARA_TYPE target)
     {
         // 誰かが行動中なら攻撃できない
-        if (TurnManager.Interface.NoOneActing == false)
+        if (m_TurnManager.NoOneActing == false)
             return false;
 
         m_CharaMove.Face(direction); // 向く
@@ -170,7 +182,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
 
-        var disposable = TurnManager.Interface.RequestProhibitAction(Owner); // 行動禁止
+        var disposable = m_TurnManager.RequestProhibitAction(Owner); // 行動禁止
 
         // モーション終わりに
         StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
@@ -190,8 +202,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         disposable.Dispose();
 
         // 角抜け確認
-        if (DungeonHandler.Interface.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
-            UnitFinder.Interface.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
+        if (m_DungeonHandler.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
+            m_UnitFinder.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
             collector.RequireInterface<ICharaBattle>(out var battle) == false)
         {
             return AttackResult.Invalid;
@@ -270,7 +282,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         // ログ出力
         var log = CharaLog.CreateAttackResultLog(new AttackResult(default, Owner, true, damage, Status.Hp, false));
-        BattleLogManager.Interface.Log(log);
+        m_BattleLogManager.Log(log);
 
         // awaitする
         await PostDamage(default);

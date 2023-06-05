@@ -4,6 +4,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using System.Threading.Tasks;
 using System;
+using Zenject;
 
 public interface ITrapHandler : IActorInterface
 {
@@ -18,7 +19,7 @@ public interface ITrapHandler : IActorInterface
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    Task ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around, IDisposable disposable);
+    Task ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IDisposable disposable);
 
     /// <summary>
     /// 罠設置
@@ -34,6 +35,9 @@ public interface ITrapHandler : IActorInterface
 
 public class CellTrapHandler : ActorComponentBase, ITrapHandler
 {
+    [Inject]
+    private IObjectPoolController m_ObjectPoolController;
+
     private static readonly float OFFSET_Y = 0.5f;
 
     /// <summary>
@@ -64,11 +68,11 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     bool ITrapHandler.IsVisible => IsVisible;
 
     /// <summary>
-    /// 罠取得
+    /// 罠作動
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, AroundCell around, IDisposable disposable)
+    async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IDisposable disposable)
     {
         if (m_Trap == null)
         {
@@ -81,7 +85,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         m_GameObject.SetActive(true);
         IsVisible = true;
 
-        await m_Trap.Effect(m_Setup, stepper, unitFinder, around, m_Effect, m_GameObject.transform.position);
+        await m_Trap.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
         disposable.Dispose();
     }
 
@@ -99,7 +103,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
         if (m_GameObject == null)
         {
-            m_GameObject = ObjectPoolController.Interface.GetObject(m_Setup);
+            m_GameObject = m_ObjectPoolController.GetObject(m_Setup);
             m_GameObject.SetActive(false);
             var effect = Instantiate(m_Setup.EffectObject);
             m_Effect = new EffectHandler(effect);
@@ -117,7 +121,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     {
         if (m_GameObject != null)
         {
-            ObjectPoolController.Interface.SetObject(m_Setup, m_GameObject);
+            m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
             m_Effect.Dispose();
         }
 

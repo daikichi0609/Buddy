@@ -9,7 +9,7 @@ public interface ICameraHandler : ISingleton
     IDisposable SetParent(GameObject parent);
 }
 
-public class CameraHandler : Singleton<CameraHandler, ICameraHandler>, ICameraHandler
+public class CameraHandler : MonoBehaviour, ICameraHandler
 {
     /// <summary>
     /// メインカメラ

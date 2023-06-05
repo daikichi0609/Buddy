@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 
-public class HomeInitializer : SceneInitializer<HomeInitializer>
+public class HomeInitializer : SceneInitializer
 {
     protected override string FungusMessage => "Home";
 
@@ -20,7 +20,7 @@ public class HomeInitializer : SceneInitializer<HomeInitializer>
     protected override void OnStart()
     {
         // 仮
-        FadeManager.Interface.TurnBright(async () => await OnTurnBright(), "", "");
+        m_FadeManager.TurnBright(async () => await OnTurnBright(), "", "");
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class HomeInitializer : SceneInitializer<HomeInitializer>
     /// </summary>
     async protected override Task OnTurnBright()
     {
-        await FadeManager.Interface.LoadScene(SceneName.SCENE_DUNGEON);
+        await m_FadeManager.LoadScene(SceneName.SCENE_DUNGEON);
     }
 
     /// <summary>
