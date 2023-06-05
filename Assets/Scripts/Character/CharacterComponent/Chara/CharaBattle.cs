@@ -77,6 +77,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private IUnitFinder m_UnitFinder;
     [Inject]
     private IBattleLogManager m_BattleLogManager;
+    [Inject]
+    private IAttackResultUiManager m_AttackResultUiManager;
 
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;
@@ -147,9 +149,9 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackEnd.Subscribe(result =>
         {
             if (result.IsHit == true)
-                AttackResultUiManager.Interface.Damage(result);
+                m_AttackResultUiManager.Damage(result);
             else
-                AttackResultUiManager.Interface.Miss(result);
+                m_AttackResultUiManager.Miss(result);
         }).AddTo(CompositeDisposable);
 
         // 死亡時、リストから抜ける

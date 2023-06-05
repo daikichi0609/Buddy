@@ -15,9 +15,13 @@ public interface IMenuUiManager : IUiManager
 /// </summary>
 public class MenuUiManager : UiManagerBase, IMenuUiManager
 {
+    [Serializable]
+    public class MenuUi : UiBase { }
+
     [Inject]
     private IBagUiManager m_BagUiManager;
 
+    [SerializeField]
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
@@ -85,18 +89,5 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private void CheckStatus()
     {
         Deactivate();
-    }
-
-    public class MenuUi : UiBase
-    {
-        /// <summary>
-        /// 操作するUi
-        /// </summary>
-        protected override GameObject Ui => UiHolder.Instance.MenuUi;
-
-        /// <summary>
-        /// 操作するテキストUi
-        /// </summary>
-        protected override List<Text> Texts => UiHolder.Instance.MenuText;
     }
 }

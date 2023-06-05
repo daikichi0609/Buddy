@@ -28,7 +28,7 @@ public readonly struct OptionElement
     }
 }
 
-public interface IUiManager : ISingleton
+public interface IUiManager
 {
     /// <summary>
     /// UI表示

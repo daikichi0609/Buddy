@@ -449,6 +449,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6e75a4a1f34d4fa6adaff9890b814c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Initialize: 1
   m_DungeonUiSystem: {fileID: 1862151905159314750}
 --- !u!114 &1263038316
 MonoBehaviour:

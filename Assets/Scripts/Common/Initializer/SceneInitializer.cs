@@ -8,7 +8,7 @@ using UnityEditor.EditorTools;
 
 public interface ISceneInitializer
 {
-    void ReadyToOperatable();
+    Task ReadyToOperatable();
 }
 
 public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
@@ -25,6 +25,8 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     protected DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
     protected OutGameInfoHolder m_OutGameInfoHolder;
+    [Inject]
+    protected IInstantiater m_Instantiater;
 
     protected virtual string FungusMessage { get; }
 
@@ -53,29 +55,31 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
 
     private void Awake()
     {
-        m_LoopManager.GetInitEvent.Subscribe(_ => OnStart()).AddTo(this);
+        m_LoopManager.GetInitEvent.Subscribe(async _ => await OnStart()).AddTo(this);
     }
 
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected virtual void OnStart()
+    protected virtual Task OnStart()
     {
         // ----- キャラクター生成 ----- //
         // リーダー
         var leader = m_OutGameInfoHolder.Leader;
-        var l = Instantiate(leader.OutGamePrefab);
+        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab);
         l.transform.position = LeaderStartPos;
         m_Leader = l.GetComponent<ActorComponentCollector>();
         m_Leader.Initialize();
 
         // バディ
         var friend = m_OutGameInfoHolder.Friend;
-        var f = Instantiate(friend.OutGamePrefab);
+        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab);
         f.transform.position = FriendStartPos;
         m_Friend = f.GetComponent<ActorComponentCollector>();
         m_Friend.Initialize();
         // ---------- //
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -86,5 +90,5 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public virtual void ReadyToOperatable() { }
+    public virtual Task ReadyToOperatable() { return default; }
 }

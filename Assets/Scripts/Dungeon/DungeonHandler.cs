@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UniRx;
 using Zenject;
 
-public interface IDungeonHandler : ISingleton
+public interface IDungeonHandler
 {
     /// <summary>
     /// セル
@@ -30,10 +30,8 @@ public interface IDungeonHandler : ISingleton
     /// <summary>
     /// 周りのセルId取得
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="z"></param>
+    /// <param name="pos"></param>
     /// <returns></returns>
-    AroundCellId GetAroundCellId(int x, int z);
     AroundCellId GetAroundCellId(Vector3Int pos);
 
     /// <summary>
@@ -77,7 +75,7 @@ public interface IDungeonHandler : ISingleton
     void MarkExplored(Vector3Int pos);
 }
 
-public partial class DungeonHandler : IDungeonHandler
+public class DungeonHandler : IDungeonHandler
 {
     [Inject]
     private IDungeonDeployer m_DungeonDeployer;
@@ -111,21 +109,17 @@ public partial class DungeonHandler : IDungeonHandler
     /// <summary>
     /// 周囲のセル取得
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="z"></param>
-    /// <returns></returns>s
-    private AroundCell NewAroundCell(int x, int z) => new AroundCell(CellMap, x, z);
-    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => NewAroundCell(pos.x, pos.z);
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private AroundCell GetAroundCell(Vector3Int pos) => new AroundCell(CellMap, pos.x, pos.z);
+    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => GetAroundCell(pos);
 
     /// <summary>
-    /// 周囲のセルId取得
+    /// 周囲のセルIDを取得
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="z"></param>
+    /// <param name="pos"></param>
     /// <returns></returns>
-    private AroundCellId NewAroundCellId(int x, int z) => new AroundCellId(IdMap, x, z);
-    AroundCellId IDungeonHandler.GetAroundCellId(int x, int z) => NewAroundCellId(x, z);
-    AroundCellId IDungeonHandler.GetAroundCellId(Vector3Int pos) => NewAroundCellId(pos.x, pos.z);
+    AroundCellId IDungeonHandler.GetAroundCellId(Vector3Int pos) => new AroundCellId(IdMap, pos.x, pos.z);
 
     /// <summary>
     /// 任意座標の部屋Id取得
@@ -295,7 +289,7 @@ public partial class DungeonHandler : IDungeonHandler
         // 部屋にいないなら周囲のセルを探索済みとする
         else
         {
-            var around = NewAroundCell(pos.x, pos.z);
+            var around = GetAroundCell(pos);
             foreach (var cell in around.Cells.Values)
                 MarkExploredInternal(cell);
         }

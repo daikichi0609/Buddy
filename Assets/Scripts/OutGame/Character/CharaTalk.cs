@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public interface ICharaTalk : IActorInterface
 {
@@ -24,6 +25,9 @@ public interface ICharaTalk : IActorInterface
 
 public class CharaTalk : ActorComponentBase, ICharaTalk
 {
+    [Inject]
+    private IConversationManager m_ConversationManager;
+
     private static readonly float TALK_DISTANCE = 2.0f;
     private static readonly string SPOKEN_MESSAGE = "Spoken";
 
@@ -54,7 +58,7 @@ public class CharaTalk : ActorComponentBase, ICharaTalk
     bool ICharaTalk.TryTalk()
     {
         var pos = m_CharaController.Position;
-        if (ConversationManager.Interface.TryTalk(pos, Owner, out var dir) == true)
+        if (m_ConversationManager.TryTalk(pos, Owner, out var dir) == true)
         {
             m_CharaController.Face(dir);
             m_CharaController.StopAnimation(ANIMATION_TYPE.MOVE);

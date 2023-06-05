@@ -1,10 +1,18 @@
 using System.Collections.Generic;
+using Fungus;
 
 /// <summary>
 /// セル拡張メソッド
 /// </summary>
 public static class CellExtension
 {
+    /// <summary>
+    /// 周囲の地形Idを取得
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
+    public static AroundCellId GetAroundCellId(this TERRAIN_ID[,] map, int x, int z) => new AroundCellId(map, x, z);
+
     /// <summary>
     /// 周囲の地形Idを取得
     /// </summary>

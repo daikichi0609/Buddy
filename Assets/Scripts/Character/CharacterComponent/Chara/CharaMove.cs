@@ -27,6 +27,8 @@ public interface ICharaMoveEvent : IActorEvent
 public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 {
     [Inject]
+    private IPlayerLoopManager m_LoopManager;
+    [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private IUnitFinder m_UnitFinder;
@@ -81,12 +83,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
 
-    [Inject]
-    public void Construct(IPlayerLoopManager loopManager)
-    {
-        loopManager.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
-    }
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -108,6 +104,9 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         // アクション登録
         m_OnMoveStart.Subscribe(_ => m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
+
+        // 移動更新
+        m_LoopManager.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
     }
 
     /// <summary>

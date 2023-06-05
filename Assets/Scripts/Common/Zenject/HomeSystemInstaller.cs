@@ -10,7 +10,7 @@ public class HomeSystemInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        // PlayerLoop
+        // 初期化
         Container.Bind<ISceneInitializer>()
             .To<HomeInitializer>()
             .FromComponentOn(m_HomeSystem)
@@ -18,4 +18,3 @@ public class HomeSystemInstaller : MonoInstaller
             .NonLazy();
     }
 }
-

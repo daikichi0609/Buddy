@@ -7,6 +7,9 @@ using Zenject;
 public class DungeonSystemInstaller : MonoInstaller
 {
     [SerializeField]
+    private bool m_Initialize;
+
+    [SerializeField]
     private GameObject m_DungeonUiSystem;
 
     public override void InstallBindings()
@@ -32,12 +35,25 @@ public class DungeonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
-        // ダンジョン進行度管理
-        Container.Bind(typeof(IDungeonProgressManager), typeof(IInitializable)) // 引数にIInitializableの型を渡す
-            .To<DungeonProgressManager>()
-            .FromNew()
-            .AsSingle()
-            .NonLazy();
+        // 初期化もするか
+        if (m_Initialize == true)
+        {
+            // ダンジョン進行度管理
+            Container.Bind(typeof(IDungeonProgressManager), typeof(IInitializable)) // 引数にIInitializableの型を渡す
+                .To<DungeonProgressManager>()
+                .FromNew()
+                .AsSingle()
+                .NonLazy();
+        }
+        else
+        {
+            // ダンジョン進行度管理
+            Container.Bind<IDungeonProgressManager>()
+                .To<DungeonProgressManager>()
+                .FromNew()
+                .AsSingle()
+                .NonLazy();
+        }
 
         // オブジェクトプール
         Container.Bind<IObjectPoolController>()

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IConversationManager : ISingleton
+public interface IConversationManager
 {
     /// <summary>
     /// 会話先登録
@@ -24,7 +24,7 @@ public interface IConversationManager : ISingleton
     void OnFinishTalking();
 }
 
-public class ConversationManager : Singleton<ConversationManager, IConversationManager>, IConversationManager
+public class ConversationManager : MonoBehaviour, IConversationManager
 {
     /// <summary>
     /// 会話先

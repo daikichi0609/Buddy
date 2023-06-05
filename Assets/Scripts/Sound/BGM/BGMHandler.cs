@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
 
-public interface IBGMHandler : ISingleton
+public interface IBGMHandler
 {
     /// <summary>
     /// BGMセット

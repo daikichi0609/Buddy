@@ -40,7 +40,7 @@ public readonly struct InputInfo
     }
 }
 
-public interface IInputManager : ISingleton
+public interface IInputManager
 {
     IObservable<InputInfo> InputEvent { get; }
     IObservable<InputInfo> InputStartEvent { get; }

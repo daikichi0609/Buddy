@@ -1239,73 +1239,6 @@ Transform:
   m_Father: {fileID: 1862151905951310467}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1862151905847456956
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1862151905847456959}
-  - component: {fileID: 1862151905847456958}
-  m_Layer: 0
-  m_Name: UiHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1862151905847456959
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1862151905847456956}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1862151906042642184}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1862151905847456958
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1862151905847456956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62629e21dd08f4ffc914ce2257fc90f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Canvas: {fileID: 1862151905951310471}
-  m_CharacterUi: {fileID: 9033225181970526970, guid: 6873beef1f8ce4f7baaa077836d02cfc,
-    type: 3}
-  m_MenuUi: {fileID: 1862151905730288890}
-  m_MenuText:
-  - {fileID: 1862151905742929910}
-  - {fileID: 1862151906394117908}
-  m_BagUi: {fileID: 1862151905272087390}
-  m_ItemTexts:
-  - {fileID: 1862151906161280445}
-  - {fileID: 1862151905293140410}
-  - {fileID: 1862151906534790960}
-  - {fileID: 1862151906477646255}
-  - {fileID: 1862151905325390760}
-  - {fileID: 1862151906077186881}
-  - {fileID: 1862151905635196067}
-  - {fileID: 1862151905117995956}
-  - {fileID: 1862151905366615701}
-  m_QuestionAndChoiceUi: {fileID: 1862151905268190488}
-  m_QuestionText: {fileID: 1862151905209488589}
-  m_OptionTextList:
-  - {fileID: 1862151906064468698}
-  - {fileID: 1862151906249412913}
 --- !u!1 &1862151905914396784
 GameObject:
   m_ObjectHideFlags: 0
@@ -1427,7 +1360,7 @@ RectTransform:
   - {fileID: 1862151905730288885}
   - {fileID: 1862151905272087385}
   m_Father: {fileID: 1862151906042642184}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1529,7 +1462,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1862151905847456959}
   - {fileID: 1862151905951310467}
   - {fileID: 1862151906579339616}
   m_Father: {fileID: 0}
@@ -1547,6 +1479,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82125047a68a54c9896e52db8b66dc33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UiInterface:
+    m_Ui: {fileID: 1862151905730288890}
+    m_Texts:
+    - {fileID: 1862151905742929910}
+    - {fileID: 1862151906394117908}
 --- !u!114 &7065681949943778063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1559,6 +1496,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff566e94732d4224b8ca6321db38b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UiInterface:
+    m_Ui: {fileID: 1862151905272087390}
+    m_Texts:
+    - {fileID: 1862151906161280445}
+    - {fileID: 1862151905293140410}
+    - {fileID: 1862151906534790960}
+    - {fileID: 1862151906477646255}
+    - {fileID: 1862151905325390760}
+    - {fileID: 1862151906077186881}
+    - {fileID: 1862151905635196067}
+    - {fileID: 1862151905117995956}
+    - {fileID: 1862151905366615701}
 --- !u!114 &4919413994143230328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1571,6 +1520,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cfe208addb1f4d5e91298a7557a3132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Interface:
+    m_Ui: {fileID: 1862151905268190488}
+    m_Texts:
+    - {fileID: 1862151906064468698}
+    - {fileID: 1862151906249412913}
+    m_QuestionText: {fileID: 1862151905209488589}
 --- !u!114 &4092083852894976188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1583,6 +1538,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07da90beafeba49db86679d38a36b7e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Canvas: {fileID: 1862151905951310471}
+  m_CharacterUiPrefab: {fileID: 9033225181970526970, guid: 6873beef1f8ce4f7baaa077836d02cfc,
+    type: 3}
   m_CharacterUiList: []
 --- !u!114 &2514205357633887915
 MonoBehaviour:
@@ -2206,7 +2164,7 @@ RectTransform:
   - {fileID: 1862151905473704535}
   - {fileID: 1862151905751253339}
   m_Father: {fileID: 1862151906042642184}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

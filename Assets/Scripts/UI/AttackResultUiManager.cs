@@ -6,13 +6,13 @@ using UnityEngine.UI;
 using UniRx;
 using DG.Tweening;
 
-public interface IAttackResultUiManager : ISingleton
+public interface IAttackResultUiManager
 {
     void Damage(AttackResult result);
     void Miss(AttackResult result);
 }
 
-public class AttackResultUiManager : Singleton<AttackResultUiManager, IAttackResultUiManager>, IAttackResultUiManager
+public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
 {
     // フェイド速度
     private static readonly float FADE_SPEED = 1f;

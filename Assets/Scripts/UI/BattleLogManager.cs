@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UniRx;
 using Zenject;
 
-public interface IBattleLogManager : ISingleton
+public interface IBattleLogManager
 {
     /// <summary>
     /// ログを出す

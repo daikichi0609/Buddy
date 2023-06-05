@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Analytics;
 using Zenject;
 
-public interface IDungeonProgressManager : ISingleton
+public interface IDungeonProgressManager
 {
     /// <summary>
     /// ランダムな敵キャラクターセットアップを取得
@@ -85,23 +85,24 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     private ReactiveProperty<int> m_CurrentFloor = new ReactiveProperty<int>(1);
     IObservable<int> IDungeonProgressManager.FloorChanged => m_CurrentFloor;
 
-    void IInitializable.Initialize() => InitializeDungeon();
+    async void IInitializable.Initialize() => await InitializeDungeon();
 
     /// <summary>
     /// ダンジョン初期化
     /// </summary>
-    private void InitializeDungeon()
+    private async Task InitializeDungeon()
     {
         string where = m_CurrentFloor.Value.ToString() + "F";
-        // 明転
-        m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
 
         var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
-        m_DungeonDeployer.DeployDungeon(elementSetup);
-        m_DungeonContentsDeployer.DeployAll();
+        await m_DungeonDeployer.DeployDungeon(elementSetup);
+        await m_DungeonContentsDeployer.DeployAll();
 
         var bgm = MonoBehaviour.Instantiate(m_ProgressHolder.CurrentDungeonSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
+
+        // 明転
+        await m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
     }
 
     /// <summary>
@@ -182,13 +183,13 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
 
         // 暗転 & ダンジョン再構築
         string where = m_CurrentFloor.Value.ToString() + "F";
-        await m_FadeManager.StartFade(() => RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
+        await m_FadeManager.StartFade(async () => await RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
     }
 
     /// <summary>
     /// ダンジョン再構築
     /// </summary>
-    private void RebuildDungeon()
+    private async Task RebuildDungeon()
     {
         // ダンジョン撤去
         m_DungeonDeployer.RemoveDungeon();
@@ -196,8 +197,8 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
 
         // ダンジョン再構築
         var setup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
-        m_DungeonDeployer.DeployDungeon(setup);
-        m_DungeonContentsDeployer.DeployAll();
+        await m_DungeonDeployer.DeployDungeon(setup);
+        await m_DungeonContentsDeployer.DeployAll();
     }
 
     /// <summary>

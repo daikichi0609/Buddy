@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using Zenject;
+using System.Threading.Tasks;
 
 public enum CONTENTS_TYPE
 {
@@ -13,12 +14,12 @@ public enum CONTENTS_TYPE
     ITEM,
 }
 
-public interface IDungeonContentsDeployer : ISingleton
+public interface IDungeonContentsDeployer
 {
     /// <summary>
     /// コンテンツ全部配置
     /// </summary>
-    void DeployAll();
+    Task DeployAll();
 
     /// <summary>
     /// ボスバトル用
@@ -26,7 +27,7 @@ public interface IDungeonContentsDeployer : ISingleton
     /// <param name="playerPos"></param>
     /// <param name="friendPos"></param>
     /// <param name="bossPos"></param>
-    void DeployBossBattleContents(BossBattleDeployInfo info);
+    Task DeployBossBattleContents(BossBattleDeployInfo info);
 
     /// <summary>
     /// コンテンツ撤去
@@ -76,17 +77,17 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// <summary>
     /// 全て配置
     /// </summary>
-    private void DeployAll()
+    private async Task DeployAll()
     {
         Debug.Log("Deploy Contents");
-        Deploy(CONTENTS_TYPE.PLAYER);
-        Deploy(CONTENTS_TYPE.FRIEND);
-        Deploy(CONTENTS_TYPE.ENEMY, m_DungeonProgressHolder.CurrentDungeonSetup.EnemyCountMax);
-        Deploy(CONTENTS_TYPE.ITEM, m_DungeonProgressHolder.CurrentDungeonSetup.ItemCountMax);
+        await Deploy(CONTENTS_TYPE.PLAYER);
+        await Deploy(CONTENTS_TYPE.FRIEND);
+        await Deploy(CONTENTS_TYPE.ENEMY, m_DungeonProgressHolder.CurrentDungeonSetup.EnemyCountMax);
+        await Deploy(CONTENTS_TYPE.ITEM, m_DungeonProgressHolder.CurrentDungeonSetup.ItemCountMax);
 
         m_OnDeployContents.OnNext(Unit.Default);
     }
-    void IDungeonContentsDeployer.DeployAll() => DeployAll();
+    async Task IDungeonContentsDeployer.DeployAll() => await DeployAll();
 
     /// <summary>
     /// ボス戦に必要なもの配置
@@ -94,11 +95,11 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// <param name="playerPos"></param>
     /// <param name="friendPos"></param>
     /// <param name="bossPos"></param>
-    void IDungeonContentsDeployer.DeployBossBattleContents(BossBattleDeployInfo info)
+    async Task IDungeonContentsDeployer.DeployBossBattleContents(BossBattleDeployInfo info)
     {
-        DeployPlayer(info.PlayerPos);
-        DeployFriend(info.FriendPos);
-        DeployBoss(info.BossPos, info.BossCharacterSetup);
+        await DeployPlayer(info.PlayerPos);
+        await DeployFriend(info.FriendPos);
+        await DeployBoss(info.BossPos, info.BossCharacterSetup);
 
         m_OnDeployContents.OnNext(Unit.Default);
     }
@@ -129,7 +130,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// </summary>
     /// <param name="type"></param>
     /// <param name="count"></param>
-    private void Deploy(CONTENTS_TYPE type, int count = 1)
+    private async Task Deploy(CONTENTS_TYPE type, int count = 1)
     {
         for (int i = 0; i < count; i++)
         {
@@ -140,21 +141,21 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
                     // 配置位置決め
                     var cellPos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
                     var pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z);
-                    DeployPlayer(pos);
+                    await DeployPlayer(pos);
                     break;
 
                 case CONTENTS_TYPE.FRIEND:
                     // 配置位置決め
                     var nearPos = PlayerAroundPos();
-                    DeployFriend(nearPos);
+                    await DeployFriend(nearPos);
                     break;
 
                 case CONTENTS_TYPE.ENEMY:
-                    DeployEnemy();
+                    await DeployEnemy();
                     break;
 
                 case CONTENTS_TYPE.ITEM:
-                    DeployItem();
+                    await DeployItem();
                     break;
             }
         }
@@ -183,7 +184,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
         }
 
         // 敵配置
-        void DeployEnemy()
+        Task DeployEnemy()
         {
             // 使うもの
             var setup = m_DungeonProgressManager.GetRandomEnemySetup();
@@ -202,10 +203,11 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
 
             // 追加
             m_UnitHolder.AddEnemy(enemy);
+            return Task.CompletedTask;
         }
 
         // アイテム配置
-        void DeployItem()
+        Task DeployItem()
         {
             // 使うもの
             var setup = m_DungeonProgressManager.GetRandomItemSetup();
@@ -219,6 +221,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
 
             // 追加
             m_ItemManager.AddItem(item);
+            return Task.CompletedTask;
         }
     }
 
@@ -226,7 +229,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// プレイヤー配置
     /// </summary>
     /// <param name="pos"></param>
-    private void DeployPlayer(Vector3 pos)
+    private Task DeployPlayer(Vector3 pos)
     {
         // 使うもの
         var setup = m_OutGameInfoHolder.Leader;
@@ -245,13 +248,14 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
 
         // 追加
         m_UnitHolder.AddPlayer(player);
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// バディ配置
     /// </summary>
     /// <param name="pos"></param>
-    private void DeployFriend(Vector3 pos)
+    private Task DeployFriend(Vector3 pos)
     {
         // 使うもの
         var setup = m_OutGameInfoHolder.Friend;
@@ -270,13 +274,14 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
 
         // 追加
         m_UnitHolder.AddPlayer(friend);
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// ボス配置
     /// </summary>
     /// <param name="pos"></param>
-    private void DeployBoss(Vector3 pos, CharacterSetup setup)
+    private Task DeployBoss(Vector3 pos, CharacterSetup setup)
     {
         var gameObject = m_ObjectPoolController.GetObject(setup);
 
@@ -291,5 +296,6 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
 
         // 追加
         m_UnitHolder.AddEnemy(boss);
+        return Task.CompletedTask;
     }
 }

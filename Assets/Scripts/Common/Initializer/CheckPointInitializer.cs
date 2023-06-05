@@ -7,6 +7,9 @@ using Zenject;
 
 public class CheckPointInitializer : SceneInitializer
 {
+    [Inject]
+    private IConversationManager m_ConversationManager;
+
     protected override string FungusMessage => "CheckPoint";
 
     protected override Vector3 LeaderStartPos => new Vector3(-1f, OFFSET_Y, -5f);
@@ -25,22 +28,22 @@ public class CheckPointInitializer : SceneInitializer
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected override void OnStart()
+    protected override async Task OnStart()
     {
+        await base.OnStart();
+
         var currentDungeon = m_DungeonProgressHolder.CurrentDungeonSetup;
         var checkPoint = currentDungeon.CheckPointSetup;
-
-        // 明転
-        m_FadeManager.TurnBright(() => _ = OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
 
         // ステージ生成
         Instantiate(checkPoint.Stage);
 
         // 会話フロー生成
-        m_ArrivalFlowChart = Instantiate(checkPoint.ArrivalFlow).GetComponent<Fungus.Flowchart>();
-        m_DeparturedFlowChart = Instantiate(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
+        m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.ArrivalFlow).GetComponent<Fungus.Flowchart>();
+        m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
 
-        base.OnStart();
+        // 明転
+        await m_FadeManager.TurnBright(() => _ = OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
     }
 
     /// <summary>
@@ -69,7 +72,7 @@ public class CheckPointInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override void ReadyToOperatable()
+    public override Task ReadyToOperatable()
     {
         // リーダー
         var leaderController = m_Leader.GetInterface<ICharaController>();
@@ -85,9 +88,10 @@ public class CheckPointInitializer : SceneInitializer
         // バディに会話フローを持たせる
         var friendTalk = m_Friend.GetInterface<ICharaTalk>();
         friendTalk.FlowChart = m_DeparturedFlowChart;
-        ConversationManager.Interface.Register(friendTalk);
+        m_ConversationManager.Register(friendTalk);
 
         // カメラをリーダーに追従させる
         m_CameraHandler.SetParent(leaderController.MoveObject);
+        return default;
     }
 }

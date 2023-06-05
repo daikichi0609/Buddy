@@ -17,10 +17,10 @@ public class HomeInitializer : SceneInitializer
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected override void OnStart()
+    protected override async Task OnStart()
     {
         // 仮
-        m_FadeManager.TurnBright(async () => await OnTurnBright(), "", "");
+        await m_FadeManager.TurnBright(async () => await OnTurnBright(), "", "");
     }
 
     /// <summary>
@@ -34,8 +34,8 @@ public class HomeInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override void ReadyToOperatable()
+    public override Task ReadyToOperatable()
     {
-
+        return default;
     }
 }

@@ -5,17 +5,27 @@ using UniRx;
 using NaughtyAttributes;
 using Zenject;
 
-public interface ICharaUiManager : ISingleton
+public interface ICharaUiManager
 {
     void InitializeCharacterUi(ICollector[] units);
 }
 
-public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, ICharaUiManager
+public class CharaUiManager : MonoBehaviour, ICharaUiManager
 {
+    [Inject]
+    private IPlayerLoopManager m_LoopManager;
     [Inject]
     private IDungeonContentsDeployer m_DungeonContentsDeployer;
     [Inject]
     private IUnitHolder m_UnitHolder;
+
+    //キャンバス
+    [SerializeField]
+    private GameObject m_Canvas;
+
+    //キャラクターUIプレハブ
+    [SerializeField]
+    private GameObject m_CharacterUiPrefab;
 
     private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
 
@@ -28,24 +38,18 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
         set { m_CharacterUiList = value; }
     }
 
-    [Inject]
-    public void Construct(IPlayerLoopManager loopManager)
+    private void Awake()
     {
-        // Updateで更新
-        loopManager.GetUpdateEvent
-            .Subscribe(_ => UpdateCharaUi()).AddTo(this);
-    }
-
-    protected override void Awake()
-    {
-        base.Awake();
-
         // Ui初期化
         m_DungeonContentsDeployer.OnDeployContents.Subscribe(_ =>
         {
             var units = m_UnitHolder.FriendList.ToArray();
             InitializeCharacterUi(units);
         });
+
+        // Updateで更新
+        m_LoopManager.GetUpdateEvent
+            .Subscribe(_ => UpdateCharaUi()).AddTo(this);
     }
 
     /// <summary>
@@ -58,8 +62,8 @@ public class CharaUiManager : Singleton<CharaUiManager, ICharaUiManager>, IChara
 
         foreach (var unit in units)
         {
-            GameObject obj = Instantiate(UiHolder.Instance.CharacterUi);
-            obj.transform.SetParent(UiHolder.Instance.Canvas.transform, false);
+            GameObject obj = Instantiate(m_CharacterUiPrefab);
+            obj.transform.SetParent(m_Canvas.transform, false);
             obj.transform.SetAsFirstSibling();
             CharaUi ui = obj.GetComponent<CharaUi>();
             CharacterUiList.Add(ui);

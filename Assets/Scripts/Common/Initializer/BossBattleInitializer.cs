@@ -40,22 +40,19 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected override void OnStart()
+    protected override async Task OnStart()
     {
+        await base.OnStart();
+
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
 
-        // 明転
-        m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
-
         // 会話フロー生成
-        m_ArrivalFlowChart = Instantiate(bossBattleSetup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
-        m_DefeatedFlowChart = Instantiate(bossBattleSetup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
-
-        base.OnStart();
+        m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(bossBattleSetup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
+        m_DefeatedFlowChart = m_Instantiater.InstantiatePrefab(bossBattleSetup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
 
         // ボス
         var boss = bossBattleSetup.BossCharacterSetup;
-        var b = Instantiate(boss.OutGamePrefab);
+        var b = m_Instantiater.InstantiatePrefab(boss.OutGamePrefab);
         b.transform.position = BOSS_POS;
         m_Boss = b.GetComponent<ActorComponentCollector>();
         var controller = m_Boss.GetInterface<ICharaController>();
@@ -99,7 +96,10 @@ public class BossBattleInitializer : SceneInitializer
 
         var elementSetup = bossBattleSetup.ElementSetup;
 
-        m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
+        await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
+
+        // 明転
+        await m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
     }
 
     /// <summary>
@@ -124,15 +124,15 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override void ReadyToOperatable()
+    public override async Task ReadyToOperatable()
     {
-        m_FadeManager.StartFadeWhite(() => ReadyToBossBattle());
+        await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle());
     }
 
     /// <summary>
     /// 
     /// </summary>
-    private void ReadyToBossBattle()
+    private async Task ReadyToBossBattle()
     {
         m_Leader.Dispose();
         m_Friend.Dispose();
@@ -143,7 +143,7 @@ public class BossBattleInitializer : SceneInitializer
         var boss = bossBattleSetup.BossCharacterSetup;
         var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderEndPos, FriendEndPos, BOSS_POS, boss);
 
-        m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
+        await m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
 
         // BGM
         var bgm = Instantiate(bossBattleSetup.BGM);

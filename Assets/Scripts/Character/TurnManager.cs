@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using static UnityEngine.UI.CanvasScaler;
 using Zenject;
 
-public interface ITurnManager : ISingleton
+public interface ITurnManager
 {
     /// <summary>
     /// 累計ターン数

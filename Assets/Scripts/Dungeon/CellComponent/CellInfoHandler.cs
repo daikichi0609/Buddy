@@ -5,6 +5,7 @@ using NaughtyAttributes;
 using UniRx;
 using System;
 using Zenject;
+using System.Threading.Tasks;
 
 public interface ICellInfoHandler : IActorInterface
 {
@@ -90,7 +91,6 @@ public class CellInfoHandler : ActorComponentBase, ICellInfoHandler
     {
         var key = m_CellId.ToString();
         m_ObjectPoolController.SetObject(key, m_CellObject);
-
         base.Dispose();
     }
 }

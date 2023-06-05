@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Fungus;
 using UnityEngine;
 using Zenject;
 
-public interface IObjectPoolController : ISingleton
+public interface IObjectPoolController
 {
     /// <summary>
     /// 汎用プール操作
@@ -26,7 +27,8 @@ public interface IObjectPoolController : ISingleton
 
 public class ObjectPoolController : IObjectPoolController
 {
-    [Inject] private DiContainer m_Container;
+    [Inject]
+    private IInstantiater m_Instantiater;
 
     /// <summary>
     /// プールインスタンス
@@ -44,7 +46,7 @@ public class ObjectPoolController : IObjectPoolController
     GameObject IObjectPoolController.GetObject<T>(T setup)
     {
         if (m_ObjectPool.TryGetPoolObject(setup.ToString(), out var chara) == false)
-            chara = m_Container.InstantiatePrefab(setup.Prefab);
+            chara = m_Instantiater.InstantiatePrefab(setup.Prefab);
 
         return chara;
     }

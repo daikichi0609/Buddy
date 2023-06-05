@@ -15,6 +15,15 @@ public interface IBagUiManager : IUiManager
 /// </summary>
 public class BagUiManager : UiManagerBase, IBagUiManager
 {
+    [Serializable]
+    public class BagUi : UiBase
+    {
+        /// <summary>
+        /// アイテムの要素数
+        /// </summary>
+        public int ItemElementCount => m_Texts.Count;
+    }
+
     [Inject]
     private IMenuUiManager m_MenuUiManager;
     [Inject]
@@ -26,6 +35,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     [Inject]
     private IBagUiManager m_BagUiManager;
 
+    [SerializeField]
     private BagUiManager.BagUi m_UiInterface = new BagUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
@@ -64,23 +74,5 @@ public class BagUiManager : UiManagerBase, IBagUiManager
         base.Deactivate();
         if (back == true)
             m_MenuUiManager.Activate();
-    }
-
-    public class BagUi : UiBase
-    {
-        /// <summary>
-        /// 操作するUi
-        /// </summary>
-        protected override GameObject Ui => UiHolder.Instance.BagUi;
-
-        /// <summary>
-        /// 操作するテキストUi
-        /// </summary>
-        protected override List<Text> Texts => UiHolder.Instance.ItemTexts;
-
-        /// <summary>
-        /// アイテムの要素数
-        /// </summary>
-        public int ItemElementCount => Texts.Count;
     }
 }

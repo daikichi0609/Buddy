@@ -35,5 +35,5 @@ public class DungeonProgressHolder : ScriptableObject
     [SerializeField]
     private int m_CurrentProgress;
     public int CurrentProgress { get => m_CurrentProgress; set => m_CurrentProgress = value; }
-    public int MaxProgress => m_DungeonSetupHolders.Length;
+    public int MaxProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
 }

@@ -9,6 +9,8 @@ public class FungusMethod : MonoBehaviour
     private IFadeManager m_FadeManager;
     [Inject]
     private ISceneInitializer m_SceneInitializer;
+    [Inject]
+    private IConversationManager m_ConversationManager;
 
     /// <summary>
     /// チェックポイント到達会話フロー終了時
@@ -33,5 +35,5 @@ public class FungusMethod : MonoBehaviour
     /// <summary>
     /// 会話終了時
     /// </summary>
-    public void OnFinishFlow() => ConversationManager.Interface.OnFinishTalking();
+    public void OnFinishFlow() => m_ConversationManager.OnFinishTalking();
 }

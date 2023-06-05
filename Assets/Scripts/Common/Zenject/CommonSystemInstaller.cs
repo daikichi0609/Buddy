@@ -40,6 +40,13 @@ public class CommonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // プレハブ生成
+        Container.Bind<IInstantiater>()
+            .To<Instantiater>()
+            .FromComponentOn(m_CommonSystem)
+            .AsSingle()
+            .NonLazy();
+
         // Fade
         Container.Bind<IFadeManager>()
             .To<FadeManager>()

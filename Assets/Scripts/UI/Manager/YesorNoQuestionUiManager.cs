@@ -26,9 +26,17 @@ public interface IYesorNoQuestionUiManager : IUiManager
 
 public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 {
+    [Serializable]
+    public class QuestionUi : UiBase
+    {
+        [SerializeField]
+        public Text m_QuestionText;
+    }
+
     [Inject]
     protected IDungeonProgressManager m_DungeonProgressManager;
 
+    [SerializeField]
     private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
     protected override IUiBase UiInterface => m_Interface;
 
@@ -70,25 +78,12 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
             _ => ""
         };
 
-        UiHolder.Instance.QuestionText.text = s;
+        m_Interface.m_QuestionText.text = s;
     }
 
     protected override void Deactivate(bool back = true)
     {
         base.Deactivate();
-    }
-
-    public class QuestionUi : UiBase
-    {
-        /// <summary>
-        /// 操作するUi
-        /// </summary>
-        protected override GameObject Ui => UiHolder.Instance.QuestionAndChoiceUi;
-
-        /// <summary>
-        /// 操作するテキストUi
-        /// </summary>
-        protected override List<Text> Texts => UiHolder.Instance.OptionTextList;
     }
 }
 

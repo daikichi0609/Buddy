@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using Zenject;
 
-public interface ISoundHolder : ISingleton
+public interface ISoundHolder
 {
     AudioSource AttackSound { get; }
     AudioSource MissSound { get; }

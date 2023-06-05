@@ -113,7 +113,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         //通路にいる場合
         if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
         {
-            AroundCellId around = m_DungeonHandler.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
+            AroundCellId around = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
             var cells = around.Cells;
             var lastDirection = m_CharaMove.LastMoveDirection;
             var candidateDir = new List<DIRECTION>();
@@ -177,7 +177,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         //入り口についた場合、部屋を出る
         if (m_CharaMove.Position == DestinationCell.Position)
         {
-            var aroundGridID = m_DungeonHandler.GetAroundCellId((int)m_CharaMove.Position.x, (int)m_CharaMove.Position.z);
+            var aroundGridID = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
             var cells = aroundGridID.Cells;
 
             // 通路への方向

@@ -7,7 +7,7 @@ using UniRx.Triggers;
 using System;
 using System.Threading.Tasks;
 
-public interface IPlayerLoopManager : ISingleton
+public interface IPlayerLoopManager
 {
     IObservable<Unit> GetInitEvent { get; }
     IObservable<Unit> GetUpdateEvent { get; }

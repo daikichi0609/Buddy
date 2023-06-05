@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Zenject;
 
-public interface IUnitFinder : ISingleton
+public interface IUnitFinder
 {
     /// <summary>
     /// 特定座標のユニット取得

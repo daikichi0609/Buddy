@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 
-public interface ICameraHandler : ISingleton
+public interface ICameraHandler
 {
     IDisposable SetParent(GameObject parent);
 }

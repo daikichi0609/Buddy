@@ -15,4 +15,4 @@ MonoBehaviour:
   m_DungeonSetupHolders:
   - {fileID: 11400000, guid: e209a91df6ba2475481d56520366a35c, type: 2}
   m_CurrentDungeonTheme: 0
-  m_CurrentProgress: 0
+  m_CurrentProgress: 3

@@ -7,7 +7,7 @@ using System.Linq;
 using NaughtyAttributes;
 using Zenject;
 
-public interface IUnitHolder : ISingleton
+public interface IUnitHolder
 {
     /// <summary>
     /// プレイヤー

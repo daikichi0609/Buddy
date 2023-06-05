@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Zenject;
 
-public interface IItemManager : ISingleton
+public interface IItemManager
 {
     /// <summary>
     /// 全てのアイテム

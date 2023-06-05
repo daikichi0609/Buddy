@@ -37,6 +37,18 @@ public interface IUiBase
 public abstract class UiBase : IUiBase
 {
     /// <summary>
+    /// 操作するUi
+    /// </summary>
+    [SerializeField]
+    protected GameObject m_Ui;
+
+    /// <summary>
+    /// 操作するテキストUi
+    /// </summary>
+    [SerializeField]
+    protected List<Text> m_Texts;
+
+    /// <summary>
     /// Ui表示中かどうか
     /// </summary>
     private ReactiveProperty<bool> m_IsActive = new ReactiveProperty<bool>(false);
@@ -66,16 +78,6 @@ public abstract class UiBase : IUiBase
     void IUiBase.InvokeOptionMethod() => OptionMethods[m_OptionId.Value]?.Invoke();
 
     /// <summary>
-    /// 操作するUi
-    /// </summary>
-    protected virtual GameObject Ui { get; }
-
-    /// <summary>
-    /// 操作するテキストUi
-    /// </summary>
-    protected virtual List<Text> Texts { get; }
-
-    /// <summary>
     /// 初期化処理。手動で呼ぶ。
     /// </summary>
     protected void Initialize(CompositeDisposable disposable, OptionElement element)
@@ -90,8 +92,8 @@ public abstract class UiBase : IUiBase
         OptionMethods = element.OptionMethods;
 
         // 選択肢テキスト初期化
-        for (int i = 0; i < Texts.Count; i++)
-            Texts[i].text = element.OptionTexts[i];
+        for (int i = 0; i < m_Texts.Count; i++)
+            m_Texts[i].text = element.OptionTexts[i];
 
         // 有効中の選択肢初期化
         m_OptionId.Value = 0;
@@ -102,20 +104,20 @@ public abstract class UiBase : IUiBase
     /// <summary>
     /// Ui表示・非表示操作
     /// </summary>
-    private void OnChangeUiActive(bool isActive) => Ui.SetActive(isActive);
+    private void OnChangeUiActive(bool isActive) => m_Ui.SetActive(isActive);
 
     /// <summary>
     /// テキスト更新操作
     /// </summary>
     private void OnChangeActiveOption(ref int optionId)
     {
-        optionId = Mathf.Clamp(optionId, 0, Texts.Count - 1);
+        optionId = Mathf.Clamp(optionId, 0, m_Texts.Count - 1);
 
         //選択肢の文字色更新
-        for (int i = 0; i <= Texts.Count - 1; i++)
-            Texts[i].color = Color.white;
+        for (int i = 0; i <= m_Texts.Count - 1; i++)
+            m_Texts[i].color = Color.white;
 
         //選択中の文字色更新
-        Texts[optionId].color = Color.yellow;
+        m_Texts[optionId].color = Color.yellow;
     }
 }

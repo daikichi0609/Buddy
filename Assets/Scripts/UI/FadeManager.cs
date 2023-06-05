@@ -6,7 +6,7 @@ using DG.Tweening;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
-public interface IFadeManager : ISingleton
+public interface IFadeManager
 {
     /// <summary>
     /// 暗転中にイベント
