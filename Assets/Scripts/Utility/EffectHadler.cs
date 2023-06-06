@@ -6,7 +6,7 @@ using UnityEngine;
 
 public interface IEffectHandler : IDisposable
 {
-    Task Play(Vector3 pos, float time = 1f);
+    Task Play(Vector3 pos, float time = 0.5f);
 }
 
 public class EffectHandler : IEffectHandler

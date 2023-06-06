@@ -12,42 +12,6 @@ public static class Utility
     }
 }
 
-public static class Calculator
-{
-    public static int CalculatePower(int atk, float mag)
-    {
-        return (int)(atk * mag);
-    }
-
-    public static int CalculateDamage(int power, int def)
-    {
-        int damage = power - def;
-
-        if (damage < 1)
-            damage = 1;
-
-        return damage;
-    }
-
-    public static int CalculateRemainingHp(int hp, int damage)
-    {
-        hp -= damage;
-
-        if (hp < 0)
-            hp = 0;
-
-        return hp;
-    }
-
-    public static bool JudgeHit(float dex)
-    {
-        if (UnityEngine.Random.Range(0, 1f) >= dex)
-            return false;
-
-        return true;
-    }
-}
-
 public static class Coroutine
 {
     public static IEnumerator DelayCoroutine(float seconds, System.Action action)

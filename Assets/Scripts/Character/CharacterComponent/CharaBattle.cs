@@ -34,7 +34,7 @@ public interface ICharaBattle : IActorInterface
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    Task<int> DamagePercentage(float ratio);
+    Task<AttackResult> DamagePercentage(AttackPercentageInfo attackInfo);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -179,7 +179,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return false;
 
         m_CharaMove.Face(direction); // 向く
-        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, 0.95f, false, direction); // 攻撃情報　
+        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, 0.95f, 0.05f, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
@@ -226,24 +226,9 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <param name="dex"></param>
     AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
     {
-        var isHit = Calculator.JudgeHit(attackInfo.Dex);
-        int damage = 0;
-        bool isDead = false;
+        var result = BattleSystem.Damage(attackInfo, Owner);
 
-        // ダメージ処理
-        if (isHit == true)
-        {
-            if (attackInfo.IgnoreDefence == false)
-                damage = Calculator.CalculateDamage(attackInfo.Atk, Status.Def);
-            else
-                damage = attackInfo.Atk; // 防御無視
-            Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
-            isDead = Status.Hp == 0;
-        }
-
-        var result = new AttackResult(attackInfo, Owner, isHit, damage, Status.Hp, isDead);
-
-        if (isHit == false)
+        if (result.IsHit == false)
             return result;
 
         m_CharaMove.Face(attackInfo.Direction.ToOppositeDir());
@@ -274,22 +259,24 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    async Task<int> ICharaBattle.DamagePercentage(float ratio)
+    async Task<AttackResult> ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
     {
-        // ダメージ処理
-        int damage = (int)(Status.Hp * ratio);
-        Status.Hp = Calculator.CalculateRemainingHp(Status.Hp, damage);
+        var result = BattleSystem.DamagePercentage(attackInfo, Owner);
 
-        m_OnDamageStart.OnNext(default);
+        if (result.IsHit == false)
+            return result;
+
+        m_CharaMove.Face(attackInfo.Direction.ToOppositeDir());
+        m_OnDamageStart.OnNext(result);
 
         // ログ出力
-        var log = CharaLog.CreateAttackResultLog(new AttackResult(default, Owner, true, damage, Status.Hp, false));
+        var log = CharaLog.CreateAttackResultLog(result);
         m_BattleLogManager.Log(log);
 
         // awaitする
-        await PostDamage(default);
+        await PostDamage(result);
 
-        return Status.Hp;
+        return result;
     }
 
     /// <summary>

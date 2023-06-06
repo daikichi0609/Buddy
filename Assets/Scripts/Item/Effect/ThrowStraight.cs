@@ -53,7 +53,7 @@ public class ThrowStraight : ItemEffectBase
         if (hit != null)
         {
             var battle = hit.GetInterface<ICharaBattle>();
-            var result = battle.Damage(new AttackInfo(ctx.Owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, true, dir));
+            var result = battle.Damage(new AttackInfo(ctx.Owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, 0f, true, dir));
             var log = CharaLog.CreateAttackResultLog(result);
             ctx.BattleLogManager.Log(log);
         }

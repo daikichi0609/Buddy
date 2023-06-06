@@ -14,7 +14,8 @@ public class BombTrap : TrapEffectBase
         await ctx.EffectHandler.Play(ctx.EffectPos);
 
         // 範囲内の敵に割合ダメージ
-        await ctx.Owner.GetInterface<ICharaBattle>().DamagePercentage(m_DamageRatio);
+        AttackPercentageInfo info = new AttackPercentageInfo(default, default, m_DamageRatio, 100f, DIRECTION.NONE);
+        await ctx.Owner.GetInterface<ICharaBattle>().DamagePercentage(info);
 
         var aroundCell = ctx.Cell.GetAroundCell(ctx.DungeonHandler);
         foreach (var cell in aroundCell.Cells.Values)
@@ -24,7 +25,7 @@ public class BombTrap : TrapEffectBase
                 continue;
 
             var battle = unit.GetInterface<ICharaBattle>();
-            await battle.DamagePercentage(m_DamageRatio);
+            await battle.DamagePercentage(info);
         }
     }
 }
