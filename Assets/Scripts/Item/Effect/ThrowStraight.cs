@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 //[CreateAssetMenu(menuName = "MyScriptable/Item/Effect/空腹値回復")]
@@ -11,7 +12,7 @@ public class ThrowStraight : ItemEffectBase
     [SerializeField, Header("飛距離")]
     private int m_Distance;
 
-    protected override void EffectInternal(ItemEffectContext ctx)
+    protected override async Task EffectInternal(ItemEffectContext ctx)
     {
         // Log
         var status = ctx.Owner.GetInterface<ICharaStatus>();
@@ -26,7 +27,8 @@ public class ThrowStraight : ItemEffectBase
         // ターゲットタイプ
         var targetType = ctx.Owner.GetInterface<ICharaTypeHolder>().TargetType;
         // ヒットしたキャラ
-        ICollector hit = null;
+        ICollector target = null;
+        bool isHit = false;
         // 飛距離
         int distance;
 
@@ -36,8 +38,11 @@ public class ThrowStraight : ItemEffectBase
             var targetPos = currentPos + dirV3 * distance;
 
             // 攻撃対象ユニットが存在するか調べる
-            if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(targetPos, out hit, targetType) == true)
+            if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(targetPos, out target, targetType) == true)
+            {
+                isHit = true;
                 break;
+            }
 
             // 地形チェック
             var terrain = ctx.DungeonHandler.GetCellId(targetPos);
@@ -49,18 +54,15 @@ public class ThrowStraight : ItemEffectBase
             }
         }
 
+        await ctx.ItemManager.FlyItem(ctx.ItemSetup, currentPos, dirV3 * distance, !isHit);
+
         // ヒット対象がいるならダメージを与える
-        if (hit != null)
+        if (isHit == true)
         {
-            var battle = hit.GetInterface<ICharaBattle>();
+            var battle = target.GetInterface<ICharaBattle>();
             var result = battle.Damage(new AttackInfo(ctx.Owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, 0f, true, dir));
             var log = CharaLog.CreateAttackResultLog(result);
             ctx.BattleLogManager.Log(log);
-        }
-        // ヒットしていないならアイテムを落とす
-        else
-        {
-
         }
     }
 }

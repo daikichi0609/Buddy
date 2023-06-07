@@ -27,13 +27,13 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     [Inject]
     private IMenuUiManager m_MenuUiManager;
     [Inject]
+    private IItemManager m_ItemManager;
+    [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
     private IUnitFinder m_UnitFinder;
-    [Inject]
-    private IBagUiManager m_BagUiManager;
 
     [SerializeField]
     private BagUiManager.BagUi m_UiInterface = new BagUi();
@@ -57,7 +57,12 @@ public class BagUiManager : UiManagerBase, IBagUiManager
             var item = items[index];
             var name = item.Setup.ItemName;
             var effect = item.Setup.Effect;
-            effects[index] = () => effect.Effect(player, item, m_DungeonHandler, m_UnitFinder, m_BagUiManager, m_BattleLogManager);
+            effects[index] = async () =>
+            {
+                var disposable = m_TurnManager.RequestProhibitAction(null);
+                Deactivate(false);
+                await effect.Effect(player, item, m_ItemManager, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, disposable);
+            };
             names[index] = name.ToString();
         }
         while (index < itemTextCount)

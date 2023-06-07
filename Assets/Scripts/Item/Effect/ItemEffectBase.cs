@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public interface IItemEffect
 {
-    void Effect(ICollector owner, IItemHandler item, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBagUiManager bagUiManager, IBattleLogManager battleLogManager);
+    Task Effect(ICollector owner, IItemHandler item, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable);
 }
 
 public readonly struct ItemEffectContext
@@ -18,6 +20,11 @@ public readonly struct ItemEffectContext
     /// アイテム
     /// </summary>
     public ItemSetup ItemSetup { get; }
+
+    /// <summary>
+    /// アイテムManager
+    /// </summary>
+    public IItemManager ItemManager { get; }
 
     /// <summary>
     /// ダンジョン
@@ -34,10 +41,11 @@ public readonly struct ItemEffectContext
     /// </summary>
     public IBattleLogManager BattleLogManager { get; }
 
-    public ItemEffectContext(ICollector owner, ItemSetup item, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
+    public ItemEffectContext(ICollector owner, ItemSetup item, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
     {
         Owner = owner;
         ItemSetup = item;
+        ItemManager = itemManager;
         DungeonHandler = dungeonHandler;
         UnitFinder = unitFinder;
         BattleLogManager = battleLogManager;
@@ -50,30 +58,27 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// アイテム効果
     /// </summary>
     /// <param name="owner"></param>
-    public void Effect(ICollector owner, IItemHandler item, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBagUiManager bagUiManager, IBattleLogManager battleLogManager)
+    public async Task Effect(ICollector owner, IItemHandler item, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable)
     {
-        EffectInternal(new ItemEffectContext(owner, item.Setup, dungeonHandler, unitFinder, battleLogManager));
-        PostEffect(owner, item, bagUiManager);
+        await EffectInternal(new ItemEffectContext(owner, item.Setup, itemManager, dungeonHandler, unitFinder, battleLogManager));
+        PostEffect(owner, item, disposable);
     }
 
     /// <summary>
     /// アイテム固有効果
     /// </summary>
     /// <param name="owner"></param>
-    protected virtual void EffectInternal(ItemEffectContext ctx)
+    protected virtual Task EffectInternal(ItemEffectContext ctx)
     {
-
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// アイテム共通処理
     /// </summary>
     /// <param name="owner"></param>
-    private void PostEffect(ICollector owner, IItemHandler item, IBagUiManager bagUiManager)
+    private void PostEffect(ICollector owner, IItemHandler item, IDisposable disposable)
     {
-        // Ui非有効化
-        bagUiManager.Deactive(false);
-
         // アイテム消費
         if (owner.RequireInterface<ICharaInventory>(out var inventory) == true)
             inventory.Consume(item);
@@ -85,5 +90,8 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         // ターン消費
         if (owner.RequireInterface<ICharaTurn>(out var turn) == true)
             turn.TurnEnd();
+
+        // Ui非有効化
+        disposable.Dispose();
     }
 }

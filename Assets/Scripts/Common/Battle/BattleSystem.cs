@@ -8,14 +8,26 @@ public static class BattleSystem
     {
         var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
 
-        var random = UnityEngine.Random.Range(0, 1f);
+        // ヒット判定
+        float random = UnityEngine.Random.Range(0, 1f);
         bool isHit = info.Dex >= random;
+
+        // ダメージ
         int damage = info.IgnoreDefence ? info.Atk : info.Atk - defenderStatus.Def;
+
+        // 急所判定
+        random = UnityEngine.Random.Range(0, 1f);
+        bool isCritical = info.CriticalRatio >= random;
+
+        // 急所でダメージ倍増
+        if (isCritical == true)
+            damage *= 2;
+
         int hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
         bool isDead = hp == 0;
 
         defenderStatus.Hp = hp;
-        return new AttackResult(defender, isHit, damage, hp, isDead);
+        return new AttackResult(defender, isHit, damage, isCritical, hp, isDead);
     }
 
     public static AttackResult DamagePercentage(AttackPercentageInfo info, ICollector defender)
@@ -29,6 +41,6 @@ public static class BattleSystem
         bool isDead = hp == 0;
 
         defenderStatus.Hp = hp;
-        return new AttackResult(defender, isHit, damage, hp, isDead);
+        return new AttackResult(defender, isHit, damage, false, hp, isDead);
     }
 }

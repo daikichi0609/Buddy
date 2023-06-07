@@ -5,6 +5,8 @@ using UniRx;
 using System;
 using System.Linq;
 using Zenject;
+using System.Threading.Tasks;
+using DG.Tweening;
 
 public interface IItemManager
 {
@@ -31,10 +33,20 @@ public interface IItemManager
     /// <param name="pos"></param>
     /// <returns></returns>
     bool IsItemOn(Vector3Int pos);
+
+    /// <summary>
+    /// アイテムを飛ばす
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    Task FlyItem(ItemSetup setup, Vector3 from, Vector3 to, bool isDrop);
 }
 
 public class ItemManager : IItemManager
 {
+    [Inject]
+    private IObjectPoolController m_ObjectPoolContoroller;
+
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
@@ -63,5 +75,31 @@ public class ItemManager : IItemManager
                 return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// アイテムを飛ばす
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    async Task IItemManager.FlyItem(ItemSetup setup, Vector3 from, Vector3 dir, bool isDrop)
+    {
+        var content = m_ObjectPoolContoroller.GetObject(setup);
+        content.transform.position = from + new Vector3(0f, ItemHandler.OFFSET_Y, 0f);
+        await content.transform.DOLocalMove(dir, 0.5f).SetRelative(true).SetEase(Ease.Linear).AsyncWaitForCompletion();
+        var destPos = from + dir;
+
+        if (isDrop == true)
+        {
+            IItemHandler item = content.GetComponent<ItemHandler>();
+            item.Initialize(setup as ItemSetup, content, destPos.ToV3Int());
+
+            // 追加
+            m_ItemList.Add(item);
+        }
+        else
+        {
+            m_ObjectPoolContoroller.SetObject(setup, content);
+        }
     }
 }

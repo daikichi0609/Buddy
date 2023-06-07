@@ -7,7 +7,14 @@ using Zenject;
 
 public interface IItemHandler : IDisposable
 {
+    /// <summary>
+    /// セットアップ
+    /// </summary>
     ItemSetup Setup { get; }
+
+    /// <summary>
+    /// オブジェクト
+    /// </summary>
     GameObject ItemObject { get; }
 
     /// <summary>
@@ -71,12 +78,18 @@ public class ItemHandler : MonoBehaviour, IItemHandler
         m_ItemObject.transform.position = pos + new Vector3(0f, OFFSET_Y, 0f);
     }
 
+    /// <summary>
+    /// インベントリに入る
+    /// </summary>
     void IItemHandler.OnPut()
     {
         m_ItemManager.RemoveItem(this);
         m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
     }
 
+    /// <summary>
+    /// オブジェクトプールに入る
+    /// </summary>
     void IDisposable.Dispose()
     {
         m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);

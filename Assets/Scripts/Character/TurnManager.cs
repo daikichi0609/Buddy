@@ -6,7 +6,6 @@ using System;
 using Unity.Collections;
 using NaughtyAttributes;
 using System.Threading.Tasks;
-using static UnityEngine.UI.CanvasScaler;
 using Zenject;
 
 public interface ITurnManager

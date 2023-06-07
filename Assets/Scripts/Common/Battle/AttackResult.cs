@@ -25,6 +25,11 @@ public readonly struct AttackResult
     public int Damage { get; }
 
     /// <summary>
+    /// 急所ヒットか
+    /// </summary>
+    public bool IsCritical { get; }
+
+    /// <summary>
     /// 相手の残りHp
     /// </summary>
     public int RemainingHp { get; }
@@ -34,12 +39,13 @@ public readonly struct AttackResult
     /// </summary>
     public bool IsDead { get; }
 
-    public AttackResult(ICollector defender, bool isHit, int damage, int remainingHp, bool isDead)
+    public AttackResult(ICollector defender, bool isHit, int damage, bool isCritical, int remainingHp, bool isDead)
     {
         Defender = defender;
         Name = Defender.GetInterface<ICharaStatus>().CurrentStatus.OriginParam.GivenName;
         IsHit = isHit;
         Damage = damage;
+        IsCritical = isCritical;
         RemainingHp = remainingHp;
         IsDead = isDead;
     }

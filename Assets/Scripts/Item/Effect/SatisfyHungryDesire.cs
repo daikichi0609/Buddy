@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 //[CreateAssetMenu(menuName = "MyScriptable/Item/Effect/空腹値回復")]
@@ -8,7 +9,7 @@ public class SatisfyHungryDesire : ItemEffectBase
     [SerializeField, Header("空腹回復値")]
     private int m_Recover;
 
-    protected override void EffectInternal(ItemEffectContext ctx)
+    protected override Task EffectInternal(ItemEffectContext ctx)
     {
         // Log
         if (ctx.Owner.RequireInterface<ICharaStatus>(out var status) == true)
@@ -16,5 +17,7 @@ public class SatisfyHungryDesire : ItemEffectBase
 
         if (ctx.Owner.RequireInterface<ICharaStarvation>(out var starvation) == true)
             starvation.RecoverHungry(m_Recover);
+
+        return Task.CompletedTask;
     }
 }

@@ -91,8 +91,8 @@ public class TrapEffectBase : ScriptableObject, ITrap
         return true;
     }
 
-    async protected virtual Task EffectInternal(TrapEffectContext ctx)
+    protected virtual Task EffectInternal(TrapEffectContext ctx)
     {
-
+        return Task.CompletedTask;
     }
 }

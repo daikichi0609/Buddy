@@ -53,7 +53,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// <summary>
     /// エフェクト
     /// </summary>
-    private IEffectHandler m_Effect;
+    private IEffectHandler m_Effect = new EffectHandler();
 
     /// <summary>
     /// 罠機能
@@ -101,14 +101,12 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         var pos = Owner.GetInterface<ICellInfoHandler>().Position;
         var v3 = pos + new Vector3(0f, OFFSET_Y, 0f);
 
-        if (m_GameObject == null)
-        {
-            m_GameObject = m_ObjectPoolController.GetObject(m_Setup);
-            m_GameObject.SetActive(false);
-            var effect = Instantiate(m_Setup.EffectObject);
-            m_Effect = new EffectHandler(effect);
-        }
+        m_GameObject = m_ObjectPoolController.GetObject(m_Setup);
         m_GameObject.transform.position = v3;
+        m_GameObject.SetActive(false);
+
+        var effect = Instantiate(m_Setup.EffectObject);
+        m_Effect.SetEffect(effect);
     }
 
     protected override void Register(ICollector owner)
@@ -119,11 +117,8 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
     protected override void Dispose()
     {
-        if (m_GameObject != null)
-        {
-            m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
-            m_Effect.Dispose();
-        }
+        m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
+        m_Effect.Dispose();
 
         base.Dispose();
     }
