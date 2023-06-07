@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "MyScriptable/OutGame/Characters")]
-public class OutGameInfoHolder : ScriptableObject
+[CreateAssetMenu(menuName = "MyScriptable/Dungeon/CurrentCharacter")]
+public class CurrentCharacterHolder : ScriptableObject
 {
     /// <summary>
     /// リーダーセットアップ

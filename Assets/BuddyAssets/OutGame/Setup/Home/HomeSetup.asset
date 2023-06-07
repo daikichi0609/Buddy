@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6a4e9720631c44e7a8f9b6e3be6711f, type: 3}
+  m_Name: HomeSetup
+  m_EditorClassIdentifier: 
+  m_Progress: 0
+  m_Stage: {fileID: 4131946162474604888, guid: f49dc1a65c42b4fd6b845a6d642fcae9, type: 3}
+  m_FriendFlow: {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5,
+    type: 3}

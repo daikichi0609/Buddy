@@ -70,6 +70,18 @@ public class TrapEffectBase : ScriptableObject, ITrap
 {
     private static readonly float UNEXPLODE_RATE = 0.1f;
 
+    /// <summary>
+    /// 罠効果
+    /// </summary>
+    /// <param name="trap"></param>
+    /// <param name="stepper"></param>
+    /// <param name="cell"></param>
+    /// <param name="unitFinder"></param>
+    /// <param name="dungeonHandler"></param>
+    /// <param name="battleLogManager"></param>
+    /// <param name="effectHandler"></param>
+    /// <param name="effectPos"></param>
+    /// <returns></returns>
     async Task<bool> ITrap.Effect(TrapSetup trap, ICollector stepper, ICollector cell, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IEffectHandler effectHandler, Vector3 effectPos)
     {
         // ----- ログ ----- //
@@ -91,6 +103,11 @@ public class TrapEffectBase : ScriptableObject, ITrap
         return true;
     }
 
+    /// <summary>
+    /// 罠効果中身
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
     protected virtual Task EffectInternal(TrapEffectContext ctx)
     {
         return Task.CompletedTask;

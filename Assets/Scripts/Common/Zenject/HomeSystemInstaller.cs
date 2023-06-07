@@ -16,5 +16,12 @@ public class HomeSystemInstaller : MonoInstaller
             .FromComponentOn(m_HomeSystem)
             .AsSingle()
             .NonLazy();
+
+        // 会話
+        Container.Bind<IConversationManager>()
+            .To<ConversationManager>()
+            .FromComponentOn(m_HomeSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

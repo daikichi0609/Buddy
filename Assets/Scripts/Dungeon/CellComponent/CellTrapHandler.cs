@@ -117,8 +117,11 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
     protected override void Dispose()
     {
-        m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
-        m_Effect.Dispose();
+        if (m_GameObject != null)
+        {
+            m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
+            m_Effect.Dispose();
+        }
 
         base.Dispose();
     }

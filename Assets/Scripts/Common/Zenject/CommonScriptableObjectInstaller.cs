@@ -8,6 +8,13 @@ using Zenject;
 public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonScriptableObjectInstaller>
 {
     /// <summary>
+    /// ホームセットアップ
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private HomeSetup m_HomeSetup;
+
+    /// <summary>
     /// ダンジョン進行度
     /// </summary>
     [SerializeField]
@@ -19,7 +26,7 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
     /// </summary>
     [SerializeField]
     [Expandable]
-    private OutGameInfoHolder m_OutGameInfoHolder;
+    private CurrentCharacterHolder m_CurrentCharacterHolder;
 
     /// <summary>
     /// マスターデータ
@@ -30,10 +37,9 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
 
     public override void InstallBindings()
     {
+        Container.BindInstance(m_HomeSetup).AsSingle();
         Container.BindInstance(m_ProgressHolder).AsSingle();
-
-        Container.BindInstance(m_OutGameInfoHolder).AsSingle();
-
+        Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
         Container.BindInstance(m_MasterData).AsSingle();
     }
 }

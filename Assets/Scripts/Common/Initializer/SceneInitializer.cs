@@ -5,10 +5,12 @@ using UnityEngine;
 using UniRx;
 using Zenject;
 using UnityEditor.EditorTools;
+using Fungus;
+using Task = System.Threading.Tasks.Task;
 
 public interface ISceneInitializer
 {
-    Task ReadyToOperatable();
+    Task FungusMethod();
 }
 
 public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
@@ -24,19 +26,11 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     [Inject]
     protected DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
-    protected OutGameInfoHolder m_OutGameInfoHolder;
+    protected CurrentCharacterHolder m_CurrentCharacterHolder;
     [Inject]
     protected IInstantiater m_Instantiater;
 
     protected virtual string FungusMessage { get; }
-
-    protected static readonly float OFFSET_Y = 0.5f;
-
-    protected virtual Vector3 LeaderStartPos { get; }
-    protected virtual Vector3 LeaderEndPos { get; }
-
-    protected virtual Vector3 FriendStartPos { get; }
-    protected virtual Vector3 FriendEndPos { get; }
 
     /// <summary>
     /// リーダーインスタンス
@@ -48,12 +42,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// </summary>
     protected ICollector m_Friend;
 
-    /// <summary>
-    /// 到着時会話フロー
-    /// </summary>
-    protected Fungus.Flowchart m_ArrivalFlowChart;
-
-    private void Awake()
+    protected virtual void Awake()
     {
         m_LoopManager.GetInitEvent.Subscribe(async _ => await OnStart()).AddTo(this);
     }
@@ -61,34 +50,76 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected virtual Task OnStart()
-    {
-        // ----- キャラクター生成 ----- //
-        // リーダー
-        var leader = m_OutGameInfoHolder.Leader;
-        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab);
-        l.transform.position = LeaderStartPos;
-        m_Leader = l.GetComponent<ActorComponentCollector>();
-        m_Leader.Initialize();
-
-        // バディ
-        var friend = m_OutGameInfoHolder.Friend;
-        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab);
-        f.transform.position = FriendStartPos;
-        m_Friend = f.GetComponent<ActorComponentCollector>();
-        m_Friend.Initialize();
-        // ---------- //
-
-        return Task.CompletedTask;
-    }
+    protected abstract Task OnStart();
 
     /// <summary>
     /// 移動後イベント
     /// </summary>
-    protected virtual Task OnTurnBright() { return default; }
+    protected virtual Task OnTurnBright() { return Task.CompletedTask; }
 
     /// <summary>
-    /// 操作可能にする
+    /// Fungusから呼ぶメソッド
     /// </summary>
-    public virtual Task ReadyToOperatable() { return default; }
+    public virtual Task FungusMethod() { return Task.CompletedTask; }
+
+    /// <summary>
+    /// アウトゲームキャラ生成
+    /// </summary>
+    /// <param name="leaderPos"></param>
+    /// <param name="friendPos"></param>
+    protected void CreateOutGameCharacter(Vector3 leaderPos, Vector3 friendPos)
+    {
+        // ----- キャラクター生成 ----- //
+        // リーダー
+        var leader = m_CurrentCharacterHolder.Leader;
+        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab);
+        l.transform.position = leaderPos;
+        m_Leader = l.GetComponent<ActorComponentCollector>();
+        m_Leader.Initialize();
+
+        // バディ
+        var friend = m_CurrentCharacterHolder.Friend;
+        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab);
+        f.transform.position = friendPos;
+        m_Friend = f.GetComponent<ActorComponentCollector>();
+        m_Friend.Initialize();
+        // ---------- //
+    }
+
+    /// <summary>
+    /// 操作許可
+    /// </summary>
+    /// <param name="chara"></param>
+    /// <param name="wrapPos"></param>
+    /// <param name="cameraHandler"></param>
+    protected static void AllowOperation(ICollector chara, Vector3 wrapPos, ICameraHandler cameraHandler)
+    {
+        var controller = chara.GetInterface<ICharaController>();
+        controller.Wrap(wrapPos);
+        IOutGamePlayerInput leader = chara.GetInterface<IOutGamePlayerInput>();
+        leader.CanOperate = true; // 操作可能
+
+        // カメラを追従させる
+        cameraHandler.SetParent(controller.MoveObject);
+    }
+
+    /// <summary>
+    /// 会話フローを持たせる
+    /// </summary>
+    /// <param name="chara"></param>
+    /// <param name="flowchart"></param>
+    /// <param name="pos"></param>
+    /// <param name="conversationManager"></param>
+    protected static void SetTalkFlow(ICollector chara, Flowchart flowchart, Vector3 pos, IConversationManager conversationManager)
+    {
+        // キャラを定位置に固定
+        var friendConroller = chara.GetInterface<ICharaController>();
+        friendConroller.Wrap(pos);
+        friendConroller.Rigidbody.constraints = RigidbodyConstraints.FreezeAll; // 位置固定
+
+        // 会話フローを持たせる
+        var friendTalk = chara.GetInterface<ICharaTalk>();
+        friendTalk.FlowChart = flowchart;
+        conversationManager.Register(friendTalk);
+    }
 }

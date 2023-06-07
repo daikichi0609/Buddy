@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: "\u30EB\u30FC\u30B0"
-  nameColor: {r: 1, g: 1, b: 1, a: 1}
+  nameColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
   soundEffect: {fileID: 0}
   portraits: []
   portraitsFace: 1

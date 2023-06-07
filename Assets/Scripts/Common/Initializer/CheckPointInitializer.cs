@@ -12,31 +12,46 @@ public class CheckPointInitializer : SceneInitializer
 
     protected override string FungusMessage => "CheckPoint";
 
-    protected override Vector3 LeaderStartPos => new Vector3(-1f, OFFSET_Y, -5f);
-    protected override Vector3 LeaderEndPos => new Vector3(-1f, OFFSET_Y, -1.5f);
+    private Vector3 LeaderStartPos { get; set; }
+    private Vector3 FriendStartPos { get; set; }
+    private Vector3 LeaderEndPos { get; set; }
+    private Vector3 FriendEndPos { get; set; }
 
-    protected override Vector3 FriendStartPos => new Vector3(1f, OFFSET_Y, -5f);
-    protected override Vector3 FriendEndPos => new Vector3(1f, OFFSET_Y, 0f);
-
-    private static readonly Vector3 FRIEND_POS = new Vector3(1f, OFFSET_Y, 7.5f);
+    private Vector3 LeaderPos { get; set; }
+    private Vector3 FriendPos { get; set; }
 
     /// <summary>
     /// Fungusフロー
     /// </summary>
+    private Fungus.Flowchart m_ArrivalFlowChart;
     private Fungus.Flowchart m_DeparturedFlowChart;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        MessageBroker.Default.Receive<CheckPointInitializerInfo>().Subscribe(info =>
+        {
+            LeaderStartPos = info.LeaderStartPos;
+            FriendStartPos = info.FriendStartPos;
+            LeaderEndPos = info.LeaderEndPos;
+            FriendEndPos = info.FriendEndPos;
+
+            LeaderPos = info.LeaderPos;
+            FriendPos = info.FriendPos;
+        }).AddTo(this);
+    }
 
     /// <summary>
     /// スタート処理
     /// </summary>
     protected override async Task OnStart()
     {
-        await base.OnStart();
+        CreateOutGameCharacter(LeaderStartPos, FriendStartPos);
 
         var currentDungeon = m_DungeonProgressHolder.CurrentDungeonSetup;
         var checkPoint = currentDungeon.CheckPointSetup;
-
-        // ステージ生成
-        Instantiate(checkPoint.Stage);
+        m_Instantiater.InstantiatePrefab(checkPoint.Stage); // ステージ生成
 
         // 会話フロー生成
         m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.ArrivalFlow).GetComponent<Fungus.Flowchart>();
@@ -72,26 +87,12 @@ public class CheckPointInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override Task ReadyToOperatable()
+    public override async Task FungusMethod()
     {
-        // リーダー
-        var leaderController = m_Leader.GetInterface<ICharaController>();
-        leaderController.Wrap(new Vector3(0f, OFFSET_Y, 0f));
-        IOutGamePlayerInput leader = m_Leader.GetInterface<IOutGamePlayerInput>();
-        leader.CanOperate = true; // 操作可能
-
-        // バディ
-        var friendConroller = m_Friend.GetInterface<ICharaController>();
-        friendConroller.Wrap(FRIEND_POS);
-        friendConroller.Rigidbody.constraints = RigidbodyConstraints.FreezeAll; // 位置固定
-
-        // バディに会話フローを持たせる
-        var friendTalk = m_Friend.GetInterface<ICharaTalk>();
-        friendTalk.FlowChart = m_DeparturedFlowChart;
-        m_ConversationManager.Register(friendTalk);
-
-        // カメラをリーダーに追従させる
-        m_CameraHandler.SetParent(leaderController.MoveObject);
-        return default;
+        await m_FadeManager.StartFade(() =>
+        {
+            AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
+            SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
+        }, string.Empty, string.Empty);
     }
 }

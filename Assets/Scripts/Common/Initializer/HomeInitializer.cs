@@ -3,39 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
+using Zenject;
+using Fungus;
+using Task = System.Threading.Tasks.Task;
 
 public class HomeInitializer : SceneInitializer
 {
+    [Inject]
+    private HomeSetup m_HomeSetup;
+    [Inject]
+    private IConversationManager m_ConversationManager;
+
     protected override string FungusMessage => "Home";
 
-    protected override Vector3 LeaderStartPos => new Vector3(-1f, OFFSET_Y, -5f);
-    protected override Vector3 LeaderEndPos => new Vector3(-1f, OFFSET_Y, -1.5f);
+    private Vector3 LeaderPos { get; set; }
+    private Vector3 FriendPos { get; set; }
 
-    protected override Vector3 FriendStartPos => new Vector3(1f, OFFSET_Y, -5f);
-    protected override Vector3 FriendEndPos => new Vector3(1f, OFFSET_Y, 0f);
+    private Fungus.Flowchart m_DeparturedFlowChart;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        MessageBroker.Default.Receive<HomeInitializerInfo>().Subscribe(info =>
+        {
+            LeaderPos = info.LeaderPos;
+            FriendPos = info.FriendPos;
+        }).AddTo(this);
+    }
 
     /// <summary>
     /// スタート処理
     /// </summary>
     protected override async Task OnStart()
     {
+        CreateOutGameCharacter(LeaderPos, FriendPos);
+
+        // ステージ生成
+        Instantiate(m_HomeSetup.Stage);
+
+        m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.FriendFlow).GetComponent<Fungus.Flowchart>();
+
+        AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
+        SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
+
         // 仮
         await m_FadeManager.TurnBright(async () => await OnTurnBright(), "", "");
-    }
-
-    /// <summary>
-    /// 会話開始前
-    /// </summary>
-    async protected override Task OnTurnBright()
-    {
-        await m_FadeManager.LoadScene(SceneName.SCENE_DUNGEON);
-    }
-
-    /// <summary>
-    /// 操作可能にする
-    /// </summary>
-    public override Task ReadyToOperatable()
-    {
-        return default;
     }
 }

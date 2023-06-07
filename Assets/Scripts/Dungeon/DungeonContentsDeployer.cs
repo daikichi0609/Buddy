@@ -60,7 +60,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     [Inject]
     protected DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
-    protected OutGameInfoHolder m_OutGameInfoHolder;
+    protected CurrentCharacterHolder m_OutGameInfoHolder;
 
     /// <summary>
     /// デプロイイベント

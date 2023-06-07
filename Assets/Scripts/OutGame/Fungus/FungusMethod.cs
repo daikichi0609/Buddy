@@ -13,14 +13,9 @@ public class FungusMethod : MonoBehaviour
     private IConversationManager m_ConversationManager;
 
     /// <summary>
-    /// チェックポイント到達会話フロー終了時
+    /// InitializerのFungus用メソッド呼び出し
     /// </summary>
-    public void OnFinishCheckPointFlow() => m_FadeManager.StartFade(() => m_SceneInitializer.ReadyToOperatable(), string.Empty, string.Empty);
-
-    /// <summary>
-    /// チェックポイント到達会話フロー終了時
-    /// </summary>
-    public void OnFinishBossBattleFlow() => m_FadeManager.StartFadeWhite(() => m_SceneInitializer.ReadyToOperatable());
+    public async void CallInitializerFungusMethod() => await m_SceneInitializer.FungusMethod();
 
     /// <summary>
     /// ダンジョンシーンをロード

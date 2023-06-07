@@ -18,85 +18,53 @@ public class BossBattleInitializer : SceneInitializer
     private IUnitHolder m_UnitHolder;
 
     protected override string FungusMessage => "BossBattleStart";
+    private static readonly float OFFSET_Y = 0.5f;
 
-    protected override Vector3 LeaderStartPos => new Vector3(10f, OFFSET_Y, 5f);
-    protected override Vector3 LeaderEndPos => new Vector3(10f, OFFSET_Y, 10f);
+    private Vector3 LeaderStartPos { get; set; }
+    private Vector3 FriendStartPos { get; set; }
+    private Vector3 LeaderEndPos { get; set; }
+    private Vector3 FriendEndPos { get; set; }
 
-    protected override Vector3 FriendStartPos => new Vector3(12f, OFFSET_Y, 5f);
-    protected override Vector3 FriendEndPos => new Vector3(12f, OFFSET_Y, 10f);
+    private Vector3 BossPos { get; set; }
 
-    private static readonly Vector3 BOSS_POS = new Vector3(11f, OFFSET_Y, 13f);
+    /// <summary>
+    /// Fungusフロー
+    /// </summary>
+    private Fungus.Flowchart m_ArrivalFlowChart;
+    private Fungus.Flowchart m_DefeatedFlowChart;
 
     /// <summary>
     /// ボスインスタンス
     /// </summary>
     private ICollector m_Boss;
 
-    /// <summary>
-    /// Fungusフロー
-    /// </summary>
-    private Fungus.Flowchart m_DefeatedFlowChart;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        LeaderStartPos = new Vector3(10f, OFFSET_Y, 5f);
+        FriendStartPos = new Vector3(12f, OFFSET_Y, 5f);
+        LeaderEndPos = new Vector3(10f, OFFSET_Y, 10f);
+        FriendEndPos = new Vector3(11f, OFFSET_Y, 13f);
+        BossPos = new Vector3(11f, OFFSET_Y, 13f);
+
+        /*
+        MessageBroker.Default.Receive<BossBattleInitializerInfo>().Subscribe(info =>
+        {
+
+        }).AddTo(this);
+        */
+    }
 
     /// <summary>
     /// スタート処理
     /// </summary>
     protected override async Task OnStart()
     {
-        await base.OnStart();
+        CreateOutGameCharacter(LeaderStartPos, FriendStartPos);
 
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
-
-        // 会話フロー生成
-        m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(bossBattleSetup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
-        m_DefeatedFlowChart = m_Instantiater.InstantiatePrefab(bossBattleSetup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
-
-        // ボス
-        var boss = bossBattleSetup.BossCharacterSetup;
-        var b = m_Instantiater.InstantiatePrefab(boss.OutGamePrefab);
-        b.transform.position = BOSS_POS;
-        m_Boss = b.GetComponent<ActorComponentCollector>();
-        var controller = m_Boss.GetInterface<ICharaController>();
-        controller.Face(DIRECTION.UNDER);
-
-        // ダンジョン
-        var cellMap = new TERRAIN_ID[21, 21];
-        Range range = new Range(6, 6, 16, 16);
-
-        for (int x = range.Start.X; x <= range.End.X; x++)
-            for (int y = range.Start.Y; y <= range.End.Y; y++)
-                cellMap[x, y] = TERRAIN_ID.ROOM;
-
-        /*
-        // https://blog.xin9le.net/entry/2013/12/14/033519
-        // 0は暗黙変換できる！
-        CELL_ID[,] map = new CELL_ID[21, 21] {
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        };
-        */
-
-        var elementSetup = bossBattleSetup.ElementSetup;
-
-        await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
+        await BossSetup(bossBattleSetup, BossPos); // 必要なもの準備
 
         // 明転
         await m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
@@ -124,13 +92,78 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override async Task ReadyToOperatable()
+    public override async Task FungusMethod() => await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle());
+
+    /// <summary>
+    /// ボスキャラ生成
+    /// 会話フロー生成
+    /// マップ生成
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    private async Task BossSetup(BossBattleSetup setup, Vector3 pos)
     {
-        await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle());
+        // ボス
+        var boss = setup.BossCharacterSetup;
+        var b = m_Instantiater.InstantiatePrefab(boss.OutGamePrefab);
+        b.transform.position = pos;
+        m_Boss = b.GetComponent<ActorComponentCollector>();
+        var controller = m_Boss.GetInterface<ICharaController>();
+        controller.Face(DIRECTION.UNDER);
+
+        // 会話フロー生成
+        m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(setup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
+        m_DefeatedFlowChart = m_Instantiater.InstantiatePrefab(setup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
+
+        await DeployBossMap(setup);
+
+        async Task DeployBossMap(BossBattleSetup setup)
+        {
+            // ダンジョン
+            var cellMap = new TERRAIN_ID[21, 21];
+            Range range = new Range(6, 6, 16, 16);
+
+            for (int x = range.Start.X; x <= range.End.X; x++)
+                for (int y = range.Start.Y; y <= range.End.Y; y++)
+                    cellMap[x, y] = TERRAIN_ID.ROOM;
+
+            /*
+            // https://blog.xin9le.net/entry/2013/12/14/033519
+            // 0は暗黙変換できる！
+            CELL_ID[,] map = new CELL_ID[21, 21] {
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            };
+            */
+
+            var elementSetup = setup.ElementSetup;
+
+            await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
+        }
     }
 
     /// <summary>
-    /// 
+    /// インゲーム準備
     /// </summary>
     private async Task ReadyToBossBattle()
     {
@@ -141,7 +174,7 @@ public class BossBattleInitializer : SceneInitializer
         // ボス
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
         var boss = bossBattleSetup.BossCharacterSetup;
-        var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderEndPos, FriendEndPos, BOSS_POS, boss);
+        var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderEndPos, FriendEndPos, BossPos, boss);
 
         await m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
 
@@ -152,9 +185,8 @@ public class BossBattleInitializer : SceneInitializer
         // 敵がいなくなったら終了
         m_UnitHolder.OnEnemyRemove.Subscribe(count =>
         {
-            if (count != 0)
-                return;
-            m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+            if (count == 0)
+                m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
         }).AddTo(this);
     }
 }
