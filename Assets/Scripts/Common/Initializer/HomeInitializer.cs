@@ -37,10 +37,14 @@ public class HomeInitializer : SceneInitializer
     /// </summary>
     protected override async Task OnStart()
     {
-        CreateOutGameCharacter(LeaderPos, FriendPos);
-
         // ステージ生成
         Instantiate(m_HomeSetup.Stage);
+
+        // キャラ生成
+        CreateOutGameCharacter(LeaderPos, FriendPos);
+
+        var leader = m_Leader.GetInterface<ICharaController>().MoveObject;
+        leader.GetComponent<Rigidbody>().useGravity = true;
 
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.FriendFlow).GetComponent<Fungus.Flowchart>();
 

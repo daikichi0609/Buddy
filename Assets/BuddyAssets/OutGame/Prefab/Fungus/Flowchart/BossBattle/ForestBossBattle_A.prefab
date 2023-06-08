@@ -67,7 +67,8 @@ MonoBehaviour:
     height: 859
   selectedBlocks:
   - {fileID: 5498602457853490413}
-  selectedCommands: []
+  selectedCommands:
+  - {fileID: 866200049597434919}
   variables: []
   description: 
   stepPause: 0
@@ -209,8 +210,8 @@ MonoBehaviour:
     PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
   targetComponentText: FungusMethod
-  targetMethod: OnFinishBossBattleFlow
-  targetMethodText: 'OnFinishBossBattleFlow (): Void'
+  targetMethod: CallInitializerFungusMethod
+  targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []
   saveReturnValue: 0
   returnValueVariableKey: 

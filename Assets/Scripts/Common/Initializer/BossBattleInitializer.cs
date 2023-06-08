@@ -45,7 +45,7 @@ public class BossBattleInitializer : SceneInitializer
         LeaderStartPos = new Vector3(10f, OFFSET_Y, 5f);
         FriendStartPos = new Vector3(12f, OFFSET_Y, 5f);
         LeaderEndPos = new Vector3(10f, OFFSET_Y, 10f);
-        FriendEndPos = new Vector3(11f, OFFSET_Y, 13f);
+        FriendEndPos = new Vector3(12f, OFFSET_Y, 10f);
         BossPos = new Vector3(11f, OFFSET_Y, 13f);
 
         /*
@@ -61,10 +61,12 @@ public class BossBattleInitializer : SceneInitializer
     /// </summary>
     protected override async Task OnStart()
     {
-        CreateOutGameCharacter(LeaderStartPos, FriendStartPos);
-
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
-        await BossSetup(bossBattleSetup, BossPos); // 必要なもの準備
+        await DeployBossMap(bossBattleSetup); // ステージ生成
+
+        CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラ生成
+
+        await BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
         // 明転
         await m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
@@ -117,49 +119,54 @@ public class BossBattleInitializer : SceneInitializer
         m_DefeatedFlowChart = m_Instantiater.InstantiatePrefab(setup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
 
         await DeployBossMap(setup);
+    }
 
-        async Task DeployBossMap(BossBattleSetup setup)
-        {
-            // ダンジョン
-            var cellMap = new TERRAIN_ID[21, 21];
-            Range range = new Range(6, 6, 16, 16);
+    /// <summary>
+    /// マップ生成
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    private async Task DeployBossMap(BossBattleSetup setup)
+    {
+        // ダンジョン
+        var cellMap = new TERRAIN_ID[21, 21];
+        Range range = new Range(6, 6, 16, 16);
 
-            for (int x = range.Start.X; x <= range.End.X; x++)
-                for (int y = range.Start.Y; y <= range.End.Y; y++)
-                    cellMap[x, y] = TERRAIN_ID.ROOM;
+        for (int x = range.Start.X; x <= range.End.X; x++)
+            for (int y = range.Start.Y; y <= range.End.Y; y++)
+                cellMap[x, y] = TERRAIN_ID.ROOM;
 
-            /*
-            // https://blog.xin9le.net/entry/2013/12/14/033519
-            // 0は暗黙変換できる！
-            CELL_ID[,] map = new CELL_ID[21, 21] {
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            };
-            */
+        /*
+        // https://blog.xin9le.net/entry/2013/12/14/033519
+        // 0は暗黙変換できる！
+        CELL_ID[,] map = new CELL_ID[21, 21] {
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        };
+        */
 
-            var elementSetup = setup.ElementSetup;
+        var elementSetup = setup.ElementSetup;
 
-            await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
-        }
+        await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
     }
 
     /// <summary>

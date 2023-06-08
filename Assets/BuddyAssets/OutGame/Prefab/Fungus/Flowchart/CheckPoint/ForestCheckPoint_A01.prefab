@@ -76,8 +76,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 5498602457853490413}
-  selectedCommands: []
+  - {fileID: 7147907686087265552}
+  selectedCommands:
+  - {fileID: 1623549289404647091}
   variables: []
   description: 
   stepPause: 0
@@ -436,8 +437,8 @@ MonoBehaviour:
     PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
   targetComponentText: FungusMethod
-  targetMethod: OnFinishCheckPointFlow
-  targetMethodText: 'OnFinishCheckPointFlow (): Void'
+  targetMethod: CallInitializerFungusMethod
+  targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []
   saveReturnValue: 0
   returnValueVariableKey: 

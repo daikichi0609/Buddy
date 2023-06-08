@@ -23,5 +23,12 @@ public class CheckPointSystemInstaller : MonoInstaller
             .FromComponentOn(m_CheckPointSystem)
             .AsSingle()
             .NonLazy();
+
+        // 会話システム
+        Container.Bind<IObjectPoolController>()
+            .To<ObjectPoolController>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
     }
 }
