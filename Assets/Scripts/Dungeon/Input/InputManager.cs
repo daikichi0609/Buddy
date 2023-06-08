@@ -85,7 +85,7 @@ public class InputManager : MonoBehaviour, IInputManager
     [Inject]
     public void Construct(IPlayerLoopManager loopManager)
     {
-        loopManager.GetUpdateEvent.Subscribe(_ => DetectInput());
+        loopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.DetectInput());
     }
 
     //入力を見てメッセージ発行

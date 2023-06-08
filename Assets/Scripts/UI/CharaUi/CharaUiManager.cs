@@ -41,15 +41,15 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     private void Awake()
     {
         // Ui初期化
-        m_DungeonContentsDeployer.OnDeployContents.Subscribe(_ =>
+        m_DungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
         {
-            var units = m_UnitHolder.FriendList.ToArray();
-            InitializeCharacterUi(units);
+            var units = self.m_UnitHolder.FriendList.ToArray();
+            self.InitializeCharacterUi(units);
         });
 
         // Updateで更新
         m_LoopManager.GetUpdateEvent
-            .Subscribe(_ => UpdateCharaUi()).AddTo(this);
+            .SubscribeWithState(this, (_, self) => self.UpdateCharaUi()).AddTo(this);
     }
 
     /// <summary>

@@ -154,7 +154,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     private void SubscribeDetectInput()
     {
         // 入力購読
-        var disposable = m_InputManager.InputStartEvent.Subscribe(input => DetectInput(input.KeyCodeFlag));
+        var disposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
 
         m_Disposables.Add(disposable);
     }

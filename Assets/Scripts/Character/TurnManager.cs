@@ -49,11 +49,11 @@ public class TurnManager : ITurnManager
     [Inject]
     public void Construct(IPlayerLoopManager loopManager, IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        loopManager.GetUpdateEvent.Subscribe(_ => NextUnitAct());
-        dungeonContentsDeployer.OnDeployContents.Subscribe(_ =>
+        loopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.NextUnitAct());
+        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
         {
-            CreateActionList();
-            m_IsActive = true;
+            self.CreateActionList();
+            self.m_IsActive = true;
         });
     }
 

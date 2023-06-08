@@ -37,7 +37,7 @@ public class SoundHolder : ISoundHolder
     [Inject]
     public void Construct(IPlayerLoopManager loopManager)
     {
-        loopManager.GetInitEvent.Subscribe(_ => Initialize());
+        loopManager.GetInitEvent.SubscribeWithState(this, (_, self) => self.Initialize());
     }
 
     /// <summary>

@@ -59,10 +59,7 @@ public class UnitHolder : IUnitHolder
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        dungeonContentsDeployer.OnRemoveContents.Subscribe(_ =>
-        {
-            ClearList();
-        });
+        dungeonContentsDeployer.OnRemoveContents.SubscribeWithState(this, (_, self) => self.ClearList());
     }
 
     /// <summary>

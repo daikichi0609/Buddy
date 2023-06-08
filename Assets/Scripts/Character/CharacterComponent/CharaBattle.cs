@@ -140,25 +140,25 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
 
         // 攻撃時、アクション登録
-        m_OnAttackStart.Subscribe(attackInfo =>
+        m_OnAttackStart.SubscribeWithState(this, (_, self) =>
         {
-            m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
+            self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
         }).AddTo(CompositeDisposable);
 
         // 攻撃終了時、Ui表示
-        m_OnAttackEnd.Subscribe(result =>
+        m_OnAttackEnd.SubscribeWithState(this, (result, self) =>
         {
             if (result.IsHit == true)
-                m_AttackResultUiManager.Damage(result);
+                self.m_AttackResultUiManager.Damage(result);
             else
-                m_AttackResultUiManager.Miss(result);
+                self.m_AttackResultUiManager.Miss(result);
         }).AddTo(CompositeDisposable);
 
         // 死亡時、リストから抜ける
-        m_OnDead.Subscribe(_ =>
+        m_OnDead.SubscribeWithState(this, (_, self) =>
         {
-            m_UnitHolder.RemoveUnit(Owner);
-            m_TurnManager.RemoveUnit(Owner);
+            self.m_UnitHolder.RemoveUnit(self.Owner);
+            self.m_TurnManager.RemoveUnit(self.Owner);
         }).AddTo(CompositeDisposable);
     }
 

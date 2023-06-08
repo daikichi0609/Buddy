@@ -82,13 +82,13 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
         // 特定のアニメーション中は他キャラの行動を禁止する
         AnimationStateChanged
             .Zip(AnimationStateChanged.Skip(1), (Old, New) => new { Old, New })
-            .Subscribe(state =>
+            .SubscribeWithState(this, (state, self) =>
             {
                 switch (state.New)
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        m_CancelRequest = m_TurnManager.RequestProhibitAction(Owner);
+                        self.m_CancelRequest = self.m_TurnManager.RequestProhibitAction(self.Owner);
                         return;
                 }
 
@@ -96,7 +96,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
                 {
                     case ANIMATION_TYPE.ATTACK:
                     case ANIMATION_TYPE.DAMAGE:
-                        m_CancelRequest?.Dispose();
+                        self.m_CancelRequest?.Dispose();
                         return;
                 }
             }).AddTo(CompositeDisposable);
@@ -104,19 +104,19 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             // 攻撃
-            battle.OnAttackStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(CompositeDisposable);
+            battle.OnAttackStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(CompositeDisposable);
 
             // ダメージ前
-            battle.OnDamageStart.Subscribe(async _ => await PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime)).AddTo(CompositeDisposable);
+            battle.OnDamageStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime)).AddTo(CompositeDisposable);
         }
 
         if (Owner.RequireEvent<ICharaMoveEvent>(out var move) == true)
         {
             // 移動前
-            move.OnMoveStart.Subscribe(_ => PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
+            move.OnMoveStart.SubscribeWithState(this, (_, self) => self.PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
 
             // 移動後
-            move.OnMoveEnd.Subscribe(_ => StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
+            move.OnMoveEnd.SubscribeWithState(this, (_, self) => self.StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
         }
     }
 

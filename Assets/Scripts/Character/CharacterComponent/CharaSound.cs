@@ -26,28 +26,28 @@ public class CharaSound : ActorComponentBase, ICharaSound
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnAttackStart.Subscribe(_ =>
+            battle.OnAttackStart.SubscribeWithState(this, (_, self) =>
             {
                 // 攻撃音
-                StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, () =>
+                self.StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, () =>
                 {
-                    m_SoundHolder.AttackSound.Play();
+                    self.m_SoundHolder.AttackSound.Play();
                 }));
             }).AddTo(CompositeDisposable);
 
-            battle.OnAttackEnd.Subscribe(result =>
+            battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
             {
                 if (result.IsHit == false)
                 {
                     // 空振り音
-                    m_SoundHolder.MissSound.Play();
+                    self.m_SoundHolder.MissSound.Play();
                 }
             }).AddTo(CompositeDisposable);
 
-            battle.OnDamageEnd.Subscribe(_ =>
+            battle.OnDamageEnd.SubscribeWithState(this, (_, self) =>
             {
                 // ダメージ音
-                m_SoundHolder.DamageSound.Play();
+                self.m_SoundHolder.DamageSound.Play();
             }).AddTo(CompositeDisposable);
         }
 

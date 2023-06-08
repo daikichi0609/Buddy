@@ -81,7 +81,7 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
         if (m_Type == CHARA_TYPE.PLAYER)
         {
             var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.Subscribe(_ => m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
+            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
         }
     }
 }

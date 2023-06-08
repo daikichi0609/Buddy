@@ -31,18 +31,18 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 
         if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEndPost.Subscribe(_ =>
+            turn.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
             {
-                if (Owner.RequireInterface<ICharaStarvation>(out var starvation) == true && starvation.IsStarvate == true)
+                if (self.Owner.RequireInterface<ICharaStarvation>(out var starvation) == true && starvation.IsStarvate == true)
                     return;
 
-                int currentTurn = m_TurnManager.TotalTurnCount + 1;
+                int currentTurn = self.m_TurnManager.TotalTurnCount + 1;
 
                 // 回復インターバル
                 if (currentTurn % RECOVER_TURN != 0)
                     return;
 
-                if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
+                if (self.Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
                 status.CurrentStatus.Hp++;

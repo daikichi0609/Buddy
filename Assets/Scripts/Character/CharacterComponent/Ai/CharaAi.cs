@@ -43,17 +43,18 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
 
-        m_LoopManager.GetUpdateEvent.Subscribe(_ =>
+        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) =>
         {
-            if (m_CharaTurn.CanAct == true)
-                DecideAndExecuteAction();
+            if (self.m_CharaTurn.CanAct == true)
+                self.DecideAndExecuteAction();
         }).AddTo(this);
     }
 
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    public abstract bool DecideAndExecuteAction();
+    protected abstract bool DecideAndExecuteAction();
+    bool IAiAction.DecideAndExecuteAction() => DecideAndExecuteAction();
 
     /// <summary>
     /// ランダムなターゲットへの方向を返す 主に攻撃前

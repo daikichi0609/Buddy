@@ -44,7 +44,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
 
     protected virtual void Awake()
     {
-        m_LoopManager.GetInitEvent.Subscribe(async _ => await OnStart()).AddTo(this);
+        m_LoopManager.GetInitEvent.SubscribeWithState(this, async (_, self) => await self.OnStart()).AddTo(this);
     }
 
     /// <summary>

@@ -84,12 +84,12 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
 
         if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEndPost.Subscribe(_ =>
+            turn.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
             {
-                if (IsStarvate == true)
-                    Starvate();
+                if (self.IsStarvate == true)
+                    self.Starvate();
                 else
-                    MakeHungry();
+                    self.MakeHungry();
             }).AddTo(CompositeDisposable);
         }
     }

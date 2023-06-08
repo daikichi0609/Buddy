@@ -47,10 +47,10 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     /// </summary>
     private void SubscribeMenuOpen()
     {
-        m_OpenMenuDisposable = m_InputManager.InputStartEvent.Subscribe(input =>
+        m_OpenMenuDisposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
         {
-            if (IsActive == false && m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
-                Activate();
+            if (self.IsActive == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
+                self.Activate();
         }).AddTo(this);
     }
 

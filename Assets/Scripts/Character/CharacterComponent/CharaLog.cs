@@ -28,39 +28,39 @@ public class CharaLog : ActorComponentBase, ICharaLog
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             // 攻撃ログ
-            battle.OnAttackStart.Subscribe(info =>
+            battle.OnAttackStart.SubscribeWithState(this, (info, self) =>
             {
-                var log = CreateAttackLog(info);
-                m_BattleLogManager.Log(log);
+                var log = self.CreateAttackLog(info);
+                self.m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
 
             // 攻撃結果ログ
-            battle.OnAttackEnd.Subscribe(result =>
+            battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
             {
                 var log = CreateAttackResultLog(result);
-                m_BattleLogManager.Log(log);
+                self.m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
 
             // 死亡ログ
-            battle.OnDamageEnd.Subscribe(result =>
+            battle.OnDamageEnd.SubscribeWithState(this, (result, self) =>
             {
                 if (result.IsDead == false)
                     return;
 
-                var log = CreateDeadLog(result);
-                m_BattleLogManager.Log(log);
+                var log = self.CreateDeadLog(result);
+                self.m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
         }
 
         if (Owner.RequireInterface<ICharaInventoryEvent>(out var inventory) == true)
         {
-            inventory.OnPutItem.Subscribe(info =>
+            inventory.OnPutItem.SubscribeWithState(this, (info, self) =>
             {
                 if (info.Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
-                var log = CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
-                m_BattleLogManager.Log(log);
+                var log = self.CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
+                self.m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
         }
     }

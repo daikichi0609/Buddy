@@ -25,10 +25,10 @@ public class HomeInitializer : SceneInitializer
     {
         base.Awake();
 
-        MessageBroker.Default.Receive<HomeInitializerInfo>().Subscribe(info =>
+        MessageBroker.Default.Receive<HomeInitializerInfo>().SubscribeWithState(this, (info, self) =>
         {
-            LeaderPos = info.LeaderPos;
-            FriendPos = info.FriendPos;
+            self.LeaderPos = info.LeaderPos;
+            self.FriendPos = info.FriendPos;
         }).AddTo(this);
     }
 

@@ -27,6 +27,9 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
 
+    // カメラ追従キャンセル
+    private IDisposable m_CancelFollowing;
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -42,9 +45,9 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 入力購読
-        m_InputManager.InputEvent.Subscribe(input =>
+        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) =>
         {
-            DetectInput(input.KeyCodeFlag);
+            self.DetectInput(input.KeyCodeFlag);
         }).AddTo(CompositeDisposable);
 
 
@@ -52,23 +55,23 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         // カメラ追従
         if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
         {
-            var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+            m_CancelFollowing = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
 
             // 死亡時
             var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.Subscribe(_ => disposable.Dispose()).AddTo(CompositeDisposable);
+            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_CancelFollowing.Dispose()).AddTo(CompositeDisposable);
 
             // その他
-            CompositeDisposable.Add(disposable);
+            CompositeDisposable.Add(m_CancelFollowing);
         }
 
         // 探索済みとしてマーク
         if (Owner.RequireEvent<ICharaTurnEvent>(out var e) == true)
         {
-            e.OnTurnEndPost.Subscribe(_ =>
+            e.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
             {
-                var pos = m_CharaMove.Position;
-                m_DungeonHandler.MarkExplored(pos);
+                var pos = self.m_CharaMove.Position;
+                self.m_DungeonHandler.MarkExplored(pos);
             }).AddTo(CompositeDisposable);
         }
         // ----- //

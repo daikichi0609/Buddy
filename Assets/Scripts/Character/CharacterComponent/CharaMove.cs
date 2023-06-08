@@ -103,10 +103,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
         // アクション登録
-        m_OnMoveStart.Subscribe(_ => m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
+        m_OnMoveStart.SubscribeWithState(this, (_, self) => self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
 
         // 移動更新
-        m_LoopManager.GetUpdateEvent.Subscribe(_ => Moving()).AddTo(CompositeDisposable);
+        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.Moving()).AddTo(CompositeDisposable);
     }
 
     /// <summary>

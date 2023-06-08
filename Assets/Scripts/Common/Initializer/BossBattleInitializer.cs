@@ -190,10 +190,10 @@ public class BossBattleInitializer : SceneInitializer
         m_BGMHandler.SetBGM(bgm);
 
         // 敵がいなくなったら終了
-        m_UnitHolder.OnEnemyRemove.Subscribe(count =>
+        m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>
         {
             if (count == 0)
-                m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+                self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
         }).AddTo(this);
     }
 }

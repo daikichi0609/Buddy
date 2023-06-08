@@ -45,7 +45,7 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
     [Inject]
     public void Construct(IPlayerLoopManager loopManager)
     {
-        loopManager.GetUpdateEvent.Subscribe(_ => OnUpdate()).AddTo(this);
+        loopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.OnUpdate()).AddTo(this);
     }
 
     /// <summary>

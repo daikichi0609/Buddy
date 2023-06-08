@@ -83,10 +83,10 @@ public abstract class UiBase : IUiBase
     protected void Initialize(CompositeDisposable disposable, OptionElement element)
     {
         // Ui表示・非表示
-        IsActiveChanged.Subscribe(active => OnChangeUiActive(active)).AddTo(disposable);
+        IsActiveChanged.SubscribeWithState(this, (active, self) => self.OnChangeUiActive(active)).AddTo(disposable);
 
         // 有効な選択肢の変更
-        OptionIdChanged.Subscribe(option => OnChangeActiveOption(ref option)).AddTo(disposable);
+        OptionIdChanged.SubscribeWithState(this, (option, self) => self.OnChangeActiveOption(ref option)).AddTo(disposable);
 
         // 選択肢メソッド初期化
         OptionMethods = element.OptionMethods;

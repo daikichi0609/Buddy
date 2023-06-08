@@ -50,7 +50,7 @@ public class ItemManager : IItemManager
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        dungeonContentsDeployer.OnRemoveContents.Subscribe(_ => m_ItemList.Clear());
+        dungeonContentsDeployer.OnRemoveContents.SubscribeWithState(this, (_, self) => self.m_ItemList.Clear());
     }
 
     /// <summary>

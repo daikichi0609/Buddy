@@ -41,16 +41,16 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         base.Initialize();
 
         // ステート更新で目的地リセット
-        m_CurrentState.Subscribe(_ =>
+        m_CurrentState.SubscribeWithState(this, (_, self) =>
         {
-            DestinationCell = null;
+            self.DestinationCell = null;
         }).AddTo(CompositeDisposable);
     }
 
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    public override bool DecideAndExecuteAction()
+    protected override bool DecideAndExecuteAction()
     {
         var result = false;
 

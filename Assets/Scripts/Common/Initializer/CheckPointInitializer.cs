@@ -30,15 +30,15 @@ public class CheckPointInitializer : SceneInitializer
     {
         base.Awake();
 
-        MessageBroker.Default.Receive<CheckPointInitializerInfo>().Subscribe(info =>
+        MessageBroker.Default.Receive<CheckPointInitializerInfo>().SubscribeWithState(this, (info, self) =>
         {
-            LeaderStartPos = info.LeaderStartPos;
-            FriendStartPos = info.FriendStartPos;
-            LeaderEndPos = info.LeaderEndPos;
-            FriendEndPos = info.FriendEndPos;
+            self.LeaderStartPos = info.LeaderStartPos;
+            self.FriendStartPos = info.FriendStartPos;
+            self.LeaderEndPos = info.LeaderEndPos;
+            self.FriendEndPos = info.FriendEndPos;
 
-            LeaderPos = info.LeaderPos;
-            FriendPos = info.FriendPos;
+            self.LeaderPos = info.LeaderPos;
+            self.FriendPos = info.FriendPos;
         }).AddTo(this);
     }
 

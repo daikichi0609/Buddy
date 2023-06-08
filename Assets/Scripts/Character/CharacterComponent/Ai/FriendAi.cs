@@ -35,7 +35,7 @@ public partial class FriendAi : CharaAi, IFriendAi
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    public override bool DecideAndExecuteAction()
+    protected override bool DecideAndExecuteAction()
     {
         var result = false;
 
