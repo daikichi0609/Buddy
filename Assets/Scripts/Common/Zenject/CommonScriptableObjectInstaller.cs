@@ -40,6 +40,6 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
         Container.BindInstance(m_HomeSetup).AsSingle();
         Container.BindInstance(m_ProgressHolder).AsSingle();
         Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
-        Container.BindInstance(m_MasterData).AsSingle();
+        Container.BindInstance(m_MasterData.CharacterMasterSetup).AsSingle();
     }
 }

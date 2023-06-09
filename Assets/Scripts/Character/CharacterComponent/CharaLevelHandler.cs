@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public interface ICharaLevelHandler : IActorInterface
 {
@@ -18,15 +19,24 @@ public interface ICharaLevelHandler : IActorInterface
 
 public class CharaLevelHandler : ActorComponentBase, ICharaLevelHandler
 {
+    [Inject]
+    private CharacterMasterSetup m_CharacterMasterSetup;
+
     /// <summary>
     /// 累計経験値
     /// </summary>
     private int m_TotalExperience;
 
     /// <summary>
+    /// 経験値テーブル
+    /// 動的に生成する
+    /// </summary>
+    private int[] m_LevelUpBorder;
+
+    /// <summary>
     /// レベル
     /// </summary>
-    int ICharaLevelHandler.Level
+    private int Level
     {
         get
         {
@@ -41,31 +51,25 @@ public class CharaLevelHandler : ActorComponentBase, ICharaLevelHandler
             return level;
         }
     }
+    int ICharaLevelHandler.Level => Level;
 
-    /// <summary>
-    /// 経験値テーブル
-    /// 動的に生成する
-    /// </summary>
-    private int[] m_LevelUpBorder;
-
-    /// <summary>
-    /// 経験値テーブル設定
-    /// </summary>
-    private static readonly int ms_LevelUpBorderBase = 5;
-    private static readonly int ms_MaxLevel = 100;
-    private static readonly float ms_NextExMag = 1.1f;
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        Owner.Register<ICharaLevelHandler>(this);
+    }
 
     protected override void Initialize()
     {
         base.Initialize();
 
         // 経験値テーブルの作成
-        m_LevelUpBorder = new int[ms_LevelUpBorderBase];
-        int border = ms_LevelUpBorderBase;
+        m_LevelUpBorder = new int[m_CharacterMasterSetup.MaxLevel];
+        int border = m_CharacterMasterSetup.LevelUpFirstBorder;
         for (int i = 0; i < m_LevelUpBorder.Length; i++)
         {
             m_LevelUpBorder[i] = border;
-            border = (int)(border * ms_NextExMag);
+            border = (int)(border * m_CharacterMasterSetup.NextExMag);
         }
     }
 
@@ -73,9 +77,11 @@ public class CharaLevelHandler : ActorComponentBase, ICharaLevelHandler
     /// 経験値入手
     /// </summary>
     /// <param name="add"></param>
-    /// <returns></returns>
+    /// <returns>レベルアップしたかどうか</returns>
     bool ICharaLevelHandler.AddExperience(int add)
     {
-        return true;
+        int level = Level;
+        m_TotalExperience += level;
+        return Level > level;
     }
 }

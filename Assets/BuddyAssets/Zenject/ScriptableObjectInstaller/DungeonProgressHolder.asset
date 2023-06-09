@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1dc82cb03cb6b40cea2237021ccf9f35, type: 3}
-  m_Name: New Dungeon Progress Holder
+  m_Name: DungeonProgressHolder
   m_EditorClassIdentifier: 
   m_DungeonSetupHolders:
   - {fileID: 11400000, guid: e209a91df6ba2475481d56520366a35c, type: 2}
   m_CurrentDungeonTheme: 0
-  m_CurrentProgress: 3
+  m_CurrentProgress: 0

@@ -34,7 +34,7 @@ public interface ICharaBattle : IActorInterface
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    Task<AttackResult> DamagePercentage(AttackPercentageInfo attackInfo);
+    AttackResult DamagePercentage(AttackPercentageInfo attackInfo);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -227,17 +227,38 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
     {
         var result = BattleSystem.Damage(attackInfo, Owner);
+        DamageInternal(result, attackInfo.Direction);
+        return result;
+    }
+
+    /// <summary>
+    /// 割合ダメージ
+    /// </summary>
+    /// <param name="ratio"></param>
+    /// <returns></returns>
+    AttackResult ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
+    {
+        var result = BattleSystem.DamagePercentage(attackInfo, Owner);
+        DamageInternal(result, attackInfo.Direction);
+        return result;
+    }
+
+    /// <summary>
+    /// ダメージ処理
+    /// </summary>
+    /// <param name="result"></param>
+    /// <param name="attackDir"></param>
+    private void DamageInternal(AttackResult result, DIRECTION attackDir)
+    {
+        m_OnDamageStart.OnNext(result);
 
         if (result.IsHit == false)
-            return result;
+            return;
 
-        m_CharaMove.Face(attackInfo.Direction.ToOppositeDir());
-        m_OnDamageStart.OnNext(result);
+        m_CharaMove.Face(attackDir.ToOppositeDir());
 
         // awaitしない
         var _ = PostDamage(result);
-
-        return result;
     }
 
     /// <summary>
@@ -252,31 +273,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         // 死亡
         if (result.IsDead == true)
             Dead();
-    }
-
-    /// <summary>
-    /// 割合ダメージ
-    /// </summary>
-    /// <param name="ratio"></param>
-    /// <returns></returns>
-    async Task<AttackResult> ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
-    {
-        var result = BattleSystem.DamagePercentage(attackInfo, Owner);
-
-        if (result.IsHit == false)
-            return result;
-
-        m_CharaMove.Face(attackInfo.Direction.ToOppositeDir());
-        m_OnDamageStart.OnNext(result);
-
-        // ログ出力
-        var log = CharaLog.CreateAttackResultLog(result);
-        m_BattleLogManager.Log(log);
-
-        // awaitする
-        await PostDamage(result);
-
-        return result;
     }
 
     /// <summary>

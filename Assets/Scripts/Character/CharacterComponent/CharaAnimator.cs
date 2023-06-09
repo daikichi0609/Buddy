@@ -107,7 +107,11 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
             battle.OnAttackStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(CompositeDisposable);
 
             // ダメージ前
-            battle.OnDamageStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime)).AddTo(CompositeDisposable);
+            battle.OnDamageStart.SubscribeWithState(this, async (result, self) =>
+            {
+                if (result.IsHit == true)
+                    await self.PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime);
+            }).AddTo(CompositeDisposable);
         }
 
         if (Owner.RequireEvent<ICharaMoveEvent>(out var move) == true)

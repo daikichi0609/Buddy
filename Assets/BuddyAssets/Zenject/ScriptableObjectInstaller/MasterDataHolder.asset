@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e303ec1bb7ab4adeb2ef2a3655ac1e4, type: 3}
-  m_Name: New Master Data Holder
+  m_Name: MasterDataHolder
   m_EditorClassIdentifier: 
   m_CharacterMasterSetup: {fileID: 11400000, guid: c0b5e00a3f7b94f0b85feda8b9b53b3c,
     type: 2}

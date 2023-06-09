@@ -35,7 +35,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
             }).AddTo(CompositeDisposable);
 
             // 攻撃結果ログ
-            battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
+            battle.OnDamageStart.SubscribeWithState(this, (result, self) =>
             {
                 var log = CreateAttackResultLog(result);
                 self.m_BattleLogManager.Log(log);

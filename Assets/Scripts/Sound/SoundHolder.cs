@@ -14,7 +14,7 @@ public interface ISoundHolder
 public class SoundHolder : ISoundHolder
 {
     [Inject]
-    private MasterDataHolder m_MasterDataHolder;
+    private CharacterMasterSetup m_CharacterMasterSetup;
 
     /// <summary>
     /// 攻撃
@@ -45,8 +45,8 @@ public class SoundHolder : ISoundHolder
     /// </summary>
     private void Initialize()
     {
-        m_AttackSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.AttackSound).GetComponent<AudioSource>();
-        m_MissSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
-        m_DamageSound = MonoBehaviour.Instantiate(m_MasterDataHolder.CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
+        m_AttackSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.AttackSound).GetComponent<AudioSource>();
+        m_MissSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
+        m_DamageSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
     }
 }

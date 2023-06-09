@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e40e0ca089da64a18bd8bb8983cdc6a6, type: 3}
-  m_Name: New Common Scriptable Object Installer
+  m_Name: CommonScriptableObjectInstaller
   m_EditorClassIdentifier: 
   m_HomeSetup: {fileID: 11400000, guid: 873a69d4d80db42e0a74efdbd55f438a, type: 2}
   m_ProgressHolder: {fileID: 11400000, guid: ef237522cbeff4433967f01e611682a0, type: 2}
