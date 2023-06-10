@@ -34,11 +34,14 @@ public class CurrentStatus
     // ヒットポイント
     [ShowNativeProperty]
     public int Hp { get; set; }
+    public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
+    private float LvMaxHpMag => 1f + Lv * 0.01f;
 
     // 攻撃力
     [ShowNativeProperty]
-    public int Atk => (int)(OriginParam.Atk * AtkMag * LvMag);
-    public float AtkMag
+    public int Atk => (int)(OriginParam.Atk * LvAtkMag * BuffAtkMag);
+    private float LvAtkMag => 1f + Lv * 0.1f;
+    public float BuffAtkMag
     {
         get
         {
@@ -52,8 +55,9 @@ public class CurrentStatus
 
     // 防御力
     [ShowNativeProperty]
-    public int Def => (int)(OriginParam.Def * DefMag * LvMag);
-    public float DefMag
+    public int Def => (int)(OriginParam.Def * LvDefMag * BuffDefMag);
+    private float LvDefMag => 1f + Lv * 0.1f;
+    public float BuffDefMag
     {
         get
         {

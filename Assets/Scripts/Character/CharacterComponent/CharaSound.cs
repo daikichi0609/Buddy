@@ -29,7 +29,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
             battle.OnAttackStart.SubscribeWithState(this, (_, self) =>
             {
                 // 攻撃音
-                self.StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, () =>
+                self.StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, this, self =>
                 {
                     self.m_SoundHolder.AttackSound.Play();
                 }));

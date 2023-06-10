@@ -86,11 +86,11 @@ public class TurnManager : ITurnManager
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
     /// <summary>
-    /// 全ての行動を禁じる
+    /// 全ユニットへの行動禁止リクエスト
     /// </summary>
-    private Queue<ProhibitRequest> m_ProhibitAllAction = new Queue<ProhibitRequest>();
+    private List<ProhibitRequest> m_ProhibitActionRequests = new List<ProhibitRequest>();
     [ShowNativeProperty]
-    private bool ProhibitAllAction => m_ProhibitAllAction.Count != 0;
+    private bool ProhibitAllAction => m_ProhibitActionRequests.Count != 0;
 
     /// <summary>
     /// 禁止リクエスト
@@ -98,8 +98,9 @@ public class TurnManager : ITurnManager
     /// <returns></returns>
     IDisposable ITurnManager.RequestProhibitAction(ICollector requester)
     {
-        m_ProhibitAllAction.Enqueue(new ProhibitRequest(requester));
-        return Disposable.CreateWithState(this, self => self.m_ProhibitAllAction.Dequeue());
+        var req = new ProhibitRequest(requester);
+        m_ProhibitActionRequests.Add(req);
+        return Disposable.CreateWithState((this, req), tuple => tuple.Item1.m_ProhibitActionRequests.Remove(tuple.req));
     }
 
     /// <summary>
@@ -141,7 +142,7 @@ public class TurnManager : ITurnManager
         if (ProhibitAllAction == true)
         {
 #if DEBUG
-            foreach (var req in m_ProhibitAllAction)
+            foreach (var req in m_ProhibitActionRequests)
             {
                 if (req.Requester == null)
                     continue;

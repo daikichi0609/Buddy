@@ -14,10 +14,10 @@ public static class Utility
 
 public static class Coroutine
 {
-    public static IEnumerator DelayCoroutine(float seconds, System.Action action)
+    public static IEnumerator DelayCoroutine<T>(float seconds, T state, System.Action<T> action)
     {
         yield return new WaitForSeconds(seconds);
-        action?.Invoke();
+        action?.Invoke(state);
     }
 }
 

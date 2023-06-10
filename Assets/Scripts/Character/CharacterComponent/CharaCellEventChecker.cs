@@ -105,7 +105,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             if (m_CharaMove.Position == itemPos)
             {
                 var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing(this, self => self.m_CharaInventory.Put(item, disposable));
+                m_CharaTurn.WaitFinishActing((this, item, disposable), tuple => tuple.Item1.m_CharaInventory.Put(tuple.item, tuple.disposable));
                 return true;
             }
         }
@@ -127,7 +127,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             if (handler.HasTrap == true)
             {
                 var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing(handler, self => self.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager, disposable));
+                m_CharaTurn.WaitFinishActing((this, handler, disposable), tuple => tuple.handler.ActivateTrap(tuple.Item1.Owner, tuple.Item1.m_UnitFinder, tuple.Item1.m_DungeonHandler, tuple.Item1.m_BattleLogManager, tuple.disposable));
                 return true;
             }
 

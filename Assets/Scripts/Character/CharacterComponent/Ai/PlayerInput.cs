@@ -54,7 +54,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         {
             var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
 
-            // 死亡時
+            // 死亡時にカメラ追従を止める
             var battle = Owner.GetEvent<ICharaBattleEvent>();
             battle.OnDead.SubscribeWithState(disposable, (_, self) => self.Dispose()).AddTo(CompositeDisposable);
 

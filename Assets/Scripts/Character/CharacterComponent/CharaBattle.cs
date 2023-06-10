@@ -187,7 +187,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         var disposable = m_TurnManager.RequestProhibitAction(Owner); // 行動禁止
 
         // モーション終わりに
-        StartCoroutine(Coroutine.DelayCoroutine(0.7f, () => AttackInternal(attackPos, target, attackInfo, disposable)));
+        StartCoroutine(Coroutine.DelayCoroutine(0.7f, (this, attackPos, target, attackInfo, disposable), tuple => tuple.Item1.AttackInternal(tuple.attackPos, tuple.target, tuple.attackInfo, tuple.disposable)));
         return true;
     }
 

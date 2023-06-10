@@ -144,6 +144,13 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
         m_CanAct.Value = true;
     }
 
+    /// <summary>
+    /// IsActing == false になるのを待ってから発火
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="self"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     async Task ICharaTurn.WaitFinishActing<T>(T self, Action<T> action)
     {
         // IsActing -> false になるまで待つ

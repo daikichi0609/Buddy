@@ -22,7 +22,7 @@ public class CameraHandler : MonoBehaviour, ICameraHandler
     private static readonly Vector3 ms_Angle = new Vector3(60f, 0, 0);
 
     /// <summary>
-    /// 親子関係構築
+    /// カメラを追従させる
     /// </summary>
     /// <param name="parent"></param>
     /// <returns></returns>
@@ -32,11 +32,6 @@ public class CameraHandler : MonoBehaviour, ICameraHandler
         m_MainCamera.transform.localPosition = ms_KeepPos;
         m_MainCamera.transform.eulerAngles = ms_Angle;
 
-        return Disposable.CreateWithState(this, self => self.CancelParent());
+        return Disposable.CreateWithState(this, self => self.m_MainCamera.transform.parent = null);
     }
-
-    /// <summary>
-    /// 親子関係キャンセル
-    /// </summary>
-    private void CancelParent() => m_MainCamera.transform.parent = null;
 }

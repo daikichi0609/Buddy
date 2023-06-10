@@ -32,7 +32,7 @@ public class CharaUi : MonoBehaviour
 
         m_CharaName.text = m_Target.CurrentStatus.OriginParam.GivenName.ToString();
 
-        int maxHp = m_Target.CurrentStatus.OriginParam.MaxHp;
+        int maxHp = m_Target.CurrentStatus.MaxHp;
         int hp = m_Target.CurrentStatus.Hp;
         m_HpSlider.maxValue = maxHp;
         m_HpSlider.value = hp;
