@@ -42,11 +42,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 入力購読
-        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) =>
-        {
-            self.DetectInput(input.KeyCodeFlag);
-        }).AddTo(CompositeDisposable);
-
+        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag)).AddTo(CompositeDisposable);
 
         // ----- 別のとこに移した方が良い ----- //
         // カメラ追従

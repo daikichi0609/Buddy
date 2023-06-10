@@ -108,7 +108,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     }
 
     /// <summary>
-    /// 敵
+    /// 敵ステータスセット
     /// </summary>
     /// <param name="enemyStatus"></param>
     private void SetEnemyStatus(EnemyStatus enemyStatus)
@@ -131,7 +131,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
             {
                 foreach (var unit in self.m_UnitHolder.FriendList)
                 {
-                    // 味方キャラによるキルなら
+                    // 味方キャラによるキルなら経験値加算
                     if (result.Attacker == unit)
                     {
                         self.m_TeamLevelHandler.AddExperience(enemyStatus.Param.Ex);

@@ -40,10 +40,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
         m_CharaTalk = Owner.GetInterface<ICharaTalk>();
 
         // 入力購読
-        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) =>
-        {
-            self.DetectInput(input.KeyCodeFlag);
-        }).AddTo(this);
+        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag)).AddTo(this);
     }
 
     /// <summary>

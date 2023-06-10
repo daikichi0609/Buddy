@@ -30,7 +30,7 @@ public static class BattleSystem
 
         // ヒットしているならHpを削る
         if (isHit == true)
-            defenderStatus.Hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
+            defenderStatus.RecoverHp(-damage);
 
         // 死亡しているか
         bool isDead = defenderStatus.Hp == 0;
@@ -46,7 +46,7 @@ public static class BattleSystem
         bool isHit = info.Dex >= random;
         int damage = (int)(defenderStatus.Hp * info.Ratio);
         if (isHit == true)
-            defenderStatus.Hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
+            defenderStatus.RecoverHp(-damage);
 
         bool isDead = defenderStatus.Hp == 0;
         return new AttackResult(info.Attacker, defender, isHit, damage, false, defenderStatus.Hp, isDead);

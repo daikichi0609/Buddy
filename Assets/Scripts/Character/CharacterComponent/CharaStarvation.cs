@@ -98,10 +98,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// 空腹を回復する
     /// </summary>
     /// <param name="add"></param>
-    void ICharaStarvation.RecoverHungry(int add)
-    {
-        m_Hungry -= add;
-    }
+    void ICharaStarvation.RecoverHungry(int add) => m_Hungry = Mathf.Clamp(m_Hungry - add, 0, MAX_HUNGRY);
 
     /// <summary>
     /// 空腹状態
@@ -118,7 +115,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
             return;
 
         // 死亡はしない
-        status.CurrentStatus.Hp = Mathf.Clamp(--status.CurrentStatus.Hp, 1, status.CurrentStatus.MaxHp);
+        status.CurrentStatus.RecoverHp(-1, false);
 
         if (StarvateIndex < STARVATE_MESSAGE.Length)
         {

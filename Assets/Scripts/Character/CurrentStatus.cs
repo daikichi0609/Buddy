@@ -33,9 +33,14 @@ public class CurrentStatus
 
     // ヒットポイント
     [ShowNativeProperty]
-    public int Hp { get; set; }
+    public int Hp { get; private set; }
     public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
     private float LvMaxHpMag => 1f + Lv * 0.01f;
+    public void RecoverHp(int add, bool canDead = true)
+    {
+        int min = canDead ? 0 : 1;
+        Hp = Math.Clamp(Hp + add, min, MaxHp);
+    }
 
     // 攻撃力
     [ShowNativeProperty]
@@ -85,10 +90,7 @@ public class CurrentStatus
     public IDisposable AddBuff(BuffTicket buff)
     {
         m_BuffList.Add(buff);
-        return Disposable.CreateWithState((m_BuffList, buff), tuple =>
-        {
-            tuple.m_BuffList.Remove(tuple.buff);
-        });
+        return Disposable.CreateWithState((m_BuffList, buff), tuple => tuple.m_BuffList.Remove(tuple.buff));
     }
 }
 

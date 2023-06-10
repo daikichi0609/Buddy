@@ -45,7 +45,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
                 if (self.Owner.RequireInterface<ICharaStatus>(out var status) == false)
                     return;
 
-                status.CurrentStatus.Hp++;
+                status.CurrentStatus.RecoverHp(1);
 
             }).AddTo(CompositeDisposable);
         }
