@@ -62,7 +62,7 @@ public class UnitFinder : IUnitFinder
     /// <returns></returns>
     private bool TryGetSpecifiedPositionUnit(Vector3 pos, CHARA_TYPE target, out ICollector val)
     {
-        if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
+        if (target == CHARA_TYPE.FRIEND || target == CHARA_TYPE.NONE)
         {
             foreach (ICollector collector in m_UnitHolder.FriendList)
             {
@@ -111,7 +111,7 @@ public class UnitFinder : IUnitFinder
 
         var roomList = m_DungeonDeployer.GetRoom(roomId).Cells;
 
-        if (target == CHARA_TYPE.PLAYER || target == CHARA_TYPE.NONE)
+        if (target == CHARA_TYPE.FRIEND || target == CHARA_TYPE.NONE)
         {
             foreach (ICollector unit in m_UnitHolder.FriendList)
             {

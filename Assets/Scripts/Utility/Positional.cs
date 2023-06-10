@@ -31,7 +31,7 @@ public static class Positional
     /// <summary>
     /// Direction配列
     /// </summary>
-    private static readonly Vector3Int[] Direction = new Vector3Int[8]
+    public static readonly Vector3Int[] Directions = new Vector3Int[8]
     {
         new Vector3Int(-1, 0, -1), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, 0, 1),
         new Vector3Int(1, 0, 1), new Vector3Int(1, 0, 0), new Vector3Int(1, 0, -1),  new Vector3Int(0, 0, -1),
@@ -51,7 +51,7 @@ public static class Positional
                 return new Vector3Int(0, 0, 0);
         }
 
-        return Direction[(int)dir];
+        return Directions[(int)dir];
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public static class Positional
     public static DIRECTION ToDirEnum(this Vector3Int dir)
     {
         for (int i = 0; i < (int)DIRECTION.MAX; i++)
-            if (dir == Direction[i])
+            if (dir == Directions[i])
                 return (DIRECTION)i;
 
         return DIRECTION.NONE;

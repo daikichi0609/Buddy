@@ -27,9 +27,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
 
-    // カメラ追従キャンセル
-    private IDisposable m_CancelFollowing;
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -55,14 +52,14 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         // カメラ追従
         if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
         {
-            m_CancelFollowing = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+            var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
 
             // 死亡時
             var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_CancelFollowing.Dispose()).AddTo(CompositeDisposable);
+            battle.OnDead.SubscribeWithState(disposable, (_, self) => self.Dispose()).AddTo(CompositeDisposable);
 
             // その他
-            CompositeDisposable.Add(m_CancelFollowing);
+            CompositeDisposable.Add(disposable);
         }
 
         // 探索済みとしてマーク

@@ -99,7 +99,7 @@ public class TurnManager : ITurnManager
     IDisposable ITurnManager.RequestProhibitAction(ICollector requester)
     {
         m_ProhibitAllAction.Enqueue(new ProhibitRequest(requester));
-        return Disposable.Create(() => m_ProhibitAllAction.Dequeue());
+        return Disposable.CreateWithState(this, self => self.m_ProhibitAllAction.Dequeue());
     }
 
     /// <summary>

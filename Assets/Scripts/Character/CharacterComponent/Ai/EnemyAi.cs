@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using NaughtyAttributes;
+using Zenject;
 
 public interface IEnemyAi : IAiAction
 {

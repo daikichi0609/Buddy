@@ -32,7 +32,7 @@ public class CameraHandler : MonoBehaviour, ICameraHandler
         m_MainCamera.transform.localPosition = ms_KeepPos;
         m_MainCamera.transform.eulerAngles = ms_Angle;
 
-        return Disposable.Create(() => CancelParent());
+        return Disposable.CreateWithState(this, self => self.CancelParent());
     }
 
     /// <summary>

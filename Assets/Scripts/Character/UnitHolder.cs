@@ -15,20 +15,25 @@ public interface IUnitHolder
     ICollector Player { get; }
 
     /// <summary>
-    /// 味方
+    /// バディ
+    /// </summary>
+    ICollector Buddy { get; }
+
+    /// <summary>
+    /// 味方リスト
     /// </summary>
     List<ICollector> FriendList { get; }
 
     /// <summary>
-    /// 敵
+    /// 敵リスト
     /// </summary>
     List<ICollector> EnemyList { get; }
 
     /// <summary>
     /// プレイヤー追加
     /// </summary>
-    /// <param name="player"></param>
-    void AddPlayer(ICollector player);
+    /// <param name="friend"></param>
+    void AddFriend(ICollector friend);
 
     /// <summary>
     /// 敵追加
@@ -71,46 +76,48 @@ public class UnitHolder : IUnitHolder
     {
         get
         {
-            if (m_FriendList.Count != 0)
+            if (m_FriendList.Count >= 1)
                 return m_FriendList[0];
             else
                 return null;
         }
     }
-    [ShowNativeProperty]
-    private int FriendCount => m_FriendList.Count;
+    ICollector IUnitHolder.Buddy
+    {
+        get
+        {
+            if (m_FriendList.Count >= 2)
+                return m_FriendList[1];
+            else
+                return null;
+        }
+    }
 
     /// <summary>
     /// Enemyのコレクターリスト
     /// </summary>
-    [ReadOnly]
     private List<ICollector> m_EnemyList = new List<ICollector>();
     List<ICollector> IUnitHolder.EnemyList => m_EnemyList;
-    [ShowNativeProperty]
     private int EnemyCount => m_EnemyList.Count;
 
-    void IUnitHolder.AddPlayer(ICollector player) => m_FriendList.Add(player);
+    void IUnitHolder.AddFriend(ICollector friend) => m_FriendList.Add(friend);
     void IUnitHolder.AddEnemy(ICollector enemy) => m_EnemyList.Add(enemy);
     void IUnitHolder.RemoveUnit(ICollector unit)
     {
         foreach (ICollector player in m_FriendList)
-        {
             if (player == unit)
             {
                 m_FriendList.Remove(unit);
                 return;
             }
-        }
 
         foreach (ICollector enemy in m_EnemyList)
-        {
             if (enemy == unit)
             {
                 m_EnemyList.Remove(unit);
                 m_OnEnemyRemove.OnNext(EnemyCount);
                 return;
             }
-        }
     }
 
     /// <summary>

@@ -27,14 +27,14 @@ public interface ICharaBattle : IActorInterface
     /// </summary>
     /// <param name="attackInfo"></param>
     /// <returns></returns>
-    AttackResult Damage(AttackInfo attackInfo);
+    AttackResult Damage(AttackInfo attackInfo, out Task damageTask);
 
     /// <summary>
     /// 割合ダメージ
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    AttackResult DamagePercentage(AttackPercentageInfo attackInfo);
+    AttackResult DamagePercentage(AttackPercentageInfo attackInfo, out Task damageTask);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -62,7 +62,7 @@ public interface ICharaBattleEvent : IActorEvent
     /// <summary>
     /// 死亡時
     /// </summary>
-    IObservable<Unit> OnDead { get; }
+    IObservable<AttackResult> OnDead { get; }
 }
 
 public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
@@ -119,8 +119,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <summary>
     /// 死亡時に呼ばれる
     /// </summary>
-    private Subject<Unit> m_OnDead = new Subject<Unit>();
-    IObservable<Unit> ICharaBattleEvent.OnDead => m_OnDead;
+    private Subject<AttackResult> m_OnDead = new Subject<AttackResult>();
+    IObservable<AttackResult> ICharaBattleEvent.OnDead => m_OnDead;
 
     protected override void Register(ICollector owner)
     {
@@ -211,7 +211,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return AttackResult.Invalid;
         }
 
-        var result = battle.Damage(attackInfo);
+        var result = battle.Damage(attackInfo, out var _);
 
         //モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
@@ -224,10 +224,10 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="power"></param>
     /// <param name="dex"></param>
-    AttackResult ICharaBattle.Damage(AttackInfo attackInfo)
+    AttackResult ICharaBattle.Damage(AttackInfo attackInfo, out Task damageTask)
     {
         var result = BattleSystem.Damage(attackInfo, Owner);
-        DamageInternal(result, attackInfo.Direction);
+        damageTask = DamageInternal(result, attackInfo.Direction);
         return result;
     }
 
@@ -236,10 +236,11 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    AttackResult ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
+    AttackResult ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo, out Task damageTask)
     {
         var result = BattleSystem.DamagePercentage(attackInfo, Owner);
-        DamageInternal(result, attackInfo.Direction);
+        // awaitしない
+        damageTask = DamageInternal(result, attackInfo.Direction);
         return result;
     }
 
@@ -248,7 +249,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="result"></param>
     /// <param name="attackDir"></param>
-    private void DamageInternal(AttackResult result, DIRECTION attackDir)
+    private async Task DamageInternal(AttackResult result, DIRECTION attackDir)
     {
         m_OnDamageStart.OnNext(result);
 
@@ -257,8 +258,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         m_CharaMove.Face(attackDir.ToOppositeDir());
 
-        // awaitしない
-        var _ = PostDamage(result);
+        await PostDamage(result);
     }
 
     /// <summary>
@@ -272,15 +272,15 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         // 死亡
         if (result.IsDead == true)
-            Dead();
+            Dead(result);
     }
 
     /// <summary>
     /// 死亡時
     /// </summary>
-    private void Dead()
+    private void Dead(AttackResult result)
     {
-        m_OnDead.OnNext(Unit.Default);
+        m_OnDead.OnNext(result);
         Owner.Dispose();
     }
 }

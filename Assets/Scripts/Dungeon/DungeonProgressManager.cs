@@ -33,6 +33,11 @@ public interface IDungeonProgressManager
     /// 次の階層へ
     /// </summary>
     Task NextFloor();
+
+    /// <summary>
+    /// 現在の階層
+    /// </summary>
+    int CurrentFloor { get; }
     IObservable<int> FloorChanged { get; }
 
     /// <summary>
@@ -83,6 +88,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     /// 現在の階層
     /// </summary>
     private ReactiveProperty<int> m_CurrentFloor = new ReactiveProperty<int>(1);
+    int IDungeonProgressManager.CurrentFloor => m_CurrentFloor.Value;
     IObservable<int> IDungeonProgressManager.FloorChanged => m_CurrentFloor;
 
     async void IInitializable.Initialize() => await InitializeDungeon();

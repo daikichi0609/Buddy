@@ -84,7 +84,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
         if (m_DungeonHandler.GetCellId(m_CharaMove.Position) == TERRAIN_ID.STAIRS)
         {
             m_QuestionUiManager.SetQuestion(QUESTION_TYPE.STAIRS);
-            m_CharaTurn.WaitFinishActing(() => m_QuestionUiManager.Activate());
+            m_CharaTurn.WaitFinishActing(this, self => self.m_QuestionUiManager.Activate());
             return true;
         }
 
@@ -105,7 +105,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             if (m_CharaMove.Position == itemPos)
             {
                 var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing(() => m_CharaInventory.Put(item, disposable));
+                m_CharaTurn.WaitFinishActing(this, self => self.m_CharaInventory.Put(item, disposable));
                 return true;
             }
         }
@@ -119,7 +119,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// <returns></returns>
     private bool CheckTrap()
     {
-        if (m_TypeHolder.Type != CHARA_TYPE.PLAYER)
+        if (m_TypeHolder.Type != CHARA_TYPE.FRIEND)
             return false;
 
         var cell = m_DungeonHandler.GetCell(m_CharaMove.Position);
@@ -127,7 +127,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             if (handler.HasTrap == true)
             {
                 var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing(() => handler.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager, disposable));
+                m_CharaTurn.WaitFinishActing(handler, self => self.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager, disposable));
                 return true;
             }
 

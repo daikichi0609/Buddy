@@ -37,11 +37,11 @@ public interface ICharaTurn : IActorInterface
     void TurnEnd();
 
     /// <summary>
-    /// Acting = false を待って発火
+    /// Acting == false を待って発火
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    Task WaitFinishActing(Action action);
+    Task WaitFinishActing<T>(T self, Action<T> func);
 }
 
 public interface ICharaTurnEvent : IActorEvent
@@ -109,7 +109,7 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     {
         var ticket = new ActTicket();
         m_TicketHolder.Enqueue(ticket);
-        return Disposable.Create(() => m_TicketHolder.Dequeue());
+        return Disposable.CreateWithState(this, self => self.m_TicketHolder.Dequeue());
     }
 
     /// <summary>
@@ -144,13 +144,13 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
         m_CanAct.Value = true;
     }
 
-    async Task ICharaTurn.WaitFinishActing(Action action)
+    async Task ICharaTurn.WaitFinishActing<T>(T self, Action<T> action)
     {
         // IsActing -> false になるまで待つ
         while (IsActing == true)
             await Task.Delay(1);
 
-        action.Invoke();
+        action.Invoke(self);
     }
 
     [Serializable]

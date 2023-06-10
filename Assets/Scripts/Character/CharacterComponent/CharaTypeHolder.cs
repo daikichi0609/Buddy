@@ -12,7 +12,7 @@ using Zenject;
 public enum CHARA_TYPE
 {
     NONE,
-    PLAYER,
+    FRIEND,
     ENEMY,
 }
 
@@ -31,9 +31,6 @@ public interface ICharaTypeHolder : IActorInterface
 
 public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
 {
-    [Inject]
-    private IDungeonProgressManager m_DungeonProgressManager;
-
     /// <summary>
     /// 味方か敵か
     /// </summary>
@@ -52,36 +49,5 @@ public class CharaTypeHolder : ActorComponentBase, ICharaTypeHolder
     {
         base.Register(owner);
         owner.Register<ICharaTypeHolder>(this);
-    }
-
-    protected override void Initialize()
-    {
-        base.Initialize();
-
-        // プレイヤー
-        if (Owner.RequireInterface<IPlayerInput>(out var _) == true)
-        {
-            m_Type = CHARA_TYPE.PLAYER;
-            m_TargetType = CHARA_TYPE.ENEMY;
-        }
-        // バディ
-        else if (Owner.RequireInterface<IFriendAi>(out var _) == true)
-        {
-            m_Type = CHARA_TYPE.PLAYER;
-            m_TargetType = CHARA_TYPE.ENEMY;
-        }
-        // 敵
-        else if (Owner.RequireInterface<IEnemyAi>(out var _) == true)
-        {
-            m_Type = CHARA_TYPE.ENEMY;
-            m_TargetType = CHARA_TYPE.PLAYER;
-        }
-
-        // プレイヤーなら死亡時にゲーム終了の処理
-        if (m_Type == CHARA_TYPE.PLAYER)
-        {
-            var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
-        }
     }
 }

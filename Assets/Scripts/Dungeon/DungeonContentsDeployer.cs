@@ -247,7 +247,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
         player.Initialize();
 
         // 追加
-        m_UnitHolder.AddPlayer(player);
+        m_UnitHolder.AddFriend(player);
         return Task.CompletedTask;
     }
 
@@ -273,7 +273,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
         friend.Initialize();
 
         // 追加
-        m_UnitHolder.AddPlayer(friend);
+        m_UnitHolder.AddFriend(friend);
         return Task.CompletedTask;
     }
 

@@ -16,7 +16,7 @@ MonoBehaviour:
   m_FloorCount: 1
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 3, y: 4}
-  m_EnemyTable: {fileID: 11400000, guid: e14b30015173b4c5c8e74c7d65280d3d, type: 2}
+  m_EnemyTable: {fileID: 11400000, guid: 5e17b93d1a03a4b71b7eab7ad832443f, type: 2}
   m_EnemyCountRange: {x: 2, y: 4}
   m_MonsterHouseRate: 0
   m_TrapCountRange: {x: 0, y: 0}

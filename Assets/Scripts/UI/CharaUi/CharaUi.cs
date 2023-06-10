@@ -11,6 +11,9 @@ public class CharaUi : MonoBehaviour
     [SerializeField]
     private Slider m_HpSlider;
 
+    [SerializeField]
+    private Text m_HpValue;
+
     public void Initialize(ICollector target)
     {
         var status = target.GetInterface<ICharaStatus>();
@@ -28,7 +31,11 @@ public class CharaUi : MonoBehaviour
         }
 
         m_CharaName.text = m_Target.CurrentStatus.OriginParam.GivenName.ToString();
-        m_HpSlider.maxValue = m_Target.CurrentStatus.OriginParam.MaxHp;
-        m_HpSlider.value = m_Target.CurrentStatus.Hp;
+
+        int maxHp = m_Target.CurrentStatus.OriginParam.MaxHp;
+        int hp = m_Target.CurrentStatus.Hp;
+        m_HpSlider.maxValue = maxHp;
+        m_HpSlider.value = hp;
+        m_HpValue.text = hp + " / " + maxHp;
     }
 }

@@ -64,7 +64,7 @@ public partial class FriendAi : CharaAi, IFriendAi
                         var info = pair.Value.GetInterface<ICellInfoHandler>();
 
                         // Unit存在判定
-                        if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.PLAYER) == false)
+                        if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.FRIEND) == false)
                             continue;
 
                         // 隣にいるなら

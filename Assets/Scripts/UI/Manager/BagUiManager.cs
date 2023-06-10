@@ -34,6 +34,8 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     private IUnitHolder m_UnitHolder;
     [Inject]
     private IUnitFinder m_UnitFinder;
+    [Inject]
+    private ITeamInventory m_TeamInventory;
 
     [SerializeField]
     private BagUiManager.BagUi m_UiInterface = new BagUi();
@@ -41,9 +43,9 @@ public class BagUiManager : UiManagerBase, IBagUiManager
 
     protected override OptionElement CreateOptionElement()
     {
-        var player = m_UnitHolder.FriendList[0];
+        var player = m_UnitHolder.Player;
         var inventory = player.GetInterface<ICharaInventory>();
-        var items = inventory.Items;
+        var items = m_TeamInventory.Items;
         int itemCount = items.Length;
 
         var effects = new Action[itemCount];
@@ -61,7 +63,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
             {
                 var disposable = m_TurnManager.RequestProhibitAction(null);
                 Deactivate(false);
-                await effect.Effect(player, item, m_ItemManager, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, disposable);
+                await effect.Effect(player, item, m_TeamInventory, m_ItemManager, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, disposable);
             };
             names[index] = name.ToString();
         }

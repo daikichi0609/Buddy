@@ -13,7 +13,9 @@ public static class BattleSystem
         bool isHit = info.Dex >= random;
 
         // ダメージ
-        int damage = info.IgnoreDefence ? info.Atk : info.Atk - defenderStatus.Def;
+        random = UnityEngine.Random.Range(0.8f, 1f);
+        int power = (int)(info.Atk * random);
+        int damage = info.IgnoreDefence ? power : power - defenderStatus.Def;
 
         // 急所判定
         random = UnityEngine.Random.Range(0, 1f);
@@ -23,11 +25,17 @@ public static class BattleSystem
         if (isCritical == true)
             damage *= 2;
 
-        int hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
-        bool isDead = hp == 0;
+        // ダメージは1以上
+        damage = Mathf.Max(damage, 1);
 
-        defenderStatus.Hp = hp;
-        return new AttackResult(defender, isHit, damage, isCritical, hp, isDead);
+        // ヒットしているならHpを削る
+        if (isHit == true)
+            defenderStatus.Hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
+
+        // 死亡しているか
+        bool isDead = defenderStatus.Hp == 0;
+
+        return new AttackResult(info.Attacker, defender, isHit, damage, isCritical, defenderStatus.Hp, isDead);
     }
 
     public static AttackResult DamagePercentage(AttackPercentageInfo info, ICollector defender)
@@ -37,10 +45,10 @@ public static class BattleSystem
         var random = UnityEngine.Random.Range(0, 1f);
         bool isHit = info.Dex >= random;
         int damage = (int)(defenderStatus.Hp * info.Ratio);
-        int hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
-        bool isDead = hp == 0;
+        if (isHit == true)
+            defenderStatus.Hp = Mathf.Clamp(defenderStatus.Hp - damage, 0, int.MaxValue);
 
-        defenderStatus.Hp = hp;
-        return new AttackResult(defender, isHit, damage, false, hp, isDead);
+        bool isDead = defenderStatus.Hp == 0;
+        return new AttackResult(info.Attacker, defender, isHit, damage, false, defenderStatus.Hp, isDead);
     }
 }

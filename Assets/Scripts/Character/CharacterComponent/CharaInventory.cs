@@ -3,26 +3,16 @@ using UniRx;
 using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using Zenject;
 
 public interface ICharaInventory : IActorInterface
 {
-    /// <summary>
-    /// 所持しているアイテム
-    /// </summary>
-    IItemHandler[] Items { get; }
-
     /// <summary>
     /// アイテムをしまう
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool Put(IItemHandler item, IDisposable disposable);
-
-    /// <summary>
-    /// アイテムを消費する
-    /// </summary>
-    /// <param name="item"></param>
-    void Consume(IItemHandler item);
+    void Put(IItemHandler item, IDisposable disposable);
 }
 
 public interface ICharaInventoryEvent : IActorInterface
@@ -47,10 +37,8 @@ public readonly struct ItemPutInfo
 
 public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInventoryEvent
 {
-    private static readonly int InventoryCount = 9;
-
-    private List<IItemHandler> m_ItemList = new List<IItemHandler>();
-    IItemHandler[] ICharaInventory.Items => m_ItemList.ToArray();
+    [Inject]
+    private ITeamInventory m_TeamInventory;
 
     Subject<ItemPutInfo> m_OnPutItem = new Subject<ItemPutInfo>();
     IObservable<ItemPutInfo> ICharaInventoryEvent.OnPutItem => m_OnPutItem;
@@ -67,31 +55,15 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool ICharaInventory.Put(IItemHandler item, IDisposable disposable)
+    void ICharaInventory.Put(IItemHandler item, IDisposable disposable)
     {
         disposable.Dispose();
 
-        if (m_ItemList.Count < InventoryCount)
+        bool put = m_TeamInventory.TryPut(item);
+        if (put == true)
         {
-            m_ItemList.Add(item);
             item.OnPut();
             m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
-            return true;
         }
-        else
-        {
-#if DEBUG
-            Debug.Log("アイテムがいっぱいです");
-#endif
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// アイテムを消費する
-    /// </summary>
-    void ICharaInventory.Consume(IItemHandler item)
-    {
-        m_ItemList.Remove(item);
     }
 }

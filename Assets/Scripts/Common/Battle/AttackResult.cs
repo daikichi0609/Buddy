@@ -5,6 +5,11 @@ using UnityEngine;
 public readonly struct AttackResult
 {
     /// <summary>
+    /// 攻撃者
+    /// </summary>
+    public ICollector Attacker { get; }
+
+    /// <summary>
     /// 被攻撃者
     /// </summary>
     public ICollector Defender { get; }
@@ -39,8 +44,9 @@ public readonly struct AttackResult
     /// </summary>
     public bool IsDead { get; }
 
-    public AttackResult(ICollector defender, bool isHit, int damage, bool isCritical, int remainingHp, bool isDead)
+    public AttackResult(ICollector attacker, ICollector defender, bool isHit, int damage, bool isCritical, int remainingHp, bool isDead)
     {
+        Attacker = attacker;
         Defender = defender;
         Name = Defender.GetInterface<ICharaStatus>().CurrentStatus.OriginParam.GivenName;
         IsHit = isHit;

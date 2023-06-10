@@ -742,6 +742,21 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 2114257274}
+    - target: {fileID: 2126199722139832230, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126199722139832230, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2232923540722938566, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3228300144086927232, guid: 706c0944bdc85487b8200ab5c8ed0d49,
         type: 3}
       propertyPath: m_Color.b
@@ -796,6 +811,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4255678930808990037, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4677277157222064922, guid: 706c0944bdc85487b8200ab5c8ed0d49,
         type: 3}

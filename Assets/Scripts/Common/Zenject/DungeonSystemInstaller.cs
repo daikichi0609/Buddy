@@ -140,5 +140,20 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+
+        // インベントリ
+        Container.Bind<ITeamInventory>()
+            .To<TeamInventory>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // チームレベル
+        Container.Bind(typeof(ITeamLevelHandler), typeof(IInitializable))
+            .To<TeamLevelHandler>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
     }
 }
