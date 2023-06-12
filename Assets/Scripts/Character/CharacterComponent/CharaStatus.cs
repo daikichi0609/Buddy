@@ -5,13 +5,16 @@ using UnityEngine;
 using NaughtyAttributes;
 using Zenject;
 using UniRx;
+using Zenject.SpaceFighter;
 
 public interface ICharaStatus : IActorInterface
 {
     /// <summary>
-    /// セットアップ
+    /// ステータスセット
     /// </summary>
-    CharacterSetup Setup { get; }
+    /// <param name="param"></param>
+    /// <returns></returns>
+    void SetStatus(CurrentStatus status);
 
     /// <summary>
     /// ステータスセット
@@ -41,12 +44,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private IUnitHolder m_UnitHolder;
 
     /// <summary>
-    /// セットアップ
-    /// </summary>
-    private CharacterSetup m_Setup;
-    CharacterSetup ICharaStatus.Setup => m_Setup;
-
-    /// <summary>
     /// 現在のステータス
     /// </summary>
     [SerializeField, ReadOnly]
@@ -64,29 +61,45 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     /// <summary>
     /// ステータスセット
     /// </summary>
+    /// <param name="status"></param>
+    void ICharaStatus.SetStatus(CurrentStatus status)
+    {
+        m_CurrentStatus = status;
+        if (m_CurrentStatus.OriginParam is PlayerStatus.PlayerParameter)
+            PostSetFriendStatus();
+        else if (m_CurrentStatus.OriginParam is EnemyStatus.EnemyParameter)
+            PostSetEnemyStatus(m_CurrentStatus.OriginParam as EnemyStatus.EnemyParameter);
+    }
+
+    /// <summary>
+    /// ステータスセット
+    /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
     void ICharaStatus.SetStatus(CharacterSetup setup)
     {
-        m_Setup = setup;
-        var status = m_Setup.Status;
+        var status = setup.Status;
 
         if (status is PlayerStatus)
-            SetPlayerStatus(status as PlayerStatus);
+            SetFriendStatus(setup, status as PlayerStatus);
         else if (status is EnemyStatus)
-            SetEnemyStatus(status as EnemyStatus);
+            SetEnemyStatus(setup, status as EnemyStatus);
     }
 
     /// <summary>
-    /// プレイヤー
+    /// 味方ステータスセット
     /// </summary>
     /// <param name="playerStatus"></param>
-    private void SetPlayerStatus(PlayerStatus playerStatus)
+    private void SetFriendStatus(CharacterSetup setup, PlayerStatus playerStatus)
     {
         BattleStatus.Parameter param = new BattleStatus.Parameter(playerStatus.Param);
         int level = m_TeamLevelHandler.Level;
-        m_CurrentStatus = new CurrentStatus(param, level);
+        m_CurrentStatus = new CurrentStatus(setup, param, level);
 
+        PostSetFriendStatus();
+    }
+    private void PostSetFriendStatus()
+    {
         // タイプセット
         if (Owner.RequireInterface<ICharaTypeHolder>(out var type) == true)
         {
@@ -111,12 +124,16 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     /// 敵ステータスセット
     /// </summary>
     /// <param name="enemyStatus"></param>
-    private void SetEnemyStatus(EnemyStatus enemyStatus)
+    private void SetEnemyStatus(CharacterSetup setup, EnemyStatus enemyStatus)
     {
         BattleStatus.Parameter param = new BattleStatus.Parameter(enemyStatus.Param);
         int level = m_DungeonProgressManager.CurrentFloor;
-        m_CurrentStatus = new CurrentStatus(param, level);
+        m_CurrentStatus = new CurrentStatus(setup, param, level);
 
+        PostSetEnemyStatus(enemyStatus.Param);
+    }
+    private void PostSetEnemyStatus(EnemyStatus.EnemyParameter enemyParam)
+    {
         // タイプセット
         if (Owner.RequireInterface<ICharaTypeHolder>(out var type) == true)
         {
@@ -127,14 +144,14 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         // 死亡時に経験値を与える
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDead.SubscribeWithState2(this, enemyStatus, (result, self, enemyStatus) =>
+            battle.OnDead.SubscribeWithState2(this, enemyParam, (result, self, enemyStatus) =>
             {
                 foreach (var unit in self.m_UnitHolder.FriendList)
                 {
                     // 味方キャラによるキルなら経験値加算
                     if (result.Attacker == unit)
                     {
-                        self.m_TeamLevelHandler.AddExperience(enemyStatus.Param.Ex);
+                        self.m_TeamLevelHandler.AddExperience(enemyParam.Ex);
                         break;
                     }
                 }

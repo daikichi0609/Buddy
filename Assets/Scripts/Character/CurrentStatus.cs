@@ -15,14 +15,23 @@ public class CurrentStatus
     /// 初期化
     /// </summary>
     /// <param name="param"></param>
-    public CurrentStatus(BattleStatus.Parameter param, int lv)
+    public CurrentStatus(CharacterSetup setup, BattleStatus.Parameter param, int lv)
     {
+        Setup = setup;
         OriginParam = param;
         Lv = lv;
         Hp = OriginParam.MaxHp;
     }
 
-    // 元ステータス
+    /// <summary>
+    /// 元セットアップ
+    /// </summary>
+    [ShowNativeProperty]
+    public CharacterSetup Setup { get; }
+
+    /// <summary>
+    /// 元ステータス
+    /// </summary>
     [ShowNativeProperty]
     public BattleStatus.Parameter OriginParam { get; }
 

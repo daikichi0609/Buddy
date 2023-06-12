@@ -66,7 +66,7 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
 
     protected override void Dispose()
     {
-        var setup = Owner.GetInterface<ICharaStatus>().Setup;
+        var setup = Owner.GetInterface<ICharaStatus>().CurrentStatus.Setup;
         m_ObjectPoolController.SetObject(setup, m_MoveObject);
         base.Dispose();
     }

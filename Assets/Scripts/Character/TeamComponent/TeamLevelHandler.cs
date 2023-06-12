@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using UniRx;
-using static UnityEngine.UI.GridLayoutGroup;
 using System;
 
 public interface ITeamLevelHandler

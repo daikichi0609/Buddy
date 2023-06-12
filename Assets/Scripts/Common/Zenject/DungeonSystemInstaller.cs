@@ -10,6 +10,9 @@ public class DungeonSystemInstaller : MonoInstaller
     private bool m_Initialize;
 
     [SerializeField]
+    private bool m_SpawnRandomEnemy;
+
+    [SerializeField]
     private GameObject m_DungeonUiSystem;
 
     public override void InstallBindings()
@@ -62,6 +65,48 @@ public class DungeonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // 味方生成
+        Container.Bind<IDungeonFriendSpawner>()
+            .To<DungeonFriendSpawner>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // 敵生成
+        Container.Bind<IDungeonEnemySpawner>()
+            .To<DungeonEnemySpawner>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // アイテム生成
+        Container.Bind<IDungeonItemSpawner>()
+            .To<DungeonItemSpawner>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // インベントリ
+        Container.Bind<ITeamInventory>()
+            .To<TeamInventory>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // チームレベル
+        Container.Bind(typeof(ITeamLevelHandler), typeof(IInitializable))
+            .To<TeamLevelHandler>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // インベントリ
+        Container.Bind<ITeamStatusHolder>()
+            .To<TeamStatusHolder>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
 
         // アイテム管理
         Container.Bind<IItemManager>()
@@ -97,6 +142,7 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromNew()
             .AsSingle()
             .NonLazy();
+
 
 
         // メニュー
@@ -141,18 +187,10 @@ public class DungeonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
-
-        // インベントリ
-        Container.Bind<ITeamInventory>()
-            .To<TeamInventory>()
-            .FromNew()
-            .AsSingle()
-            .NonLazy();
-
-        // チームレベル
-        Container.Bind(typeof(ITeamLevelHandler), typeof(IInitializable))
-            .To<TeamLevelHandler>()
-            .FromNew()
+        // チームレベルUi
+        Container.Bind<TeamLevelUiManager>()
+            .To<TeamLevelUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
     }
