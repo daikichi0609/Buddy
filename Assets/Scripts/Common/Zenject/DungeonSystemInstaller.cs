@@ -79,6 +79,16 @@ public class DungeonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // 敵自動沸き
+        if (m_SpawnRandomEnemy == true)
+        {
+            Container.Bind(typeof(IDungeonEnemyAutoSpawner), typeof(IInitializable))
+                .To<DungeonEnemyAutoSpawner>()
+                .FromNew()
+                .AsSingle()
+                .NonLazy();
+        }
+
         // アイテム生成
         Container.Bind<IDungeonItemSpawner>()
             .To<DungeonItemSpawner>()
@@ -106,6 +116,7 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromNew()
             .AsSingle()
             .NonLazy();
+
 
 
         // アイテム管理

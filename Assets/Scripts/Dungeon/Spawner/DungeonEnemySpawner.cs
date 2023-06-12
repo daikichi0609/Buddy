@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -59,7 +60,7 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
     /// 敵をランダムスポーンさせる
     /// </summary>
     /// <param name="count"></param>
-    async Task IDungeonEnemySpawner.SpawnRandomEnemy(int count)
+    private async Task SpawnRandomEnemy(int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -72,5 +73,41 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
 
             await SpawnEnemy(setup, pos);
         }
+    }
+    Task IDungeonEnemySpawner.SpawnRandomEnemy(int count) => SpawnRandomEnemy(count);
+
+    /// <summary>
+    /// 敵をランダムスポーンさせる
+    /// </summary>
+    /// <param name="count"></param>
+    private async Task SpawnRandomEnemy()
+    {
+        var playerPos = m_UnitHolder.Player.GetInterface<ICharaMove>().Position;
+        if (m_DungeonHandler.TryGetRoomId(playerPos, out var id) == false)
+        {
+            await SpawnRandomEnemy(1);
+            return;
+        }
+
+        // 敵のセットアップをランダム取得
+        var setup = m_DungeonProgressManager.GetRandomEnemySetup();
+        Vector3 pos = default;
+
+        while (true)
+        {
+            // 座標
+            var cellPos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
+            if (m_DungeonHandler.TryGetRoomId(playerPos, out var spawnId) == false)
+                continue;
+
+            // 違う部屋なら
+            if (id != spawnId)
+            {
+                pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z);
+                break;
+            }
+        }
+
+        await SpawnEnemy(setup, pos);
     }
 }

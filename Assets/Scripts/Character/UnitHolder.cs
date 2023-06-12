@@ -30,6 +30,11 @@ public interface IUnitHolder
     List<ICollector> EnemyList { get; }
 
     /// <summary>
+    /// 敵の数
+    /// </summary>
+    int EnemyCount { get; }
+
+    /// <summary>
     /// プレイヤー追加
     /// </summary>
     /// <param name="friend"></param>
@@ -55,17 +60,17 @@ public interface IUnitHolder
 
 public class UnitHolder : IUnitHolder
 {
-    /// <summary>
-    /// 敵除外イベント
-    /// </summary>
-    private Subject<int> m_OnEnemyRemove = new Subject<int>();
-    IObservable<int> IUnitHolder.OnEnemyRemove => m_OnEnemyRemove;
-
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
         dungeonContentsDeployer.OnRemoveContents.SubscribeWithState(this, (_, self) => self.ClearList());
     }
+
+    /// <summary>
+    /// 敵除外イベント
+    /// </summary>
+    private Subject<int> m_OnEnemyRemove = new Subject<int>();
+    IObservable<int> IUnitHolder.OnEnemyRemove => m_OnEnemyRemove;
 
     /// <summary>
     /// Playerのコレクターリスト
@@ -99,6 +104,7 @@ public class UnitHolder : IUnitHolder
     private List<ICollector> m_EnemyList = new List<ICollector>();
     List<ICollector> IUnitHolder.EnemyList => m_EnemyList;
     private int EnemyCount => m_EnemyList.Count;
+    int IUnitHolder.EnemyCount => EnemyCount;
 
     void IUnitHolder.AddFriend(ICollector friend) => m_FriendList.Add(friend);
     void IUnitHolder.AddEnemy(ICollector enemy) => m_EnemyList.Add(enemy);

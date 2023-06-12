@@ -450,6 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Initialize: 1
+  m_SpawnRandomEnemy: 1
   m_DungeonUiSystem: {fileID: 1862151905159314750}
 --- !u!114 &1263038316
 MonoBehaviour:

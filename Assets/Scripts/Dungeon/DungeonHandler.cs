@@ -80,6 +80,8 @@ public class DungeonHandler : IDungeonHandler
     [Inject]
     private IDungeonDeployer m_DungeonDeployer;
     [Inject]
+    private IDungeonHandler m_DungeonHandler;
+    [Inject]
     private IItemManager m_ItemManager;
     [Inject]
     private IUnitFinder m_UnitFinder;
@@ -221,6 +223,11 @@ public class DungeonHandler : IDungeonHandler
 
         // アイテム
         if (m_ItemManager.IsItemOn(pos) == true)
+            return false;
+
+        // 罠
+        var cell = m_DungeonHandler.GetCell(pos);
+        if (cell.GetInterface<ITrapHandler>().HasTrap == true)
             return false;
 
         return true;
