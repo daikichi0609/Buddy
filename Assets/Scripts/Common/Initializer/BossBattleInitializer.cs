@@ -16,6 +16,8 @@ public class BossBattleInitializer : SceneInitializer
     protected IDungeonProgressManager m_DungeonProgressManager;
     [Inject]
     private IUnitHolder m_UnitHolder;
+    [Inject]
+    private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
 
     protected override string FungusMessage => "BossBattleStart";
     private static readonly float OFFSET_Y = 0.5f;
@@ -188,6 +190,8 @@ public class BossBattleInitializer : SceneInitializer
         // BGM
         var bgm = Instantiate(bossBattleSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
+
+        m_DungeonCharacterProgressManager.AdoptSaveData();
 
         // 敵がいなくなったら終了
         m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>

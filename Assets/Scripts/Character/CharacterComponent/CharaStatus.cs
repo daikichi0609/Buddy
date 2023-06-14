@@ -10,6 +10,11 @@ using Zenject.SpaceFighter;
 public interface ICharaStatus : IActorInterface
 {
     /// <summary>
+    /// 敵レベルに上乗せするレベル
+    /// </summary>
+    int EnemyLevelBase { set; }
+
+    /// <summary>
     /// ステータスセット
     /// </summary>
     /// <param name="param"></param>
@@ -42,6 +47,11 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private IDungeonProgressManager m_DungeonProgressManager;
     [Inject]
     private IUnitHolder m_UnitHolder;
+
+    private int EnemyLevelBase { get; set; }
+    int ICharaStatus.EnemyLevelBase { set => EnemyLevelBase = value; }
+
+    private static readonly int ENEMY_RATIO = 3;
 
     /// <summary>
     /// 現在のステータス
@@ -127,7 +137,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private void SetEnemyStatus(CharacterSetup setup, EnemyStatus enemyStatus)
     {
         BattleStatus.Parameter param = new BattleStatus.Parameter(enemyStatus.Param);
-        int level = m_DungeonProgressManager.CurrentFloor;
+        int level = (m_DungeonProgressManager.CurrentFloor + EnemyLevelBase) * ENEMY_RATIO;
         m_CurrentStatus = new CurrentStatus(setup, param, level);
 
         PostSetEnemyStatus(enemyStatus.Param);

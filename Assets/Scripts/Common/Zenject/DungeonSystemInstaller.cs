@@ -58,6 +58,13 @@ public class DungeonSystemInstaller : MonoInstaller
                 .NonLazy();
         }
 
+        // ダンジョンキャラ状態保存
+        Container.Bind<IDungeonCharacterProgressManager>()
+            .To<DungeonCharacterProgressManager>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
         // オブジェクトプール
         Container.Bind<IObjectPoolController>()
             .To<ObjectPoolController>()

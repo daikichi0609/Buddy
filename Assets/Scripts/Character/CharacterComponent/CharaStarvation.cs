@@ -7,6 +7,11 @@ using Zenject;
 public interface ICharaStarvation : IActorInterface
 {
     /// <summary>
+    /// 空腹値
+    /// </summary>
+    int Hungry { get; set; }
+
+    /// <summary>
     /// 空腹状態かどうか
     /// </summary>
     bool IsStarvate { get; }
@@ -32,6 +37,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// 空腹値
     /// </summary>
     private int m_Hungry = 0;
+    int ICharaStarvation.Hungry { get => m_Hungry; set => m_Hungry = value; }
 
     /// <summary>
     /// 空腹であるかどうか
@@ -65,7 +71,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// <summary>
     /// 空腹値減少インターバル
     /// </summary>
-    private static readonly int HUNGRY_TURN = 5;
+    private static readonly int HUNGRY_TURN = 3;
 
     /// <summary>
     /// 空腹による体力減少インターバル

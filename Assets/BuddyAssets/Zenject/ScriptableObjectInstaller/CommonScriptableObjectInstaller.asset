@@ -16,4 +16,6 @@ MonoBehaviour:
   m_ProgressHolder: {fileID: 11400000, guid: ef237522cbeff4433967f01e611682a0, type: 2}
   m_CurrentCharacterHolder: {fileID: 11400000, guid: aa4d5e6da00a248c4aa5459c519ec4a8,
     type: 2}
+  m_DungeonCharacterSaveData: {fileID: 11400000, guid: 3649a4c86320345c4b489e0f417f1b9f,
+    type: 2}
   m_MasterData: {fileID: 11400000, guid: b5f921f56974c4d4389484cac827d904, type: 2}

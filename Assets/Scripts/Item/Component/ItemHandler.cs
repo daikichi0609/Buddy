@@ -84,14 +84,15 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     void IItemHandler.OnPut()
     {
         m_ItemManager.RemoveItem(this);
-        m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
+        Dispose();
     }
 
     /// <summary>
     /// オブジェクトプールに入る
     /// </summary>
-    void IDisposable.Dispose()
+    private void Dispose()
     {
         m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
     }
+    void IDisposable.Dispose() => Dispose();
 }

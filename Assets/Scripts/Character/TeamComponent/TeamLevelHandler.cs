@@ -8,6 +8,11 @@ using System;
 public interface ITeamLevelHandler
 {
     /// <summary>
+    /// Exp
+    /// </summary>
+    float Exp { get; set; }
+
+    /// <summary>
     /// レベル
     /// </summary>
     int Level { get; }
@@ -46,6 +51,8 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     private IUnitHolder m_UnitHolder;
     [Inject]
     private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IDungeonContentsDeployer m_DungeonContentsDeployer;
 
     /// <summary>
     /// 経験値テーブル
@@ -57,6 +64,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     /// 累計経験値
     /// </summary>
     private ReactiveProperty<float> m_TotalExp = new ReactiveProperty<float>();
+    float ITeamLevelHandler.Exp { get => m_TotalExp.Value; set => m_TotalExp.Value = value; }
 
     /// <summary>
     /// レベル情報
@@ -110,17 +118,22 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
 
         void SubscribeGetExp()
         {
-            // 同じ部屋にいる || 近傍マスにいるならBuddyゲージ増加
+            // 同じ部屋にいる || 近傍マスにいるなら経験値増加
             m_TurnManager.OnTurnEnd.SubscribeWithState(this, (_, self) =>
             {
-                var playerPos = self.m_UnitHolder.Player.GetInterface<ICharaMove>().Position;
-                var buddyPos = self.m_UnitHolder.Buddy.GetInterface<ICharaMove>().Position;
+                var player = self.m_UnitHolder.Player;
+                var buddy = self.m_UnitHolder.Buddy;
+                if (player == null || buddy == null)
+                    return;
+
+                var playerPos = player.GetInterface<ICharaMove>().Position;
+                var buddyPos = buddy.GetInterface<ICharaMove>().Position;
                 // 同じ部屋にいるなら
                 if (self.m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
                     self.m_DungeonHandler.TryGetRoomId(buddyPos, out var buddyId) == true &&
                     playerId == buddyId)
                 {
-                    self.AddExperience(0.1f);
+                    self.AddExperience(0.5f);
                     return;
                 }
 
@@ -129,12 +142,10 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
                     var pos = playerPos + dir;
                     if (buddyPos == pos)
                     {
-                        self.AddExperience(0.1f);
+                        self.AddExperience(0.5f);
                         return;
                     }
                 }
-
-                self.AddExperience(-1f);
             });
         }
     }

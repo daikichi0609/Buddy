@@ -14,6 +14,13 @@ public interface IDungeonItemSpawner
     Task SpawnItem(ItemSetup setup, Vector3Int pos);
 
     /// <summary>
+    /// アイテムを生成する
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    Task SpawnItem(ItemSetup setup, Vector3Int pos, GameObject content);
+
+    /// <summary>
     /// ランダムなアイテムを生成する
     /// </summary>
     /// <param name="count"></param>
@@ -37,10 +44,20 @@ public class DungeonItemSpawner : IDungeonItemSpawner
     /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
-    private Task SpawnItem(ItemSetup setup, Vector3Int pos)
+    private async Task SpawnItem(ItemSetup setup, Vector3Int pos)
     {
         var content = m_ObjectPoolController.GetObject(setup);
+        await SpawnItem(setup, pos, content);
+    }
+    Task IDungeonItemSpawner.SpawnItem(ItemSetup setup, Vector3Int pos) => SpawnItem(setup, pos);
 
+    /// <summary>
+    /// 任意のアイテムを生成する
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    private Task SpawnItem(ItemSetup setup, Vector3Int pos, GameObject content)
+    {
         IItemHandler item = content.GetComponent<ItemHandler>();
         item.Initialize(setup as ItemSetup, content, pos);
 
@@ -49,13 +66,13 @@ public class DungeonItemSpawner : IDungeonItemSpawner
 
         return Task.CompletedTask;
     }
-    Task IDungeonItemSpawner.SpawnItem(ItemSetup setup, Vector3Int pos) => SpawnItem(setup, pos);
+    Task IDungeonItemSpawner.SpawnItem(ItemSetup setup, Vector3Int pos, GameObject content) => SpawnItem(setup, pos, content);
 
     /// <summary>
     /// アイテムをランダムスポーンさせる
     /// </summary>
     /// <param name="count"></param>
-    Task IDungeonItemSpawner.SpawnRandomItem(int count)
+    async Task IDungeonItemSpawner.SpawnRandomItem(int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -64,8 +81,7 @@ public class DungeonItemSpawner : IDungeonItemSpawner
             // 初期化
             var cellPos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
             var pos = new Vector3Int(cellPos.x, 0, cellPos.z);
-            SpawnItem(setup, pos);
+            await SpawnItem(setup, pos);
         }
-        return Task.CompletedTask;
     }
 }

@@ -22,11 +22,18 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
     private DungeonProgressHolder m_ProgressHolder;
 
     /// <summary>
-    /// アウトゲーム情報
+    /// キャラクター情報
     /// </summary>
     [SerializeField]
     [Expandable]
     private CurrentCharacterHolder m_CurrentCharacterHolder;
+
+    /// <summary>
+    /// ダンジョン途中キャラクター持ち越し情報
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private DungeonCharacterProgressSaveData m_DungeonCharacterSaveData;
 
     /// <summary>
     /// マスターデータ
@@ -40,6 +47,7 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
         Container.BindInstance(m_HomeSetup).AsSingle();
         Container.BindInstance(m_ProgressHolder).AsSingle();
         Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
+        Container.BindInstance(m_DungeonCharacterSaveData).AsSingle();
         Container.BindInstance(m_MasterData.CharacterMasterSetup).AsSingle();
     }
 }

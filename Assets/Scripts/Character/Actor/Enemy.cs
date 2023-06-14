@@ -12,6 +12,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharaTypeHolder))]
 [RequireComponent(typeof(CharaLastActionHolder))]
 
+[RequireComponent(typeof(CharaCellEventChecker))]
+[RequireComponent(typeof(CharaInventory))]
+
 [RequireComponent(typeof(EnemyAi))]
 
 public class Enemy : MonoBehaviour { }

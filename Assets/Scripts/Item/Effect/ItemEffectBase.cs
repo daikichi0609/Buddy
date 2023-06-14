@@ -6,7 +6,7 @@ using UnityEngine;
 
 public interface IItemEffect
 {
-    Task Effect(ICollector owner, IItemHandler item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable);
+    Task Effect(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable);
 }
 
 public readonly struct ItemEffectContext
@@ -58,9 +58,9 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// アイテム効果
     /// </summary>
     /// <param name="owner"></param>
-    public async Task Effect(ICollector owner, IItemHandler item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable)
+    public async Task Effect(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IDisposable disposable)
     {
-        await EffectInternal(new ItemEffectContext(owner, item.Setup, itemManager, dungeonHandler, unitFinder, battleLogManager));
+        await EffectInternal(new ItemEffectContext(owner, item, itemManager, dungeonHandler, unitFinder, battleLogManager));
         PostEffect(owner, item, inventory, disposable);
     }
 
@@ -77,7 +77,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// アイテム共通処理
     /// </summary>
     /// <param name="owner"></param>
-    private void PostEffect(ICollector owner, IItemHandler item, ITeamInventory inventory, IDisposable disposable)
+    private void PostEffect(ICollector owner, ItemSetup item, ITeamInventory inventory, IDisposable disposable)
     {
         // アイテム消費
         inventory.Consume(item);

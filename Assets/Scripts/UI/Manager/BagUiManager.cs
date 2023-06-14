@@ -57,8 +57,8 @@ public class BagUiManager : UiManagerBase, IBagUiManager
         for (index = 0; index < itemCount; index++)
         {
             var item = items[index];
-            var name = item.Setup.ItemName;
-            var effect = item.Setup.Effect;
+            var name = item.ItemName;
+            var effect = item.Effect;
             effects[index] = async () =>
             {
                 var disposable = m_TurnManager.RequestProhibitAction(null);

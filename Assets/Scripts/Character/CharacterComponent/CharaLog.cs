@@ -62,6 +62,15 @@ public class CharaLog : ActorComponentBase, ICharaLog
                 var log = self.CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
                 self.m_BattleLogManager.Log(log);
             }).AddTo(CompositeDisposable);
+
+            inventory.OnPutItemFail.SubscribeWithState(this, (info, self) =>
+            {
+                if (info.Owner.RequireInterface<ICharaStatus>(out var status) == false)
+                    return;
+
+                var log = self.CreatePutItemFailLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
+                self.m_BattleLogManager.Log(log);
+            }).AddTo(CompositeDisposable);
         }
     }
 
@@ -118,7 +127,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
     }
 
     /// <summary>
-    /// 死亡ログ
+    /// アイテム収納ログ
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
@@ -127,6 +136,20 @@ public class CharaLog : ActorComponentBase, ICharaLog
         var sb = new StringBuilder();
 
         sb.Append(name + "は" + item.Setup.ItemName + "を拾った");
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// アイテム収納失敗ログ
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    private string CreatePutItemFailLog(string name, IItemHandler item)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(name + "は" + item.Setup.ItemName + "の上に乗った");
 
         return sb.ToString();
     }

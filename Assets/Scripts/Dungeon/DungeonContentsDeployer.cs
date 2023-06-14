@@ -87,9 +87,6 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// <summary>
     /// ボス戦に必要なもの配置
     /// </summary>
-    /// <param name="playerPos"></param>
-    /// <param name="friendPos"></param>
-    /// <param name="bossPos"></param>
     async Task IDungeonContentsDeployer.DeployBossBattleContents(BossBattleDeployInfo info)
     {
         await DeployLeader(info.PlayerPos);

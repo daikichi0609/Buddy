@@ -44,7 +44,7 @@ public interface IDungeonProgressManager
     /// ゲーム終了
     /// </summary>
     /// <param name="reason">理由</param>
-    void FinishDungeon(FINISH_REASON reason);
+    Task FinishDungeon(FINISH_REASON reason);
 }
 
 /// <summary>
@@ -83,6 +83,8 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     private ITurnManager m_TurnManager;
     [Inject]
     private IYesorNoQuestionUiManager m_QuestionManager;
+    [Inject]
+    private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
 
     /// <summary>
     /// 現在の階層
@@ -106,6 +108,8 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
 
         var bgm = MonoBehaviour.Instantiate(m_ProgressHolder.CurrentDungeonSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
+
+        m_DungeonCharacterProgressManager.AdoptSaveData();
 
         // 明転
         await m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
@@ -223,6 +227,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
         else
             sceneName = SceneName.SCENE_CHECKPOINT;
 
+        m_DungeonCharacterProgressManager.WriteSaveData();
         await m_FadeManager.LoadScene(sceneName);
     }
 
@@ -230,7 +235,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     /// イベントによるシーン移動
     /// </summary>
     /// <param name="reason"></param>
-    async void IDungeonProgressManager.FinishDungeon(FINISH_REASON reason)
+    async Task IDungeonProgressManager.FinishDungeon(FINISH_REASON reason)
     {
         m_TurnManager.StopUnitAct();
 

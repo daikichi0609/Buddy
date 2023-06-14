@@ -9,7 +9,13 @@ public interface ITeamInventory
     /// <summary>
     /// 所持しているアイテム
     /// </summary>
-    IItemHandler[] Items { get; }
+    ItemSetup[] Items { get; }
+
+    /// <summary>
+    /// アイテムセット
+    /// </summary>
+    /// <param name="items"></param>
+    void SetItems(ItemSetup[] items);
 
     /// <summary>
     /// アイテムをしまう
@@ -22,15 +28,23 @@ public interface ITeamInventory
     /// アイテムを消費する
     /// </summary>
     /// <param name="item"></param>
-    void Consume(IItemHandler item);
+    void Consume(ItemSetup item);
 }
 
 public class TeamInventory : ITeamInventory
 {
     private static readonly int InventoryCount = 9;
 
-    private List<IItemHandler> m_ItemList = new List<IItemHandler>();
-    IItemHandler[] ITeamInventory.Items => m_ItemList.ToArray();
+    private List<ItemSetup> m_ItemList = new List<ItemSetup>();
+    ItemSetup[] ITeamInventory.Items => m_ItemList.ToArray();
+
+    void ITeamInventory.SetItems(ItemSetup[] items)
+    {
+        m_ItemList.Clear();
+
+        foreach (var item in items)
+            m_ItemList.Add(item);
+    }
 
     /// <summary>
     /// アイテムをしまう
@@ -41,7 +55,7 @@ public class TeamInventory : ITeamInventory
     {
         if (m_ItemList.Count < InventoryCount)
         {
-            m_ItemList.Add(item);
+            m_ItemList.Add(item.Setup);
             item.OnPut();
             return true;
         }
@@ -57,7 +71,7 @@ public class TeamInventory : ITeamInventory
     /// <summary>
     /// アイテムを消費する
     /// </summary>
-    void ITeamInventory.Consume(IItemHandler item)
+    void ITeamInventory.Consume(ItemSetup item)
     {
         m_ItemList.Remove(item);
     }

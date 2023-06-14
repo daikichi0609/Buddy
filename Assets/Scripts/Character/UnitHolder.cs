@@ -77,26 +77,8 @@ public class UnitHolder : IUnitHolder
     /// </summary>
     private List<ICollector> m_FriendList = new List<ICollector>();
     List<ICollector> IUnitHolder.FriendList => m_FriendList;
-    ICollector IUnitHolder.Player
-    {
-        get
-        {
-            if (m_FriendList.Count >= 1)
-                return m_FriendList[0];
-            else
-                return null;
-        }
-    }
-    ICollector IUnitHolder.Buddy
-    {
-        get
-        {
-            if (m_FriendList.Count >= 2)
-                return m_FriendList[1];
-            else
-                return null;
-        }
-    }
+    ICollector IUnitHolder.Player => m_FriendList.Count < 1 ? null : m_FriendList[0];
+    ICollector IUnitHolder.Buddy => m_FriendList.Count < 2 ? null : m_FriendList[1];
 
     /// <summary>
     /// Enemyのコレクターリスト
