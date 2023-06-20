@@ -99,28 +99,28 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
                         self.m_CancelRequest?.Dispose();
                         return;
                 }
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
             // 攻撃
-            battle.OnAttackStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(CompositeDisposable);
+            battle.OnAttackStart.SubscribeWithState(this, async (_, self) => await self.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime)).AddTo(Owner.Disposables);
 
             // ダメージ前
             battle.OnDamageStart.SubscribeWithState(this, async (result, self) =>
             {
                 if (result.IsHit == true)
                     await self.PlayAnimation(ANIMATION_TYPE.DAMAGE, CharaBattle.ms_DamageTotalTime);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
 
         if (Owner.RequireEvent<ICharaMoveEvent>(out var move) == true)
         {
             // 移動前
-            move.OnMoveStart.SubscribeWithState(this, (_, self) => self.PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
+            move.OnMoveStart.SubscribeWithState(this, (_, self) => self.PlayAnimation(ANIMATION_TYPE.MOVE)).AddTo(Owner.Disposables);
 
             // 移動後
-            move.OnMoveEnd.SubscribeWithState(this, (_, self) => self.StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(CompositeDisposable);
+            move.OnMoveEnd.SubscribeWithState(this, (_, self) => self.StopAnimation(ANIMATION_TYPE.MOVE)).AddTo(Owner.Disposables);
         }
     }
 

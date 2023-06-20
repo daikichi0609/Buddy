@@ -80,7 +80,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDead.SubscribeWithState(this, (_, self) => self.DropItem()).AddTo(CompositeDisposable);
+            battle.OnDead.SubscribeWithState(this, (_, self) => self.DropItem()).AddTo(Owner.Disposables);
         }
     }
 

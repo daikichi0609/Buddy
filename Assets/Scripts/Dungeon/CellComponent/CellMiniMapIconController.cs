@@ -43,7 +43,7 @@ public class CellMiniMapIconController : ActorComponentBase, ICellMiniMapIconCon
         var state = Owner.GetEvent<ICellStateChangeEvent>();
         state.IsExploredChanged
             .Where(isExplored => isExplored == true)
-            .SubscribeWithState(this, (_, self) => self.AppearAroundCellIcon()).AddTo(CompositeDisposable);
+            .SubscribeWithState(this, (_, self) => self.AppearAroundCellIcon()).AddTo(Owner.Disposables);
     }
 
     protected override void Dispose()

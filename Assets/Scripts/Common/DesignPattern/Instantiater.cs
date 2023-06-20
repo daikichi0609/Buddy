@@ -16,7 +16,8 @@ public interface IInstantiater
 
 public class Instantiater : MonoBehaviour, IInstantiater
 {
-    [Inject] private DiContainer m_Container;
+    [Inject]
+    private DiContainer m_Container;
 
     /// <summary>
     /// インスタンス生成

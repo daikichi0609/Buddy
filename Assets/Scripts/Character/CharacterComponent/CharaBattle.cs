@@ -143,7 +143,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackStart.SubscribeWithState(this, (_, self) =>
         {
             self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.ATTACK);
-        }).AddTo(CompositeDisposable);
+        }).AddTo(Owner.Disposables);
 
         // 攻撃終了時、Ui表示
         m_OnAttackEnd.SubscribeWithState(this, (result, self) =>
@@ -152,14 +152,14 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
                 self.m_AttackResultUiManager.Damage(result);
             else
                 self.m_AttackResultUiManager.Miss(result);
-        }).AddTo(CompositeDisposable);
+        }).AddTo(Owner.Disposables);
 
         // 死亡時、リストから抜ける
         m_OnDead.SubscribeWithState(this, (_, self) =>
         {
             self.m_UnitHolder.RemoveUnit(self.Owner);
             self.m_TurnManager.RemoveUnit(self.Owner);
-        }).AddTo(CompositeDisposable);
+        }).AddTo(Owner.Disposables);
     }
 
     /// <summary>

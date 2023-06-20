@@ -58,11 +58,13 @@ public class DungeonItemSpawner : IDungeonItemSpawner
     /// <returns></returns>
     private Task SpawnItem(ItemSetup setup, Vector3Int pos, GameObject content)
     {
-        IItemHandler item = content.GetComponent<ItemHandler>();
-        item.Initialize(setup as ItemSetup, content, pos);
+        ICollector item = content.GetComponent<ActorComponentCollector>();
+        IItemHandler itemHandler = item.GetInterface<IItemHandler>();
+        itemHandler.SetInfo(setup, content, pos);
+        item.Initialize();
 
         // 追加
-        m_ItemManager.AddItem(item);
+        m_ItemManager.AddItem(itemHandler);
 
         return Task.CompletedTask;
     }

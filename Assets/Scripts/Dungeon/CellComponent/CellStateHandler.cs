@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using NaughtyAttributes;
+using Zenject;
 
 public interface ICellStateChanger : IActorInterface
 {
@@ -33,6 +34,9 @@ public interface ICellStateChangeEvent : IActorEvent
 
 public class CellStateHandler : ActorComponentBase, ICellStateChanger, ICellStateChangeEvent
 {
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
+
     /// <summary>
     /// 探索済みかどうか
     /// </summary>

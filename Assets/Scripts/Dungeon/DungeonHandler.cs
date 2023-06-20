@@ -68,11 +68,6 @@ public interface IDungeonHandler
     /// </summary>
     /// <returns></returns>
     Vector3Int GetRandomRoomEmptyCellPosition();
-
-    /// <summary>
-    /// 探索済みとしてマーク
-    /// </summary>
-    void MarkExplored(Vector3Int pos);
 }
 
 public class DungeonHandler : IDungeonHandler
@@ -279,32 +274,4 @@ public class DungeonHandler : IDungeonHandler
         return info.Position;
     }
     Vector3Int IDungeonHandler.GetRandomRoomEmptyCellPosition() => GetRandomRoomEmptyCellPosition();
-
-    /// <summary>
-    /// 探索済みとしてマーク
-    /// </summary>
-    /// <param name="pos"></param>
-    void IDungeonHandler.MarkExplored(Vector3Int pos)
-    {
-        // 部屋の中にいるなら部屋全体を探索済みとする
-        if (TryGetRoomId(pos, out var id) == true)
-        {
-            var room = m_DungeonDeployer.GetRoom(id);
-            foreach (var cell in room.Cells)
-                MarkExploredInternal(cell);
-        }
-        // 部屋にいないなら周囲のセルを探索済みとする
-        else
-        {
-            var around = GetAroundCell(pos);
-            foreach (var cell in around.Cells.Values)
-                MarkExploredInternal(cell);
-        }
-
-        void MarkExploredInternal(ICollector cell)
-        {
-            var state = cell.GetInterface<ICellStateChanger>();
-            state.IsExplored = true;
-        }
-    }
 }

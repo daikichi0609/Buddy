@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 /// <summary>
@@ -34,6 +35,11 @@ public interface ICollector : IDisposable
     /// 初期化
     /// </summary>
     void Initialize();
+
+    /// <summary>
+    /// Disposable
+    /// </summary>
+    CompositeDisposable Disposables { get; }
 }
 
 /// <summary>
@@ -44,6 +50,12 @@ public class ActorComponentCollector : MonoBehaviour, ICollector
 {
     private HashSet<IActorInterface> m_Interfaces = new HashSet<IActorInterface>();
     private HashSet<IActorEvent> m_Events = new HashSet<IActorEvent>();
+
+    /// <summary>
+    /// Disposeするもの
+    /// </summary>
+    protected CompositeDisposable m_CompositeDisposable = new CompositeDisposable();
+    CompositeDisposable ICollector.Disposables => m_CompositeDisposable;
 
     /// <summary>
     /// 初期化
@@ -144,5 +156,7 @@ public class ActorComponentCollector : MonoBehaviour, ICollector
     {
         foreach (var comp in m_Interfaces)
             comp.Dispose();
+
+        m_CompositeDisposable.Clear();
     }
 }

@@ -22,11 +22,6 @@ public abstract class ActorComponentBase : MonoBehaviour, IActorInterface
     protected ICollector Owner { get; set; }
 
     /// <summary>
-    /// Disposeするもの
-    /// </summary>
-    protected CompositeDisposable CompositeDisposable { get; } = new CompositeDisposable();
-
-    /// <summary>
     /// Owner取得
     /// </summary>
     private void Awake()
@@ -48,8 +43,7 @@ public abstract class ActorComponentBase : MonoBehaviour, IActorInterface
 
     protected virtual void Dispose()
     {
-        // コンポーネント破棄
-        CompositeDisposable.Clear();
+
     }
     void IDisposable.Dispose() => Dispose();
 }

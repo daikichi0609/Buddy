@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7953332958295191033}
   - component: {fileID: 7942196530435189403}
   - component: {fileID: 7934080921995394141}
+  - component: {fileID: 8527991914407773442}
   - component: {fileID: 4246699765757602946}
   m_Layer: 0
   m_Name: Peanut
@@ -84,6 +85,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8527991914407773442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7947475297059854699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521b2d735b7024995ab465d9e3ed5d4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4246699765757602946
 MonoBehaviour:
   m_ObjectHideFlags: 0

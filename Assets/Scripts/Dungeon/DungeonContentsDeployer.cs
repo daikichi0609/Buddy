@@ -168,6 +168,6 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     private async Task DeployFriend(Vector3 pos)
     {
         var setup = m_CurrentCharacterHolder.Friend; // Setup
-        await m_FriendSpawner.SpawnLeader(setup, pos);
+        await m_FriendSpawner.SpawnFriend(setup, pos);
     }
 }

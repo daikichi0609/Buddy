@@ -103,10 +103,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Position = new Vector3Int((int)pos.x, 0, (int)pos.z);
 
         // アクション登録
-        m_OnMoveStart.SubscribeWithState(this, (_, self) => self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(CompositeDisposable);
+        m_OnMoveStart.SubscribeWithState(this, (_, self) => self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(Owner.Disposables);
 
         // 移動更新
-        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.Moving()).AddTo(CompositeDisposable);
+        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.Moving()).AddTo(Owner.Disposables);
     }
 
     /// <summary>
@@ -189,6 +189,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Face(dir);
         Vector3Int destinationPos = Position + dir.ToV3Int();
         MoveInternal(destinationPos, dir);
+        Owner.GetInterface<ICharaTurn>().TurnEnd();
     }
 
     /// <summary>

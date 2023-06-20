@@ -21,7 +21,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     [Inject]
     private ICameraHandler m_CameraHandler;
     [Inject]
-    private IDungeonHandler m_DungeonHandler;
+    private IMiniMapRenderer m_MiniMapRenderer;
 
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
@@ -42,32 +42,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 入力購読
-        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag)).AddTo(CompositeDisposable);
-
-        // ----- 別のとこに移した方が良い ----- //
-        // カメラ追従
-        if (Owner.RequireInterface<ICharaObjectHolder>(out var holder) == true)
-        {
-            var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
-
-            // 死亡時にカメラ追従を止める
-            var battle = Owner.GetEvent<ICharaBattleEvent>();
-            battle.OnDead.SubscribeWithState(disposable, (_, self) => self.Dispose()).AddTo(CompositeDisposable);
-
-            // その他
-            CompositeDisposable.Add(disposable);
-        }
-
-        // 探索済みとしてマーク
-        if (Owner.RequireEvent<ICharaTurnEvent>(out var e) == true)
-        {
-            e.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
-            {
-                var pos = self.m_CharaMove.Position;
-                self.m_DungeonHandler.MarkExplored(pos);
-            }).AddTo(CompositeDisposable);
-        }
-        // ----- //
+        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag)).AddTo(Owner.Disposables);
     }
 
     /// <summary>

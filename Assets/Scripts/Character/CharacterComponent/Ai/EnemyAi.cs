@@ -45,7 +45,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         m_CurrentState.SubscribeWithState(this, (_, self) =>
         {
             self.DestinationCell = null;
-        }).AddTo(CompositeDisposable);
+        }).AddTo(Owner.Disposables);
     }
 
     /// <summary>

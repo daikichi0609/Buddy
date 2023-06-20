@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6566471519479208441}
   - component: {fileID: 6582366330644759347}
   - component: {fileID: 6592251462603065727}
+  - component: {fileID: 4415495409767151232}
   - component: {fileID: -5196727108768306907}
   m_Layer: 0
   m_Name: Apple
@@ -84,6 +85,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4415495409767151232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6568815780372088427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521b2d735b7024995ab465d9e3ed5d4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-5196727108768306907
 MonoBehaviour:
   m_ObjectHideFlags: 0

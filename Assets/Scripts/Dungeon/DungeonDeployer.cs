@@ -50,6 +50,16 @@ public interface IDungeonDeployer
     /// ダンジョンリムーブ
     /// </summary>
     void RemoveDungeon();
+
+    /// <summary>
+    /// ダンジョン生成時
+    /// </summary>
+    IObservable<TERRAIN_ID[,]> OnDungeonDeploy { get; }
+
+    /// <summary>
+    /// ダンジョン除去時
+    /// </summary>
+    IObservable<Unit> OnDungeonRemove { get; }
 }
 
 /// <summary>
@@ -139,6 +149,18 @@ public class DungeonDeployer : IDungeonDeployer
     private IDungeonProgressManager m_DungeonProgressManager;
     [Inject]
     private IInstantiater m_Instantiater;
+
+    /// <summary>
+    /// マップ作成時
+    /// </summary>
+    private Subject<TERRAIN_ID[,]> m_OnDungeonDeoloy = new Subject<TERRAIN_ID[,]>();
+    IObservable<TERRAIN_ID[,]> IDungeonDeployer.OnDungeonDeploy => m_OnDungeonDeoloy;
+
+    /// <summary>
+    /// マップ除去時
+    /// </summary>
+    private Subject<Unit> m_OnDungeonRemove = new Subject<Unit>();
+    IObservable<Unit> IDungeonDeployer.OnDungeonRemove => m_OnDungeonRemove;
 
     /// <summary>
     /// マップ
@@ -263,6 +285,8 @@ public class DungeonDeployer : IDungeonDeployer
         await DeployDungeonTerrain(map, setup);
         CreateRoomCellList(mapInfo.RangeList);
         await DeployTrap();
+
+        m_OnDungeonDeoloy.OnNext(map);
     }
     async Task IDungeonDeployer.DeployDungeon(DungeonElementSetup setup) => await DeployDungeon(setup);
 
@@ -278,6 +302,7 @@ public class DungeonDeployer : IDungeonDeployer
         DeployDungeonTerrain(map, setup);
         CreateRoomCellList(rangeList);
 
+        m_OnDungeonDeoloy.OnNext(map);
         return Task.CompletedTask;
     }
 

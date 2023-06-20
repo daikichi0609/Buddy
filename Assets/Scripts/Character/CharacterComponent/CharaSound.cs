@@ -33,7 +33,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
                 {
                     self.m_SoundHolder.AttackSound.Play();
                 }));
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
             battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
             {
@@ -42,13 +42,13 @@ public class CharaSound : ActorComponentBase, ICharaSound
                     // 空振り音
                     self.m_SoundHolder.MissSound.Play();
                 }
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
             battle.OnDamageEnd.SubscribeWithState(this, (_, self) =>
             {
                 // ダメージ音
                 self.m_SoundHolder.DamageSound.Play();
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
 
     }

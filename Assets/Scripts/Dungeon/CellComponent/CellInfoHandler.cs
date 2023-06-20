@@ -67,14 +67,6 @@ public class CellInfoHandler : ActorComponentBase, ICellInfoHandler
     private int m_RoomId = -1;
     int ICellInfoHandler.RoomId { get => m_RoomId; set => m_RoomId = value; }
 
-    /// <summary>
-    /// 探索済みかどうか
-    /// </summary>
-    private ReactiveProperty<bool> m_IsExplored = new ReactiveProperty<bool>();
-    public IObservable<bool> m_IsExploredObservable => m_IsExploredObservable;
-    [ShowNativeProperty]
-    private bool IsExplored { get => m_IsExplored.Value; set => m_IsExplored.Value = value; }
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);

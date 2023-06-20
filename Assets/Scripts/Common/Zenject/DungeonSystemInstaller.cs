@@ -211,5 +211,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // ミニマップUi
+        Container.Bind<IMiniMapRenderer>()
+            .To<MiniMapRenderer>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

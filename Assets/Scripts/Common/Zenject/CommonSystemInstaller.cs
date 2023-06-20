@@ -12,6 +12,13 @@ public class CommonSystemInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
+        // プレハブ生成
+        Container.Bind<IInstantiater>()
+            .To<Instantiater>()
+            .FromComponentOn(m_CommonSystem)
+            .AsSingle()
+            .NonLazy();
+
         // PlayerLoop
         Container.Bind<IPlayerLoopManager>()
             .To<PlayerLoopManager>()
@@ -36,13 +43,6 @@ public class CommonSystemInstaller : MonoInstaller
         // カメラ
         Container.Bind<ICameraHandler>()
             .To<CameraHandler>()
-            .FromComponentOn(m_CommonSystem)
-            .AsSingle()
-            .NonLazy();
-
-        // プレハブ生成
-        Container.Bind<IInstantiater>()
-            .To<Instantiater>()
             .FromComponentOn(m_CommonSystem)
             .AsSingle()
             .NonLazy();

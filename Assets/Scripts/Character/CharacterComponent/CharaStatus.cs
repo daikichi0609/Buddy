@@ -47,6 +47,8 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private IDungeonProgressManager m_DungeonProgressManager;
     [Inject]
     private IUnitHolder m_UnitHolder;
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
 
     private int EnemyLevelBase { get; set; }
     int ICharaStatus.EnemyLevelBase { set => EnemyLevelBase = value; }
@@ -120,14 +122,14 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         // 死亡時にダンジョンシーンを抜ける
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(CompositeDisposable);
+            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(Owner.Disposables);
         }
 
         // レベル変動時にステータスに反映
         m_TeamLevelHandler.OnLevelChanged.SubscribeWithState(this, (_, self) =>
         {
             self.m_CurrentStatus.Lv = self.m_TeamLevelHandler.Level;
-        }).AddTo(CompositeDisposable);
+        }).AddTo(Owner.Disposables);
     }
 
     /// <summary>
@@ -165,7 +167,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
                         break;
                     }
                 }
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
     }
 }

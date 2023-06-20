@@ -5,7 +5,7 @@ using System;
 using NaughtyAttributes;
 using Zenject;
 
-public interface IItemHandler : IDisposable
+public interface IItemHandler : IActorInterface
 {
     /// <summary>
     /// セットアップ
@@ -25,7 +25,7 @@ public interface IItemHandler : IDisposable
     /// <summary>
     /// 初期化
     /// </summary>
-    void Initialize(ItemSetup setup, GameObject gameObject, Vector3Int pos);
+    void SetInfo(ItemSetup setup, GameObject gameObject, Vector3Int pos);
 
     /// <summary>
     /// インベントリに入ったとき
@@ -33,12 +33,14 @@ public interface IItemHandler : IDisposable
     void OnPut();
 }
 
-public class ItemHandler : MonoBehaviour, IItemHandler
+public class ItemHandler : ActorComponentBase, IItemHandler
 {
     [Inject]
     private IObjectPoolController m_ObjectPoolController;
     [Inject]
     private IItemManager m_ItemManager;
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
 
     public static readonly float OFFSET_Y = 0.75f;
 
@@ -63,13 +65,28 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     private Vector3Int m_Position;
     Vector3Int IItemHandler.Position => m_Position;
 
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<IItemHandler>(this);
+    }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        // ミニマップアイコン登録
+        var disposable = m_MiniMapRenderer.RegisterIcon(Owner);
+        Owner.Disposables.Add(disposable);
+    }
+
     /// <summary>
     /// 初期化
     /// </summary>
     /// <param name="setup"></param>
     /// <param name="gameObject"></param>
     /// <param name="pos"></param>
-    void IItemHandler.Initialize(ItemSetup setup, GameObject gameObject, Vector3Int pos)
+    void IItemHandler.SetInfo(ItemSetup setup, GameObject gameObject, Vector3Int pos)
     {
         m_Setup = setup;
         m_ItemObject = gameObject;
@@ -84,15 +101,15 @@ public class ItemHandler : MonoBehaviour, IItemHandler
     void IItemHandler.OnPut()
     {
         m_ItemManager.RemoveItem(this);
-        Dispose();
+        Owner.Dispose();
     }
 
     /// <summary>
     /// オブジェクトプールに入る
     /// </summary>
-    private void Dispose()
+    protected override void Dispose()
     {
         m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
+        base.Dispose();
     }
-    void IDisposable.Dispose() => Dispose();
 }

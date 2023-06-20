@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -29,6 +30,10 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     private IUnitHolder m_UnitHolder;
     [Inject]
     private ITeamStatusHolder m_TeamStatusHolder;
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
+    [Inject]
+    private ICameraHandler m_CameraHandler;
 
     /// <summary>
     /// リーダースポーン
@@ -50,11 +55,42 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
                 e.SetStatus(setup as CharacterSetup);
 
         leader.Initialize();
+        PostSpawnLeader(leader);
 
         // 追加
         m_UnitHolder.AddFriend(leader);
 
         return Task.CompletedTask;
+
+        void PostSpawnLeader(ICollector leader)
+        {
+            // カメラ追従
+            if (leader.RequireInterface<ICharaObjectHolder>(out var holder) == true)
+            {
+                var disposable = m_CameraHandler.SetParent(holder.MoveObject); // カメラをリーダーに追従させる
+
+                // 死亡時にカメラ追従を止める
+                var battle = leader.GetEvent<ICharaBattleEvent>();
+                battle.OnDead.SubscribeWithState(disposable, (_, self) => self.Dispose()).AddTo(leader.Disposables);
+
+                // その他
+                leader.Disposables.Add(disposable);
+            }
+
+            // ミニマップ表示
+            var move = leader.GetInterface<ICharaMove>();
+            m_MiniMapRenderer.SetPlayerPos(move.Position);
+
+            // マップ更新
+            if (leader.RequireEvent<ICharaTurnEvent>(out var e) == true)
+            {
+                e.OnTurnEndPost.SubscribeWithState2(this, leader, (_, self, leader) =>
+                {
+                    var pos = leader.GetInterface<ICharaMove>().Position;
+                    self.m_MiniMapRenderer.SetPlayerPos(pos);
+                }).AddTo(leader.Disposables);
+            }
+        }
     }
 
     /// <summary>

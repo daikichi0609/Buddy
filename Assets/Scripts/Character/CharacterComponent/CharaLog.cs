@@ -32,14 +32,14 @@ public class CharaLog : ActorComponentBase, ICharaLog
             {
                 var log = self.CreateAttackLog(info);
                 self.m_BattleLogManager.Log(log);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
             // 攻撃結果ログ
             battle.OnDamageStart.SubscribeWithState(this, (result, self) =>
             {
                 var log = CreateAttackResultLog(result);
                 self.m_BattleLogManager.Log(log);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
             // 死亡ログ
             battle.OnDamageEnd.SubscribeWithState(this, (result, self) =>
@@ -49,7 +49,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
 
                 var log = self.CreateDeadLog(result);
                 self.m_BattleLogManager.Log(log);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
 
         if (Owner.RequireInterface<ICharaInventoryEvent>(out var inventory) == true)
@@ -61,7 +61,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
 
                 var log = self.CreatePutItemLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
                 self.m_BattleLogManager.Log(log);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
 
             inventory.OnPutItemFail.SubscribeWithState(this, (info, self) =>
             {
@@ -70,7 +70,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
 
                 var log = self.CreatePutItemFailLog(status.CurrentStatus.OriginParam.GivenName, info.Item);
                 self.m_BattleLogManager.Log(log);
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
     }
 

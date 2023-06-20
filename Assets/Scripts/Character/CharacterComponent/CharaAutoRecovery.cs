@@ -47,7 +47,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 
                 status.CurrentStatus.RecoverHp(1);
 
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
     }
 }

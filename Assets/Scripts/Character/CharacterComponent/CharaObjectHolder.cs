@@ -54,7 +54,7 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
             {
                 if (result.IsHit == true)
                     await self.RedFlash();
-            }).AddTo(CompositeDisposable);
+            }).AddTo(Owner.Disposables);
         }
     }
 

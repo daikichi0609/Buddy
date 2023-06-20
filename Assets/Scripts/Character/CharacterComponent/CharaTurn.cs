@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NaughtyAttributes;
 using System.Threading;
 using ModestTree.Util;
+using Zenject;
 
 public interface ICharaTurn : IActorInterface
 {
@@ -59,6 +60,9 @@ public interface ICharaTurnEvent : IActorEvent
 
 public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
 {
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
+
     private ICharaBattle m_CharaBattle;
     private ICharaLastActionHolder m_CharaLastCharaActionHolder;
 
@@ -77,7 +81,8 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// CanAct -> false
     /// </summary>
-    IObservable<bool> ICharaTurnEvent.OnTurnEndPost => m_CanAct.Where(turn => turn == false);
+    private IObservable<bool> OnTurnEndPost => m_CanAct.Where(turn => turn == false);
+    IObservable<bool> ICharaTurnEvent.OnTurnEndPost => OnTurnEndPost;
 
     /// <summary>
     /// 行動中ステータス
@@ -99,6 +104,12 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
         base.Initialize();
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaLastCharaActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+
+        // ミニマップアイコン登録
+        var disposable = m_MiniMapRenderer.RegisterIcon(Owner);
+        Owner.Disposables.Add(disposable);
+        // ターン終了時にアイコン更新
+        OnTurnEndPost.SubscribeWithState(this, (_, self) => self.m_MiniMapRenderer.ReflectIcon(self.Owner)).AddTo(Owner.Disposables);
     }
 
     /// <summary>
