@@ -112,14 +112,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                     continue;
 
                 var targetPos = move.Position;
-
-                if (self.m_DungeonHandler.TryGetRoomId(targetPos, out var id) == true && id == playerRoom)
-                {
-                    e.Value.SetActive(true);
-                    continue;
-                }
-
-                bool isActive = self.IsVisibleFromPlayer(targetPos.x, targetPos.z);
+                bool isActive = self.IsVisibleFromPlayer(targetPos);
                 e.Value.SetActive(isActive);
             }
 
@@ -129,14 +122,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                     continue;
 
                 var targetPos = item.Position;
-
-                if (self.m_DungeonHandler.TryGetRoomId(targetPos, out var id) == true && id == playerRoom)
-                {
-                    i.Value.SetActive(true);
-                    continue;
-                }
-
-                bool isActive = self.IsVisibleFromPlayer(targetPos.x, targetPos.z);
+                bool isActive = self.IsVisibleFromPlayer(targetPos);
                 i.Value.SetActive(isActive);
             }
         }).AddTo(this);
@@ -211,14 +197,14 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 RenderIcon(icon, move.Position.x, move.Position.z);
             else if (m_EnemyIcons.TryGetValue(collector, out icon) == true)
             {
-                icon.SetActive(IsVisibleFromPlayer(move.Position.x, move.Position.z));
+                icon.SetActive(IsVisibleFromPlayer(move.Position));
                 RenderIcon(icon, move.Position.x, move.Position.z);
             }
         }
         else if (collector.RequireInterface<IItemHandler>(out var item) == true)
             if (m_ItemIcons.TryGetValue(collector, out icon) == true)
             {
-                icon.SetActive(IsVisibleFromPlayer(item.Position.x, item.Position.z));
+                icon.SetActive(IsVisibleFromPlayer(item.Position));
                 RenderIcon(icon, item.Position.x, item.Position.z);
             }
     }
@@ -267,12 +253,16 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     /// <param name="x"></param>
     /// <param name="z"></param>
     /// <returns></returns>
-    private bool IsVisibleFromPlayer(int x, int z)
+    private bool IsVisibleFromPlayer(Vector3Int pos)
     {
+        if (m_DungeonHandler.TryGetRoomId(m_PlayerPos.Value, out var playerId) == true &&
+            m_DungeonHandler.TryGetRoomId(pos, out var id) == true && playerId == id)
+            return true;
+
         int playerX = m_PlayerPos.Value.x;
         int playerZ = m_PlayerPos.Value.z;
 
-        return x >= playerX - VISIBLE_RANGE && x <= playerX + VISIBLE_RANGE && z >= playerZ - VISIBLE_RANGE && z <= playerZ + VISIBLE_RANGE;
+        return pos.x >= playerX - VISIBLE_RANGE && pos.x <= playerX + VISIBLE_RANGE && pos.z >= playerZ - VISIBLE_RANGE && pos.z <= playerZ + VISIBLE_RANGE;
     }
 
     /// <summary>

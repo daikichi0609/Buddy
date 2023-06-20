@@ -315,6 +315,7 @@ public class DungeonDeployer : IDungeonDeployer
             foreach (var cell in list)
                 cell.Dispose();
 
+        m_OnDungeonRemove.OnNext(Unit.Default);
         InitializeAllList();
     }
     void IDungeonDeployer.RemoveDungeon() => RemoveDungeon();

@@ -144,7 +144,7 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
                 checker.CheckCurrentCell();
         }
 
-        m_CanAct.Value = false;
+        m_CanAct.SetValueAndForceNotify(false);
     }
 
     /// <summary>
