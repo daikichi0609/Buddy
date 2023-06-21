@@ -92,9 +92,15 @@ public abstract class UiBase : IUiBase
         m_OptionMethod = element.OptionMethod;
         m_OptionCount = element.MethodCount;
 
+        int i = 0;
         // 選択肢テキスト初期化
-        for (int i = 0; i < m_OptionCount; i++)
+        for (i = 0; i < element.OptionTexts.Length; i++)
             m_Texts[i].text = element.OptionTexts[i];
+        while (i < m_Texts.Count)
+        {
+            m_Texts[i].text = "";
+            i++;
+        }
 
         // 有効中の選択肢初期化
         m_OptionId.Value = 0;

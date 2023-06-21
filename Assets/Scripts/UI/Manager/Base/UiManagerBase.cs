@@ -190,7 +190,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// Ui無効化
     /// </summary>
-    protected virtual void Deactivate()
+    protected virtual void Deactivate(bool openParent = true)
     {
         // 操作不能
         m_IsOperatable = false;
@@ -204,7 +204,9 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         // 親Uiがあるなら操作可能に
         if (m_ParentUi != null)
         {
-            m_ParentUi.Activate();
+            if (openParent == true)
+                m_ParentUi.Activate();
+
             m_ParentUi = null;
         }
     }
@@ -216,7 +218,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected void DeactivateAll()
     {
         var parent = m_ParentUi;
-        Deactivate();
+        Deactivate(false);
         parent?.DeactivateAll();
     }
     void IUiManager.DeactivateAll() => DeactivateAll();

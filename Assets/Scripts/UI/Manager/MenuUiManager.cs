@@ -69,7 +69,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     /// <summary>
     /// メニュー開く再購読
     /// </summary>
-    protected override void Deactivate()
+    protected override void Deactivate(bool openParent = true)
     {
         base.Deactivate();
         SubscribeMenuOpen();
