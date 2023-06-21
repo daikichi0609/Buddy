@@ -25,12 +25,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
-    protected override OptionElement CreateOptionElement()
-    {
-        return new OptionElement
-        (new Action[2] { () => OpenBag(), () => CheckStatus() },
-        new string[2] { "バッグ", "ステータス" });
-    }
+    protected override OptionElement CreateOptionElement() => new OptionElement(m_OptionMethod, new string[2] { "バッグ", "ステータス" });
 
     /// <summary>
     /// メニュー開く購読
@@ -40,6 +35,14 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     protected void Awake()
     {
         SubscribeMenuOpen();
+
+        m_OptionMethod.SubscribeWithState(this, (index, self) =>
+        {
+            if (index == 0)
+                self.OpenBag();
+            else if (index == 1)
+                self.CheckStatus();
+        }).AddTo(this);
     }
 
     /// <summary>
@@ -49,7 +52,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     {
         m_OpenMenuDisposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
         {
-            if (self.IsActive == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Q))
+            if (self.m_IsOperatable == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
                 self.Activate();
         }).AddTo(this);
     }
@@ -66,7 +69,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     /// <summary>
     /// メニュー開く再購読
     /// </summary>
-    protected override void Deactivate(bool back = true)
+    protected override void Deactivate()
     {
         base.Deactivate();
         SubscribeMenuOpen();
@@ -80,7 +83,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
         Deactivate();
 
         // 新しくUiを開く
-        m_BagUiManager.Activate();
+        m_BagUiManager.Activate(this);
     }
 
     /// <summary>

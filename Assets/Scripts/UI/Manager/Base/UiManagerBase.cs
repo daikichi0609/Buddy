@@ -14,17 +14,26 @@ public readonly struct OptionElement
     /// <summary>
     /// 選択肢メソッド
     /// </summary>
-    public Action[] OptionMethods { get; }
+    public Subject<int> OptionMethod { get; }
 
     /// <summary>
     /// 選択肢テキスト
     /// </summary>
     public string[] OptionTexts { get; }
 
-    public OptionElement(Action[] methods, string[] texts)
+    /// <summary>
+    /// 選択肢メソッドの数
+    /// </summary>
+    public int MethodCount { get; }
+
+    public OptionElement(Subject<int> method, string[] texts, int methodCount = -1)
     {
-        OptionMethods = methods;
+        OptionMethod = method;
         OptionTexts = texts;
+        if (methodCount == -1)
+            MethodCount = OptionTexts.Length;
+        else
+            MethodCount = methodCount;
     }
 }
 
@@ -36,9 +45,29 @@ public interface IUiManager
     void Activate();
 
     /// <summary>
+    /// UI表示
+    /// </summary>
+    void Activate(IUiManager parent);
+
+    /// <summary>
     /// UI非表示
     /// </summary>
-    void Deactive(bool back = true);
+    void Deactivate();
+
+    /// <summary>
+    /// 親Ui含めUI非表示
+    /// </summary>
+    void DeactivateAll();
+
+    /// <summary>
+    /// 操作可能か
+    /// </summary>
+    bool IsOperatable { set; }
+
+    /// <summary>
+    /// 親Ui
+    /// </summary>
+    IUiManager ParentUi { set; }
 }
 
 /// <summary>
@@ -59,28 +88,39 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected abstract IUiBase UiInterface { get; }
 
     /// <summary>
-    /// 選択肢のメソッド
+    /// 選択肢の購読と選択肢
     /// </summary>
     protected abstract OptionElement CreateOptionElement();
 
     /// <summary>
-    /// Ui閉じるときに呼ぶ
+    /// 選択肢メソッド
     /// </summary>
-    protected Action CloseUiEvent { get; set; }
+    protected Subject<int> m_OptionMethod = new Subject<int>();
 
     /// <summary>
-    /// Uiがアクティブかどうか
+    /// Deactive時
     /// </summary>
-    protected bool IsActive => CloseUiEvent != null;
+    protected CompositeDisposable m_Disposables = new CompositeDisposable();
 
     /// <summary>
-    /// 購読解除用
+    /// Uiが操作可能かどうか
     /// </summary>
-    private CompositeDisposable m_Disposables = new CompositeDisposable();
+    protected bool m_IsOperatable;
+    bool IUiManager.IsOperatable { set => m_IsOperatable = value; }
 
+    /// <summary>
+    /// 親Ui
+    /// </summary>
+    private IUiManager m_ParentUi;
+    IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
+
+    /// <summary>
+    /// 入力受付
+    /// </summary>
+    /// <param name="flag"></param>
     private void DetectInput(KeyCodeFlag flag)
     {
-        if (IsActive == false)
+        if (m_IsOperatable == false)
             return;
 
         if (m_TurnManager.NoOneActing == false)
@@ -118,17 +158,30 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// Ui有効化
     /// </summary>
+    protected void Activate(IUiManager parent)
+    {
+        m_ParentUi = parent; // 親Uiセット
+        m_ParentUi.IsOperatable = false;
+        Activate();
+    }
+    void IUiManager.Activate(IUiManager parent) => Activate(parent);
     protected virtual void Activate()
     {
-        SubscribeDetectInput();
-        CloseUiEvent = m_InputManager.SetActiveUi(this.UiInterface);
-        UiInterface.Initialize(m_Disposables, CreateOptionElement());
-        UiInterface.SetActive(IsActive);
+        SubscribeDetectInput(); // 入力購読
+        var closeUi = m_InputManager.SetActiveUi(this.UiInterface);
+        m_Disposables.Add(closeUi); // 閉じるとき
+
+        // 初期化
+        var option = CreateOptionElement();
+        UiInterface.Initialize(m_Disposables, option);
+
+        m_IsOperatable = true; // 操作可能
+        UiInterface.SetActive(true); // 表示
 
         // バトルログは消す
         m_BattleLogManager.Deactive();
 
-        // キャラの行動許可
+        // キャラの行動を許可しない
         var disposable = m_TurnManager.RequestProhibitAction(null);
         m_Disposables.Add(disposable);
     }
@@ -137,25 +190,44 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// Ui無効化
     /// </summary>
-    protected virtual void Deactivate(bool back = true)
+    protected virtual void Deactivate()
     {
+        // 操作不能
+        m_IsOperatable = false;
+
         // Ui非表示
         UiInterface.SetActive(false);
 
         // 入力購読終わり
         m_Disposables.Clear();
 
-        // イベント
-        CloseUiEvent?.Invoke();
-        CloseUiEvent = null;
+        // 親Uiがあるなら操作可能に
+        if (m_ParentUi != null)
+        {
+            m_ParentUi.Activate();
+            m_ParentUi = null;
+        }
     }
-    void IUiManager.Deactive(bool back) => Deactivate(back);
+    void IUiManager.Deactivate() => Deactivate();
 
+    /// <summary>
+    /// 親Ui含め無効化
+    /// </summary>
+    protected void DeactivateAll()
+    {
+        var parent = m_ParentUi;
+        Deactivate();
+        parent?.DeactivateAll();
+    }
+    void IUiManager.DeactivateAll() => DeactivateAll();
+
+    /// <summary>
+    /// 入力購読
+    /// </summary>
     private void SubscribeDetectInput()
     {
         // 入力購読
         var disposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
-
         m_Disposables.Add(disposable);
     }
 }

@@ -5,6 +5,7 @@ using NaughtyAttributes;
 using System.Threading.Tasks;
 using System;
 using Zenject;
+using UniRx;
 
 public interface ITrapHandler : IActorInterface
 {
@@ -37,6 +38,8 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 {
     [Inject]
     private IObjectPoolController m_ObjectPoolController;
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
 
     private static readonly float OFFSET_Y = 0.5f;
 
@@ -64,8 +67,22 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// <summary>
     /// 罠が見えているか
     /// </summary>
-    private bool IsVisible { get; set; }
-    bool ITrapHandler.IsVisible => IsVisible;
+    private ReactiveProperty<bool> m_IsVisible = new ReactiveProperty<bool>();
+    bool ITrapHandler.IsVisible => m_IsVisible.Value;
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        m_IsVisible.SubscribeWithState(this, (isVisible, self) =>
+        {
+            if (isVisible == true)
+            {
+                var disposable = self.m_MiniMapRenderer.RegisterIcon(self.Owner);
+                self.Owner.Disposables.Add(disposable);
+            }
+        }).AddTo(Owner.Disposables);
+    }
 
     /// <summary>
     /// 罠作動
@@ -83,7 +100,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         var turn = stepper.GetInterface<ICharaTurn>();
 
         m_GameObject.SetActive(true);
-        IsVisible = true;
+        m_IsVisible.Value = true;
 
         await m_Trap.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
         disposable.Dispose();

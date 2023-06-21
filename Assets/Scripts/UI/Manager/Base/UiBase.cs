@@ -62,20 +62,20 @@ public abstract class UiBase : IUiBase
     private IObservable<int> OptionIdChanged => m_OptionId;
     void IUiBase.AddOptionId(int add)
     {
-        int option = Mathf.Clamp(m_OptionId.Value + add, 0, OptionCount - 1);
+        int option = Mathf.Clamp(m_OptionId.Value + add, 0, m_OptionCount - 1);
         m_OptionId.Value = option;
     }
 
     /// <summary>
-    /// 選択肢の数
-    /// </summary>
-    protected int OptionCount => OptionMethods.Length;
-
-    /// <summary>
     /// 選択肢のメソッド
     /// </summary>
-    protected Action[] OptionMethods { get; set; }
-    void IUiBase.InvokeOptionMethod() => OptionMethods[m_OptionId.Value]?.Invoke();
+    protected Subject<int> m_OptionMethod = new Subject<int>();
+    void IUiBase.InvokeOptionMethod() => m_OptionMethod.OnNext(m_OptionId.Value);
+
+    /// <summary>
+    /// 選択肢の数
+    /// </summary>
+    protected int m_OptionCount;
 
     /// <summary>
     /// 初期化処理。手動で呼ぶ。
@@ -89,10 +89,11 @@ public abstract class UiBase : IUiBase
         OptionIdChanged.SubscribeWithState(this, (option, self) => self.OnChangeActiveOption(ref option)).AddTo(disposable);
 
         // 選択肢メソッド初期化
-        OptionMethods = element.OptionMethods;
+        m_OptionMethod = element.OptionMethod;
+        m_OptionCount = element.MethodCount;
 
         // 選択肢テキスト初期化
-        for (int i = 0; i < m_Texts.Count; i++)
+        for (int i = 0; i < m_OptionCount; i++)
             m_Texts[i].text = element.OptionTexts[i];
 
         // 有効中の選択肢初期化

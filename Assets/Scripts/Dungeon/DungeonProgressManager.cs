@@ -176,7 +176,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
         m_TurnManager.StopUnitAct();
 
         // UI非表示
-        m_QuestionManager.Deactive();
+        m_QuestionManager.Deactivate();
 
         int maxFloor = m_ProgressHolder.CurrentDungeonSetup.FloorCount;
         // すでに最上階にいるならチェックポイントへ

@@ -218,5 +218,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // アイテム使用Ui
+        Container.Bind<IItemUseUiManager>()
+            .To<ItemUseUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

@@ -40,20 +40,6 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
     private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
     protected override IUiBase UiInterface => m_Interface;
 
-    protected override OptionElement CreateOptionElement()
-    {
-        var e = m_Question switch
-        {
-            QUESTION_TYPE.STAIRS => new OptionElement
-            (new Action[2] { async () => await m_DungeonProgressManager.NextFloor(), () => Deactivate() }, OptionText),
-
-            QUESTION_TYPE.NONE => new OptionElement(),
-            _ => new OptionElement()
-        };
-
-        return e;
-    }
-
     /// <summary>
     /// 質問タイプ
     /// Activateする前にセットする
@@ -62,6 +48,24 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
     void IYesorNoQuestionUiManager.SetQuestion(QUESTION_TYPE q) => m_Question = q;
 
     private static readonly string[] OptionText = new string[2] { "はい", "いいえ" };
+
+    protected override OptionElement CreateOptionElement()
+    {
+        if (m_Question == QUESTION_TYPE.STAIRS)
+        {
+            var disposable = m_OptionMethod.SubscribeWithState(this, (index, self) =>
+            {
+                if (index == 0)
+                    self.m_DungeonProgressManager.NextFloor();
+                else if (index == 1)
+                    self.Deactivate();
+            }).AddTo(this);
+
+            m_Disposables.Add(disposable);
+        }
+
+        return new OptionElement(m_OptionMethod, OptionText);
+    }
 
     /// <summary>
     /// 質問文セット
@@ -74,16 +78,10 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
         {
             QUESTION_TYPE.STAIRS => "先に進みますか？",
 
-            QUESTION_TYPE.NONE => "",
-            _ => ""
+            QUESTION_TYPE.NONE or _ => "",
         };
 
         m_Interface.m_QuestionText.text = s;
-    }
-
-    protected override void Deactivate(bool back = true)
-    {
-        base.Deactivate();
     }
 }
 

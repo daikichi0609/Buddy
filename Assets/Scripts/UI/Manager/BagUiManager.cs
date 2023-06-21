@@ -16,7 +16,7 @@ public interface IBagUiManager : IUiManager
 public class BagUiManager : UiManagerBase, IBagUiManager
 {
     [Serializable]
-    public class BagUi : UiBase
+    private class BagUi : UiBase
     {
         /// <summary>
         /// アイテムの要素数
@@ -25,61 +25,48 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     }
 
     [Inject]
-    private IMenuUiManager m_MenuUiManager;
-    [Inject]
-    private IItemManager m_ItemManager;
-    [Inject]
-    private IDungeonHandler m_DungeonHandler;
-    [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
-    private IUnitFinder m_UnitFinder;
+    private IItemUseUiManager m_ItemUseUiManager;
     [Inject]
     private ITeamInventory m_TeamInventory;
+    [Inject]
+    private IMenuUiManager m_MenuUiManager;
 
     [SerializeField]
-    private BagUiManager.BagUi m_UiInterface = new BagUi();
-    protected override IUiBase UiInterface => m_UiInterface;
+    private BagUi m_BagUi = new BagUi();
+    protected override IUiBase UiInterface => m_BagUi;
 
     protected override OptionElement CreateOptionElement()
     {
-        var player = m_UnitHolder.Player;
-        var inventory = player.GetInterface<ICharaInventory>();
-        var items = m_TeamInventory.Items;
-        int itemCount = items.Length;
+        var items = m_TeamInventory.Items; // 全てのアイテム
+        int itemCount = items.Length; // アイテム数
 
-        var effects = new Action[itemCount];
-
-        int itemTextCount = m_UiInterface.ItemElementCount;
-        var names = new string[itemTextCount];
+        int itemTextCount = m_BagUi.ItemElementCount; // バッグのアイテム数
+        var names = new string[itemTextCount]; // バッグのアイテム名
 
         int index = 0;
         for (index = 0; index < itemCount; index++)
         {
             var item = items[index];
             var name = item.ItemName;
-            var effect = item.Effect;
-            effects[index] = async () =>
+            var disposable = m_OptionMethod.SubscribeWithState((index, m_ItemUseUiManager, item), (i, tuple) =>
             {
-                var disposable = m_TurnManager.RequestProhibitAction(null);
-                Deactivate(false);
-                await effect.Effect(player, item, m_TeamInventory, m_ItemManager, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, disposable);
-            };
+                if (i == tuple.index)
+                {
+                    tuple.m_ItemUseUiManager.ItemSetup = tuple.item;
+                    tuple.m_ItemUseUiManager.Activate(this);
+                }
+            });
+            m_Disposables.Add(disposable);
             names[index] = name.ToString();
         }
+        int methodCount = index;
         while (index < itemTextCount)
         {
             names[index] = "----------";
             index++;
         }
 
-        return new OptionElement(effects, names);
-    }
-
-    protected override void Deactivate(bool back)
-    {
-        base.Deactivate();
-        if (back == true)
-            m_MenuUiManager.Activate();
+        return new OptionElement(m_OptionMethod, names, methodCount);
     }
 }
+

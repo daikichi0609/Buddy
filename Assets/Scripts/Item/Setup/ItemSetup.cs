@@ -22,7 +22,14 @@ public class ItemSetup : PrefabSetup
     [SerializeField, Header("アイテム効果")]
     [Expandable]
     private ItemEffectBase m_Effect;
-    public ItemEffectBase Effect => m_Effect;
+    public IItemEffect Effect => m_Effect;
+
+    /// <summary>
+    /// 食べられるか
+    /// </summary>
+    [SerializeField, Header("食べられるか")]
+    private bool m_CanEat;
+    public bool CanEat => m_CanEat;
 
     [SerializeField, Header("作成するアイテム効果アセット")]
     [Dropdown("GetItemEffectType")]
@@ -36,7 +43,7 @@ public class ItemSetup : PrefabSetup
         {
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
             { "空腹値回復", typeof(SatisfyHungryDesire).FullName },
-            { "直線投擲", typeof(ThrowStraight).FullName },
+            { "固定ダメージ", typeof(CauseFixedDamage).FullName },
         };
     }
 
@@ -75,8 +82,8 @@ public class ItemSetup : PrefabSetup
             m_Effect = ScriptableObject.CreateInstance<SatisfyHungryDesire>();
 
         // 直線投擲
-        if (type == typeof(ThrowStraight))
-            m_Effect = ScriptableObject.CreateInstance<ThrowStraight>();
+        if (type == typeof(CauseFixedDamage))
+            m_Effect = ScriptableObject.CreateInstance<CauseFixedDamage>();
 
 
         if (m_Effect == null)

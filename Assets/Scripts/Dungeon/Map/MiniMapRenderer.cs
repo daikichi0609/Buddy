@@ -51,6 +51,10 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     private GameObject m_EnemyImage;
     [SerializeField]
     private GameObject m_ItemImage;
+    [SerializeField]
+    private GameObject m_TrapImage;
+    [SerializeField]
+    private GameObject m_StairsImage;
 
     private float Pw { get; set; }
     private float Ph { get; set; }
@@ -61,6 +65,8 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     private static readonly string KEY_FRIEND = "FriendImage";
     private static readonly string KEY_ENEMY = "EnemyImage";
     private static readonly string KEY_ITEM = "ItemImage";
+    private static readonly string KEY_TRAP = "TrapImage";
+    private static readonly string KEY_STAIRS = "StairsImage";
 
     private static readonly int VISIBLE_RANGE = 2;
 
@@ -88,6 +94,16 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     /// アイテム
     /// </summary>
     private Dictionary<ICollector, GameObject> m_ItemIcons = new Dictionary<ICollector, GameObject>();
+
+    /// <summary>
+    /// アイテム
+    /// </summary>
+    private Dictionary<ICollector, GameObject> m_TrapIcons = new Dictionary<ICollector, GameObject>();
+
+    /// <summary>
+    /// 階段
+    /// </summary>
+    private Dictionary<(int, int), GameObject> m_StairsIcons = new Dictionary<(int, int), GameObject>();
 
     [Inject]
     private void Construct(IDungeonDeployer dungeonDeployer)
@@ -180,6 +196,20 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
             });
         }
 
+        if (collector.RequireInterface<ITrapHandler>(out var trap) == true)
+        {
+            if (m_ObjectPoolController.TryGetObject(KEY_TRAP, out icon) == false)
+                icon = Instantiate(m_TrapImage, m_Parent.transform);
+
+            m_TrapIcons.Add(collector, icon);
+            ReflectIcon(collector);
+            return Disposable.CreateWithState((this, collector), tuple =>
+            {
+                if (tuple.Item1.m_TrapIcons.Remove(tuple.collector, out var icon) == true)
+                    tuple.Item1.m_ObjectPoolController.SetObject(KEY_TRAP, icon);
+            });
+        }
+
         return Disposable.Empty;
     }
 
@@ -202,11 +232,21 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
             }
         }
         else if (collector.RequireInterface<IItemHandler>(out var item) == true)
+        {
             if (m_ItemIcons.TryGetValue(collector, out icon) == true)
             {
                 icon.SetActive(IsVisibleFromPlayer(item.Position));
                 RenderIcon(icon, item.Position.x, item.Position.z);
             }
+        }
+        else if (collector.RequireInterface<ICellInfoHandler>(out var cell) == true)
+        {
+            if (collector.RequireInterface<ITrapHandler>(out var trap) == true && m_TrapIcons.TryGetValue(collector, out icon) == true)
+            {
+                icon.SetActive(trap.IsVisible);
+                RenderIcon(icon, cell.Position.x, cell.Position.z);
+            }
+        }
     }
     void IMiniMapRenderer.ReflectIcon(ICollector collector) => ReflectIcon(collector);
 
@@ -224,6 +264,9 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 var cellPos = info.Position;
                 if (m_MapTerrains.TryGetValue((cellPos.x, cellPos.z), out var icon) == true)
                     icon.SetActive(true);
+
+                if (m_StairsIcons.TryGetValue((cellPos.x, cellPos.z), out var stairs) == true)
+                    stairs.SetActive(true);
 
                 if (info.CellId == TERRAIN_ID.GATE)
                 {
@@ -289,6 +332,16 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 passable.SetActive(false);
                 RenderIcon(passable, x, y);
                 m_MapTerrains.Add((x, y), passable);
+
+                if (id == TERRAIN_ID.STAIRS)
+                {
+                    if (m_ObjectPoolController.TryGetObject(KEY_STAIRS, out var stairs) == false)
+                        stairs = Instantiate(m_StairsImage, m_Parent.transform);
+
+                    stairs.SetActive(false);
+                    RenderIcon(stairs, x, y);
+                    m_StairsIcons.Add((x, y), stairs);
+                }
             }
     }
 
@@ -322,9 +375,17 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
         foreach (var item in m_ItemIcons.Values)
             m_ObjectPoolController.SetObject(KEY_ITEM, item);
 
+        foreach (var trap in m_TrapIcons.Values)
+            m_ObjectPoolController.SetObject(KEY_TRAP, trap);
+
+        foreach (var stairs in m_StairsIcons.Values)
+            m_ObjectPoolController.SetObject(KEY_STAIRS, stairs);
+
         m_MapTerrains.Clear();
         m_FriendIcons.Clear();
         m_EnemyIcons.Clear();
         m_ItemIcons.Clear();
+        m_TrapIcons.Clear();
+        m_StairsIcons.Clear();
     }
 }

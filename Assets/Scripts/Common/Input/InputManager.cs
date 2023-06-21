@@ -20,11 +20,14 @@ public enum KeyCodeFlag
     // 攻撃
     E = 1 << 6,
 
-    // インベントリ
+    // 戻る
     Q = 1 << 7,
 
+    // メニュー
+    M = 1 << 8,
+
     // Ui決定
-    Return = 1 << 8,
+    Return = 1 << 9,
 }
 
 public readonly struct InputInfo
@@ -45,7 +48,7 @@ public interface IInputManager
     IObservable<InputInfo> InputEvent { get; }
     IObservable<InputInfo> InputStartEvent { get; }
 
-    Action SetActiveUi(IUiBase ui);
+    IDisposable SetActiveUi(IUiBase ui);
     bool IsUiPopUp { get; }
 }
 
@@ -68,13 +71,15 @@ public class InputManager : MonoBehaviour, IInputManager
     /// </summary>
     private IUiBase ActiveUi { get; set; }
 
-    Action IInputManager.SetActiveUi(IUiBase ui)
+    /// <summary>
+    /// 操作中Uiをセット
+    /// </summary>
+    /// <param name="ui"></param>
+    /// <returns></returns>
+    IDisposable IInputManager.SetActiveUi(IUiBase ui)
     {
-        if (IsUiPopUp == true)
-            return null;
-
         ActiveUi = ui;
-        return () => ActiveUi = null;
+        return Disposable.CreateWithState(this, self => self.ActiveUi = null);
     }
 
     /// <summary>
@@ -127,6 +132,9 @@ public class InputManager : MonoBehaviour, IInputManager
         if (Input.GetKey(KeyCode.Q))
             flag |= KeyCodeFlag.Q;
 
+        if (Input.GetKey(KeyCode.M))
+            flag |= KeyCodeFlag.M;
+
         if (Input.GetKey(KeyCode.Return))
             flag |= KeyCodeFlag.Return;
 
@@ -161,6 +169,9 @@ public class InputManager : MonoBehaviour, IInputManager
 
         if (Input.GetKeyDown(KeyCode.Q))
             flag |= KeyCodeFlag.Q;
+
+        if (Input.GetKeyDown(KeyCode.M))
+            flag |= KeyCodeFlag.M;
 
         if (Input.GetKeyDown(KeyCode.Return))
             flag |= KeyCodeFlag.Return;
