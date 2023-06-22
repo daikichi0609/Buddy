@@ -55,7 +55,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 {
                     var self = tuple.Item2;
                     var disposable = self.m_TurnManager.RequestProhibitAction(null);
-                    self.m_ItemSetup.Effect.Use(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
+                    self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
                         self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, disposable);
                     self.DeactivateAll();
                 }

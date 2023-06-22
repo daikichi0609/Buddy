@@ -31,6 +31,12 @@ public class ItemSetup : PrefabSetup
     private bool m_CanEat;
     public bool CanEat => m_CanEat;
 
+    [SerializeField, Header("空腹回復値")]
+    [ShowIf("m_CanEat")]
+    private int m_Recover;
+    public int Recover => m_Recover;
+
+
     [SerializeField, Header("作成するアイテム効果アセット")]
     [Dropdown("GetItemEffectType")]
     private string m_Type;
@@ -42,7 +48,7 @@ public class ItemSetup : PrefabSetup
         return new DropdownList<string>()
         {
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
-            { "空腹値回復", typeof(SatisfyHungryDesire).FullName },
+            { "体力回復", typeof(RecoverHp).FullName },
             { "固定ダメージ", typeof(CauseFixedDamage).FullName },
         };
     }
@@ -54,8 +60,7 @@ public class ItemSetup : PrefabSetup
     [Button]
     private void CreateItemEffectAsset()
     {
-        if (m_Effect != null)
-            DestroyImmediate(m_Effect, true);
+        DestroyItemEffectAsset();
 
         var t = Type.GetType(m_Type);
         CreateItemEffectAssetInternal(t);
@@ -65,6 +70,17 @@ public class ItemSetup : PrefabSetup
 
         EditorUtility.SetDirty(this);
         EditorUtility.SetDirty(m_Effect);
+    }
+
+    /// <summary>
+    /// 効果アセットがすでにあるなら消す
+    /// </summary>
+    /// <returns></returns>
+    [Button]
+    private void DestroyItemEffectAsset()
+    {
+        if (m_Effect != null)
+            DestroyImmediate(m_Effect, true);
     }
 
     /// <summary>
@@ -78,8 +94,8 @@ public class ItemSetup : PrefabSetup
             m_Effect = ScriptableObject.CreateInstance<SampleItemEffect>();
 
         // 空腹値回復
-        if (type == typeof(SatisfyHungryDesire))
-            m_Effect = ScriptableObject.CreateInstance<SatisfyHungryDesire>();
+        if (type == typeof(RecoverHp))
+            m_Effect = ScriptableObject.CreateInstance<RecoverHp>();
 
         // 直線投擲
         if (type == typeof(CauseFixedDamage))
