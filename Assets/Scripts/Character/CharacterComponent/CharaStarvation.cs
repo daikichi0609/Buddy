@@ -71,7 +71,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     /// <summary>
     /// 空腹値減少インターバル
     /// </summary>
-    private static readonly int HUNGRY_TURN = 1;
+    private static readonly int HUNGRY_TURN = 2;
 
     /// <summary>
     /// 空腹による体力減少インターバル

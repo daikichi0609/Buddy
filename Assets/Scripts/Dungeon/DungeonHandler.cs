@@ -25,14 +25,14 @@ public interface IDungeonHandler
     /// <param name="x"></param>
     /// <param name="z"></param>
     /// <returns></returns>
-    AroundCell GetAroundCell(Vector3Int pos);
+    AroundCell<ICollector> GetAroundCell(Vector3Int pos);
 
     /// <summary>
     /// 周りのセルId取得
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    AroundCellId GetAroundCellId(Vector3Int pos);
+    AroundCell<TERRAIN_ID> GetAroundCellId(Vector3Int pos);
 
     /// <summary>
     /// 任意の地点から任意の方向に移動できるか
@@ -85,14 +85,14 @@ public class DungeonHandler : IDungeonHandler
     /// マップ
     /// </summary>
     private TERRAIN_ID[,] IdMap => m_DungeonDeployer.IdMap;
-    private List<List<ICollector>> CellMap => m_DungeonDeployer.CellMap;
+    private ICollector[,] CellMap => m_DungeonDeployer.CellMap;
 
     /// <summary>
     /// セル取得
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private ICollector GetCell(Vector3Int pos) => CellMap[pos.x][pos.z];
+    private ICollector GetCell(Vector3Int pos) => CellMap[pos.x, pos.z];
     ICollector IDungeonHandler.GetCell(Vector3Int pos) => GetCell(pos);
 
     /// <summary>
@@ -108,15 +108,15 @@ public class DungeonHandler : IDungeonHandler
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private AroundCell GetAroundCell(Vector3Int pos) => new AroundCell(CellMap, pos.x, pos.z);
-    AroundCell IDungeonHandler.GetAroundCell(Vector3Int pos) => GetAroundCell(pos);
+    private AroundCell<ICollector> GetAroundCell(Vector3Int pos) => new AroundCell<ICollector>(CellMap, pos.x, pos.z);
+    AroundCell<ICollector> IDungeonHandler.GetAroundCell(Vector3Int pos) => GetAroundCell(pos);
 
     /// <summary>
     /// 周囲のセルIDを取得
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    AroundCellId IDungeonHandler.GetAroundCellId(Vector3Int pos) => new AroundCellId(IdMap, pos.x, pos.z);
+    AroundCell<TERRAIN_ID> IDungeonHandler.GetAroundCellId(Vector3Int pos) => new AroundCell<TERRAIN_ID>(IdMap, pos.x, pos.z);
 
     /// <summary>
     /// 任意座標の部屋Id取得
@@ -126,7 +126,7 @@ public class DungeonHandler : IDungeonHandler
     /// <returns></returns>
     private bool TryGetRoomId(Vector3Int pos, out int id)
     {
-        var cell = CellMap[pos.x][pos.z];
+        var cell = CellMap[pos.x, pos.z];
         var info = cell.GetInterface<ICellInfoHandler>();
         id = info.RoomId;
         return id != -1;

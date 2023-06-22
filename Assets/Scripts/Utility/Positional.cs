@@ -9,11 +9,11 @@ public enum DIRECTION
     LOWER_LEFT = 0,
     LEFT = 1,
     UPPER_LEFT = 2,
-    UP = 3,
-    UPPER_RIGHT = 4,
-    RIGHT = 5,
-    LOWER_RIGHT = 6,
-    UNDER = 7,
+    UNDER = 3,
+    UP = 4,
+    LOWER_RIGHT = 5,
+    RIGHT = 6,
+    UPPER_RIGHT = 7,
 
     MAX = 8,
     NONE = -1,
@@ -33,9 +33,47 @@ public static class Positional
     /// </summary>
     public static readonly Vector3Int[] Directions = new Vector3Int[8]
     {
-        new Vector3Int(-1, 0, -1), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, 0, 1),
-        new Vector3Int(1, 0, 1), new Vector3Int(1, 0, 0), new Vector3Int(1, 0, -1),  new Vector3Int(0, 0, -1),
+        new Vector3Int(-1, 0, -1), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 0, 1), new Vector3Int(0, 0, -1),
+        new Vector3Int(0, 0, 1), new Vector3Int(1, 0, -1), new Vector3Int(1, 0, 0), new Vector3Int(1, 0, 1)
     };
+
+    /// <summary>
+    /// DIRECTION取得
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
+    public static DIRECTION GetDirection(int x, int z)
+    {
+        if (x == -1)
+            return z switch
+            {
+                -1 => DIRECTION.LOWER_LEFT,
+                0 => DIRECTION.LEFT,
+                1 => DIRECTION.UPPER_LEFT,
+                _ => DIRECTION.NONE,
+            };
+
+        else if (x == 0)
+            return z switch
+            {
+                -1 => DIRECTION.UNDER,
+                0 => DIRECTION.NONE,
+                1 => DIRECTION.UP,
+                _ => DIRECTION.NONE,
+            };
+
+        else if (x == 1)
+            return z switch
+            {
+                -1 => DIRECTION.LOWER_RIGHT,
+                0 => DIRECTION.RIGHT,
+                1 => DIRECTION.UPPER_RIGHT,
+                _ => DIRECTION.NONE,
+            };
+
+        return DIRECTION.NONE;
+    }
 
     /// <summary>
     /// Enum -> V3Int

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Fungus;
+using UnityEngine;
 
 /// <summary>
 /// セル拡張メソッド
@@ -11,14 +12,14 @@ public static class CellExtension
     /// </summary>
     /// <param name="cell"></param>
     /// <returns></returns>
-    public static AroundCellId GetAroundCellId(this TERRAIN_ID[,] map, int x, int z) => new AroundCellId(map, x, z);
+    public static AroundCell<TERRAIN_ID> GetAroundCellId(this TERRAIN_ID[,] map, int x, int z) => new AroundCell<TERRAIN_ID>(map, x, z);
 
     /// <summary>
     /// 周囲の地形Idを取得
     /// </summary>
     /// <param name="cell"></param>
     /// <returns></returns>
-    public static AroundCellId GetAroundCellId(this ICollector cell, IDungeonHandler dungeonHandler)
+    public static AroundCell<TERRAIN_ID> GetAroundCellId(this ICollector cell, IDungeonHandler dungeonHandler)
     {
         var pos = cell.GetInterface<ICellInfoHandler>();
         return dungeonHandler.GetAroundCellId(pos.Position);
@@ -29,7 +30,7 @@ public static class CellExtension
     /// </summary>
     /// <param name="cell"></param>
     /// <returns></returns>
-    public static AroundCell GetAroundCell(this ICollector cell, IDungeonHandler dungeonHandler)
+    public static AroundCell<ICollector> GetAroundCell(this ICollector cell, IDungeonHandler dungeonHandler)
     {
         var pos = cell.GetInterface<ICellInfoHandler>();
         return dungeonHandler.GetAroundCell(pos.Position);
@@ -40,7 +41,7 @@ public static class CellExtension
     /// </summary>
     /// <param name="map"></param>
     /// <returns></returns>
-    public static int[,] AstarGrid(this TERRAIN_ID[,] map)
+    public static int[,] AstarGrid(this ICollector[,] map)
     {
         var xLength = map.GetLength(0);
         var zLength = map.GetLength(1);
@@ -49,15 +50,21 @@ public static class CellExtension
         for (int x = 0; x < xLength; x++)
             for (int z = 0; z < zLength; z++)
             {
-                var terrain = map[x, z];
+                var cell = map[x, z];
+                var terrain = cell.GetInterface<ICellInfoHandler>().CellId;
+
                 // Wallは0（通過できない）
                 // Wall以外は全て1（通過できる）
-                var i = terrain switch
+                var cost = terrain switch
                 {
                     TERRAIN_ID.WALL => 0,
                     _ => 1
                 };
-                grid[x, z] = i;
+
+                if (cell.RequireInterface<ITrapHandler>(out var trap) == true && trap.IsVisible == true)
+                    cost += 10;
+
+                grid[x, z] = cost;
             }
 
         return grid;
@@ -65,84 +72,37 @@ public static class CellExtension
 }
 
 /// <summary>
-/// 周囲のセルId
+/// 周囲のセルを取得
 /// </summary>
-public readonly struct AroundCellId
+public readonly struct AroundCell<T>
 {
-    public TERRAIN_ID BaseCell { get; }
-    public Dictionary<DIRECTION, TERRAIN_ID> Cells { get; }
+    public T BaseCell { get; }
+    public Dictionary<DIRECTION, T> Cells { get; }
 
-    public AroundCellId(TERRAIN_ID[,] map, int x, int z)
+    public AroundCell(T[,] map, int centerX, int centerZ)
     {
-        BaseCell = map[x, z];
-        Cells = new Dictionary<DIRECTION, TERRAIN_ID>();
+        BaseCell = map[centerX, centerZ];
+        Cells = new Dictionary<DIRECTION, T>();
 
-        // 左
-        if (x - 1 >= 0 && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_LEFT, map[x - 1, z - 1]);
+        int xLength = map.GetLength(0);
+        int zLength = map.GetLength(1);
 
-        if (x - 1 >= 0)
-            Cells.Add(DIRECTION.LEFT, map[x - 1, z]);
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int z = -1; z <= 1; z++)
+            {
+                if (x == 0 && z == 0)
+                    continue;
 
-        if (x - 1 >= 0 && z + 1 < map.Length)
-            Cells.Add(DIRECTION.UPPER_LEFT, map[x - 1, z + 1]);
+                int checkX = centerX + x;
+                int checkZ = centerZ + z;
 
-        // 上
-        if (z + 1 < map.Length)
-            Cells.Add(DIRECTION.UP, map[x, z + 1]);
-
-        if (x + 1 < map.Length && z + 1 < map.Length)
-            Cells.Add(DIRECTION.UPPER_RIGHT, map[x + 1, z + 1]);
-
-        // 右
-        if (x + 1 < map.Length)
-            Cells.Add(DIRECTION.RIGHT, map[x + 1, z]);
-
-        if (x + 1 < map.Length && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_RIGHT, map[x + 1, z - 1]);
-
-        // 下
-        if (z - 1 >= 0)
-            Cells.Add(DIRECTION.UNDER, map[x, z - 1]);
-    }
-}
-
-public readonly struct AroundCell
-{
-    public ICollector BaseCell { get; } //基準
-    public Dictionary<DIRECTION, ICollector> Cells { get; }
-
-    public AroundCell(List<List<ICollector>> cellList, int x, int z)
-    {
-        BaseCell = cellList[x][z];
-        Cells = new Dictionary<DIRECTION, ICollector>();
-
-        // 左
-        if (x - 1 >= 0 && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_LEFT, cellList[x - 1][z - 1]);
-
-        if (x - 1 >= 0)
-            Cells.Add(DIRECTION.LEFT, cellList[x - 1][z]);
-
-        if (x - 1 >= 0 && z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UPPER_LEFT, cellList[x - 1][z + 1]);
-
-        // 上
-        if (z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UP, cellList[x][z + 1]);
-
-        if (x + 1 < cellList.Count && z + 1 < cellList[0].Count)
-            Cells.Add(DIRECTION.UPPER_RIGHT, cellList[x + 1][z + 1]);
-
-        // 右
-        if (x + 1 < cellList.Count)
-            Cells.Add(DIRECTION.RIGHT, cellList[x + 1][z]);
-
-        if (x + 1 < cellList.Count && z - 1 >= 0)
-            Cells.Add(DIRECTION.LOWER_RIGHT, cellList[x + 1][z - 1]);
-
-        // 下
-        if (z - 1 >= 0)
-            Cells.Add(DIRECTION.UNDER, cellList[x][z - 1]);
+                if (checkX >= 0 && checkX < map.GetLength(0) && checkZ >= 0 && checkZ < map.GetLength(1))
+                {
+                    var dir = Positional.GetDirection(x, z);
+                    Cells.Add(dir, map[checkX, checkZ]);
+                }
+            }
+        }
     }
 }

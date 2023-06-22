@@ -4,6 +4,8 @@ using UniRx;
 using System;
 using Zenject;
 using System.Threading.Tasks;
+using Fungus;
+using Task = System.Threading.Tasks.Task;
 
 /// <summary>
 /// https://note.com/motibe_tsukuru/n/nbe75bb690bcc
@@ -19,7 +21,7 @@ public interface IDungeonDeployer
     /// <summary>
     /// マップ（コレクター）
     /// </summary>
-    List<List<ICollector>> CellMap { get; }
+    ICollector[,] CellMap { get; }
 
     /// <summary>
     /// 任意の部屋を入手
@@ -171,8 +173,8 @@ public class DungeonDeployer : IDungeonDeployer
     /// <summary>
     /// インスタンス
     /// </summary>
-    private List<List<ICollector>> m_CellMap = new List<List<ICollector>>();
-    List<List<ICollector>> IDungeonDeployer.CellMap => m_CellMap;
+    private ICollector[,] m_CellMap;
+    ICollector[,] IDungeonDeployer.CellMap => m_CellMap;
 
     /// <summary>
     /// インスタンス（ルーム限定）
@@ -201,7 +203,7 @@ public class DungeonDeployer : IDungeonDeployer
             for (int x = range.Start.X; x <= range.End.X; x++)
                 for (int z = range.Start.Y; z <= range.End.Y; z++)
                 {
-                    var cell = m_CellMap[x][z];
+                    var cell = m_CellMap[x, z];
                     var info = cell.GetInterface<ICellInfoHandler>();
                     info.RoomId = roomId;
                     list.Add(cell);
@@ -225,7 +227,7 @@ public class DungeonDeployer : IDungeonDeployer
             for (int j = 0; j < map.GetLength(1) - 1; j++)
                 if (map[i, j] == TERRAIN_ID.ROOM)
                 {
-                    AroundCellId aroundId = map.GetAroundCellId(i, j);
+                    var aroundId = map.GetAroundCellId(i, j);
                     if (CheckGateWay(aroundId) == true)
                         map[i, j] = TERRAIN_ID.GATE;
                 }
@@ -251,7 +253,7 @@ public class DungeonDeployer : IDungeonDeployer
         /// </summary>
         /// <param name="aroundGrid"></param>
         /// <returns></returns>
-        bool CheckGateWay(AroundCellId aroundGrid)
+        bool CheckGateWay(AroundCell<TERRAIN_ID> aroundGrid)
         {
             var cells = aroundGrid.Cells;
 
@@ -311,9 +313,8 @@ public class DungeonDeployer : IDungeonDeployer
     /// </summary>
     private void RemoveDungeon()
     {
-        foreach (var list in m_CellMap)
-            foreach (var cell in list)
-                cell.Dispose();
+        foreach (var cell in m_CellMap)
+            cell.Dispose();
 
         m_OnDungeonRemove.OnNext(Unit.Default);
         InitializeAllList();
@@ -325,7 +326,7 @@ public class DungeonDeployer : IDungeonDeployer
     /// </summary>
     private void InitializeAllList()
     {
-        m_CellMap.Clear();
+        m_CellMap = null;
         m_RoomList.Clear();
     }
 
@@ -334,16 +335,18 @@ public class DungeonDeployer : IDungeonDeployer
     /// </summary>
     private Task DeployDungeonTerrain(TERRAIN_ID[,] map, DungeonElementSetup setup)
     {
-        for (int i = 0; i < map.GetLength(0) - 1; i++)
-        {
-            m_CellMap.Add(new List<ICollector>());
+        int xLength = map.GetLength(0);
+        int zLength = map.GetLength(1);
+        m_CellMap = new ICollector[xLength, zLength];
 
-            for (int j = 0; j < map.GetLength(1) - 1; j++)
+        for (int x = 0; x < xLength; x++)
+        {
+            for (int z = 0; z < zLength; z++)
             {
-                var id = map[i, j]; // 古いId
+                var id = map[x, z]; // 古いId
                 TERRAIN_ID type = TERRAIN_ID.INVALID; // 新Id
                 GameObject cellObject = null; // GameObject
-                Vector3 pos = new Vector3Int(i, 0, j);
+                Vector3 pos = new Vector3Int(x, 0, z);
 
                 switch (id)
                 {
@@ -391,7 +394,7 @@ public class DungeonDeployer : IDungeonDeployer
                 info.CellObject = cellObject;
                 info.CellId = type;
                 cell.Initialize();
-                m_CellMap[i].Add(cell);
+                m_CellMap[x, z] = cell;
             }
         }
 

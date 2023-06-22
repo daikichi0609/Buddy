@@ -100,7 +100,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     {
         var currentPos = m_CharaMove.Position; // 自分の位置
         var targetPos = target.GetInterface<ICharaMove>().Position; // 相手の位置
-        var grid = m_DungeonDeployer.IdMap.AstarGrid(); // マップ生成
+        var grid = m_DungeonDeployer.CellMap.AstarGrid(); // マップ生成
 
         // パス生成
         var path = AStarSearch.FindPath(new Vector2Int(currentPos.x, currentPos.z), new Vector2Int(targetPos.x, targetPos.z), grid);
@@ -133,7 +133,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// <param name="target"></param>
     /// <param name="targets"></param>
     /// <returns></returns>
-    protected bool TryGetCandidateAttack(AroundCell aroundCell, out List<ICollector> targets)
+    protected bool TryGetCandidateAttack(AroundCell<ICollector> aroundCell, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
         var baseInfo = aroundCell.BaseCell.GetInterface<ICellInfoHandler>();

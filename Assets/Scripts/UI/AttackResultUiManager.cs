@@ -28,6 +28,12 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     private Text m_DamageText;
 
     /// <summary>
+    /// ダメージテキスト
+    /// </summary>
+    [SerializeField]
+    private Text m_CriticalText;
+
+    /// <summary>
     /// Missテキスト
     /// </summary>
     [SerializeField]
@@ -39,7 +45,7 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// <param name="result"></param>
     void IAttackResultUiManager.Damage(AttackResult result)
     {
-        // 透明度操作 //
+        // 透明度操作
         string damage = result.Damage.ToString();
         m_DamageText.text = damage;
         m_DamageText.DOFade(1f, 0.001f);
@@ -50,6 +56,14 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
         var move = defender.GetInterface<ICharaMove>();
         m_DamageText.transform.position = move.Position + OFFSET;
         m_DamageText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+
+        if (result.IsCritical == true)
+        {
+            m_CriticalText.DOFade(1f, 0.001f);
+            m_CriticalText.DOFade(0f, FADE_SPEED);
+            m_CriticalText.transform.position = move.Position + OFFSET + new Vector3(0f, 1.0f, 0f);
+            m_CriticalText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+        }
     }
 
     /// <summary>
@@ -58,7 +72,7 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// <param name="result"></param>
     void IAttackResultUiManager.Miss(AttackResult result)
     {
-        // 透明度操作 //
+        // 透明度操作
         m_MissText.DOFade(1f, 0.001f);
         m_MissText.DOFade(0f, FADE_SPEED);
 

@@ -114,7 +114,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         //通路にいる場合
         if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
         {
-            AroundCellId around = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
+            var around = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
             var cells = around.Cells;
             var lastDirection = m_CharaMove.LastMoveDirection;
             var candidateDir = new List<DIRECTION>();
