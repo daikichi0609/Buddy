@@ -76,11 +76,11 @@ public class MapInfo
 
 public static class MapGenerator
 {
-
     private const int MINIMUM_RANGE_WIDTH = 6;
 
     private static int m_MapSizeX;
     private static int m_MapSizeY;
+    private static int m_MinRoom;
     private static int m_MaxRoom;
 
     private static List<Range> m_RoomList = new List<Range>();
@@ -88,10 +88,12 @@ public static class MapGenerator
     private static List<Range> m_PassList = new List<Range>();
     private static List<Range> m_RoomPassList = new List<Range>();
 
-    public static MapInfo GenerateMap(int mapSizeX, int mapSizeY, int maxRoom)
+    public static MapInfo GenerateMap(int mapSizeX, int mapSizeY, int minRoom, int maxRoom)
     {
         m_MapSizeX = mapSizeX;
         m_MapSizeY = mapSizeY;
+        m_MinRoom = minRoom;
+        m_MaxRoom = maxRoom;
 
         TERRAIN_ID[,] map = new TERRAIN_ID[mapSizeX, mapSizeY];
 
@@ -188,7 +190,7 @@ public static class MapGenerator
 
             // 40％の確率で分割しない
             // ただし、区画の数が1つの時は必ず分割する
-            if (m_RangeList.Count > 2 && RogueUtils.RandomJadge(0.4f))
+            if (m_RangeList.Count >= m_MinRoom && RogueUtils.RandomJadge(0.4f))
             {
                 continue;
             }
@@ -238,7 +240,7 @@ public static class MapGenerator
             System.Threading.Thread.Sleep(1);
             // 30％の確率で部屋を作らない
             // ただし、最大部屋数の半分に満たない場合は作る
-            if (m_RoomList.Count > m_MaxRoom / 2 && RogueUtils.RandomJadge(0.3f))
+            if (m_RoomList.Count > m_MinRoom && RogueUtils.RandomJadge(0.3f))
             {
                 continue;
             }

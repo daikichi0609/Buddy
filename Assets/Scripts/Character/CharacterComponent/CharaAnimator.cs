@@ -152,10 +152,11 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     /// </summary>
     /// <param name="type"></param>
     /// <param name="time"></param>
-    private async Task PlayAnimation(ANIMATION_TYPE type, int time)
+    private async Task PlayAnimation(ANIMATION_TYPE type, float time)
     {
         PlayAnimation(type);
-        await Task.Delay(time);
+        time *= 1000;
+        await Task.Delay((int)time);
         StopAnimation(type);
     }
 

@@ -53,41 +53,49 @@ public partial class FriendAi : CharaAi, IFriendAi
                 // 同じ部屋でPlayerと隣り合ってるかチェック
                 bool isNeighborOn = false;
                 var playerPos = m_UnitHolder.Player.GetInterface<ICharaMove>().Position;
-                // 自分とリーダーが同じ部屋にいるなら
-                if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
-                    m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
-                    myId == playerId)
+
+                // プレイヤーの周囲セル取得
+                var aroundCell = m_DungeonHandler.GetAroundCell(playerPos);
+                foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
                 {
-                    var aroundCell = m_DungeonHandler.GetAroundCell(playerPos);
-                    foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
+                    var info = pair.Value.GetInterface<ICellInfoHandler>();
+
+                    // Unit存在判定
+                    if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.FRIEND) == false)
+                        continue;
+
+                    // 隣にいるなら
+                    if (collector == Owner)
                     {
-                        var info = pair.Value.GetInterface<ICellInfoHandler>();
-
-                        // Unit存在判定
-                        if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, CHARA_TYPE.FRIEND) == false)
-                            continue;
-
-                        // 隣にいるなら
-                        if (collector == Owner)
-                        {
-                            isNeighborOn = true; // 隣り合ってるフラグオン
-                            dir = pair.Key.ToOppositeDir(); // プレイヤーの方を向く
-                            break;
-                        }
+                        isNeighborOn = true; // 隣り合ってるフラグオン
+                        dir = pair.Key.ToOppositeDir(); // プレイヤーへの方向
+                        break;
                     }
                 }
 
                 // 隣り合っているならプレイヤーを見る
                 if (isNeighborOn == true)
                 {
-                    m_CharaMove.Face(dir);
-                    result = m_CharaMove.Wait();
+                    // 自分とリーダーが同じ部屋にいるなら
+                    if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
+                        m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
+                        myId == playerId)
+                    {
+                        m_CharaMove.Face(dir);
+                        result = m_CharaMove.Wait();
+                    }
+                    else if (dir.IsDiagonal() == false)
+                    {
+                        m_CharaMove.Face(dir);
+                        result = m_CharaMove.Wait();
+                    }
+                    else
+                        result = FollowAstarPath(m_UnitHolder.Player);
                 }
-                // 隣り合っていないなら追いかける AstarPath
                 else
-                {
                     result = FollowAstarPath(m_UnitHolder.Player);
-                }
+
+
                 break;
         }
 

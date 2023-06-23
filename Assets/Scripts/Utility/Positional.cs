@@ -76,6 +76,20 @@ public static class Positional
     }
 
     /// <summary>
+    /// 斜めであるかどうか
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    public static bool IsDiagonal(this DIRECTION dir)
+    {
+        return dir switch
+        {
+            DIRECTION.LOWER_LEFT or DIRECTION.LOWER_RIGHT or DIRECTION.UPPER_LEFT or DIRECTION.UPPER_RIGHT => true,
+            _ => false
+        };
+    }
+
+    /// <summary>
     /// Enum -> V3Int
     /// </summary>
     /// <param name="dir"></param>

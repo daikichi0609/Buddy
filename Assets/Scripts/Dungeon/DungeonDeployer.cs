@@ -280,8 +280,8 @@ public class DungeonDeployer : IDungeonDeployer
     {
         var x = m_DungeonProgressHolder.CurrentDungeonSetup.MapSize.x;
         var y = m_DungeonProgressHolder.CurrentDungeonSetup.MapSize.y;
-        var roomCount = m_DungeonProgressHolder.CurrentDungeonSetup.RoomCountMax;
-        var mapInfo = MapGenerator.GenerateMap(x, y, roomCount);
+        var dungeonSetup = m_DungeonProgressHolder.CurrentDungeonSetup;
+        var mapInfo = MapGenerator.GenerateMap(x, y, dungeonSetup.RoomCountMin, dungeonSetup.RoomCountMax);
         var map = ReworkMap(mapInfo.Map);
 
         await DeployDungeonTerrain(map, setup);

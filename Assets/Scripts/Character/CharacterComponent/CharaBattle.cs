@@ -86,9 +86,12 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaObjectHolder m_CharaObjectHolder;
     private ICharaLastActionHolder m_CharaLastActionHolder;
 
-    public static readonly int ms_NormalAttackTotalTime = 700;
-    public static readonly int ms_NormalAttackHitTime = 400;
-    public static readonly int ms_DamageTotalTime = 500;
+    public static readonly float ms_NormalAttackTotalTime = 0.7f;
+    public static readonly float ms_NormalAttackHitTime = 0.4f;
+    public static readonly float ms_DamageTotalTime = 0.5f;
+
+    private static readonly float HIT_PROB = 0.95f;
+    private static readonly float CRITICAL_PROB = 0.05f;
 
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
 
@@ -179,7 +182,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return false;
 
         m_CharaMove.Face(direction); // 向く
-        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, 0.95f, 0.05f, false, direction); // 攻撃情報　
+        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
@@ -187,7 +190,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         var disposable = m_TurnManager.RequestProhibitAction(Owner); // 行動禁止
 
         // モーション終わりに
-        StartCoroutine(Coroutine.DelayCoroutine(0.7f, (this, attackPos, target, attackInfo, disposable), tuple => tuple.Item1.AttackInternal(tuple.attackPos, tuple.target, tuple.attackInfo, tuple.disposable)));
+        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackTotalTime, (this, attackPos, target, attackInfo, disposable), tuple => tuple.Item1.AttackInternal(tuple.attackPos, tuple.target, tuple.attackInfo, tuple.disposable)));
         return true;
     }
 
@@ -267,7 +270,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <param name="result"></param>
     private async Task PostDamage(AttackResult result)
     {
-        await Task.Delay(ms_DamageTotalTime); // モーション終わりまで待機
+        int time = (int)(ms_DamageTotalTime * 1000);
+        await Task.Delay(time); // モーション終わりまで待機
         m_OnDamageEnd.OnNext(result);
 
         // 死亡

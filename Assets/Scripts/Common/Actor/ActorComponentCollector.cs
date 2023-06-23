@@ -154,9 +154,9 @@ public class ActorComponentCollector : MonoBehaviour, ICollector
     /// </summary>
     void IDisposable.Dispose()
     {
+        m_CompositeDisposable.Clear();
+
         foreach (var comp in m_Interfaces)
             comp.Dispose();
-
-        m_CompositeDisposable.Clear();
     }
 }

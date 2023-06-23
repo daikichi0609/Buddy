@@ -151,7 +151,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
             var dir = DIRECTION.NONE;
             foreach (var near in around.Cells)
             {
-                if (near.Value == TERRAIN_ID.ROOM)
+                if (near.Value == TERRAIN_ID.ROOM && near.Key.IsDiagonal() == false)
                 {
                     dir = near.Key;
                     break;

@@ -15,7 +15,7 @@ public interface IAttackResultUiManager
 public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
 {
     // フェイド速度
-    private static readonly float FADE_SPEED = 1f;
+    private static readonly float FADE_SPEED = 1.5f;
     // 表示位置
     private static readonly Vector3 OFFSET = new Vector3(0f, 1.5f, 0f);
     // 移動距離
@@ -61,7 +61,7 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
         {
             m_CriticalText.DOFade(1f, 0.001f);
             m_CriticalText.DOFade(0f, FADE_SPEED);
-            m_CriticalText.transform.position = move.Position + OFFSET + new Vector3(0f, 1.0f, 0f);
+            m_CriticalText.transform.position = move.Position + OFFSET + new Vector3(0f, 0.5f, 0f);
             m_CriticalText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
         }
     }
