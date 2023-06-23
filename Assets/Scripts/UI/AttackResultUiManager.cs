@@ -5,11 +5,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using DG.Tweening;
+using Zenject;
 
 public interface IAttackResultUiManager
 {
     void Damage(AttackResult result);
     void Miss(AttackResult result);
+    void LevelUp(ICollector unit);
 }
 
 public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
@@ -38,6 +40,12 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// </summary>
     [SerializeField]
     private Text m_MissText;
+
+    /// <summary>
+    /// レベルアップテキスト
+    /// </summary>
+    [SerializeField]
+    private Text m_LevelUpText;
 
     /// <summary>
     /// ダメージ表示
@@ -81,5 +89,21 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
         var move = defender.GetInterface<ICharaMove>();
         m_MissText.transform.position = move.Position + OFFSET;
         m_MissText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+    }
+
+    /// <summary>
+    /// レベルアップ
+    /// </summary>
+    /// <param name="unit"></param>
+    void IAttackResultUiManager.LevelUp(ICollector unit)
+    {
+        // 透明度操作
+        m_LevelUpText.DOFade(1f, 0.001f);
+        m_LevelUpText.DOFade(0f, FADE_SPEED);
+
+        // 位置操作
+        var move = unit.GetInterface<ICharaMove>();
+        m_LevelUpText.transform.position = move.Position + OFFSET;
+        m_LevelUpText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
     }
 }

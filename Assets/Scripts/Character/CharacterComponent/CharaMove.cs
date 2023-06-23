@@ -115,6 +115,9 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// <param name="direction"></param>
     private void Face(DIRECTION direction)
     {
+        if (direction == DIRECTION.NONE)
+            return;
+
         Direction = direction;
         CharaObject.transform.rotation = Quaternion.LookRotation(direction.ToV3Int());
     }

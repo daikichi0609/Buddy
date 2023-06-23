@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Forest_1
   m_EditorClassIdentifier: 
   m_DungeonName: "\u59CB\u307E\u308A\u306E\u68EE"
-  m_FloorCount: 2
+  m_FloorCount: 5
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 3, y: 4}
   m_EnemyTable: {fileID: 11400000, guid: e14b30015173b4c5c8e74c7d65280d3d, type: 2}

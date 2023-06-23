@@ -53,6 +53,8 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private IDungeonContentsDeployer m_DungeonContentsDeployer;
+    [Inject]
+    private IAttackResultUiManager m_AttackResultUiManager;
 
     /// <summary>
     /// 経験値テーブル
@@ -112,6 +114,13 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
             int diff = self.UpdateLevelInfo();
             if (diff != 0)
                 self.m_LevelChanged.OnNext(diff); // レベル変動時
+        });
+
+        // レベルアップテキスト
+        m_LevelChanged.SubscribeWithState(this, (_, self) =>
+        {
+            var player = m_UnitHolder.Player;
+            self.m_AttackResultUiManager.LevelUp(player);
         });
 
         SubscribeGetExp(); // 経験値入手購読

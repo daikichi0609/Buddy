@@ -152,6 +152,10 @@ public class DungeonDeployer : IDungeonDeployer
     [Inject]
     private IInstantiater m_Instantiater;
 
+    [Inject]
+    private DiContainer m_DiContainer;
+    private static IInjector ms_CellInjector = new CellInjector();
+
     /// <summary>
     /// マップ作成時
     /// </summary>
@@ -387,6 +391,7 @@ public class DungeonDeployer : IDungeonDeployer
                         break;
                 }
 
+                ms_CellInjector.Inject(m_DiContainer, cellObject);
                 cellObject.transform.position = pos;
 
                 var cell = cellObject.GetComponent<ICollector>();
