@@ -27,11 +27,6 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
     protected override OptionElement CreateOptionElement() => new OptionElement(m_OptionMethod, new string[2] { "バッグ", "ステータス" });
 
-    /// <summary>
-    /// メニュー開く購読
-    /// </summary>
-    private IDisposable m_OpenMenuDisposable;
-
     protected void Awake()
     {
         SubscribeMenuOpen();
@@ -50,29 +45,11 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     /// </summary>
     private void SubscribeMenuOpen()
     {
-        m_OpenMenuDisposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
+        m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
         {
-            if (self.m_IsOperatable == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
+            if (self.m_InputManager.IsUiPopUp == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
                 self.Activate();
         }).AddTo(this);
-    }
-
-    /// <summary>
-    /// メニュー開く購読破棄
-    /// </summary>
-    protected override void Activate()
-    {
-        base.Activate();
-        m_OpenMenuDisposable.Dispose();
-    }
-
-    /// <summary>
-    /// メニュー開く再購読
-    /// </summary>
-    protected override void Deactivate(bool openParent = true)
-    {
-        base.Deactivate();
-        SubscribeMenuOpen();
     }
 
     /// <summary>

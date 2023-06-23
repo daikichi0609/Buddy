@@ -90,10 +90,10 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 self.Deactivate();
             }
         });
-        m_Disposables.Add(throwStraight);
+        m_Disposables.Add(quit);
         optionIndex++;
         strings.Add("やめる");
 
-        return new OptionElement(m_OptionMethod, strings.ToArray());
+        return new OptionElement(m_OptionMethod, strings.ToArray(), optionIndex);
     }
 }

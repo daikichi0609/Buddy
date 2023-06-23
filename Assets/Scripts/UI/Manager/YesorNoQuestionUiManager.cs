@@ -51,6 +51,14 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 
     protected override OptionElement CreateOptionElement()
     {
+        var s = m_Question switch
+        {
+            QUESTION_TYPE.STAIRS => "先に進みますか？",
+
+            QUESTION_TYPE.NONE or _ => "",
+        };
+        m_Interface.m_QuestionText.text = s;
+
         if (m_Question == QUESTION_TYPE.STAIRS)
         {
             var disposable = m_OptionMethod.SubscribeWithState(this, (index, self) =>
@@ -65,23 +73,6 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
         }
 
         return new OptionElement(m_OptionMethod, OptionText);
-    }
-
-    /// <summary>
-    /// 質問文セット
-    /// </summary>
-    protected override void Activate()
-    {
-        base.Activate();
-
-        var s = m_Question switch
-        {
-            QUESTION_TYPE.STAIRS => "先に進みますか？",
-
-            QUESTION_TYPE.NONE or _ => "",
-        };
-
-        m_Interface.m_QuestionText.text = s;
     }
 }
 

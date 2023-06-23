@@ -106,14 +106,14 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     private Dictionary<(int, int), GameObject> m_StairsIcons = new Dictionary<(int, int), GameObject>();
 
     [Inject]
-    private void Construct(IDungeonDeployer dungeonDeployer)
+    private void Construct(IDungeonDeployer dungeonDeployer, IDungeonContentsDeployer dungeonContentsDeployer)
     {
         RectTransform rect = m_RoadImage.GetComponent<RectTransform>();
         Pw = rect.sizeDelta.x;
         Ph = rect.sizeDelta.y;
 
         dungeonDeployer.OnDungeonDeploy.SubscribeWithState(this, (map, self) => self.Mapping(map)).AddTo(this);
-        dungeonDeployer.OnDungeonRemove.SubscribeWithState(this, (_, self) => self.ResetMiniMap()).AddTo(this);
+        dungeonContentsDeployer.OnRemoveContents.SubscribeWithState(this, (_, self) => self.ResetMiniMap()).AddTo(this);
     }
 
     private void Start()
@@ -165,6 +165,8 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 {
                     if (tuple.Item1.m_FriendIcons.Remove(tuple.collector, out var icon) == true)
                         tuple.Item1.m_ObjectPoolController.SetObject(KEY_FRIEND, icon);
+                    else
+                        Debug.Log("Friendアイコンの削除に失敗");
                 });
             }
             else if (type.Type == CHARA_TYPE.ENEMY)
@@ -178,6 +180,8 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 {
                     if (tuple.Item1.m_EnemyIcons.Remove(tuple.collector, out var icon) == true)
                         tuple.Item1.m_ObjectPoolController.SetObject(KEY_ENEMY, icon);
+                    else
+                        Debug.Log("Enemyアイコンの削除に失敗");
                 });
             }
         }
@@ -193,6 +197,8 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
             {
                 if (tuple.Item1.m_ItemIcons.Remove(tuple.collector, out var icon) == true)
                     tuple.Item1.m_ObjectPoolController.SetObject(KEY_ITEM, icon);
+                else
+                    Debug.Log("Itemアイコンの削除に失敗");
             });
         }
 
@@ -207,6 +213,8 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
             {
                 if (tuple.Item1.m_TrapIcons.Remove(tuple.collector, out var icon) == true)
                     tuple.Item1.m_ObjectPoolController.SetObject(KEY_TRAP, icon);
+                else
+                    Debug.Log("Trapアイコンの削除に失敗");
             });
         }
 

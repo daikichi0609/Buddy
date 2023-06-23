@@ -69,7 +69,12 @@ public class InputManager : MonoBehaviour, IInputManager
     /// <summary>
     /// 今表示中のUi
     /// </summary>
-    private IUiBase ActiveUi { get; set; }
+    private IUiBase m_ActiveUi;
+
+    /// <summary>
+    /// UI表示中かどうか
+    /// </summary>
+    public bool IsUiPopUp => m_ActiveUi != null;
 
     /// <summary>
     /// 操作中Uiをセット
@@ -78,14 +83,9 @@ public class InputManager : MonoBehaviour, IInputManager
     /// <returns></returns>
     IDisposable IInputManager.SetActiveUi(IUiBase ui)
     {
-        ActiveUi = ui;
-        return Disposable.CreateWithState(this, self => self.ActiveUi = null);
+        m_ActiveUi = ui;
+        return Disposable.CreateWithState(this, self => self.m_ActiveUi = null);
     }
-
-    /// <summary>
-    /// UI表示中かどうか
-    /// </summary>
-    public bool IsUiPopUp => ActiveUi != null;
 
     [Inject]
     public void Construct(IPlayerLoopManager loopManager)

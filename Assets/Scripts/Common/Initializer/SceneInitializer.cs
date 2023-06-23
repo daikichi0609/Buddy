@@ -30,6 +30,8 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     [Inject]
     protected IInstantiater m_Instantiater;
 
+    private static IInjector ms_OutGameUnitInjector = new OutGameUnitInjector();
+
     protected virtual string FungusMessage { get; }
 
     /// <summary>
@@ -72,14 +74,14 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         // ----- キャラクター生成 ----- //
         // リーダー
         var leader = m_CurrentCharacterHolder.Leader;
-        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab);
+        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab, ms_OutGameUnitInjector);
         l.transform.position = leaderPos;
         m_Leader = l.GetComponent<ActorComponentCollector>();
         m_Leader.Initialize();
 
         // バディ
         var friend = m_CurrentCharacterHolder.Friend;
-        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab);
+        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab, ms_OutGameUnitInjector);
         f.transform.position = friendPos;
         m_Friend = f.GetComponent<ActorComponentCollector>();
         m_Friend.Initialize();

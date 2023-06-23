@@ -26,14 +26,18 @@ public readonly struct OptionElement
     /// </summary>
     public int MethodCount { get; }
 
-    public OptionElement(Subject<int> method, string[] texts, int methodCount = -1)
+    public OptionElement(Subject<int> method, string[] texts)
     {
         OptionMethod = method;
         OptionTexts = texts;
-        if (methodCount == -1)
-            MethodCount = OptionTexts.Length;
-        else
-            MethodCount = methodCount;
+        MethodCount = OptionTexts.Length;
+    }
+
+    public OptionElement(Subject<int> method, string[] texts, int methodCount)
+    {
+        OptionMethod = method;
+        OptionTexts = texts;
+        MethodCount = methodCount;
     }
 }
 
@@ -60,14 +64,14 @@ public interface IUiManager
     void DeactivateAll();
 
     /// <summary>
-    /// 操作可能か
-    /// </summary>
-    bool IsOperatable { set; }
-
-    /// <summary>
     /// 親Ui
     /// </summary>
     IUiManager ParentUi { set; }
+
+    /// <summary>
+    /// 入力購読終わり
+    /// </summary>
+    IDisposable InputDisposable { get; }
 }
 
 /// <summary>
@@ -103,16 +107,16 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected CompositeDisposable m_Disposables = new CompositeDisposable();
 
     /// <summary>
-    /// Uiが操作可能かどうか
-    /// </summary>
-    protected bool m_IsOperatable;
-    bool IUiManager.IsOperatable { set => m_IsOperatable = value; }
-
-    /// <summary>
     /// 親Ui
     /// </summary>
     private IUiManager m_ParentUi;
     IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
+
+    /// <summary>
+    /// 入力購読
+    /// </summary>
+    private IDisposable m_InputDisposable;
+    IDisposable IUiManager.InputDisposable => m_InputDisposable;
 
     /// <summary>
     /// 入力受付
@@ -120,9 +124,6 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <param name="flag"></param>
     private void DetectInput(KeyCodeFlag flag)
     {
-        if (m_IsOperatable == false)
-            return;
-
         if (m_TurnManager.NoOneActing == false)
             return;
 
@@ -161,13 +162,15 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected void Activate(IUiManager parent)
     {
         m_ParentUi = parent; // 親Uiセット
-        m_ParentUi.IsOperatable = false;
+        m_ParentUi.InputDisposable.Dispose();
         Activate();
     }
     void IUiManager.Activate(IUiManager parent) => Activate(parent);
-    protected virtual void Activate()
+    protected void Activate()
     {
-        SubscribeDetectInput(); // 入力購読
+        // 入力購読
+        m_InputDisposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
+
         var closeUi = m_InputManager.SetActiveUi(this.UiInterface);
         m_Disposables.Add(closeUi); // 閉じるとき
 
@@ -175,7 +178,6 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         var option = CreateOptionElement();
         UiInterface.Initialize(m_Disposables, option);
 
-        m_IsOperatable = true; // 操作可能
         UiInterface.SetActive(true); // 表示
 
         // バトルログは消す
@@ -190,15 +192,13 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// Ui無効化
     /// </summary>
-    protected virtual void Deactivate(bool openParent = true)
+    protected void Deactivate(bool openParent = true)
     {
-        // 操作不能
-        m_IsOperatable = false;
-
         // Ui非表示
         UiInterface.SetActive(false);
 
         // 入力購読終わり
+        m_InputDisposable.Dispose();
         m_Disposables.Clear();
 
         // 親Uiがあるなら操作可能に
@@ -222,14 +222,4 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         parent?.DeactivateAll();
     }
     void IUiManager.DeactivateAll() => DeactivateAll();
-
-    /// <summary>
-    /// 入力購読
-    /// </summary>
-    private void SubscribeDetectInput()
-    {
-        // 入力購読
-        var disposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
-        m_Disposables.Add(disposable);
-    }
 }
