@@ -71,7 +71,7 @@ public interface IUiManager
     /// <summary>
     /// 入力購読終わり
     /// </summary>
-    IDisposable InputDisposable { get; }
+    CompositeDisposable Disposables { get; }
 }
 
 /// <summary>
@@ -105,18 +105,13 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// Deactive時
     /// </summary>
     protected CompositeDisposable m_Disposables = new CompositeDisposable();
+    CompositeDisposable IUiManager.Disposables => m_Disposables;
 
     /// <summary>
     /// 親Ui
     /// </summary>
     private IUiManager m_ParentUi;
     IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
-
-    /// <summary>
-    /// 入力購読
-    /// </summary>
-    private IDisposable m_InputDisposable;
-    IDisposable IUiManager.InputDisposable => m_InputDisposable;
 
     /// <summary>
     /// 入力受付
@@ -162,14 +157,15 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected void Activate(IUiManager parent)
     {
         m_ParentUi = parent; // 親Uiセット
-        m_ParentUi.InputDisposable.Dispose();
+        m_ParentUi.Disposables.Clear();
         Activate();
     }
     void IUiManager.Activate(IUiManager parent) => Activate(parent);
     protected void Activate()
     {
         // 入力購読
-        m_InputDisposable = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
+        var input = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
+        m_Disposables.Add(input);
 
         var closeUi = m_InputManager.SetActiveUi(this.UiInterface);
         m_Disposables.Add(closeUi); // 閉じるとき
@@ -198,7 +194,6 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         UiInterface.SetActive(false);
 
         // 入力購読終わり
-        m_InputDisposable.Dispose();
         m_Disposables.Clear();
 
         // 親Uiがあるなら操作可能に

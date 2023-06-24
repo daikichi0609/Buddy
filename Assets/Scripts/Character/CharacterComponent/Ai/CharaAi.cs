@@ -136,9 +136,9 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected bool TryGetCandidateAttack(AroundCell<ICollector> aroundCell, out List<ICollector> targets)
     {
         targets = new List<ICollector>();
-        var baseInfo = aroundCell.BaseCell.GetInterface<ICellInfoHandler>();
+        var baseInfo = aroundCell.CenterCell.GetInterface<ICellInfoHandler>();
 
-        foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
+        foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.AroundCells)
         {
             var info = pair.Value.GetInterface<ICellInfoHandler>();
 

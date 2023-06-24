@@ -259,7 +259,7 @@ public class DungeonDeployer : IDungeonDeployer
         /// <returns></returns>
         bool CheckGateWay(AroundCell<TERRAIN_ID> aroundGrid)
         {
-            var cells = aroundGrid.Cells;
+            var cells = aroundGrid.AroundCells;
 
             if (cells[DIRECTION.UP] == TERRAIN_ID.PATH_WAY)
                 return true;

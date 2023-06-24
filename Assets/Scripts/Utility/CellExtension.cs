@@ -10,7 +10,9 @@ public static class CellExtension
     /// <summary>
     /// 周囲の地形Idを取得
     /// </summary>
-    /// <param name="cell"></param>
+    /// <param name="map"></param>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
     /// <returns></returns>
     public static AroundCell<TERRAIN_ID> GetAroundCellId(this TERRAIN_ID[,] map, int x, int z) => new AroundCell<TERRAIN_ID>(map, x, z);
 
@@ -18,8 +20,9 @@ public static class CellExtension
     /// 周囲の地形Idを取得
     /// </summary>
     /// <param name="cell"></param>
+    /// <param name="dungeonHandler"></param>
     /// <returns></returns>
-    public static AroundCell<TERRAIN_ID> GetAroundCellId(this ICollector cell, IDungeonHandler dungeonHandler)
+    public static AroundCell<TERRAIN_ID> GetAroundTerrainId(this ICollector cell, IDungeonHandler dungeonHandler)
     {
         var pos = cell.GetInterface<ICellInfoHandler>();
         return dungeonHandler.GetAroundCellId(pos.Position);
@@ -29,6 +32,7 @@ public static class CellExtension
     /// 周囲のセルを取得
     /// </summary>
     /// <param name="cell"></param>
+    /// <param name="dungeonHandler"></param>
     /// <returns></returns>
     public static AroundCell<ICollector> GetAroundCell(this ICollector cell, IDungeonHandler dungeonHandler)
     {
@@ -76,19 +80,18 @@ public static class CellExtension
 /// </summary>
 public readonly struct AroundCell<T>
 {
-    public T BaseCell { get; }
-    public Dictionary<DIRECTION, T> Cells { get; }
+    public T CenterCell { get; }
+    public Dictionary<DIRECTION, T> AroundCells { get; }
 
     public AroundCell(T[,] map, int centerX, int centerZ)
     {
-        BaseCell = map[centerX, centerZ];
-        Cells = new Dictionary<DIRECTION, T>();
+        CenterCell = map[centerX, centerZ];
+        AroundCells = new Dictionary<DIRECTION, T>();
 
         int xLength = map.GetLength(0);
         int zLength = map.GetLength(1);
 
         for (int x = -1; x <= 1; x++)
-        {
             for (int z = -1; z <= 1; z++)
             {
                 if (x == 0 && z == 0)
@@ -100,9 +103,8 @@ public readonly struct AroundCell<T>
                 if (checkX >= 0 && checkX < map.GetLength(0) && checkZ >= 0 && checkZ < map.GetLength(1))
                 {
                     var dir = Positional.GetDirection(x, z);
-                    Cells.Add(dir, map[checkX, checkZ]);
+                    AroundCells.Add(dir, map[checkX, checkZ]);
                 }
             }
-        }
     }
 }

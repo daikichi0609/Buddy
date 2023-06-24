@@ -19,7 +19,7 @@ public class BombTrap : TrapEffectBase
         await task;
 
         var aroundCell = ctx.Cell.GetAroundCell(ctx.DungeonHandler);
-        foreach (var cell in aroundCell.Cells.Values)
+        foreach (var cell in aroundCell.AroundCells.Values)
         {
             var unitPos = cell.GetInterface<ICellInfoHandler>().Position;
             if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(unitPos, out var unit) == false)

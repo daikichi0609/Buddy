@@ -56,7 +56,7 @@ public partial class FriendAi : CharaAi, IFriendAi
 
                 // プレイヤーの周囲セル取得
                 var aroundCell = m_DungeonHandler.GetAroundCell(playerPos);
-                foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.Cells)
+                foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.AroundCells)
                 {
                     var info = pair.Value.GetInterface<ICellInfoHandler>();
 

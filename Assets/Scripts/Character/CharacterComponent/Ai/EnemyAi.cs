@@ -115,7 +115,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
         {
             var around = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
-            var cells = around.Cells;
+            var cells = around.AroundCells;
             var lastDirection = m_CharaMove.LastMoveDirection;
             var candidateDir = new List<DIRECTION>();
             var oppDirection = (-1 * lastDirection.ToV3Int()).ToDirEnum();
@@ -179,7 +179,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         if (m_CharaMove.Position == DestinationCell.Position)
         {
             var aroundGridID = m_DungeonHandler.GetAroundCellId(m_CharaMove.Position);
-            var cells = aroundGridID.Cells;
+            var cells = aroundGridID.AroundCells;
 
             // 通路への方向
             var pathDir = DIRECTION.NONE;

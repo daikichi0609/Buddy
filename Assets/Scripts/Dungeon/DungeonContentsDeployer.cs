@@ -149,7 +149,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
             var playerPos = m_UnitHolder.Player.GetInterface<ICharaMove>().Position;
             var around = m_DungeonHandler.GetAroundCellId(playerPos);
             var dir = DIRECTION.NONE;
-            foreach (var near in around.Cells)
+            foreach (var near in around.AroundCells)
             {
                 if (near.Value == TERRAIN_ID.ROOM && near.Key.IsDiagonal() == false)
                 {
