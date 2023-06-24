@@ -64,7 +64,7 @@ public class DungeonItemSpawner : IDungeonItemSpawner
         item.Initialize();
 
         // 追加
-        m_ItemManager.AddItem(itemHandler);
+        m_ItemManager.AddItem(item);
 
         return Task.CompletedTask;
     }

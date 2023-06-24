@@ -22,7 +22,7 @@ public interface ITeamInventory
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool TryPut(IItemHandler item);
+    bool TryPut(ItemSetup item);
 
     /// <summary>
     /// アイテムを消費する
@@ -51,12 +51,11 @@ public class TeamInventory : ITeamInventory
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    bool ITeamInventory.TryPut(IItemHandler item)
+    bool ITeamInventory.TryPut(ItemSetup item)
     {
         if (m_ItemList.Count < InventoryCount)
         {
-            m_ItemList.Add(item.Setup);
-            item.OnPut();
+            m_ItemList.Add(item);
             return true;
         }
         else

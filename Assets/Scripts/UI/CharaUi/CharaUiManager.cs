@@ -7,7 +7,7 @@ using Zenject;
 
 public interface ICharaUiManager
 {
-    void InitializeCharacterUi(ICollector[] units);
+
 }
 
 public class CharaUiManager : MonoBehaviour, ICharaUiManager
@@ -56,8 +56,11 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     /// CharaUi初期化
     /// </summary>
     /// <param name="units"></param>
-    public void InitializeCharacterUi(ICollector[] units)
+    void InitializeCharacterUi(ICollector[] units)
     {
+        if (m_CharacterUiList.Count != 0)
+            return;
+
         int i = 0;
 
         foreach (var unit in units)
@@ -79,8 +82,6 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     private void UpdateCharaUi()
     {
         foreach (var chara in CharacterUiList)
-        {
             chara.UpdateUi();
-        }
     }
 }

@@ -374,26 +374,10 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
         foreach (var passable in m_MapTerrains.Values)
             m_ObjectPoolController.SetObject(KEY_ROAD, passable);
 
-        foreach (var friend in m_FriendIcons.Values)
-            m_ObjectPoolController.SetObject(KEY_FRIEND, friend);
-
-        foreach (var enemy in m_EnemyIcons.Values)
-            m_ObjectPoolController.SetObject(KEY_ENEMY, enemy);
-
-        foreach (var item in m_ItemIcons.Values)
-            m_ObjectPoolController.SetObject(KEY_ITEM, item);
-
-        foreach (var trap in m_TrapIcons.Values)
-            m_ObjectPoolController.SetObject(KEY_TRAP, trap);
-
         foreach (var stairs in m_StairsIcons.Values)
             m_ObjectPoolController.SetObject(KEY_STAIRS, stairs);
 
         m_MapTerrains.Clear();
-        m_FriendIcons.Clear();
-        m_EnemyIcons.Clear();
-        m_ItemIcons.Clear();
-        m_TrapIcons.Clear();
         m_StairsIcons.Clear();
     }
 }

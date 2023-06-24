@@ -357,41 +357,40 @@ public class DungeonDeployer : IDungeonDeployer
                     case TERRAIN_ID.WALL: // 0
                         pos += new Vector3(0, 0.8f, 0);
                         if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.WALL.ToString(), out cellObject) == false)
-                            cellObject = m_Instantiater.InstantiatePrefab(setup.Wall);
+                            cellObject = m_Instantiater.InstantiatePrefab(setup.Wall, ms_CellInjector);
 
                         type = TERRAIN_ID.WALL;
                         break;
 
                     case TERRAIN_ID.PATH_WAY: // 1
                         if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.PATH_WAY.ToString(), out cellObject) == false)
-                            cellObject = m_Instantiater.InstantiatePrefab(setup.Path);
+                            cellObject = m_Instantiater.InstantiatePrefab(setup.Path, ms_CellInjector);
 
                         type = TERRAIN_ID.PATH_WAY;
                         break;
 
                     case TERRAIN_ID.ROOM: // 2
                         if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.ROOM.ToString(), out cellObject) == false)
-                            cellObject = m_Instantiater.InstantiatePrefab(setup.Room);
+                            cellObject = m_Instantiater.InstantiatePrefab(setup.Room, ms_CellInjector);
 
                         type = TERRAIN_ID.ROOM;
                         break;
 
                     case TERRAIN_ID.GATE: // 3
                         if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.GATE.ToString(), out cellObject) == false)
-                            cellObject = m_Instantiater.InstantiatePrefab(setup.Room);
+                            cellObject = m_Instantiater.InstantiatePrefab(setup.Room, ms_CellInjector);
 
                         type = TERRAIN_ID.GATE;
                         break;
 
                     case TERRAIN_ID.STAIRS:
                         if (m_ObjectPoolController.TryGetObject(TERRAIN_ID.STAIRS.ToString(), out cellObject) == false)
-                            cellObject = m_Instantiater.InstantiatePrefab(setup.Stairs);
+                            cellObject = m_Instantiater.InstantiatePrefab(setup.Stairs, ms_CellInjector);
 
                         type = TERRAIN_ID.STAIRS;
                         break;
                 }
 
-                ms_CellInjector.Inject(m_DiContainer, cellObject);
                 cellObject.transform.position = pos;
 
                 var cell = cellObject.GetComponent<ICollector>();

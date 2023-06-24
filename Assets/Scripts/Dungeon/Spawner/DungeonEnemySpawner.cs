@@ -33,8 +33,6 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
     [Inject]
     private IUnitHolder m_UnitHolder;
 
-    [Inject]
-    private DiContainer m_DiContainer;
     private static IInjector ms_EnemyInjector = new EnemyInjector();
 
     /// <summary>
@@ -44,8 +42,7 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
     /// <returns></returns>
     private Task SpawnEnemy(CharacterSetup setup, Vector3 pos)
     {
-        var gameObject = m_ObjectPoolController.GetObject(setup);
-        ms_EnemyInjector.Inject(m_DiContainer, gameObject);
+        var gameObject = m_ObjectPoolController.GetObject(setup, ms_EnemyInjector);
         gameObject.transform.position = pos;
 
         // 初期化

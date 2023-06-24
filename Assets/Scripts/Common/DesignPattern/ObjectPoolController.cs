@@ -22,6 +22,14 @@ public interface IObjectPoolController
     /// <param name="setup"></param>
     /// <returns></returns>
     GameObject GetObject<T>(T setup) where T : PrefabSetup;
+
+    /// <summary>
+    /// セットアップとInjectorがあるGameObject
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="setup"></param>
+    /// <returns></returns>
+    GameObject GetObject<T>(T setup, IInjector injector) where T : PrefabSetup;
     void SetObject<T>(T setup, GameObject gameObject) where T : PrefabSetup;
 }
 
@@ -47,6 +55,19 @@ public class ObjectPoolController : IObjectPoolController
     {
         if (m_ObjectPool.TryGetPoolObject(setup.ToString(), out var chara) == false)
             chara = m_Instantiater.InstantiatePrefab(setup.Prefab);
+
+        return chara;
+    }
+
+    /// <summary>
+    /// セットアップのオブジェクト取得
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    GameObject IObjectPoolController.GetObject<T>(T setup, IInjector injector)
+    {
+        if (m_ObjectPool.TryGetPoolObject(setup.ToString(), out var chara) == false)
+            chara = m_Instantiater.InstantiatePrefab(setup.Prefab, injector);
 
         return chara;
     }

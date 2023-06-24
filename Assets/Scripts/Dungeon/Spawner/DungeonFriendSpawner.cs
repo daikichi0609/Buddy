@@ -35,8 +35,6 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     [Inject]
     private ICameraHandler m_CameraHandler;
 
-    [Inject]
-    private DiContainer m_DiContainer;
     private static IInjector ms_PlayerInjector = new PlayerInjector();
     private static IInjector ms_FriendInjector = new FriendInjector();
 
@@ -48,8 +46,7 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     /// <returns></returns>
     Task IDungeonFriendSpawner.SpawnLeader(CharacterSetup setup, Vector3 pos)
     {
-        var gameObject = m_ObjectPoolController.GetObject(setup);
-        ms_PlayerInjector.Inject(m_DiContainer, gameObject);
+        var gameObject = m_ObjectPoolController.GetObject(setup, ms_PlayerInjector);
         gameObject.transform.position = pos;
 
         // 初期化
@@ -107,8 +104,7 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     /// <returns></returns>
     Task IDungeonFriendSpawner.SpawnFriend(CharacterSetup setup, UnityEngine.Vector3 pos)
     {
-        var gameObject = m_ObjectPoolController.GetObject(setup);
-        ms_FriendInjector.Inject(m_DiContainer, gameObject);
+        var gameObject = m_ObjectPoolController.GetObject(setup, ms_FriendInjector);
         gameObject.transform.position = pos;
 
         // 初期化

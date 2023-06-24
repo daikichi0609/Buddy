@@ -47,6 +47,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// セットアップ
     /// </summary>
     private TrapSetup m_Setup;
+    bool ITrapHandler.HasTrap => m_Setup != null;
 
     /// <summary>
     /// オブジェクト
@@ -57,12 +58,6 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// エフェクト
     /// </summary>
     private IEffectHandler m_Effect = new EffectHandler();
-
-    /// <summary>
-    /// 罠機能
-    /// </summary>
-    private ITrap m_Trap;
-    bool ITrapHandler.HasTrap => m_Trap != null;
 
     /// <summary>
     /// 罠が見えているか
@@ -91,18 +86,16 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// <returns></returns>
     async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IDisposable disposable)
     {
-        if (m_Trap == null)
+        if (m_Setup == null)
         {
-            Debug.LogAssertion("罠がありません");
+            Debug.LogWarning("罠がありません");
             return;
         }
-
-        var turn = stepper.GetInterface<ICharaTurn>();
 
         m_GameObject.SetActive(true);
         m_IsVisible.Value = true;
 
-        await m_Trap.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
+        await m_Setup.TrapEffect.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
         disposable.Dispose();
     }
 
@@ -113,7 +106,6 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     void ITrapHandler.SetTrap(TrapSetup setup)
     {
         m_Setup = setup;
-        m_Trap = setup.TrapEffect;
 
         var pos = Owner.GetInterface<ICellInfoHandler>().Position;
         var v3 = pos + new Vector3(0f, OFFSET_Y, 0f);
@@ -134,10 +126,11 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
     protected override void Dispose()
     {
-        if (m_GameObject != null)
+        if (m_Setup != null)
         {
             m_ObjectPoolController.SetObject(m_Setup, m_GameObject);
             m_Effect.Dispose();
+            m_Setup = null;
         }
 
         base.Dispose();

@@ -99,13 +99,13 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     private bool CheckItem()
     {
         //アイテムチェック
-        foreach (IItemHandler item in m_ItemManager.ItemList)
+        foreach (var item in m_ItemManager.ItemList)
         {
-            Vector3Int itemPos = item.Position;
-            if (m_CharaMove.Position == itemPos)
+            var handler = item.GetInterface<IItemHandler>();
+            if (m_CharaMove.Position == handler.Position)
             {
                 var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing((this, item, disposable), tuple => tuple.Item1.m_CharaInventory.Put(tuple.item, tuple.disposable));
+                m_CharaTurn.WaitFinishActing((this, handler, disposable), tuple => tuple.Item1.m_CharaInventory.Put(tuple.handler, tuple.disposable));
                 return true;
             }
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using NaughtyAttributes;
 using Zenject;
+using Fungus;
 
 public interface IItemHandler : IActorInterface
 {
@@ -100,7 +101,7 @@ public class ItemHandler : ActorComponentBase, IItemHandler
     /// </summary>
     void IItemHandler.OnPut()
     {
-        m_ItemManager.RemoveItem(this);
+        m_ItemManager.RemoveItem(Owner);
         Owner.Dispose();
     }
 
@@ -110,6 +111,8 @@ public class ItemHandler : ActorComponentBase, IItemHandler
     protected override void Dispose()
     {
         m_ObjectPoolController.SetObject(m_Setup, m_ItemObject);
+        m_Setup = null;
+        m_ItemObject = null;
         base.Dispose();
     }
 }

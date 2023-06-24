@@ -51,9 +51,7 @@ public abstract class UiBase : IUiBase
     /// <summary>
     /// Ui表示中かどうか
     /// </summary>
-    private ReactiveProperty<bool> m_IsActive = new ReactiveProperty<bool>(false);
-    private IObservable<bool> IsActiveChanged => m_IsActive.Skip(1);
-    void IUiBase.SetActive(bool active) => m_IsActive.Value = active;
+    void IUiBase.SetActive(bool isActive) => m_Ui.SetActive(isActive);
 
     /// <summary>
     /// 選択肢Id
@@ -82,9 +80,6 @@ public abstract class UiBase : IUiBase
     /// </summary>
     protected void Initialize(CompositeDisposable disposable, OptionElement element)
     {
-        // Ui表示・非表示
-        IsActiveChanged.SubscribeWithState(this, (active, self) => self.OnChangeUiActive(active)).AddTo(disposable);
-
         // 有効な選択肢の変更
         OptionIdChanged.SubscribeWithState(this, (option, self) => self.OnChangeActiveOption(ref option)).AddTo(disposable);
 
@@ -107,11 +102,6 @@ public abstract class UiBase : IUiBase
     }
 
     void IUiBase.Initialize(CompositeDisposable disposable, OptionElement element) => Initialize(disposable, element);
-
-    /// <summary>
-    /// Ui表示・非表示操作
-    /// </summary>
-    private void OnChangeUiActive(bool isActive) => m_Ui.SetActive(isActive);
 
     /// <summary>
     /// テキスト更新操作

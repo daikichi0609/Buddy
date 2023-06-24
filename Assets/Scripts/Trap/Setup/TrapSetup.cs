@@ -29,7 +29,7 @@ public class TrapSetup : PrefabSetup
     [SerializeField, Header("トラップ効果")]
     [Expandable]
     private TrapEffectBase m_TrapEffect;
-    public TrapEffectBase TrapEffect => m_TrapEffect;
+    public ITrap TrapEffect => m_TrapEffect;
 
     /// <summary>
     /// 生成するトラップタイプ

@@ -96,7 +96,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
         // 味方なら共有バッグに入れる
         if (m_Type.Type == CHARA_TYPE.FRIEND)
         {
-            if (m_TeamInventory.TryPut(item) == true)
+            if (m_TeamInventory.TryPut(item.Setup) == true)
                 OnPutItem(item);
             else
                 m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item));
@@ -121,8 +121,8 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// <param name="item"></param>
     private void OnPutItem(IItemHandler item)
     {
-        item.OnPut();
         m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
+        item.OnPut();
     }
 
     /// <summary>
@@ -135,5 +135,11 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
             m_ItemSpawner.SpawnItem(m_PocketItem, m_CharaMove.Position);
             m_PocketItem = null;
         }
+    }
+
+    protected override void Dispose()
+    {
+        m_PocketItem = null;
+        base.Dispose();
     }
 }

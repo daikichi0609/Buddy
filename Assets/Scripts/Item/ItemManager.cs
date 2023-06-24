@@ -13,19 +13,19 @@ public interface IItemManager
     /// <summary>
     /// 全てのアイテム
     /// </summary>
-    List<IItemHandler> ItemList { get; }
+    List<ICollector> ItemList { get; }
 
     /// <summary>
     /// アイテム追加
     /// </summary>
     /// <param name="item"></param>
-    void AddItem(IItemHandler item);
+    void AddItem(ICollector item);
 
     /// <summary>
     /// アイテム削除
     /// </summary>
     /// <param name="item"></param>
-    void RemoveItem(IItemHandler item);
+    void RemoveItem(ICollector item);
 
     /// <summary>
     /// アイテムがあるか
@@ -58,11 +58,11 @@ public class ItemManager : IItemManager
     /// <summary>
     /// 落ちているアイテムリスト
     /// </summary>
-    private List<IItemHandler> m_ItemList = new List<IItemHandler>();
-    List<IItemHandler> IItemManager.ItemList => m_ItemList;
+    private List<ICollector> m_ItemList = new List<ICollector>();
+    List<ICollector> IItemManager.ItemList => m_ItemList;
 
-    void IItemManager.AddItem(IItemHandler item) => m_ItemList.Add(item);
-    void IItemManager.RemoveItem(IItemHandler item) => m_ItemList.Remove(item);
+    void IItemManager.AddItem(ICollector item) => m_ItemList.Add(item);
+    void IItemManager.RemoveItem(ICollector item) => m_ItemList.Remove(item);
 
     /// <summary>
     /// アイテムがあるか
@@ -73,7 +73,7 @@ public class ItemManager : IItemManager
     {
         foreach (var item in m_ItemList)
         {
-            if (item.Position == pos)
+            if (item.RequireInterface<IItemHandler>(out var handler) == true && handler.Position == pos)
                 return true;
         }
         return false;
