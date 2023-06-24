@@ -212,9 +212,10 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// </summary>
     protected void DeactivateAll()
     {
-        var parent = m_ParentUi;
+        if (m_ParentUi != null)
+            m_ParentUi.DeactivateAll();
+
         Deactivate(false);
-        parent?.DeactivateAll();
     }
     void IUiManager.DeactivateAll() => DeactivateAll();
 }

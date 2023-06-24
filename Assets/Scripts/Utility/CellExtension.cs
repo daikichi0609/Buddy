@@ -100,7 +100,7 @@ public readonly struct AroundCell<T>
                 int checkX = centerX + x;
                 int checkZ = centerZ + z;
 
-                if (checkX >= 0 && checkX < map.GetLength(0) && checkZ >= 0 && checkZ < map.GetLength(1))
+                if (checkX >= 0 && checkX < xLength && checkZ >= 0 && checkZ < zLength)
                 {
                     var dir = Positional.GetDirection(x, z);
                     AroundCells.Add(dir, map[checkX, checkZ]);

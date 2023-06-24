@@ -166,7 +166,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                     if (tuple.Item1.m_FriendIcons.Remove(tuple.collector, out var icon) == true)
                         tuple.Item1.m_ObjectPoolController.SetObject(KEY_FRIEND, icon);
                     else
-                        Debug.Log("Friendアイコンの削除に失敗");
+                        Debug.LogError("Friendアイコンの削除に失敗");
                 });
             }
             else if (type.Type == CHARA_TYPE.ENEMY)
@@ -181,7 +181,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                     if (tuple.Item1.m_EnemyIcons.Remove(tuple.collector, out var icon) == true)
                         tuple.Item1.m_ObjectPoolController.SetObject(KEY_ENEMY, icon);
                     else
-                        Debug.Log("Enemyアイコンの削除に失敗");
+                        Debug.LogError("Enemyアイコンの削除に失敗");
                 });
             }
         }
@@ -198,7 +198,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 if (tuple.Item1.m_ItemIcons.Remove(tuple.collector, out var icon) == true)
                     tuple.Item1.m_ObjectPoolController.SetObject(KEY_ITEM, icon);
                 else
-                    Debug.Log("Itemアイコンの削除に失敗");
+                    Debug.LogError("Itemアイコンの削除に失敗");
             });
         }
 
@@ -214,7 +214,7 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
                 if (tuple.Item1.m_TrapIcons.Remove(tuple.collector, out var icon) == true)
                     tuple.Item1.m_ObjectPoolController.SetObject(KEY_TRAP, icon);
                 else
-                    Debug.Log("Trapアイコンの削除に失敗");
+                    Debug.LogError("Trapアイコンの削除に失敗");
             });
         }
 

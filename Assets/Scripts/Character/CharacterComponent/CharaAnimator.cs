@@ -138,7 +138,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     {
         if (m_CancelAct != null)
         {
-            Debug.LogAssertion("キャンセルしていないアニメーションがあります。" + "古：" + m_CancelAct.Value.Item2 + "新" + type);
+            Debug.LogWarning("キャンセルしていないアニメーションがあります。" + "古：" + m_CancelAct.Value.Item2 + "新" + type);
             m_CancelAct.Value.Item1.Dispose();
         }
 
@@ -167,7 +167,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     private void StopAnimation(ANIMATION_TYPE type)
     {
         if (m_CancelAct == null)
-            Debug.LogAssertion("アニメーションキャンセルのIDisposableがありません。");
+            Debug.LogWarning("アニメーションキャンセルのIDisposableがありません。");
 
         m_CancelAct.Value.Item1.Dispose();
         m_CancelAct = null;
