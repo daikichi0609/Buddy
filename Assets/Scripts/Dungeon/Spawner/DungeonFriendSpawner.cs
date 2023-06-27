@@ -87,7 +87,7 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
             // マップ更新
             if (leader.RequireEvent<ICharaTurnEvent>(out var e) == true)
             {
-                e.OnTurnEndPost.SubscribeWithState2(this, leader, (_, self, leader) =>
+                e.OnTurnEnd.SubscribeWithState2(this, leader, (_, self, leader) =>
                 {
                     var pos = leader.GetInterface<ICharaMove>().Position;
                     self.m_MiniMapRenderer.SetPlayerPos(pos);

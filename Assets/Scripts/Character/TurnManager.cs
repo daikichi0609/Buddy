@@ -39,23 +39,17 @@ public interface ITurnManager
     /// ユニット行動ストップ
     /// </summary>
     void StopUnitAct();
+
+    /// <summary>
+    /// 次のユニットを行動させる
+    /// </summary>
+    void NextUnitAct();
 }
 
-public class TurnManager : ITurnManager
+public class TurnManager : ITurnManager, IInitializable
 {
     [Inject]
     private IUnitHolder m_UnitHolder;
-
-    [Inject]
-    public void Construct(IPlayerLoopManager loopManager, IDungeonContentsDeployer dungeonContentsDeployer)
-    {
-        loopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.NextUnitAct());
-        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
-        {
-            self.CreateActionList();
-            self.m_IsActive = true;
-        });
-    }
 
     /// <summary>
     /// 有効かどうか
@@ -91,6 +85,20 @@ public class TurnManager : ITurnManager
     private List<ProhibitRequest> m_ProhibitActionRequests = new List<ProhibitRequest>();
     [ShowNativeProperty]
     private bool ProhibitAllAction => m_ProhibitActionRequests.Count != 0;
+
+    private Task m_FinishUpdate;
+
+    [Inject]
+    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
+    {
+        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
+        {
+            self.CreateActionList();
+            self.m_IsActive = true;
+        });
+    }
+
+    void IInitializable.Initialize() => NextUnitAct();
 
     /// <summary>
     /// 禁止リクエスト
@@ -132,11 +140,16 @@ public class TurnManager : ITurnManager
     /// <summary>
     /// 次のAiの行動
     /// </summary>
-    private void NextUnitAct()
+    private async void NextUnitAct()
     {
-        // 有効化中でない
+        await Task.Delay(1);
+
+        // 更新停止中
         if (m_IsActive == false)
+        {
+            NextUnitAct();
             return;
+        }
 
         // 行動禁止中なら何もしない
         if (ProhibitAllAction == true)
@@ -157,6 +170,7 @@ public class TurnManager : ITurnManager
                 }
             }
 #endif
+            NextUnitAct();
             return;
         }
 
@@ -171,17 +185,12 @@ public class TurnManager : ITurnManager
                 Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は死亡しているのでアクションリストから除外しました");
 #endif
                 m_ActionUnits.Remove(unit);
-                return;
             }
-
-            // 行動可能なキャラの行動を待つ
-            if (unit.GetInterface<ICharaTurn>().CanAct == true)
-                return;
         }
 
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る
-        if (++m_ActionIndex >= m_ActionUnits.Count)
+        if (m_ActionIndex >= m_ActionUnits.Count)
             NextTurn();
 
         // indexが範囲内なら行動させる
@@ -191,11 +200,26 @@ public class TurnManager : ITurnManager
 
             // すでに行動しているなら行動させない
             if (unit.GetInterface<ICharaLastActionHolder>().LastAction != CHARA_ACTION.NONE)
+            {
+                NextUnitAct();
                 return;
+            }
 
-            unit.GetInterface<ICharaTurn>().CanBeAct();
+            var condition = unit.GetInterface<ICharaCondition>();
+            await condition.FinishCondition();
+
+            // プレイヤー入力
+            if (unit.RequireInterface<IPlayerInput>(out var player) == true)
+                player.DetectInput();
+
+            // AI行動
+            else if (unit.RequireInterface<IAiAction>(out var ai) == true)
+                ai.DecideAndExecuteAction();
+
+            m_ActionIndex++;
         }
     }
+    void ITurnManager.NextUnitAct() => NextUnitAct();
 
     /// <summary>
     /// 次のターン
@@ -205,6 +229,7 @@ public class TurnManager : ITurnManager
         m_TotalTurnCount.Value++;
         CheckStairsCell();
         CreateActionList();
+        NextUnitAct();
     }
 
     /// <summary>
@@ -228,7 +253,6 @@ public class TurnManager : ITurnManager
 
         // indexリセット
         m_ActionIndex = 0;
-        m_ActionUnits[m_ActionIndex].GetInterface<ICharaTurn>().CanBeAct();
     }
 
     /// <summary>

@@ -90,7 +90,7 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
 
         if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
+            turn.OnTurnEnd.SubscribeWithState(this, (_, self) =>
             {
                 if (self.IsStarvate == true)
                     self.Starvate();

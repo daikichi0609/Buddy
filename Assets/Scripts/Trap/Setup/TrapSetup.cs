@@ -49,6 +49,8 @@ public class TrapSetup : PrefabSetup
         {
             { "UNDEFINE", typeof(SampleTrapEffect).FullName },
             { "爆発範囲ダメージ", typeof(BombTrap).FullName },
+            { "毒", typeof(PoisonTrap).FullName },
+            { "眠り", typeof(SleepTrap).FullName },
         };
     }
 
@@ -62,8 +64,7 @@ public class TrapSetup : PrefabSetup
         if (m_TrapEffect != null)
             DestroyImmediate(m_TrapEffect, true);
 
-        var t = Type.GetType(m_Type);
-        CreateTrapEffectAssetInternal(t);
+        CreateTrapEffectAssetInternal(Type.GetType(m_Type));
 
         AssetDatabase.AddObjectToAsset(m_TrapEffect, this);
         AssetDatabase.SaveAssets();
@@ -78,18 +79,7 @@ public class TrapSetup : PrefabSetup
     /// <param name="type"></param>
     private void CreateTrapEffectAssetInternal(Type type)
     {
-        // サンプル
-        if (type == typeof(SampleTrapEffect))
-            m_TrapEffect = ScriptableObject.CreateInstance<SampleTrapEffect>();
-
-        // 空腹値回復
-        if (type == typeof(BombTrap))
-            m_TrapEffect = ScriptableObject.CreateInstance<BombTrap>();
-
-        // 
-        if (m_TrapEffect == null)
-            return;
-
+        m_TrapEffect = (TrapEffectBase)ScriptableObject.CreateInstance(type);
         m_TrapEffect.name = type.ToString();
     }
 #endif

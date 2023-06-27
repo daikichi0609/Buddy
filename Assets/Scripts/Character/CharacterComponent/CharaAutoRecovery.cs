@@ -31,7 +31,7 @@ public class CharaAutoRecovery : ActorComponentBase, ICharaAutoRecovery
 
         if (Owner.RequireEvent<ICharaTurnEvent>(out var turn) == true)
         {
-            turn.OnTurnEndPost.SubscribeWithState(this, (_, self) =>
+            turn.OnTurnEnd.SubscribeWithState(this, (_, self) =>
             {
                 if (self.Owner.RequireInterface<ICharaStarvation>(out var starvation) == true && starvation.IsStarvate == true)
                     return;

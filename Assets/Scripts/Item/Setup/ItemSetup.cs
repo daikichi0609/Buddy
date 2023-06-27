@@ -50,6 +50,7 @@ public class ItemSetup : PrefabSetup
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
             { "体力回復", typeof(RecoverHp).FullName },
             { "固定ダメージ", typeof(CauseFixedDamage).FullName },
+            { "眠り", typeof(FallAsleep).FullName },
         };
     }
 
@@ -101,6 +102,8 @@ public class ItemSetup : PrefabSetup
         if (type == typeof(CauseFixedDamage))
             m_Effect = ScriptableObject.CreateInstance<CauseFixedDamage>();
 
+        if (type == typeof(FallAsleep))
+            m_Effect = ScriptableObject.CreateInstance<FallAsleep>();
 
         if (m_Effect == null)
             return;

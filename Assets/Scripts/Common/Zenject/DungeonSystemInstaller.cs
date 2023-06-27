@@ -134,7 +134,7 @@ public class DungeonSystemInstaller : MonoInstaller
             .NonLazy();
 
         // ユニットターン
-        Container.Bind<ITurnManager>()
+        Container.Bind(typeof(ITurnManager), typeof(IInitializable))
             .To<TurnManager>()
             .FromNew()
             .AsSingle()

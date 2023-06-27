@@ -51,7 +51,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    protected override bool DecideAndExecuteAction()
+    protected override async void DecideAndExecuteAction()
     {
         var result = false;
 
@@ -98,10 +98,13 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         if (result == true)
         {
             m_CurrentState.Value = clue.State;
-            m_CharaTurn.TurnEnd();
+            await m_CharaTurn.TurnEnd();
         }
-
-        return result;
+        else
+        {
+            await Task.Delay(1);
+            DecideAndExecuteAction();
+        }
     }
 
     /// <summary>

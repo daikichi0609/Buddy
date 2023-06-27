@@ -45,6 +45,9 @@ public readonly struct InputInfo
 
 public interface IInputManager
 {
+    KeyCodeFlag InputKeyCode { get; }
+    KeyCodeFlag InputStartKeyCode { get; }
+
     IObservable<InputInfo> InputEvent { get; }
     IObservable<InputInfo> InputStartEvent { get; }
 
@@ -59,12 +62,16 @@ public class InputManager : MonoBehaviour, IInputManager
     /// </summary>
     private Subject<InputInfo> m_InputEvent = new Subject<InputInfo>();
     IObservable<InputInfo> IInputManager.InputEvent => m_InputEvent;
+    private KeyCodeFlag m_InputKeyCode;
+    KeyCodeFlag IInputManager.InputKeyCode => m_InputKeyCode;
 
     /// <summary>
     /// 入力始めイベント
     /// </summary>
     private Subject<InputInfo> m_InputStartEvent = new Subject<InputInfo>();
     IObservable<InputInfo> IInputManager.InputStartEvent => m_InputStartEvent;
+    private KeyCodeFlag m_InputStartKeyCode;
+    KeyCodeFlag IInputManager.InputStartKeyCode => m_InputStartKeyCode;
 
     /// <summary>
     /// 今表示中のUi
@@ -93,14 +100,16 @@ public class InputManager : MonoBehaviour, IInputManager
         loopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.DetectInput());
     }
 
-    //入力を見てメッセージ発行
+    /// <summary>
+    /// 入力を見てメッセージ発行
+    /// </summary>
     private void DetectInput()
     {
-        var input = CreateGetKeyFlag();
-        var start = CreateGetKeyDownFlag();
+        m_InputKeyCode = CreateGetKeyFlag();
+        m_InputStartKeyCode = CreateGetKeyDownFlag();
 
-        m_InputEvent.OnNext(new InputInfo(input));
-        m_InputStartEvent.OnNext(new InputInfo(start));
+        m_InputEvent.OnNext(new InputInfo(m_InputKeyCode));
+        m_InputStartEvent.OnNext(new InputInfo(m_InputStartKeyCode));
     }
 
     /// <summary>

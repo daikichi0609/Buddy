@@ -9,7 +9,7 @@ using static AStarSearch;
 
 public interface IAiAction : IActorInterface
 {
-    bool DecideAndExecuteAction();
+    void DecideAndExecuteAction();
 }
 
 public abstract partial class CharaAi : ActorComponentBase, IAiAction
@@ -42,19 +42,13 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
-
-        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) =>
-        {
-            if (self.m_CharaTurn.CanAct == true)
-                self.DecideAndExecuteAction();
-        }).AddTo(this);
     }
 
     /// <summary>
     /// 行動を決めて実行する
     /// </summary>
-    protected abstract bool DecideAndExecuteAction();
-    bool IAiAction.DecideAndExecuteAction() => DecideAndExecuteAction();
+    protected abstract void DecideAndExecuteAction();
+    void IAiAction.DecideAndExecuteAction() => DecideAndExecuteAction();
 
     /// <summary>
     /// ランダムなターゲットへの方向を返す 主に攻撃前

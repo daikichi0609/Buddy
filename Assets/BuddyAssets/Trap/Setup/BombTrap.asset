@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 220792909776218635, guid: 1bb49f74d10384641b4672752e992d68, type: 3}
   m_TrapName: "\u7206\u5F3E\u30C8\u30E9\u30C3\u30D7"
-  m_EffectObject: {fileID: 1150934714579380, guid: 779aa8c25fbd0e1488637639c9fff976,
+  m_EffectObject: {fileID: 1917329542002115417, guid: c538184a6767b480f885efd61e549b8b,
     type: 3}
   m_TrapEffect: {fileID: 3069249077738780471}
   m_Type: BombTrap
@@ -30,4 +30,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56af38472fa3c4682b7a8b5b8c568dd3, type: 3}
   m_Name: BombTrap
   m_EditorClassIdentifier: 
-  m_DamageRatio: 0.5
+  m_DamageRatio: 0.2

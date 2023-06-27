@@ -44,7 +44,7 @@ public class CurrentStatus
     [ShowNativeProperty]
     public int Hp { get; private set; }
     public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
-    private float LvMaxHpMag => 1f + Lv * 0.01f;
+    private float LvMaxHpMag => 1f + LvMag * 0.01f;
     public void RecoverHp(int add, bool canDead = true)
     {
         int min = canDead ? 0 : 1;
@@ -54,7 +54,7 @@ public class CurrentStatus
     // 攻撃力
     [ShowNativeProperty]
     public int Atk => (int)(OriginParam.Atk * LvAtkMag * BuffAtkMag);
-    private float LvAtkMag => 1f + Lv * 0.1f;
+    private float LvAtkMag => 1f + LvMag * 0.1f;
     public float BuffAtkMag
     {
         get
@@ -70,7 +70,7 @@ public class CurrentStatus
     // 防御力
     [ShowNativeProperty]
     public int Def => (int)(OriginParam.Def * LvDefMag * BuffDefMag);
-    private float LvDefMag => 1f + Lv * 0.1f;
+    private float LvDefMag => 1f + LvMag * 0.1f;
     public float BuffDefMag
     {
         get

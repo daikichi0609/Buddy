@@ -31,11 +31,16 @@ public enum ANIMATION_TYPE
     /// 被ダメージ
     /// </summary>
     DAMAGE,
+
+    /// <summary>
+    /// 眠り
+    /// </summary>
+    SLEEP,
 }
 
 public interface ICharaAnimator : IActorInterface
 {
-
+    IDisposable PlayAnimation(ANIMATION_TYPE type);
 }
 
 public class CharaAnimator : ActorComponentBase, ICharaAnimator
@@ -160,6 +165,12 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
         StopAnimation(type);
     }
 
+    IDisposable ICharaAnimator.PlayAnimation(ANIMATION_TYPE type)
+    {
+        m_CharaAnimator.SetBool(GetKey(type), true);
+        return Disposable.CreateWithState(this, self => m_CharaAnimator.SetBool(GetKey(type), false));
+    }
+
     /// <summary>
     /// モーション止める
     /// </summary>
@@ -188,6 +199,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
             ANIMATION_TYPE.MOVE => "IsRunning",
             ANIMATION_TYPE.ATTACK => "IsAttacking",
             ANIMATION_TYPE.DAMAGE => "IsDamaging",
+            ANIMATION_TYPE.SLEEP => "IsSleeping",
             _ => "",
         };
 

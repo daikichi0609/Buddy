@@ -35,6 +35,13 @@ public interface ICharaBattle : IActorInterface
     /// <param name="ratio"></param>
     /// <returns></returns>
     AttackResult DamagePercentage(AttackPercentageInfo attackInfo, out Task damageTask);
+
+    /// <summary>
+    /// 失敗登録
+    /// </summary>
+    /// <param name="ticket"></param>
+    /// <returns></returns>
+    IDisposable RegisterFailureTicket(FailureTicket<ICollector> ticket);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -76,24 +83,19 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
-    private IBattleLogManager m_BattleLogManager;
-    [Inject]
     private IAttackResultUiManager m_AttackResultUiManager;
 
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;
-    private ICharaTurn m_CharaTurn;
-    private ICharaObjectHolder m_CharaObjectHolder;
     private ICharaLastActionHolder m_CharaLastActionHolder;
-
-    public static readonly float ms_NormalAttackTotalTime = 0.7f;
-    public static readonly float ms_NormalAttackHitTime = 0.4f;
-    public static readonly float ms_DamageTotalTime = 0.5f;
-
-    private static readonly float HIT_PROB = 0.95f;
-    private static readonly float CRITICAL_PROB = 0.05f;
-
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
+    private ICharaTurn m_CharaTurn;
+
+    /// <summary>
+    /// 確率で攻撃を失敗させる
+    /// </summary>
+    private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
+    IDisposable ICharaBattle.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
 
     /// <summary>
     /// 攻撃前に呼ばれる
@@ -125,6 +127,13 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private Subject<AttackResult> m_OnDead = new Subject<AttackResult>();
     IObservable<AttackResult> ICharaBattleEvent.OnDead => m_OnDead;
 
+    public static readonly float ms_NormalAttackTotalTime = 0.7f;
+    public static readonly float ms_NormalAttackHitTime = 0.4f;
+    public static readonly float ms_DamageTotalTime = 0.5f;
+
+    private static readonly float HIT_PROB = 0.95f;
+    private static readonly float CRITICAL_PROB = 0.05f;
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -138,9 +147,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         m_CharaStatus = Owner.GetInterface<ICharaStatus>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
-        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
-        m_CharaObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // 攻撃時、アクション登録
         m_OnAttackStart.SubscribeWithState(this, (_, self) =>
@@ -181,12 +189,19 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (m_TurnManager.NoOneActing == false)
             return false;
 
+        // 攻撃失敗
+        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
+        {
+            var acting = m_CharaTurn.RegisterActing();
+            ticket.OnFail(Owner, acting);
+            return true;
+        }
+
         m_CharaMove.Face(direction); // 向く
         var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
-
         var disposable = m_TurnManager.RequestProhibitAction(Owner); // 行動禁止
 
         // モーション終わりに

@@ -7,7 +7,11 @@ using Zenject;
 
 public interface ICharaLog : IActorInterface
 {
-
+    /// <summary>
+    /// BattleLogManagerのLog()呼び出し
+    /// </summary>
+    /// <param name="messege"></param>
+    void Log(string messege);
 }
 
 public class CharaLog : ActorComponentBase, ICharaLog
@@ -74,6 +78,8 @@ public class CharaLog : ActorComponentBase, ICharaLog
         }
     }
 
+    void ICharaLog.Log(string messege) => m_BattleLogManager.Log(messege);
+
     /// <summary>
     /// 攻撃ログ作成
     /// </summary>
@@ -94,7 +100,7 @@ public class CharaLog : ActorComponentBase, ICharaLog
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static string CreateAttackResultLog(AttackResult result)
+    private static string CreateAttackResultLog(AttackResult result)
     {
         var sb = new StringBuilder();
 

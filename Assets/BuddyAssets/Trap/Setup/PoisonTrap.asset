@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82115a0dcc007449ebf76ea859182252, type: 3}
+  m_Name: PoisonTrap
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 220792909776218635, guid: 92940357aa53547e082b89c927aa1165, type: 3}
+  m_TrapName: "\u3069\u304F\u3069\u304F\u30C8\u30E9\u30C3\u30D7"
+  m_EffectObject: {fileID: 548340328513148424, guid: 65460b055fcab448880534a0842b7dc8,
+    type: 3}
+  m_TrapEffect: {fileID: 5831339453145265388}
+  m_Type: PoisonTrap
+--- !u!114 &5831339453145265388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a020748ba726472aac0de7d0ff2f1ce, type: 3}
+  m_Name: PoisonTrap
+  m_EditorClassIdentifier: 

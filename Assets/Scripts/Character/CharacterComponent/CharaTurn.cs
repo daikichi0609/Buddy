@@ -5,17 +5,10 @@ using UniRx;
 using System;
 using System.Threading.Tasks;
 using NaughtyAttributes;
-using System.Threading;
-using ModestTree.Util;
 using Zenject;
 
 public interface ICharaTurn : IActorInterface
 {
-    /// <summary>
-    /// 行動可能か
-    /// </summary>
-    bool CanAct { get; }
-
     /// <summary>
     /// 行動中か
     /// </summary>
@@ -28,14 +21,9 @@ public interface ICharaTurn : IActorInterface
     IDisposable RegisterActing();
 
     /// <summary>
-    /// ターン開始
-    /// </summary>
-    void CanBeAct();
-
-    /// <summary>
     /// ターン終了
     /// </summary>
-    void TurnEnd();
+    Task TurnEnd();
 
     /// <summary>
     /// Acting == false を待って発火
@@ -48,41 +36,26 @@ public interface ICharaTurn : IActorInterface
 public interface ICharaTurnEvent : IActorEvent
 {
     /// <summary>
-    /// ターン開始 CanAct -> true
-    /// </summary>
-    IObservable<bool> OnTurnStart { get; }
-
-    /// <summary>
     /// ターン終了後 CanAct -> false
     /// </summary>
-    IObservable<bool> OnTurnEndPost { get; }
+    IObservable<Unit> OnTurnEnd { get; }
 }
 
 public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
 {
     [Inject]
     private IMiniMapRenderer m_MiniMapRenderer;
+    [Inject]
+    private ITurnManager m_TurnManager;
 
-    private ICharaBattle m_CharaBattle;
     private ICharaLastActionHolder m_CharaLastCharaActionHolder;
+    private ICharaCondition m_CharaCondition;
 
     /// <summary>
-    /// 行動済みステータス
+    /// ターン終了時
     /// </summary>
-    [SerializeField, ReadOnly]
-    private ReactiveProperty<bool> m_CanAct = new ReactiveProperty<bool>(false);
-    bool ICharaTurn.CanAct => m_CanAct.Value;
-
-    /// <summary>
-    /// CanAct -> true
-    /// </summary>
-    IObservable<bool> ICharaTurnEvent.OnTurnStart => m_CanAct.Where(turn => turn == true);
-
-    /// <summary>
-    /// CanAct -> false
-    /// </summary>
-    private IObservable<bool> OnTurnEndPost => m_CanAct.Where(turn => turn == false);
-    IObservable<bool> ICharaTurnEvent.OnTurnEndPost => OnTurnEndPost;
+    private Subject<Unit> m_OnTurnEnd = new Subject<Unit>();
+    IObservable<Unit> ICharaTurnEvent.OnTurnEnd => m_OnTurnEnd;
 
     /// <summary>
     /// 行動中ステータス
@@ -102,14 +75,14 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     protected override void Initialize()
     {
         base.Initialize();
-        m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaLastCharaActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+        m_CharaCondition = Owner.GetInterface<ICharaCondition>();
 
         // ミニマップアイコン登録
         var disposable = m_MiniMapRenderer.RegisterIcon(Owner);
         Owner.Disposables.Add(disposable);
         // ターン終了時にアイコン更新
-        OnTurnEndPost.SubscribeWithState(this, (_, self) => self.m_MiniMapRenderer.ReflectIcon(self.Owner)).AddTo(Owner.Disposables);
+        m_OnTurnEnd.SubscribeWithState(this, (_, self) => self.m_MiniMapRenderer.ReflectIcon(self.Owner)).AddTo(Owner.Disposables);
     }
 
     /// <summary>
@@ -126,13 +99,13 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// <summary>
     /// ターン終了
     /// </summary>
-    void ICharaTurn.TurnEnd()
+    async Task ICharaTurn.TurnEnd()
     {
         if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
         {
             var lastAction = m_CharaLastCharaActionHolder.LastAction;
             if (lastAction == CHARA_ACTION.NONE)
-                Debug.LogAssertion("アクションしていないのにターン終了しようとしています");
+                Debug.LogWarning("アクションしていないのにターン終了しようとしています");
 
             bool check = lastAction switch
             {
@@ -144,15 +117,10 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
                 checker.CheckCurrentCell();
         }
 
-        m_CanAct.SetValueAndForceNotify(false);
-    }
+        m_OnTurnEnd.OnNext(Unit.Default);
 
-    /// <summary>
-    /// ターン開始
-    /// </summary>
-    void ICharaTurn.CanBeAct()
-    {
-        m_CanAct.Value = true;
+        await m_CharaCondition.EffectCondition();
+        m_TurnManager.NextUnitAct();
     }
 
     /// <summary>
@@ -160,7 +128,7 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="self"></param>
-    /// <param name="action"></param>
+    /// <param name="func"></param>
     /// <returns></returns>
     async Task ICharaTurn.WaitFinishActing<T>(T self, Action<T> action)
     {

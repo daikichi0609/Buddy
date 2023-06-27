@@ -9,6 +9,7 @@ using System;
 
 public interface IPlayerInput : IActorInterface
 {
+    void DetectInput();
 }
 
 /// <summary>
@@ -18,10 +19,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
 {
     [Inject]
     private IInputManager m_InputManager;
-    [Inject]
-    private ICameraHandler m_CameraHandler;
-    [Inject]
-    private IMiniMapRenderer m_MiniMapRenderer;
 
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
@@ -40,23 +37,27 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
-
-        // 入力購読
-        m_InputManager.InputEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag)).AddTo(Owner.Disposables);
     }
 
     /// <summary>
     /// 入力検知
     /// </summary>
-    private void DetectInput(KeyCodeFlag flag)
+    private async void DetectInput()
     {
         // プレイヤーの入力結果を見る
+        var flag = m_InputManager.InputKeyCode;
         var result = DetectInputInternal(flag);
 
         // 入力結果が有効ならターン終了
         if (result == true)
-            m_CharaTurn.TurnEnd();
+            await m_CharaTurn.TurnEnd();
+        else
+        {
+            await Task.Delay(1);
+            DetectInput();
+        }
     }
+    void IPlayerInput.DetectInput() => DetectInput();
 
     /// <summary>
     /// 入力検知 攻撃、移動
@@ -65,7 +66,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private bool DetectInputInternal(KeyCodeFlag flag)
     {
         // 行動許可ないなら何もしない。行動中なら何もしない。
-        if (m_CharaTurn.CanAct == false || m_CharaTurn.IsActing == true)
+        if (m_CharaTurn.IsActing == true)
             return false;
 
         // Ui操作中なら何もしない
@@ -132,27 +133,5 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         }
 
         return m_CharaMove.Move(dir);
-    }
-
-    /// <summary>
-    /// 入力方向が斜めかを見る
-    /// </summary>
-    /// <param name="direction"></param>
-    /// <returns></returns>
-    private bool JudgeDirectionDiagonal(Vector3 direction)
-    {
-        if (direction == new Vector3(1f, 0f, 1f))
-            return true;
-
-        if (direction == new Vector3(1f, 0f, -1f))
-            return true;
-
-        if (direction == new Vector3(-1f, 0f, 1f))
-            return true;
-
-        if (direction == new Vector3(-1f, 0f, -1f))
-            return true;
-
-        return false;
     }
 }

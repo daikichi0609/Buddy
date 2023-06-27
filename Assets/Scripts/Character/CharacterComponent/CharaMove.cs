@@ -6,16 +6,58 @@ using Zenject;
 
 public interface ICharaMove : IActorInterface
 {
+    /// <summary>
+    /// 座標
+    /// </summary>
     Vector3Int Position { get; }
+
+    /// <summary>
+    /// 向き
+    /// </summary>
     DIRECTION Direction { get; }
+
+    /// <summary>
+    /// 最後に移動した方向
+    /// </summary>
     DIRECTION LastMoveDirection { get; }
 
+    /// <summary>
+    /// 向き直る
+    /// </summary>
+    /// <param name="direction"></param>
     void Face(DIRECTION direction);
+
+    /// <summary>
+    /// 移動
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
     bool Move(DIRECTION dir);
+
+    /// <summary>
+    /// 強制的に移動
+    /// </summary>
+    /// <param name="dir"></param>
     void ForcedMove(DIRECTION dir);
+
+    /// <summary>
+    /// 待機
+    /// </summary>
+    /// <returns></returns>
     bool Wait();
 
+    /// <summary>
+    /// ワープ
+    /// </summary>
+    /// <param name="pos"></param>
     void Warp(Vector3Int pos);
+
+    /// <summary>
+    /// 失敗登録
+    /// </summary>
+    /// <param name="ticket"></param>
+    /// <returns></returns>
+    IDisposable RegisterFailureTicket(FailureTicket<ICollector> ticket);
 }
 
 public interface ICharaMoveEvent : IActorEvent
@@ -38,6 +80,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private GameObject MoveObject => m_ObjectHolder.MoveObject;
     private ICharaTypeHolder m_Type;
     private ICharaLastActionHolder m_CharaLastActionHolder;
+    private ICharaTurn m_CharaTurn;
 
     /// <summary>
     /// 位置
@@ -59,6 +102,12 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     DIRECTION ICharaMove.LastMoveDirection => LastMoveDirection;
 
     /// <summary>
+    /// 確率で移動を失敗させる
+    /// </summary>
+    private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
+    IDisposable ICharaMove.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
+
+    /// <summary>
     /// 移動目標座標
     /// </summary>
     private Vector3 DestinationPos { get; set; }
@@ -72,13 +121,13 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
-    /// 攻撃前に呼ばれる
+    /// 移動前に呼ばれる
     /// </summary>
     private Subject<Unit> m_OnMoveStart = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveStart => m_OnMoveStart;
 
     /// <summary>
-    /// 攻撃後に呼ばれる
+    /// 移動後に呼ばれる
     /// </summary>
     private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
@@ -95,6 +144,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_ObjectHolder = Owner.GetInterface<ICharaObjectHolder>();
         m_Type = Owner.GetInterface<ICharaTypeHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
 
         // ----- 初期化 ----- //
         Direction = DIRECTION.UNDER;
@@ -130,6 +180,14 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// <returns></returns>
     bool ICharaMove.Move(DIRECTION direction)
     {
+        // 移動失敗
+        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
+        {
+            var acting = m_CharaTurn.RegisterActing();
+            ticket.OnFail(Owner, acting);
+            return true;
+        }
+
         //向きを変える
         Face(direction);
 

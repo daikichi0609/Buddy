@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TrapPacks:
   - m_Setup: {fileID: 11400000, guid: 22ad98827ea1b428997af99fd450ef9e, type: 2}
-    m_Weight: 100
+    m_Weight: 25
+  - m_Setup: {fileID: 11400000, guid: 279b7d342a940433ea2b407fd329b947, type: 2}
+    m_Weight: 50
+  - m_Setup: {fileID: 11400000, guid: 4dee0dc42abc7425fb42c5bf925a0117, type: 2}
+    m_Weight: 50

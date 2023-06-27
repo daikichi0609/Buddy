@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
+  m_Name: SeedSleep
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 3295842741159853856, guid: 71ed0c98522c44bf39eef4637ccd5e39,
+    type: 3}
+  m_ItemName: "\u3059\u3044\u307F\u3093\u306E\u30BF\u30CD"
+  m_Effect: {fileID: 1608672371832384807}
+  m_CanEat: 1
+  m_Recover: 10
+  m_Type: FallAsleep
+--- !u!114 &1608672371832384807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b96de43a166477e89167ab3901efcf, type: 3}
+  m_Name: FallAsleep
+  m_EditorClassIdentifier: 
