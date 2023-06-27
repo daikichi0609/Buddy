@@ -22,6 +22,11 @@ public interface ICharaMove : IActorInterface
     DIRECTION LastMoveDirection { get; }
 
     /// <summary>
+    /// 入れ替わりをするユニット
+    /// </summary>
+    ICollector SwitchUnit { get; set; }
+
+    /// <summary>
     /// 向き直る
     /// </summary>
     /// <param name="direction"></param>
@@ -100,6 +105,12 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     private DIRECTION LastMoveDirection { get; set; }
     DIRECTION ICharaMove.LastMoveDirection => LastMoveDirection;
+
+    /// <summary>
+    /// 入れ替わるユニット
+    /// </summary>
+    private ICollector m_SwitchUnit;
+    ICollector ICharaMove.SwitchUnit { get => m_SwitchUnit; set => m_SwitchUnit = value; }
 
     /// <summary>
     /// 確率で移動を失敗させる
@@ -212,6 +223,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
                 var move = unit.GetInterface<ICharaMove>();
                 move.ForcedMove(direction.ToOppositeDir());
+                m_SwitchUnit = unit;
             }
         }
 
@@ -250,7 +262,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Face(dir);
         Vector3Int destinationPos = Position + dir.ToV3Int();
         MoveInternal(destinationPos, dir);
-        Owner.GetInterface<ICharaTurn>().TurnEnd();
     }
 
     /// <summary>
@@ -264,16 +275,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, DestinationPos, Time.deltaTime * SPEED_MAG);
 
         if ((MoveObject.transform.position - DestinationPos).magnitude <= 0.01f)
-            FinishMove();
-    }
-
-    /// <summary>
-    /// 移動終わり
-    /// </summary>
-    private void FinishMove()
-    {
-        IsMoving = false;
-        m_OnMoveEnd.OnNext(Unit.Default);
+        {
+            IsMoving = false;
+            m_OnMoveEnd.OnNext(Unit.Default);
+        }
     }
 
     /// <summary>

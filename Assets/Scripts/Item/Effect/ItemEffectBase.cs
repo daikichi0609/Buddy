@@ -99,7 +99,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         if (target != null)
             await EffectInternal(new ItemEffectContext(target, item, itemManager, dungeonHandler, unitFinder, battleLogManager));
 
-        PostEffect(owner, item, inventory, disposable);
+        await PostEffect(owner, item, inventory, disposable);
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// アイテム共通処理
     /// </summary>
     /// <param name="owner"></param>
-    private void PostEffect(ICollector owner, ItemSetup item, ITeamInventory inventory, IDisposable disposable)
+    private async Task PostEffect(ICollector owner, ItemSetup item, ITeamInventory inventory, IDisposable disposable)
     {
         // アイテム消費
         inventory.Consume(item);
@@ -178,7 +178,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
 
         // ターン消費
         if (owner.RequireInterface<ICharaTurn>(out var turn) == true)
-            turn.TurnEnd();
+            await turn.TurnEnd();
 
         // Ui非有効化
         disposable.Dispose();

@@ -101,25 +101,35 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// </summary>
     async Task ICharaTurn.TurnEnd()
     {
-        if (Owner.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
+        var checker = Owner.GetInterface<ICharaCellEventChecker>();
+        var lastAction = m_CharaLastCharaActionHolder.LastAction;
+        if (lastAction == CHARA_ACTION.NONE)
+            Debug.LogWarning("アクションしていないのにターン終了しようとしています");
+
+        bool check = lastAction switch
         {
-            var lastAction = m_CharaLastCharaActionHolder.LastAction;
-            if (lastAction == CHARA_ACTION.NONE)
-                Debug.LogWarning("アクションしていないのにターン終了しようとしています");
+            CHARA_ACTION.MOVE => true,
+            _ => false
+        };
 
-            bool check = lastAction switch
-            {
-                CHARA_ACTION.MOVE => true,
-                _ => false
-            };
-
-            if (check == true)
-                checker.CheckCurrentCell();
-        }
+        if (check == true)
+            checker.CheckCurrentCell();
 
         m_OnTurnEnd.OnNext(Unit.Default);
 
         await m_CharaCondition.EffectCondition();
+
+        if (check == true)
+        {
+            var move = Owner.GetInterface<ICharaMove>();
+            if (move.SwitchUnit != null)
+            {
+                await move.SwitchUnit.GetInterface<ICharaTurn>().TurnEnd();
+                move.SwitchUnit = null;
+                return;
+            }
+        }
+
         m_TurnManager.NextUnitAct();
     }
 

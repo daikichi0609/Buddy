@@ -18,7 +18,7 @@ public interface IEffectHandler : IDisposable
     /// <param name="pos"></param>
     /// <param name="time"></param>
     /// <returns></returns>
-    Task Play(Vector3 pos, float time = 0.5f);
+    Task Play(Vector3 pos, float time = 1f);
 }
 
 public class EffectHandler : IEffectHandler

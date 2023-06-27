@@ -143,13 +143,17 @@ public class TurnManager : ITurnManager, IInitializable
     private async void NextUnitAct()
     {
         await Task.Delay(1);
+        var loop = await NextUnitActInternal();
+        if (loop == true)
+            NextUnitAct();
+    }
+    void ITurnManager.NextUnitAct() => NextUnitAct();
 
+    private async Task<bool> NextUnitActInternal()
+    {
         // 更新停止中
         if (m_IsActive == false)
-        {
-            NextUnitAct();
-            return;
-        }
+            return true;
 
         // 行動禁止中なら何もしない
         if (ProhibitAllAction == true)
@@ -170,22 +174,7 @@ public class TurnManager : ITurnManager, IInitializable
                 }
             }
 #endif
-            NextUnitAct();
-            return;
-        }
-
-        // 行動可能なキャラがいるなら何もしない
-        foreach (var unit in m_ActionUnits)
-        {
-            var status = unit.GetInterface<ICharaStatus>();
-            // 死んでるキャラは除外する
-            if (status.IsDead == true)
-            {
-#if DEBUG
-                Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は死亡しているのでアクションリストから除外しました");
-#endif
-                m_ActionUnits.Remove(unit);
-            }
+            return true;
         }
 
         // 行動可能なキャラがいないなら、インクリメントする
@@ -197,13 +186,21 @@ public class TurnManager : ITurnManager, IInitializable
         else
         {
             var unit = m_ActionUnits[m_ActionIndex];
+            m_ActionIndex++;
+
+            // 死んでるキャラは行動させない
+            var status = unit.GetInterface<ICharaStatus>();
+            if (status.IsDead == true)
+            {
+#if DEBUG
+                Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は死亡しているので無視します。");
+#endif
+                return true;
+            }
 
             // すでに行動しているなら行動させない
             if (unit.GetInterface<ICharaLastActionHolder>().LastAction != CHARA_ACTION.NONE)
-            {
-                NextUnitAct();
-                return;
-            }
+                return true;
 
             var condition = unit.GetInterface<ICharaCondition>();
             await condition.FinishCondition();
@@ -215,11 +212,10 @@ public class TurnManager : ITurnManager, IInitializable
             // AI行動
             else if (unit.RequireInterface<IAiAction>(out var ai) == true)
                 ai.DecideAndExecuteAction();
-
-            m_ActionIndex++;
         }
+
+        return false;
     }
-    void ITurnManager.NextUnitAct() => NextUnitAct();
 
     /// <summary>
     /// 次のターン
