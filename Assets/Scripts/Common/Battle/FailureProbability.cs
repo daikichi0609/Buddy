@@ -7,9 +7,9 @@ using UnityEngine;
 public readonly struct FailureTicket<T>
 {
     public float Prob { get; }
-    public Action<T, IDisposable> OnFail { get; }
+    public Action<T> OnFail { get; }
 
-    public FailureTicket(float prob, Action<T, IDisposable> onFail)
+    public FailureTicket(float prob, Action<T> onFail)
     {
         Prob = prob;
         OnFail = onFail;

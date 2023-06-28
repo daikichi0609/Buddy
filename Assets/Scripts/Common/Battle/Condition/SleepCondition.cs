@@ -8,7 +8,7 @@ public class SleepCondition : Condition
 {
     protected override bool CanOverlapping => false;
 
-    private static readonly Color ms_BarColor = new Color(157, 204, 244, 255);
+    private static readonly Color32 ms_BarColor = new Color32(157, 204, 244, 255);
 
     public SleepCondition(int remainingTurn) : base(remainingTurn) { }
 
@@ -21,17 +21,14 @@ public class SleepCondition : Condition
         var colorChange = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(colorChange);
 
-        var ticket = new FailureTicket<ICollector>(1f, async (owner, disposable) =>
+        var ticket = new FailureTicket<ICollector>(1f, owner =>
              {
                  var status = owner.GetInterface<ICharaStatus>();
                  string log = status.CurrentStatus.OriginParam.GivenName + "は眠っている";
                  owner.GetInterface<ICharaLog>().Log(log);
 
                  var last = owner.GetInterface<ICharaLastActionHolder>();
-                 last.RegisterAction(CHARA_ACTION.SLEEP);
-
-                 await Task.Delay(500);
-                 disposable.Dispose();
+                 last.RegisterAction(CHARA_ACTION.WAIT);
              });
 
         if (owner.RequireInterface<ICharaBattle>(out var battle) == true)

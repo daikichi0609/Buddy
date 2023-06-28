@@ -30,8 +30,6 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     [Inject]
     private IItemManager m_ItemManager;
     [Inject]
-    private ITurnManager m_TurnManager;
-    [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
     private IYesorNoQuestionUiManager m_QuestionUiManager;

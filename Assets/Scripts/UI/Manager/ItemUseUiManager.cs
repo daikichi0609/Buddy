@@ -28,8 +28,6 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private IUnitFinder m_UnitFinder;
-    [Inject]
-    private IBagUiManager m_BagUiManager;
 
     [SerializeField]
     private ItemUseUi m_ItemUseUi = new ItemUseUi();

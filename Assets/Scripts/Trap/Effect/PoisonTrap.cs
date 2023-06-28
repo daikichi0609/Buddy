@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PoisonTrap : TrapEffectBase
 {
-
     protected override async Task EffectInternal(TrapEffectContext ctx)
     {
         await ctx.EffectHandler.Play(ctx.EffectPos);

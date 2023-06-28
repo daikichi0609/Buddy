@@ -26,7 +26,7 @@ public interface ICharaUi
     /// 色変え
     /// </summary>
     /// <returns></returns>
-    IDisposable ChangeBarColor(Color color);
+    IDisposable ChangeBarColor(Color32 color);
 }
 
 public class CharaUi : MonoBehaviour, ICharaUi
@@ -50,10 +50,10 @@ public class CharaUi : MonoBehaviour, ICharaUi
 
     private bool m_IsChangingColor;
 
-    private static readonly Color ms_Color1 = new Color(0, 255, 0, 255);
-    private static readonly Color ms_Color2 = new Color(255, 255, 0, 255);
-    private static readonly Color ms_Color3 = new Color(255, 182, 0, 255);
-    private static readonly Color ms_Color4 = new Color(255, 0, 0, 255);
+    private static readonly Color32 ms_Color1 = new Color(0, 255, 0, 255);
+    private static readonly Color32 ms_Color2 = new Color(255, 255, 0, 255);
+    private static readonly Color32 ms_Color3 = new Color(255, 182, 0, 255);
+    private static readonly Color32 ms_Color4 = new Color(255, 0, 0, 255);
 
     void ICharaUi.Initialize(ICollector target)
     {
@@ -98,7 +98,7 @@ public class CharaUi : MonoBehaviour, ICharaUi
         }
     }
 
-    IDisposable ICharaUi.ChangeBarColor(Color color)
+    IDisposable ICharaUi.ChangeBarColor(Color32 color)
     {
         m_IsChangingColor = true;
         m_FillImage.color = color;

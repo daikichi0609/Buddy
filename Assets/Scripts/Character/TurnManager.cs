@@ -26,9 +26,16 @@ public interface ITurnManager
     bool NoOneActing { get; }
 
     /// <summary>
-    /// ユニット除去
+    /// アクション禁止
     /// </summary>
-    void RemoveUnit(ICollector unit);
+    /// <param name="collector"></param>
+    /// <returns></returns>
+    IDisposable RegisterProhibit(ICollector collector);
+
+    /// <summary>
+    /// 次のユニットを行動させる
+    /// </summary>
+    void NextUnitAct();
 
     /// <summary>
     /// ユニット行動ストップ
@@ -36,9 +43,9 @@ public interface ITurnManager
     void StopUnitAct();
 
     /// <summary>
-    /// 次のユニットを行動させる
+    /// ユニット除去
     /// </summary>
-    void NextUnitAct();
+    void RemoveUnit(ICollector unit);
 }
 
 public class TurnManager : ITurnManager, IInitializable
@@ -54,10 +61,7 @@ public class TurnManager : ITurnManager, IInitializable
     /// <summary>
     /// ユニットアクト停止
     /// </summary>
-    void ITurnManager.StopUnitAct()
-    {
-        m_IsActive = false;
-    }
+    void ITurnManager.StopUnitAct() => m_IsActive = false;
 
     /// <summary>
     /// 行動するキャラ
@@ -73,18 +77,6 @@ public class TurnManager : ITurnManager, IInitializable
     private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>(1);
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
-
-    [Inject]
-    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
-    {
-        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
-        {
-            self.CreateActionList();
-            self.m_IsActive = true;
-        });
-    }
-
-    void IInitializable.Initialize() => NextUnitAct();
 
     /// <summary>
     /// 全てのキャラが行動中でない
@@ -105,6 +97,26 @@ public class TurnManager : ITurnManager, IInitializable
         }
     }
     bool ITurnManager.NoOneActing => NoOneActing;
+
+    private Queue<ProhibitRequest> m_ProhibitRequests = new Queue<ProhibitRequest>();
+    private bool ProhibitAllAction => m_ProhibitRequests.Count != 0;
+    IDisposable ITurnManager.RegisterProhibit(ICollector collector)
+    {
+        m_ProhibitRequests.Enqueue(new ProhibitRequest(collector));
+        return Disposable.CreateWithState(m_ProhibitRequests, self => self.Dequeue());
+    }
+
+    [Inject]
+    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
+    {
+        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
+        {
+            self.CreateActionList();
+            self.m_IsActive = true;
+        });
+    }
+
+    void IInitializable.Initialize() => NextUnitAct();
 
     /// <summary>
     /// 任意のユニットを除く
@@ -129,6 +141,16 @@ public class TurnManager : ITurnManager, IInitializable
         // 更新停止中
         if (m_IsActive == false)
             return true;
+
+        // 行動禁止中
+        if (ProhibitAllAction == true)
+        {
+#if DEBUG
+            foreach (var req in m_ProhibitRequests)
+                Debug.Log(req.Requester);
+#endif
+            return true;
+        }
 
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る

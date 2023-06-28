@@ -101,6 +101,9 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// </summary>
     async Task ICharaTurn.TurnEnd()
     {
+        // 行動禁止
+        var disposable = m_TurnManager.RegisterProhibit(Owner);
+
         var checker = Owner.GetInterface<ICharaCellEventChecker>();
         var lastAction = m_CharaLastCharaActionHolder.LastAction;
         if (lastAction == CHARA_ACTION.NONE)
@@ -127,10 +130,13 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
                 await switchInfo.SwitchTask;
                 await switchInfo.Switcher.GetInterface<ICharaTurn>().TurnEnd();
                 Owner.GetInterface<ICharaMove>().SwitchInfo = null;
+                disposable.Dispose();
                 return;
             }
         }
 
+        // 行動禁止解除
+        disposable.Dispose();
         m_TurnManager.NextUnitAct();
     }
 

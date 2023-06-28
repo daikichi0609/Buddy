@@ -6,7 +6,30 @@ using UnityEngine;
 
 public interface IItemEffect
 {
+    /// <summary>
+    /// アイテムを食べる
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="item"></param>
+    /// <param name="inventory"></param>
+    /// <param name="itemManager"></param>
+    /// <param name="dungeonHandler"></param>
+    /// <param name="unitFinder"></param>
+    /// <param name="battleLogManager"></param>
+    /// <returns></returns>
     Task Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager);
+
+    /// <summary>
+    /// アイテムを投げる
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="item"></param>
+    /// <param name="inventory"></param>
+    /// <param name="itemManager"></param>
+    /// <param name="dungeonHandler"></param>
+    /// <param name="unitFinder"></param>
+    /// <param name="battleLogManager"></param>
+    /// <returns></returns>
     Task ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager);
 }
 
@@ -67,7 +90,6 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// <param name="dungeonHandler"></param>
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
-    /// <param name="disposable"></param>
     /// <returns></returns>
     async Task IItemEffect.Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
     {
@@ -77,7 +99,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
             ctx.BattleLogManager.Log(status.CurrentStatus.OriginParam.GivenName + "は" + ctx.ItemSetup.ItemName + "を食べた");
 
         await EffectInternal(ctx);
-        PostEffect(owner, item, inventory);
+        await PostEffect(owner, item, inventory);
     }
 
     /// <summary>
@@ -90,7 +112,6 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// <param name="dungeonHandler"></param>
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
-    /// <param name="disposable"></param>
     /// <returns></returns>
     async Task IItemEffect.ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
     {
@@ -173,11 +194,9 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         inventory.Consume(item);
 
         // アクション登録
-        if (owner.RequireInterface<ICharaLastActionHolder>(out var last) == true)
-            last.RegisterAction(CHARA_ACTION.ITEM_USE);
+        owner.GetInterface<ICharaLastActionHolder>().RegisterAction(CHARA_ACTION.ITEM_USE);
 
         // ターン消費
-        if (owner.RequireInterface<ICharaTurn>(out var turn) == true)
-            await turn.TurnEnd();
+        await owner.GetInterface<ICharaTurn>().TurnEnd();
     }
 }

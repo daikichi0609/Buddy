@@ -8,7 +8,7 @@ public class PoisonCondition : Condition
 {
     protected override bool CanOverlapping => false;
 
-    private static readonly Color ms_BarColor = new Color(167, 87, 168, 255);
+    private static readonly Color32 ms_BarColor = new Color32(167, 87, 168, 255);
     private static readonly float POISON_DAMAGE_RATIO = 0.03f;
     public static readonly int POISON_REMAINING_TURN = 10;
 

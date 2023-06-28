@@ -132,6 +132,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
             m_Setup = null;
         }
 
+        m_IsVisible.Value = false;
         base.Dispose();
     }
 }

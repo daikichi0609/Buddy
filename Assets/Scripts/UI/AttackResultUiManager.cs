@@ -17,7 +17,7 @@ public interface IAttackResultUiManager
 public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
 {
     // フェイド速度
-    private static readonly float FADE_SPEED = 1.5f;
+    private static readonly float FADE_SPEED = 1.0f;
     // 表示位置
     private static readonly Vector3 OFFSET = new Vector3(0f, 1.5f, 0f);
     // 移動距離

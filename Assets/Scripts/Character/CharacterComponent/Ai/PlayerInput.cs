@@ -23,6 +23,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaBattle m_CharaBattle;
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
+    private ICharaLastActionHolder m_LastActionHolder;
 
     protected override void Register(ICollector owner)
     {
@@ -37,6 +38,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_LastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
     }
 
     /// <summary>
@@ -44,6 +46,10 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// </summary>
     private async void DetectInput()
     {
+        // すでに行動済みなら再帰抜ける
+        if (m_LastActionHolder.LastAction != CHARA_ACTION.NONE)
+            return;
+
         // プレイヤーの入力結果を見る
         var flag = m_InputManager.InputKeyCode;
         var result = await DetectInputInternal(flag);
@@ -69,16 +75,16 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (m_CharaTurn.IsActing == true)
             return false;
 
-        // Ui操作中なら何もしない
+        // Ui操作中なら再帰終了
         if (m_InputManager.IsUiPopUp == true)
             return false;
 
-        // 攻撃
-        if (await DetectInputAttack(flag) == true)
-            return true;
-
         // 移動
         if (await DetectInputMove(flag) == true)
+            return true;
+
+        // 攻撃
+        if (await DetectInputAttack(flag) == true)
             return true;
 
         return false;

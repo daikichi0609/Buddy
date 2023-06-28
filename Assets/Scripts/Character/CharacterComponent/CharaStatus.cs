@@ -43,7 +43,7 @@ public interface ICharaStatus : IActorInterface
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
-    IDisposable ChangeBarColor(Color color);
+    IDisposable ChangeBarColor(Color32 color);
 }
 
 public class CharaStatus : ActorComponentBase, ICharaStatus
@@ -178,5 +178,5 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         }
     }
 
-    IDisposable ICharaStatus.ChangeBarColor(Color color) => m_CharaUiManager.TryGetCharaUi(this, out var ui) ? ui.ChangeBarColor(color) : Disposable.Empty;
+    IDisposable ICharaStatus.ChangeBarColor(Color32 color) => m_CharaUiManager.TryGetCharaUi(this, out var ui) ? ui.ChangeBarColor(color) : Disposable.Empty;
 }

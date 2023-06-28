@@ -5,6 +5,7 @@ using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
 using Zenject;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public interface ICharaBattle : IActorInterface
 {
@@ -194,8 +195,16 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         // 攻撃失敗
         if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
         {
+            Debug.Log("行動不能");
+            await m_CharaTurn.WaitFinishActing();
+
+            // 失敗
+            m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.WAIT);
+            ticket.OnFail(Owner);
+
             var acting = m_CharaTurn.RegisterActing();
-            ticket.OnFail(Owner, acting);
+            await Task.Delay(500);
+            acting.Dispose();
             return true;
         }
 

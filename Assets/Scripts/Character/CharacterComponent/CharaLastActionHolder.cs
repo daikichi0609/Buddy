@@ -16,7 +16,6 @@ public enum CHARA_ACTION
     MOVE,
     WAIT,
     ITEM_USE,
-    SLEEP,
 }
 
 public interface ICharaLastActionHolder : IActorInterface
@@ -58,7 +57,7 @@ public class CharaLastActionHolder : ActorComponentBase, ICharaLastActionHolder
     {
         if (m_LastAction != CHARA_ACTION.NONE)
         {
-            Debug.LogAssertion("すでにアクションが登録済みです。" + m_LastAction);
+            Debug.LogAssertion("すでに" + m_LastAction + "が登録済みです。" + action);
             return false;
         }
 
