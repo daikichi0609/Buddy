@@ -46,7 +46,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     {
         // プレイヤーの入力結果を見る
         var flag = m_InputManager.InputKeyCode;
-        var result = DetectInputInternal(flag);
+        var result = await DetectInputInternal(flag);
 
         // 入力結果が有効ならターン終了
         if (result == true)
@@ -63,7 +63,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// 入力検知 攻撃、移動
     /// </summary>
     /// <param name="flag"></param>
-    private bool DetectInputInternal(KeyCodeFlag flag)
+    private async Task<bool> DetectInputInternal(KeyCodeFlag flag)
     {
         // 行動許可ないなら何もしない。行動中なら何もしない。
         if (m_CharaTurn.IsActing == true)
@@ -74,11 +74,11 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             return false;
 
         // 攻撃
-        if (DetectInputAttack(flag) == true)
+        if (await DetectInputAttack(flag) == true)
             return true;
 
         // 移動
-        if (DetectInputMove(flag) == true)
+        if (await DetectInputMove(flag) == true)
             return true;
 
         return false;
@@ -89,10 +89,10 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// </summary>
     /// <param name="flag"></param>
     /// <returns></returns>
-    private bool DetectInputAttack(KeyCodeFlag flag)
+    private async Task<bool> DetectInputAttack(KeyCodeFlag flag)
     {
         if (flag.HasBitFlag(KeyCodeFlag.E))
-            return m_CharaBattle.NormalAttack();
+            return await m_CharaBattle.NormalAttack();
 
         return false;
     }
@@ -102,7 +102,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// </summary>
     /// <param name="flag"></param>
     /// <returns></returns>
-    private bool DetectInputMove(KeyCodeFlag flag)
+    private async Task<bool> DetectInputMove(KeyCodeFlag flag)
     {
         var direction = new Vector3Int();
 
@@ -132,6 +132,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             return false; // ターン消費しない
         }
 
-        return m_CharaMove.Move(dir);
+        return await m_CharaMove.Move(dir);
     }
 }

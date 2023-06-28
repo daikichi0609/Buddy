@@ -20,7 +20,7 @@ public interface ITrapHandler : IActorInterface
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    Task ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IDisposable disposable);
+    Task ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager);
 
     /// <summary>
     /// 罠設置
@@ -84,7 +84,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     /// </summary>
     /// <param name="trap"></param>
     /// <returns></returns>
-    async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager, IDisposable disposable)
+    async Task ITrapHandler.ActivateTrap(ICollector stepper, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, IBattleLogManager battleLogManager)
     {
         if (m_Setup == null)
         {
@@ -96,7 +96,6 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         m_IsVisible.Value = true;
 
         await m_Setup.TrapEffect.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
-        disposable.Dispose();
     }
 
     /// <summary>

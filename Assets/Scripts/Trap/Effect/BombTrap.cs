@@ -11,12 +11,11 @@ public class BombTrap : TrapEffectBase
 
     protected override async Task EffectInternal(TrapEffectContext ctx)
     {
-        await ctx.EffectHandler.Play(ctx.EffectPos);
+        await ctx.EffectHandler.Play(ctx.EffectPos, 0.5f);
 
         // 範囲内の敵に割合ダメージ
         AttackPercentageInfo info = new AttackPercentageInfo(default, default, m_DamageRatio, 100f, DIRECTION.NONE);
-        ctx.Owner.GetInterface<ICharaBattle>().DamagePercentage(info, out var task);
-        await task;
+        await ctx.Owner.GetInterface<ICharaBattle>().DamagePercentage(info);
 
         var aroundCell = ctx.Cell.GetAroundCell(ctx.DungeonHandler);
         foreach (var cell in aroundCell.AroundCells.Values)
@@ -26,8 +25,7 @@ public class BombTrap : TrapEffectBase
                 continue;
 
             var battle = unit.GetInterface<ICharaBattle>();
-            battle.DamagePercentage(info, out task);
-            await task;
+            await battle.DamagePercentage(info);
         }
     }
 }

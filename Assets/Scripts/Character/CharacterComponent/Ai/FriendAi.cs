@@ -46,7 +46,7 @@ public partial class FriendAi : CharaAi, IFriendAi
         {
             case FRIEND_STATE.ATTACKING:
                 dir = LotteryDirection(clue.TargetList);
-                result = m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
+                result = await m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
                 break;
 
             case FRIEND_STATE.CHASING:
@@ -90,10 +90,10 @@ public partial class FriendAi : CharaAi, IFriendAi
                         result = m_CharaMove.Wait();
                     }
                     else
-                        result = FollowAstarPath(m_UnitHolder.Player);
+                        result = await FollowAstarPath(m_UnitHolder.Player);
                 }
                 else
-                    result = FollowAstarPath(m_UnitHolder.Player);
+                    result = await FollowAstarPath(m_UnitHolder.Player);
 
 
                 break;

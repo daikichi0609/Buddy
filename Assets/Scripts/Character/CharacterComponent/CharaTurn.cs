@@ -26,11 +26,11 @@ public interface ICharaTurn : IActorInterface
     Task TurnEnd();
 
     /// <summary>
-    /// Acting == false を待って発火
+    /// Acting == false を待つ
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    Task WaitFinishActing<T>(T self, Action<T> func);
+    Task WaitFinishActing();
 }
 
 public interface ICharaTurnEvent : IActorEvent
@@ -113,7 +113,7 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
         };
 
         if (check == true)
-            checker.CheckCurrentCell();
+            await checker.CheckCurrentCell();
 
         m_OnTurnEnd.OnNext(Unit.Default);
 
@@ -137,16 +137,14 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
     /// IsActing == false になるのを待ってから発火
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="self"></param>
+    /// <param name="arg"></param>
     /// <param name="func"></param>
     /// <returns></returns>
-    async Task ICharaTurn.WaitFinishActing<T>(T self, Action<T> action)
+    async Task ICharaTurn.WaitFinishActing()
     {
         // IsActing -> false になるまで待つ
         while (IsActing == true)
             await Task.Delay(1);
-
-        action.Invoke(self);
     }
 
     [Serializable]

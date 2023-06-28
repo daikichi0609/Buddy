@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,11 +24,8 @@ public class PoisonCondition : Condition
         AttackPercentageInfo info = new AttackPercentageInfo(default, default, POISON_DAMAGE_RATIO, 100f, DIRECTION.NONE);
 
         var turn = owner.GetInterface<ICharaTurn>();
-        await turn.WaitFinishActing((owner, info), async tuple =>
-        {
-            tuple.owner.GetInterface<ICharaBattle>().DamagePercentage(tuple.info, out var task);
-            await task;
-        });
+        await turn.WaitFinishActing();
+        await owner.GetInterface<ICharaBattle>().DamagePercentage(info);
     }
 
     protected override async Task OnFinish(ICollector owner)

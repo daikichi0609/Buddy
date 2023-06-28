@@ -12,7 +12,6 @@ public class CauseFixedDamage : ItemEffectBase
     {
         var battle = ctx.Owner.GetInterface<ICharaBattle>();
         var status = ctx.Owner.GetInterface<ICharaStatus>();
-        battle.Damage(new AttackInfo(ctx.Owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, 0f, true, DIRECTION.NONE), out var task);
-        await task;
+        await battle.Damage(new AttackInfo(ctx.Owner, status.CurrentStatus.OriginParam.GivenName, m_Damage, 100f, 0f, true, DIRECTION.NONE));
     }
 }

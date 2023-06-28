@@ -178,10 +178,6 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
 
         // バトルログは消す
         m_BattleLogManager.Deactive();
-
-        // キャラの行動を許可しない
-        var disposable = m_TurnManager.RequestProhibitAction(null);
-        m_Disposables.Add(disposable);
     }
     void IUiManager.Activate() => Activate();
 

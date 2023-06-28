@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using UniRx;
 using System;
 using Zenject;
+using System.Threading;
 
 public interface ICharaCellEventChecker : IActorInterface
 {
@@ -10,13 +11,13 @@ public interface ICharaCellEventChecker : IActorInterface
     /// セルイベントチェック
     /// </summary>
     /// <returns></returns>
-    bool CheckCurrentCell();
+    Task<bool> CheckCurrentCell();
 
     /// <summary>
     /// 階段マスチェック
     /// </summary>
     /// <returns></returns>
-    bool CheckStairsCell();
+    Task<bool> CheckStairsCell();
 }
 
 /// <summary>
@@ -61,14 +62,14 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// 現在地セルのイベントチェック
     /// </summary>
     /// <returns></returns>
-    bool ICharaCellEventChecker.CheckCurrentCell()
+    async Task<bool> ICharaCellEventChecker.CheckCurrentCell()
     {
         // アイテムチェック
-        if (CheckItem() == true)
+        if (await CheckItem() == true)
             return true;
 
         // 罠チェック
-        if (CheckTrap() == true)
+        if (await CheckTrap() == true)
             return true;
 
         return false;
@@ -78,25 +79,26 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// 階段チェック
     /// </summary>
     /// <returns></returns>
-    private bool CheckStairsCell()
+    private async Task<bool> CheckStairsCell()
     {
         //階段チェック
         if (m_DungeonHandler.GetCellId(m_CharaMove.Position) == TERRAIN_ID.STAIRS)
         {
             m_QuestionUiManager.SetQuestion(QUESTION_TYPE.STAIRS);
-            m_CharaTurn.WaitFinishActing(this, self => self.m_QuestionUiManager.Activate());
+            await m_CharaTurn.WaitFinishActing();
+            m_QuestionUiManager.Activate();
             return true;
         }
 
         return false;
     }
-    bool ICharaCellEventChecker.CheckStairsCell() => CheckStairsCell();
+    async Task<bool> ICharaCellEventChecker.CheckStairsCell() => await CheckStairsCell();
 
     /// <summary>
     /// アイテムチェック
     /// </summary>
     /// <returns></returns>
-    private bool CheckItem()
+    private async Task<bool> CheckItem()
     {
         //アイテムチェック
         foreach (var item in m_ItemManager.ItemList)
@@ -104,8 +106,8 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
             var handler = item.GetInterface<IItemHandler>();
             if (m_CharaMove.Position == handler.Position)
             {
-                var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing((this, handler, disposable), tuple => tuple.Item1.m_CharaInventory.Put(tuple.handler, tuple.disposable));
+                await m_CharaTurn.WaitFinishActing();
+                m_CharaInventory.Put(handler);
                 return true;
             }
         }
@@ -117,7 +119,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// 罠チェック
     /// </summary>
     /// <returns></returns>
-    private bool CheckTrap()
+    private async Task<bool> CheckTrap()
     {
         if (m_TypeHolder.Type != CHARA_TYPE.FRIEND)
             return false;
@@ -126,8 +128,8 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
         if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
             if (handler.HasTrap == true)
             {
-                var disposable = m_TurnManager.RequestProhibitAction(Owner);
-                m_CharaTurn.WaitFinishActing((this, handler, disposable), tuple => tuple.handler.ActivateTrap(tuple.Item1.Owner, tuple.Item1.m_UnitFinder, tuple.Item1.m_DungeonHandler, tuple.Item1.m_BattleLogManager, tuple.disposable));
+                await m_CharaTurn.WaitFinishActing();
+                await handler.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager);
                 return true;
             }
 

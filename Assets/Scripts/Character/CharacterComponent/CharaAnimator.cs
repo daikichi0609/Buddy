@@ -64,14 +64,9 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     private Animator m_CharaAnimator;
 
     /// <summary>
-    /// 行動禁止全体フラグ解除
-    /// </summary>
-    private IDisposable m_CancelRequest;
-
-    /// <summary>
     /// IsActingフラグ解除
     /// </summary>
-    private (IDisposable, ANIMATION_TYPE)? m_CancelAct;
+    private IDisposable m_CancelAct;
 
     protected override void Register(ICollector owner)
     {
@@ -83,28 +78,6 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     {
         base.Initialize();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
-
-        // 特定のアニメーション中は他キャラの行動を禁止する
-        AnimationStateChanged
-            .Zip(AnimationStateChanged.Skip(1), (Old, New) => new { Old, New })
-            .SubscribeWithState(this, (state, self) =>
-            {
-                switch (state.New)
-                {
-                    case ANIMATION_TYPE.ATTACK:
-                    case ANIMATION_TYPE.DAMAGE:
-                        self.m_CancelRequest = self.m_TurnManager.RequestProhibitAction(self.Owner);
-                        return;
-                }
-
-                switch (state.Old)
-                {
-                    case ANIMATION_TYPE.ATTACK:
-                    case ANIMATION_TYPE.DAMAGE:
-                        self.m_CancelRequest?.Dispose();
-                        return;
-                }
-            }).AddTo(Owner.Disposables);
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
@@ -129,12 +102,6 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
         }
     }
 
-    protected override void Dispose()
-    {
-        m_CancelRequest?.Dispose();
-        base.Dispose();
-    }
-
     /// <summary>
     /// モーション流す
     /// </summary>
@@ -143,11 +110,14 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     {
         if (m_CancelAct != null)
         {
-            Debug.LogWarning("キャンセルしていないアニメーションがあります。" + "古：" + m_CancelAct.Value.Item2 + "新" + type);
-            m_CancelAct.Value.Item1.Dispose();
+#if DEBUG
+            Debug.LogWarning("再生途中のアニメーションをキャンセルします。");
+            m_CancelAct.Dispose();
+            m_CancelAct = null;
+#endif
         }
 
-        m_CancelAct = (m_CharaTurn.RegisterActing(), type);
+        m_CancelAct = m_CharaTurn.RegisterActing();
         m_AnimationState.Value = type;
         m_CharaAnimator.SetBool(GetKey(type), true);
     }
@@ -160,8 +130,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     private async Task PlayAnimation(ANIMATION_TYPE type, float time)
     {
         PlayAnimation(type);
-        time *= 1000;
-        await Task.Delay((int)time);
+        await Task.Delay((int)(time * 1000));
         StopAnimation(type);
     }
 
@@ -177,11 +146,12 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
     /// <param name="type"></param>
     private void StopAnimation(ANIMATION_TYPE type)
     {
-        if (m_CancelAct == null)
-            Debug.LogWarning("アニメーションキャンセルのIDisposableがありません。");
+        if (m_CancelAct != null)
+        {
+            m_CancelAct.Dispose();
+            m_CancelAct = null;
+        }
 
-        m_CancelAct.Value.Item1.Dispose();
-        m_CancelAct = null;
         m_AnimationState.Value = ANIMATION_TYPE.IDLE;
         m_CharaAnimator.SetBool(GetKey(type), false);
     }

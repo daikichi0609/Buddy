@@ -67,10 +67,10 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// </summary>
     /// <param name="dir"></param>
     /// <returns></returns>
-    protected bool Move(DIRECTION dir)
+    protected async Task<bool> Move(DIRECTION dir)
     {
-        if (m_CharaMove.Move(dir) == false)
-            if (CompromiseMove(dir) == false)
+        if (await m_CharaMove.Move(dir) == false)
+            if (await CompromiseMove(dir) == false)
                 return m_CharaMove.Wait();
 
         return true;
@@ -81,16 +81,16 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// 移動の可否に関わらずtrue
     /// </summary>
     /// <returns></returns>
-    protected bool Chase(ICollector target)
+    protected async Task<bool> Chase(ICollector target)
     {
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, target.GetInterface<ICharaMove>().Position);
-        return Move(dir);
+        return await Move(dir);
     }
 
     /// <summary>
     /// Astarパスで最初のノードを辿る
     /// </summary>
-    protected bool FollowAstarPath(ICollector target)
+    protected async Task<bool> FollowAstarPath(ICollector target)
     {
         var currentPos = m_CharaMove.Position; // 自分の位置
         var targetPos = target.GetInterface<ICharaMove>().Position; // 相手の位置
@@ -101,7 +101,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         var first = path[0];
         var firstPos = new Vector3Int(first.X, 0, first.Y);
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, firstPos);
-        return Move(dir);
+        return await Move(dir);
     }
 
     /// <summary>
@@ -109,12 +109,12 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    protected bool CompromiseMove(DIRECTION direction)
+    protected async Task<bool> CompromiseMove(DIRECTION direction)
     {
         var dirs = direction.NearDirection();
         foreach (var dir in dirs)
         {
-            if (m_CharaMove.Move(dir) == true)
+            if (await m_CharaMove.Move(dir) == true)
                 return true;
         }
         return false;

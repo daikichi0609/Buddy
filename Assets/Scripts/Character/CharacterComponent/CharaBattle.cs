@@ -12,7 +12,7 @@ public interface ICharaBattle : IActorInterface
     /// 通常攻撃
     /// </summary>
     /// <returns></returns>
-    bool NormalAttack();
+    Task<bool> NormalAttack();
 
     /// <summary>
     /// 通常攻撃、方向指定
@@ -20,21 +20,21 @@ public interface ICharaBattle : IActorInterface
     /// <param name="direction"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-    bool NormalAttack(DIRECTION direction, CHARA_TYPE target);
+    Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target);
 
     /// <summary>
     /// 被ダメージ
     /// </summary>
     /// <param name="attackInfo"></param>
     /// <returns></returns>
-    AttackResult Damage(AttackInfo attackInfo, out Task damageTask);
+    Task<AttackResult> Damage(AttackInfo attackInfo);
 
     /// <summary>
     /// 割合ダメージ
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    AttackResult DamagePercentage(AttackPercentageInfo attackInfo, out Task damageTask);
+    Task<AttackResult> DamagePercentage(AttackPercentageInfo attackInfo);
 
     /// <summary>
     /// 失敗登録
@@ -157,7 +157,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         }).AddTo(Owner.Disposables);
 
         // 攻撃終了時、Ui表示
-        m_OnAttackEnd.SubscribeWithState(this, (result, self) =>
+        m_OnDamageStart.SubscribeWithState(this, (result, self) =>
         {
             if (result.IsHit == true)
                 self.m_AttackResultUiManager.Damage(result);
@@ -176,14 +176,14 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <summary>
     /// 通常攻撃・プレイヤー操作
     /// </summary>
-    bool ICharaBattle.NormalAttack() => NormalAttack(m_CharaMove.Direction, CHARA_TYPE.ENEMY);
+    async Task<bool> ICharaBattle.NormalAttack() => await NormalAttack(m_CharaMove.Direction, CHARA_TYPE.ENEMY);
 
     /// <summary>
     /// 通常攻撃
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="target"></param>
-    private bool NormalAttack(DIRECTION direction, CHARA_TYPE target)
+    private async Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target)
     {
         // 誰かが行動中なら攻撃できない
         if (m_TurnManager.NoOneActing == false)
@@ -202,25 +202,21 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
-        var disposable = m_TurnManager.RequestProhibitAction(Owner); // 行動禁止
 
-        // モーション終わりに
-        StartCoroutine(Coroutine.DelayCoroutine(ms_NormalAttackTotalTime, (this, attackPos, target, attackInfo, disposable), tuple => tuple.Item1.AttackInternal(tuple.attackPos, tuple.target, tuple.attackInfo, tuple.disposable)));
+        await Task.Delay((int)(ms_NormalAttackTotalTime * 1000));
+        await AttackInternal(attackPos, target, attackInfo);
         return true;
     }
 
-    bool ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => NormalAttack(direction, target);
+    Task<bool> ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => NormalAttack(direction, target);
 
     /// <summary>
     /// 攻撃
     /// </summary>
     /// <param name="attackPos"></param>
     /// <param name="target"></param>
-    private AttackResult AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo, IDisposable disposable)
+    private async Task<AttackResult> AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo)
     {
-        // 行動禁止解除
-        disposable.Dispose();
-
         // 角抜け確認
         if (m_DungeonHandler.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
             m_UnitFinder.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
@@ -229,7 +225,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return AttackResult.Invalid;
         }
 
-        var result = battle.Damage(attackInfo, out var _);
+        var result = await battle.Damage(attackInfo);
 
         //モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
@@ -242,10 +238,10 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="power"></param>
     /// <param name="dex"></param>
-    AttackResult ICharaBattle.Damage(AttackInfo attackInfo, out Task damageTask)
+    async Task<AttackResult> ICharaBattle.Damage(AttackInfo attackInfo)
     {
         var result = BattleSystem.Damage(attackInfo, Owner);
-        damageTask = DamageInternal(result, attackInfo.Direction);
+        await DamageInternal(result, attackInfo.Direction);
         return result;
     }
 
@@ -254,11 +250,10 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    AttackResult ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo, out Task damageTask)
+    async Task<AttackResult> ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
     {
         var result = BattleSystem.DamagePercentage(attackInfo, Owner);
-        // awaitしない
-        damageTask = DamageInternal(result, attackInfo.Direction);
+        await DamageInternal(result, attackInfo.Direction);
         return result;
     }
 

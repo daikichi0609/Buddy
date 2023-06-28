@@ -54,9 +54,8 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 if (tuple.optionIndex == index)
                 {
                     var self = tuple.Item2;
-                    var disposable = self.m_TurnManager.RequestProhibitAction(null);
                     self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                        self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, disposable);
+                        self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager);
                     self.DeactivateAll();
                 }
             });
@@ -71,9 +70,8 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
             if (tuple.optionIndex == index)
             {
                 var self = tuple.Item2;
-                var disposable = self.m_TurnManager.RequestProhibitAction(null);
                 self.m_ItemSetup.Effect.ThrowStraight(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, disposable);
+                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager);
                 self.DeactivateAll();
             }
         });

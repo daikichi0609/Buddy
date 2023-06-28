@@ -26,11 +26,6 @@ public interface ITurnManager
     bool NoOneActing { get; }
 
     /// <summary>
-    /// アクション禁止フラグ
-    /// </summary>
-    IDisposable RequestProhibitAction(ICollector requester);
-
-    /// <summary>
     /// ユニット除去
     /// </summary>
     void RemoveUnit(ICollector unit);
@@ -79,15 +74,6 @@ public class TurnManager : ITurnManager, IInitializable
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
-    /// <summary>
-    /// 全ユニットへの行動禁止リクエスト
-    /// </summary>
-    private List<ProhibitRequest> m_ProhibitActionRequests = new List<ProhibitRequest>();
-    [ShowNativeProperty]
-    private bool ProhibitAllAction => m_ProhibitActionRequests.Count != 0;
-
-    private Task m_FinishUpdate;
-
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
@@ -99,17 +85,6 @@ public class TurnManager : ITurnManager, IInitializable
     }
 
     void IInitializable.Initialize() => NextUnitAct();
-
-    /// <summary>
-    /// 禁止リクエスト
-    /// </summary>
-    /// <returns></returns>
-    IDisposable ITurnManager.RequestProhibitAction(ICollector requester)
-    {
-        var req = new ProhibitRequest(requester);
-        m_ProhibitActionRequests.Add(req);
-        return Disposable.CreateWithState((this, req), tuple => tuple.Item1.m_ProhibitActionRequests.Remove(tuple.req));
-    }
 
     /// <summary>
     /// 全てのキャラが行動中でない
@@ -154,28 +129,6 @@ public class TurnManager : ITurnManager, IInitializable
         // 更新停止中
         if (m_IsActive == false)
             return true;
-
-        // 行動禁止中なら何もしない
-        if (ProhibitAllAction == true)
-        {
-#if DEBUG
-            foreach (var req in m_ProhibitActionRequests)
-            {
-                if (req.Requester == null)
-                    continue;
-
-                if (req.Requester.RequireInterface<ICharaStatus>(out var status) == true)
-                {
-                    Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は行動禁止要請中");
-                }
-                else
-                {
-                    Debug.Log("差出人不明な行動禁止");
-                }
-            }
-#endif
-            return true;
-        }
 
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る

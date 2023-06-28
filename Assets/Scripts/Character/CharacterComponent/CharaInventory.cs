@@ -14,7 +14,7 @@ public interface ICharaInventory : IActorInterface
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    void Put(IItemHandler item, IDisposable disposable);
+    void Put(IItemHandler item);
 }
 
 public interface ICharaInventoryEvent : IActorInterface
@@ -89,10 +89,8 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    void ICharaInventory.Put(IItemHandler item, IDisposable disposable)
+    void ICharaInventory.Put(IItemHandler item)
     {
-        disposable.Dispose();
-
         // 味方なら共有バッグに入れる
         if (m_Type.Type == CHARA_TYPE.FRIEND)
         {

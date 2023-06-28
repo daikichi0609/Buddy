@@ -3,6 +3,8 @@ using UniRx;
 using System;
 using NaughtyAttributes;
 using Zenject;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public interface ICharaMove : IActorInterface
 {
@@ -37,7 +39,7 @@ public interface ICharaMove : IActorInterface
     /// </summary>
     /// <param name="dir"></param>
     /// <returns></returns>
-    bool Move(DIRECTION dir);
+    Task<bool> Move(DIRECTION dir);
 
     /// <summary>
     /// 強制的に移動
@@ -73,8 +75,6 @@ public interface ICharaMoveEvent : IActorEvent
 
 public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 {
-    [Inject]
-    private IPlayerLoopManager m_LoopManager;
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
@@ -118,17 +118,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
     IDisposable ICharaMove.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
 
-    /// <summary>
-    /// 移動目標座標
-    /// </summary>
-    private Vector3 DestinationPos { get; set; }
-
-    /// <summary>
-    /// 移動中かどうか
-    /// </summary>
-    private bool IsMoving { get; set; }
-
-    private static readonly float SPEED_MAG = 3.0f;
+    private static readonly float SPEED_MAG = 3f;
     public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
@@ -142,6 +132,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
+
+    /// <summary>
+    /// 移動タスク
+    /// </summary>
+    private List<Task> m_MoveTasks = new List<Task>();
 
     protected override void Register(ICollector owner)
     {
@@ -165,9 +160,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         // アクション登録
         m_OnMoveStart.SubscribeWithState(this, (_, self) => self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(Owner.Disposables);
-
-        // 移動更新
-        m_LoopManager.GetUpdateEvent.SubscribeWithState(this, (_, self) => self.Moving()).AddTo(Owner.Disposables);
     }
 
     /// <summary>
@@ -189,8 +181,12 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    bool ICharaMove.Move(DIRECTION direction)
+    async Task<bool> ICharaMove.Move(DIRECTION direction)
     {
+        // 前の移動タスクがあるなら完了まで待つ
+        while (m_MoveTasks.Count > 0)
+            await Task.Delay(1);
+
         // 移動失敗
         if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
         {
@@ -227,19 +223,20 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
             }
         }
 
-        MoveInternal(destinationPos, direction);
+        // awaitしない
+        var _ = MoveInternal(destinationPos, direction);
         return true;
     }
 
     /// <summary>
-    /// 移動処理
+    /// 移動呼び出し
     /// </summary>
     /// <param name="dest"></param>
     /// <param name="dir"></param>
-    private void MoveInternal(Vector3Int dest, DIRECTION dir)
+    private async Task MoveInternal(Vector3Int dest, DIRECTION dir)
     {
         // 座標設定
-        DestinationPos = dest + new Vector3(0f, OFFSET_Y, 0f);
+        var destPos = dest + new Vector3(0f, OFFSET_Y, 0f);
         LastMoveDirection = dir;
 
         // 内部的には先に移動しとく
@@ -248,8 +245,27 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         // 移動開始イベント
         m_OnMoveStart.OnNext(Unit.Default);
 
-        // フラグオン
-        IsMoving = true;
+        // 移動タスクエンキュー
+        var task = MoveTask(destPos);
+        m_MoveTasks.Add(task);
+        await task;
+        m_MoveTasks.Remove(task);
+
+        m_OnMoveEnd.OnNext(Unit.Default);
+    }
+
+    /// <summary>
+    /// 移動処理
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <returns></returns>
+    private async Task MoveTask(Vector3 dest)
+    {
+        while ((MoveObject.transform.position - dest).magnitude > 0.01f)
+        {
+            MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, dest, Time.deltaTime * SPEED_MAG);
+            await Task.Delay(1);
+        }
     }
 
     /// <summary>
@@ -257,28 +273,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// 入れ替わり用
     /// </summary>
     /// <param name="dir"></param>
-    void ICharaMove.ForcedMove(DIRECTION dir)
+    async void ICharaMove.ForcedMove(DIRECTION dir)
     {
         Face(dir);
         Vector3Int destinationPos = Position + dir.ToV3Int();
-        MoveInternal(destinationPos, dir);
-    }
-
-    /// <summary>
-    /// 移動中処理
-    /// </summary>
-    private void Moving()
-    {
-        if (IsMoving == false)
-            return;
-
-        MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, DestinationPos, Time.deltaTime * SPEED_MAG);
-
-        if ((MoveObject.transform.position - DestinationPos).magnitude <= 0.01f)
-        {
-            IsMoving = false;
-            m_OnMoveEnd.OnNext(Unit.Default);
-        }
+        await MoveInternal(destinationPos, dir);
     }
 
     /// <summary>

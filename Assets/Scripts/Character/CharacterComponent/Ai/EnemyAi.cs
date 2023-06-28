@@ -62,7 +62,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
         {
             case ENEMY_STATE.ATTACKING:
                 dir = LotteryDirection(clue.TargetList);
-                result = m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
+                result = await m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
                 break;
 
             case ENEMY_STATE.CHASING:
@@ -87,11 +87,11 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 
                 // 抽選完了
                 var target = candidates[0];
-                result = Chase(target);
+                result = await Chase(target);
                 break;
 
             case ENEMY_STATE.SEARCHING:
-                result = SearchPlayer();
+                result = await SearchPlayer();
                 break;
         }
 
@@ -112,7 +112,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
     /// 移動の可否に関わらずtrue
     /// </summary>
     /// <returns></returns>
-    private bool SearchPlayer()
+    private async Task<bool> SearchPlayer()
     {
         //通路にいる場合
         if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var roomId) == false)
@@ -142,10 +142,10 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 
             Utility.RandomLottery(candidateDir);
 
-            if (m_CharaMove.Move(candidateDir[0]) == true)
+            if (await m_CharaMove.Move(candidateDir[0]) == true)
                 return true;
 
-            if (m_CharaMove.Move(oppDirection) == true)
+            if (await m_CharaMove.Move(oppDirection) == true)
                 return true;
 
 #if DEBUG
@@ -199,7 +199,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
             if (cells[DIRECTION.RIGHT] == TERRAIN_ID.PATH_WAY)
                 pathDir = DIRECTION.RIGHT;
 
-            if (m_CharaMove.Move(pathDir) == true)
+            if (await m_CharaMove.Move(pathDir) == true)
             {
 #if DEBUG
                 Debug.Log("部屋から出る");
@@ -214,10 +214,10 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 
         //通路出入り口へ向かう
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, DestinationCell.Position);
-        if (m_CharaMove.Move(dir) == true)
+        if (await m_CharaMove.Move(dir) == true)
             return true;
 
-        if (CompromiseMove(dir) == true)
+        if (await CompromiseMove(dir) == true)
             return true;
 
         return m_CharaMove.Wait();
