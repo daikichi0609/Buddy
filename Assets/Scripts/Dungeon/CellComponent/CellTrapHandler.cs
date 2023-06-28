@@ -65,6 +65,12 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     private ReactiveProperty<bool> m_IsVisible = new ReactiveProperty<bool>();
     bool ITrapHandler.IsVisible => m_IsVisible.Value;
 
+    protected override void Register(ICollector owner)
+    {
+        base.Register(owner);
+        owner.Register<ITrapHandler>(this);
+    }
+
     protected override void Initialize()
     {
         base.Initialize();
@@ -115,12 +121,6 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
         var effect = Instantiate(m_Setup.EffectObject);
         m_Effect.SetEffect(effect);
-    }
-
-    protected override void Register(ICollector owner)
-    {
-        base.Register(owner);
-        owner.Register<ITrapHandler>(this);
     }
 
     protected override void Dispose()

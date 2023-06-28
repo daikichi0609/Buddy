@@ -281,7 +281,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     {
         while ((MoveObject.transform.position - dest).magnitude > 0.01f)
         {
-            Debug.Log("移動中" + (MoveObject.transform.position - dest).magnitude);
             MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, dest, Time.deltaTime * SPEED_MAG);
             await Task.Delay(1);
         }

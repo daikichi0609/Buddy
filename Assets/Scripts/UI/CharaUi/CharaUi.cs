@@ -85,7 +85,7 @@ public class CharaUi : MonoBehaviour, ICharaUi
 
             if (ratio > 0.55f)
             {
-                m_FillImage.color = Color.Lerp(ms_Color2, ms_Color1, (ratio - 0.75f) * 4f);
+                m_FillImage.color = Color.Lerp(ms_Color2, ms_Color1, (ratio - 0.55f) * 4f);
             }
             else if (ratio > 0.25f)
             {
