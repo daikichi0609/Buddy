@@ -6,6 +6,10 @@ using UnityEngine;
 
 public class SleepCondition : Condition
 {
+    protected override bool CanOverlapping => false;
+
+    private static readonly Color ms_BarColor = new Color(157, 204, 244, 255);
+
     public SleepCondition(int remainingTurn) : base(remainingTurn) { }
 
     protected override async Task OnStart(ICollector owner)
@@ -13,6 +17,9 @@ public class SleepCondition : Condition
         var status = owner.GetInterface<ICharaStatus>();
         string log = status.CurrentStatus.OriginParam.GivenName + "は眠ってしまった！";
         owner.GetInterface<ICharaLog>().Log(log);
+
+        var colorChange = status.ChangeBarColor(ms_BarColor);
+        m_OnFinish.Add(colorChange);
 
         var ticket = new FailureTicket<ICollector>(1f, async (owner, disposable) =>
              {

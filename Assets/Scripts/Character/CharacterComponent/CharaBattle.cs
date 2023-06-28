@@ -90,6 +90,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
     private ICharaTurn m_CharaTurn;
+    private ICharaAnimator m_CharaAnimator;
 
     /// <summary>
     /// 確率で攻撃を失敗させる
@@ -149,6 +150,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
 
         // 攻撃時、アクション登録
         m_OnAttackStart.SubscribeWithState(this, (_, self) =>
@@ -202,8 +204,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
-
-        await Task.Delay((int)(ms_NormalAttackTotalTime * 1000));
         await AttackInternal(attackPos, target, attackInfo);
         return true;
     }
@@ -217,6 +217,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <param name="target"></param>
     private async Task<AttackResult> AttackInternal(Vector3 attackPos, CHARA_TYPE target, AttackInfo attackInfo)
     {
+        await m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.ATTACK, ms_NormalAttackTotalTime);
+
         // 角抜け確認
         if (m_DungeonHandler.CanMove(m_CharaMove.Position, m_CharaMove.Direction) == false ||
             m_UnitFinder.TryGetSpecifiedPositionUnit(attackPos, out var collector, target) == false ||
@@ -227,7 +229,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         var result = await battle.Damage(attackInfo);
 
-        //モーション終わりに実行
+        // モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
 
         return result;
@@ -241,7 +243,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     async Task<AttackResult> ICharaBattle.Damage(AttackInfo attackInfo)
     {
         var result = BattleSystem.Damage(attackInfo, Owner);
-        await DamageInternal(result, attackInfo.Direction);
+        await Damage(result, attackInfo.Direction);
         return result;
     }
 
@@ -253,7 +255,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     async Task<AttackResult> ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
     {
         var result = BattleSystem.DamagePercentage(attackInfo, Owner);
-        await DamageInternal(result, attackInfo.Direction);
+        await Damage(result, attackInfo.Direction);
         return result;
     }
 
@@ -262,7 +264,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="result"></param>
     /// <param name="attackDir"></param>
-    private async Task DamageInternal(AttackResult result, DIRECTION attackDir)
+    private async Task Damage(AttackResult result, DIRECTION attackDir)
     {
         m_OnDamageStart.OnNext(result);
 
@@ -271,17 +273,16 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         m_CharaMove.Face(attackDir.ToOppositeDir());
 
-        await PostDamage(result);
+        await DamageInternal(result);
     }
 
     /// <summary>
     /// ダメージモーション終わり
     /// </summary>
     /// <param name="result"></param>
-    private async Task PostDamage(AttackResult result)
+    private async Task DamageInternal(AttackResult result)
     {
-        int time = (int)(ms_DamageTotalTime * 1000);
-        await Task.Delay(time); // モーション終わりまで待機
+        await m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.DAMAGE, ms_DamageTotalTime);
         m_OnDamageEnd.OnNext(result);
 
         // 死亡

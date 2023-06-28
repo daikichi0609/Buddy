@@ -7,7 +7,7 @@ using Zenject;
 
 public interface ICharaUiManager
 {
-
+    bool TryGetCharaUi(ICharaStatus status, out ICharaUi ui);
 }
 
 public class CharaUiManager : MonoBehaviour, ICharaUiManager
@@ -19,24 +19,36 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     [Inject]
     private IUnitHolder m_UnitHolder;
 
-    //キャンバス
+    /// <summary>
+    /// キャンバス
+    /// </summary>
     [SerializeField]
     private GameObject m_Canvas;
 
-    //キャラクターUIプレハブ
+    /// <summary>
+    /// プレハブ
+    /// </summary>
     [SerializeField]
     private GameObject m_CharacterUiPrefab;
 
-    private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
-
-    //各キャラUI格納用List（キャラUiは他とは別）
-    [SerializeField, ReadOnly]
-    private List<CharaUi> m_CharacterUiList = new List<CharaUi>();
-    public List<CharaUi> CharacterUiList
+    /// <summary>
+    /// 各キャラUIインスタンス格納用List
+    /// </summary>
+    private List<ICharaUi> m_CharacterUiList = new List<ICharaUi>();
+    bool ICharaUiManager.TryGetCharaUi(ICharaStatus status, out ICharaUi ui)
     {
-        get { return m_CharacterUiList; }
-        set { m_CharacterUiList = value; }
+        foreach (var charaUi in m_CharacterUiList)
+            if (charaUi.IsTarget(status) == true)
+            {
+                ui = charaUi;
+                return true;
+            }
+
+        ui = null;
+        return false;
     }
+
+    private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
 
     private void Awake()
     {
@@ -68,8 +80,8 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
             GameObject obj = Instantiate(m_CharacterUiPrefab);
             obj.transform.SetParent(m_Canvas.transform, false);
             obj.transform.SetAsFirstSibling();
-            CharaUi ui = obj.GetComponent<CharaUi>();
-            CharacterUiList.Add(ui);
+            ICharaUi ui = obj.GetComponent<CharaUi>();
+            m_CharacterUiList.Add(ui);
             ui.Initialize(unit);
 
             obj.GetComponent<RectTransform>().transform.position += ms_Diff * i++;
@@ -81,7 +93,7 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     /// </summary>
     private void UpdateCharaUi()
     {
-        foreach (var chara in CharacterUiList)
+        foreach (var chara in m_CharacterUiList)
             chara.UpdateUi();
     }
 }

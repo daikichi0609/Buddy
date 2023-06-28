@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class PoisonCondition : Condition
 {
+    protected override bool CanOverlapping => false;
+
+    private static readonly Color ms_BarColor = new Color(167, 87, 168, 255);
     private static readonly float POISON_DAMAGE_RATIO = 0.03f;
     public static readonly int POISON_REMAINING_TURN = 10;
 
@@ -16,6 +19,10 @@ public class PoisonCondition : Condition
         var status = owner.GetInterface<ICharaStatus>();
         string log = status.CurrentStatus.OriginParam.GivenName + "は毒状態になった！";
         owner.GetInterface<ICharaLog>().Log(log);
+
+        var disposable = status.ChangeBarColor(ms_BarColor);
+        m_OnFinish.Add(disposable);
+
         await Task.Delay(500);
     }
 

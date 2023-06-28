@@ -29,9 +29,14 @@ public interface ICondition
     Task OnFinish(ICollector owner);
 
     /// <summary>
-    /// 
+    /// 終了しているかどうか
     /// </summary>
     bool IsFinish { get; }
+
+    /// <summary>
+    /// 他と共存できるか
+    /// </summary>
+    bool CanOverlapping { get; }
 }
 
 public abstract class Condition : ICondition
@@ -43,6 +48,12 @@ public abstract class Condition : ICondition
     /// </summary>
     private int m_RemainingTurn;
     bool ICondition.IsFinish => m_RemainingTurn == 0;
+
+    /// <summary>
+    /// 他バフとの共存が可能か
+    /// </summary>
+    protected abstract bool CanOverlapping { get; }
+    bool ICondition.CanOverlapping => CanOverlapping;
 
     /// <summary>
     /// 終了時

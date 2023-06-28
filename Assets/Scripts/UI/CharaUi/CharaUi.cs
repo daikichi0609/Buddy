@@ -1,26 +1,67 @@
-﻿using UnityEngine;
+﻿using System;
+using Fungus;
+using UniRx;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class CharaUi : MonoBehaviour
+public interface ICharaUi
 {
+    /// <summary>
+    /// 対象
+    /// </summary>
+    bool IsTarget(ICharaStatus target);
+
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    /// <param name="target"></param>
+    void Initialize(ICollector target);
+
+    /// <summary>
+    /// UI更新
+    /// </summary>
+    void UpdateUi();
+
+    /// <summary>
+    /// 色変え
+    /// </summary>
+    /// <returns></returns>
+    IDisposable ChangeBarColor(Color color);
+}
+
+public class CharaUi : MonoBehaviour, ICharaUi
+{
+    /// <summary>
+    /// ターゲット
+    /// </summary>
     private ICharaStatus m_Target;
+    bool ICharaUi.IsTarget(ICharaStatus target) => target == m_Target;
 
     [SerializeField]
     private Text m_CharaName;
 
     [SerializeField]
     private Slider m_HpSlider;
+    [SerializeField]
+    private Image m_FillImage;
 
     [SerializeField]
     private Text m_HpValue;
 
-    public void Initialize(ICollector target)
+    private bool m_IsChangingColor;
+
+    private static readonly Color ms_Color1 = new Color(0, 255, 0, 255);
+    private static readonly Color ms_Color2 = new Color(255, 255, 0, 255);
+    private static readonly Color ms_Color3 = new Color(255, 182, 0, 255);
+    private static readonly Color ms_Color4 = new Color(255, 0, 0, 255);
+
+    void ICharaUi.Initialize(ICollector target)
     {
         var status = target.GetInterface<ICharaStatus>();
         m_Target = status;
     }
 
-    public void UpdateUi()
+    void ICharaUi.UpdateUi()
     {
         if (m_Target == null || m_Target.CurrentStatus.OriginParam == null)
         {
@@ -37,5 +78,30 @@ public class CharaUi : MonoBehaviour
         m_HpSlider.maxValue = maxHp;
         m_HpSlider.value = hp;
         m_HpValue.text = hp + " / " + maxHp;
+
+        if (m_IsChangingColor == false)
+        {
+            float ratio = (float)hp / (float)maxHp;
+
+            if (ratio > 0.55f)
+            {
+                m_FillImage.color = Color.Lerp(ms_Color2, ms_Color1, (ratio - 0.75f) * 4f);
+            }
+            else if (ratio > 0.25f)
+            {
+                m_FillImage.color = Color.Lerp(ms_Color3, ms_Color2, (ratio - 0.25f) * 4f);
+            }
+            else
+            {
+                m_FillImage.color = Color.Lerp(ms_Color4, ms_Color3, ratio * 4f);
+            }
+        }
+    }
+
+    IDisposable ICharaUi.ChangeBarColor(Color color)
+    {
+        m_IsChangingColor = true;
+        m_FillImage.color = color;
+        return Disposable.CreateWithState(this, self => self.m_IsChangingColor = false);
     }
 }

@@ -39,17 +39,23 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
         owner.Register<ICharaCondition>(this);
     }
 
-    protected override void Initialize()
-    {
-        base.Initialize();
-    }
-
     /// <summary>
     /// 状態異常追加
     /// </summary>
     /// <param name="condition"></param>
     async Task ICharaCondition.AddCondition(ICondition condition)
     {
+        if (condition.CanOverlapping == false)
+            for (int i = 0; i < m_CharaCondition.Count; i++)
+            {
+                var c = m_CharaCondition[i];
+                if (c.CanOverlapping == false)
+                {
+                    await c.OnFinish(Owner);
+                    m_CharaCondition.Remove(c);
+                }
+            }
+
         m_CharaCondition.Add(condition);
         await condition.OnStart(Owner);
     }

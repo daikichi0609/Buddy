@@ -24,9 +24,9 @@ public interface ICharaMove : IActorInterface
     DIRECTION LastMoveDirection { get; }
 
     /// <summary>
-    /// 入れ替わりをするユニット
+    /// 入れ替わりをするときの待ち合わせ情報
     /// </summary>
-    ICollector SwitchUnit { get; set; }
+    CharaMove.MoveSwitchInfo SwitchInfo { get; set; }
 
     /// <summary>
     /// 向き直る
@@ -45,7 +45,7 @@ public interface ICharaMove : IActorInterface
     /// 強制的に移動
     /// </summary>
     /// <param name="dir"></param>
-    void ForcedMove(DIRECTION dir);
+    Task ForcedMove(DIRECTION dir);
 
     /// <summary>
     /// 待機
@@ -86,6 +86,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private ICharaTypeHolder m_Type;
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private ICharaTurn m_CharaTurn;
+    private ICharaAnimator m_CharaAnimator;
 
     /// <summary>
     /// 位置
@@ -107,19 +108,33 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     DIRECTION ICharaMove.LastMoveDirection => LastMoveDirection;
 
     /// <summary>
+    /// 現在の移動タスク
+    /// </summary>
+    private Task m_MovingTask;
+
+    /// <summary>
     /// 入れ替わるユニット
     /// </summary>
-    private ICollector m_SwitchUnit;
-    ICollector ICharaMove.SwitchUnit { get => m_SwitchUnit; set => m_SwitchUnit = value; }
+    private MoveSwitchInfo m_SwitchInfo;
+    MoveSwitchInfo ICharaMove.SwitchInfo { get => m_SwitchInfo; set => m_SwitchInfo = value; }
+
+    public sealed class MoveSwitchInfo
+    {
+        public ICollector Switcher { get; }
+        public Task SwitchTask { get; }
+
+        public MoveSwitchInfo(ICollector switcher, Task task)
+        {
+            Switcher = switcher;
+            SwitchTask = task;
+        }
+    }
 
     /// <summary>
     /// 確率で移動を失敗させる
     /// </summary>
     private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
     IDisposable ICharaMove.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
-
-    private static readonly float SPEED_MAG = 3f;
-    public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
     /// 移動前に呼ばれる
@@ -133,10 +148,8 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
     IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
 
-    /// <summary>
-    /// 移動タスク
-    /// </summary>
-    private List<Task> m_MoveTasks = new List<Task>();
+    private static readonly float SPEED_MAG = 3f;
+    public static readonly float OFFSET_Y = 0.51f;
 
     protected override void Register(ICollector owner)
     {
@@ -151,6 +164,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_Type = Owner.GetInterface<ICharaTypeHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
 
         // ----- 初期化 ----- //
         Direction = DIRECTION.UNDER;
@@ -183,9 +197,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// <returns></returns>
     async Task<bool> ICharaMove.Move(DIRECTION direction)
     {
-        // 前の移動タスクがあるなら完了まで待つ
-        while (m_MoveTasks.Count > 0)
-            await Task.Delay(1);
+        // 前の移動タスクの完了を待つ
+        if (m_MovingTask != null)
+            while (m_MovingTask.IsCompleted == false)
+                await Task.Delay(1);
 
         // 移動失敗
         if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
@@ -218,8 +233,8 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
                     return false; // 入れ違いできないなら移動不可
 
                 var move = unit.GetInterface<ICharaMove>();
-                move.ForcedMove(direction.ToOppositeDir());
-                m_SwitchUnit = unit;
+                var forced = move.ForcedMove(direction.ToOppositeDir());
+                m_SwitchInfo = new MoveSwitchInfo(unit, forced);
             }
         }
 
@@ -245,11 +260,14 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         // 移動開始イベント
         m_OnMoveStart.OnNext(Unit.Default);
 
-        // 移動タスクエンキュー
-        var task = MoveTask(destPos);
-        m_MoveTasks.Add(task);
-        await task;
-        m_MoveTasks.Remove(task);
+        var animation = m_CharaAnimator.PlayAnimation(ANIMATION_TYPE.MOVE);
+        var acting = m_CharaTurn.RegisterActing();
+
+        // 移動タスク
+        m_MovingTask = MoveTask(destPos);
+        await m_MovingTask;
+        animation.Dispose();
+        acting.Dispose();
 
         m_OnMoveEnd.OnNext(Unit.Default);
     }
@@ -263,6 +281,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     {
         while ((MoveObject.transform.position - dest).magnitude > 0.01f)
         {
+            Debug.Log("移動中" + (MoveObject.transform.position - dest).magnitude);
             MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, dest, Time.deltaTime * SPEED_MAG);
             await Task.Delay(1);
         }
@@ -273,8 +292,9 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// 入れ替わり用
     /// </summary>
     /// <param name="dir"></param>
-    async void ICharaMove.ForcedMove(DIRECTION dir)
+    async Task ICharaMove.ForcedMove(DIRECTION dir)
     {
+        await m_CharaTurn.WaitFinishActing();
         Face(dir);
         Vector3Int destinationPos = Position + dir.ToV3Int();
         await MoveInternal(destinationPos, dir);

@@ -5,7 +5,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using Zenject;
 using UniRx;
-using Zenject.SpaceFighter;
+using System;
 
 public interface ICharaStatus : IActorInterface
 {
@@ -37,6 +37,13 @@ public interface ICharaStatus : IActorInterface
     /// 死んでいるか
     /// </summary>
     bool IsDead { get; }
+
+    /// <summary>
+    /// HPバーの色変更
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    IDisposable ChangeBarColor(Color color);
 }
 
 public class CharaStatus : ActorComponentBase, ICharaStatus
@@ -48,7 +55,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
-    private IMiniMapRenderer m_MiniMapRenderer;
+    private ICharaUiManager m_CharaUiManager;
 
     private int EnemyLevelBase { get; set; }
     int ICharaStatus.EnemyLevelBase { set => EnemyLevelBase = value; }
@@ -170,4 +177,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
             }).AddTo(Owner.Disposables);
         }
     }
+
+    IDisposable ICharaStatus.ChangeBarColor(Color color) => m_CharaUiManager.TryGetCharaUi(this, out var ui) ? ui.ChangeBarColor(color) : Disposable.Empty;
 }

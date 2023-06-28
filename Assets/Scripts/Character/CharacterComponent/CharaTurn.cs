@@ -121,11 +121,12 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
 
         if (check == true)
         {
-            var move = Owner.GetInterface<ICharaMove>();
-            if (move.SwitchUnit != null)
+            var switchInfo = Owner.GetInterface<ICharaMove>().SwitchInfo;
+            if (switchInfo != null)
             {
-                await move.SwitchUnit.GetInterface<ICharaTurn>().TurnEnd();
-                move.SwitchUnit = null;
+                await switchInfo.SwitchTask;
+                await switchInfo.Switcher.GetInterface<ICharaTurn>().TurnEnd();
+                Owner.GetInterface<ICharaMove>().SwitchInfo = null;
                 return;
             }
         }
