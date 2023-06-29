@@ -209,6 +209,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
         var setup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(setup);
         await m_DungeonContentsDeployer.DeployAll();
+        m_TurnManager.NextUnitAct();
     }
 
     /// <summary>

@@ -81,7 +81,7 @@ public class InputManager : MonoBehaviour, IInputManager
     /// <summary>
     /// UI表示中かどうか
     /// </summary>
-    public bool IsUiPopUp => m_ActiveUi != null;
+    bool IInputManager.IsUiPopUp => m_ActiveUi != null;
 
     /// <summary>
     /// 操作中Uiをセット

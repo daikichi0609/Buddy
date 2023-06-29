@@ -54,14 +54,14 @@ public class TurnManager : ITurnManager, IInitializable
     private IUnitHolder m_UnitHolder;
 
     /// <summary>
-    /// 有効かどうか
+    /// 再帰を止めるフラグ
     /// </summary>
-    private bool m_IsActive;
+    private bool m_IsStop;
 
     /// <summary>
-    /// ユニットアクト停止
+    /// 再帰停止
     /// </summary>
-    void ITurnManager.StopUnitAct() => m_IsActive = false;
+    void ITurnManager.StopUnitAct() => m_IsStop = false;
 
     /// <summary>
     /// 行動するキャラ
@@ -109,11 +109,7 @@ public class TurnManager : ITurnManager, IInitializable
     [Inject]
     public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
     {
-        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) =>
-        {
-            self.CreateActionList();
-            self.m_IsActive = true;
-        });
+        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) => self.CreateActionList());
     }
 
     void IInitializable.Initialize() => NextUnitAct();
@@ -139,8 +135,11 @@ public class TurnManager : ITurnManager, IInitializable
     private async Task<bool> NextUnitActInternal()
     {
         // 更新停止中
-        if (m_IsActive == false)
-            return true;
+        if (m_IsStop == true)
+        {
+            m_IsStop = false;
+            return false;
+        }
 
         // 行動禁止中
         if (ProhibitAllAction == true)
