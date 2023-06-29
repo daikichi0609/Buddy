@@ -205,11 +205,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         // 移動失敗
         if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
         {
-            Debug.Log("行動不能");
             await m_CharaTurn.WaitFinishActing();
-
-            // 失敗
-            m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.WAIT);
             ticket.OnFail(Owner);
 
             var acting = m_CharaTurn.RegisterActing();
