@@ -16,6 +16,8 @@ MonoBehaviour:
   m_TrapName: "\u3069\u304F\u3069\u304F\u30C8\u30E9\u30C3\u30D7"
   m_EffectObject: {fileID: 548340328513148424, guid: 65460b055fcab448880534a0842b7dc8,
     type: 3}
+  m_SoundObject: {fileID: 5087174154848842170, guid: 6a9f3ff2a317e425dade9e6e66a288ce,
+    type: 3}
   m_TrapEffect: {fileID: 5831339453145265388}
   m_Type: PoisonTrap
 --- !u!114 &5831339453145265388

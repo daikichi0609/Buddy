@@ -16,6 +16,8 @@ MonoBehaviour:
   m_TrapName: "\u7206\u5F3E\u30C8\u30E9\u30C3\u30D7"
   m_EffectObject: {fileID: 1917329542002115417, guid: c538184a6767b480f885efd61e549b8b,
     type: 3}
+  m_SoundObject: {fileID: 5087174154848842170, guid: 588b992cb4ff34ff4a61886637e39411,
+    type: 3}
   m_TrapEffect: {fileID: 3069249077738780471}
   m_Type: BombTrap
 --- !u!114 &3069249077738780471

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Zenject;
+using System.Threading.Tasks;
 
 public interface ICharaSound : IActorInterface
 {
@@ -13,6 +14,10 @@ public class CharaSound : ActorComponentBase, ICharaSound
 {
     [Inject]
     private ISoundHolder m_SoundHolder;
+
+    private static readonly string ATTACK_SOUND = "Attack";
+    private static readonly string DAMAGE_SOUND = "Damage";
+    private static readonly string MISS_SOUND = "Miss";
 
     protected override void Register(ICollector owner)
     {
@@ -26,28 +31,27 @@ public class CharaSound : ActorComponentBase, ICharaSound
 
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnAttackStart.SubscribeWithState(this, (_, self) =>
+            // 攻撃音
+            battle.OnAttackStart.SubscribeWithState(this, async (_, self) =>
             {
-                // 攻撃音
-                self.StartCoroutine(Coroutine.DelayCoroutine(CharaBattle.ms_NormalAttackHitTime, this, self =>
-                {
-                    self.m_SoundHolder.AttackSound.Play();
-                }));
+                await Task.Delay((int)(CharaBattle.ms_NormalAttackHitTime * 1000));
+                if (self.m_SoundHolder.TryGetSound(ATTACK_SOUND, out var sound) == true)
+                    sound.Play();
             }).AddTo(Owner.Disposables);
 
+            // 空振り音
             battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
             {
                 if (result.IsHit == false)
-                {
-                    // 空振り音
-                    self.m_SoundHolder.MissSound.Play();
-                }
+                    if (self.m_SoundHolder.TryGetSound(MISS_SOUND, out var sound) == true)
+                        sound.Play();
             }).AddTo(Owner.Disposables);
 
+            // ダメージ音
             battle.OnDamageEnd.SubscribeWithState(this, (_, self) =>
             {
-                // ダメージ音
-                self.m_SoundHolder.DamageSound.Play();
+                if (self.m_SoundHolder.TryGetSound(DAMAGE_SOUND, out var sound) == true)
+                    sound.Play();
             }).AddTo(Owner.Disposables);
         }
 

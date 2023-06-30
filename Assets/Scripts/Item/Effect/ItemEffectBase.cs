@@ -17,7 +17,7 @@ public interface IItemEffect
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
     /// <returns></returns>
-    Task Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager);
+    Task Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, ISoundHolder sound);
 
     /// <summary>
     /// アイテムを投げる
@@ -30,7 +30,7 @@ public interface IItemEffect
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
     /// <returns></returns>
-    Task ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager);
+    Task ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, ISoundHolder soundHolder);
 }
 
 public readonly struct ItemEffectContext
@@ -79,6 +79,8 @@ public readonly struct ItemEffectContext
 public class ItemEffectBase : ScriptableObject, IItemEffect
 {
     private static readonly int THROW_DISTANCE = 10;
+    private static readonly string ITEM_THROW = "ItemThrow";
+    private static readonly string ITEM_EAT = "ItemEat";
 
     /// <summary>
     /// アイテムを自分に使う
@@ -91,12 +93,17 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
     /// <returns></returns>
-    async Task IItemEffect.Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
+    async Task IItemEffect.Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, ISoundHolder soundHolder)
     {
         var ctx = new ItemEffectContext(owner, item, itemManager, dungeonHandler, unitFinder, battleLogManager);
+
         // Log
         if (ctx.Owner.RequireInterface<ICharaStatus>(out var status) == true)
             ctx.BattleLogManager.Log(status.CurrentStatus.OriginParam.GivenName + "は" + ctx.ItemSetup.ItemName + "を食べた");
+
+        // 音
+        if (soundHolder.TryGetSound(ITEM_EAT, out var sound) == true)
+            sound.Play();
 
         await EffectInternal(ctx);
         await PostEffect(owner, item, inventory);
@@ -113,9 +120,12 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// <param name="unitFinder"></param>
     /// <param name="battleLogManager"></param>
     /// <returns></returns>
-    async Task IItemEffect.ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager)
+    async Task IItemEffect.ThrowStraight(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, ISoundHolder soundHolder)
     {
         var ctx = new ItemEffectContext(owner, item, itemManager, dungeonHandler, unitFinder, battleLogManager);
+        if (soundHolder.TryGetSound(ITEM_THROW, out var sound) == true)
+            sound.Play();
+
         var target = await ThrowResult(ctx, THROW_DISTANCE);
         if (target != null)
             await EffectInternal(new ItemEffectContext(target, item, itemManager, dungeonHandler, unitFinder, battleLogManager));

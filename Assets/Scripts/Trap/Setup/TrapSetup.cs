@@ -19,9 +19,16 @@ public class TrapSetup : PrefabSetup
     /// <summary>
     /// エフェクト
     /// </summary>
-    [SerializeField, Header("エフェクトプレハブ")]
+    [SerializeField, Header("エフェクト")]
     private GameObject m_EffectObject;
     public GameObject EffectObject => m_EffectObject;
+
+    /// <summary>
+    /// エフェクト
+    /// </summary>
+    [SerializeField, Header("サウンド")]
+    private GameObject m_SoundObject;
+    public GameObject SoundObject => m_SoundObject;
 
     /// <summary>
     /// トラップ効果

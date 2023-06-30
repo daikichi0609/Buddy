@@ -155,7 +155,7 @@ public class DungeonSystemInstaller : MonoInstaller
             .NonLazy();
 
         // サウンド保持
-        Container.Bind<ISoundHolder>()
+        Container.Bind(typeof(ISoundHolder), typeof(IInitializable))
             .To<SoundHolder>()
             .FromNew()
             .AsSingle()

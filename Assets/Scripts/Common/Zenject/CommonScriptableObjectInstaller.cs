@@ -42,6 +42,13 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
     [Expandable]
     private MasterDataHolder m_MasterData;
 
+    /// <summary>
+    /// マスターデータ
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private SoundSetup m_SoundSetup;
+
     public override void InstallBindings()
     {
         Container.BindInstance(m_HomeSetup).AsSingle();
@@ -49,5 +56,6 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
         Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
         Container.BindInstance(m_DungeonCharacterSaveData).AsSingle();
         Container.BindInstance(m_MasterData.CharacterMasterSetup).AsSingle();
+        Container.BindInstance(m_SoundSetup).AsSingle();
     }
 }

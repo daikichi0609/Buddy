@@ -16,6 +16,8 @@ MonoBehaviour:
   m_TrapName: "\u304A\u3084\u3059\u307F\u30C8\u30E9\u30C3\u30D7"
   m_EffectObject: {fileID: 548340328513148424, guid: 66184d136853847c487bf119bf5bef04,
     type: 3}
+  m_SoundObject: {fileID: 5087174154848842170, guid: 6a9f3ff2a317e425dade9e6e66a288ce,
+    type: 3}
   m_TrapEffect: {fileID: 4659825319154207743}
   m_Type: SleepTrap
 --- !u!114 &4659825319154207743

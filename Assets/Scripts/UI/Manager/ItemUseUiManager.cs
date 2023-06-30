@@ -21,13 +21,15 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
+    private IUnitFinder m_UnitFinder;
+    [Inject]
     private ITeamInventory m_TeamInventory;
     [Inject]
     private IItemManager m_ItemManager;
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
-    private IUnitFinder m_UnitFinder;
+    private ISoundHolder m_SoundHolder;
 
     [SerializeField]
     private ItemUseUi m_ItemUseUi = new ItemUseUi();
@@ -53,7 +55,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 {
                     var self = tuple.Item2;
                     self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                        self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager);
+                        self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
                     self.DeactivateAll();
                 }
             });
@@ -69,7 +71,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
             {
                 var self = tuple.Item2;
                 self.m_ItemSetup.Effect.ThrowStraight(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager);
+                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
                 self.DeactivateAll();
             }
         });

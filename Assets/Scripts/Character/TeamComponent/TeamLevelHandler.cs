@@ -52,9 +52,11 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
-    private IDungeonContentsDeployer m_DungeonContentsDeployer;
-    [Inject]
     private IAttackResultUiManager m_AttackResultUiManager;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+
+    private static readonly string LEVEL_UP_SOUND = "LevelUp";
 
     /// <summary>
     /// 経験値テーブル
@@ -119,6 +121,9 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
         // レベルアップテキスト
         m_LevelChanged.SubscribeWithState(this, (_, self) =>
         {
+            if (self.m_SoundHolder.TryGetSound(LEVEL_UP_SOUND, out var sound) == true)
+                sound.Play();
+
             var player = m_UnitHolder.Player;
             self.m_AttackResultUiManager.LevelUp(player);
         });

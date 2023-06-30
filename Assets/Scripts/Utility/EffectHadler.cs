@@ -10,7 +10,7 @@ public interface IEffectHandler : IDisposable
     /// エフェクトセット
     /// </summary>
     /// <param name="effect"></param>
-    void RegisterEffect(GameObject effect);
+    void RegisterEffect(GameObject effect, GameObject sound);
 
     /// <summary>
     /// エフェクト再生
@@ -30,11 +30,16 @@ public class EffectHandler : IEffectHandler
     private ParticleSystemHolder m_ParticleSystemHolder;
 
     /// <summary>
+    /// サウンド
+    /// </summary>
+    private AudioSource m_AudioSource;
+
+    /// <summary>
     /// エフェクトセット
     /// </summary>
     /// <param name="effect"></param>
     /// <param name="pos"></param>
-    public void RegisterEffect(GameObject effect)
+    void IEffectHandler.RegisterEffect(GameObject effect, GameObject sound)
     {
 #if DEBUG
         if (m_ParentObject != null)
@@ -43,6 +48,7 @@ public class EffectHandler : IEffectHandler
 
         m_ParentObject = effect;
         m_ParticleSystemHolder = m_ParentObject.GetComponent<ParticleSystemHolder>();
+        m_AudioSource = sound.GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -53,6 +59,7 @@ public class EffectHandler : IEffectHandler
     /// <returns></returns>
     async Task IEffectHandler.Play(Vector3 pos, float time)
     {
+        m_AudioSource.Play();
         await PlayInternal(pos, time);
     }
 
@@ -73,5 +80,6 @@ public class EffectHandler : IEffectHandler
     {
         MonoBehaviour.Destroy(m_ParentObject);
         m_ParticleSystemHolder = null;
+        MonoBehaviour.Destroy(m_AudioSource.gameObject);
     }
 }

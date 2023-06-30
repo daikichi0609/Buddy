@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9694a85378d614998897b4b738095de8, type: 3}
+  m_Name: SoundSetup
+  m_EditorClassIdentifier: 
+  m_SoundPacks:
+  - m_Sound: {fileID: 2573996989346612756, guid: 76a9212cd8aa94688b5e8f19bbe4cc2e,
+      type: 3}
+    m_Key: Attack
+  - m_Sound: {fileID: 8713785440656138478, guid: 368dd7a29e15845f88bfa7d00ade6606,
+      type: 3}
+    m_Key: Damage
+  - m_Sound: {fileID: 5087174154848842170, guid: 9acd612c7b095473db42d39e9d4ca660,
+      type: 3}
+    m_Key: Miss
+  - m_Sound: {fileID: 5087174154848842170, guid: 45bf19b62fe0241029f48812b35dc7a3,
+      type: 3}
+    m_Key: LevelUp
+  - m_Sound: {fileID: 5087174154848842170, guid: 62a819fe157a14f869a6cd6c17d1b50d,
+      type: 3}
+    m_Key: ItemThrow
+  - m_Sound: {fileID: 5087174154848842170, guid: c6fe500a36bd44389b856f2e32a3dab7,
+      type: 3}
+    m_Key: ItemEat
+  - m_Sound: {fileID: 5087174154848842170, guid: 2bc59f581ca7b460bb7465e3000bfaa7,
+      type: 3}
+    m_Key: TrapActivate

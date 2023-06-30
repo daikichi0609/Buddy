@@ -24,39 +24,4 @@ public class CharacterMasterSetup : ScriptableObject
     [BoxGroup("レベル")]
     private int m_MaxLevel;
     public int MaxLevel => m_MaxLevel;
-
-    // ----- エフェクト ----- //
-
-    [SerializeField, Header("レベルアップエフェクト")]
-    [BoxGroup("エフェクト")]
-    private GameObject m_LevelUpEffect;
-    public GameObject LevelUpEffect => m_LevelUpEffect;
-
-    // ------ ----- //
-
-    // ----- サウンド ----- //
-
-    [SerializeField, Header("攻撃時サウンド")]
-    [BoxGroup("サウンド")]
-    private GameObject m_AttackSound;
-    public GameObject AttackSound => m_AttackSound;
-
-    [SerializeField, Header("被ダメージサウンド")]
-    [BoxGroup("サウンド")]
-    private GameObject m_DamageSound;
-    public GameObject DamageSound => m_DamageSound;
-
-    [SerializeField, Header("攻撃外しサウンド")]
-    [BoxGroup("サウンド")]
-    private GameObject m_MissSound;
-    public GameObject MissSound => m_MissSound;
-
-    [SerializeField, Header("レベルアップサウンド")]
-    [BoxGroup("サウンド")]
-    private GameObject m_LevelUpSound;
-    public GameObject LevelUpSound => m_LevelUpSound;
-
-    // ------ ----- //
-
-
 }

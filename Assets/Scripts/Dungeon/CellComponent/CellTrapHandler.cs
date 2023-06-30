@@ -40,7 +40,10 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
     private IObjectPoolController m_ObjectPoolController;
     [Inject]
     private IMiniMapRenderer m_MiniMapRenderer;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
 
+    private static readonly string TRAP_ACTIVATE_SOUND = "TrapActivate";
     private static readonly float OFFSET_Y = 0.5f;
 
     /// <summary>
@@ -100,6 +103,8 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
 
         m_GameObject.SetActive(true);
         m_IsVisible.Value = true;
+        if (m_SoundHolder.TryGetSound(TRAP_ACTIVATE_SOUND, out var sound) == true)
+            sound.Play();
 
         await m_Setup.TrapEffect.Effect(m_Setup, stepper, Owner, unitFinder, dungeonHandler, battleLogManager, m_Effect, m_GameObject.transform.position);
     }
@@ -120,7 +125,8 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         m_GameObject.SetActive(false);
 
         var effect = Instantiate(m_Setup.EffectObject);
-        m_Effect.RegisterEffect(effect);
+        var sound = Instantiate(m_Setup.SoundObject);
+        m_Effect.RegisterEffect(effect, sound);
     }
 
     protected override void Dispose()

@@ -6,47 +6,27 @@ using Zenject;
 
 public interface ISoundHolder
 {
-    AudioSource AttackSound { get; }
-    AudioSource MissSound { get; }
-    AudioSource DamageSound { get; }
+    bool TryGetSound(string key, out AudioSource sound);
 }
 
-public class SoundHolder : ISoundHolder
+public class SoundHolder : ISoundHolder, IInitializable
 {
     [Inject]
-    private CharacterMasterSetup m_CharacterMasterSetup;
+    private SoundSetup m_SoundSetup;
 
-    /// <summary>
-    /// 攻撃
-    /// </summary>
-    private AudioSource m_AttackSound;
-    AudioSource ISoundHolder.AttackSound => m_AttackSound;
-
-    /// <summary>
-    /// 空振り
-    /// </summary>
-    private AudioSource m_MissSound;
-    AudioSource ISoundHolder.MissSound => m_MissSound;
-
-    /// <summary>
-    /// 被ダメージ
-    /// </summary>
-    private AudioSource m_DamageSound;
-    AudioSource ISoundHolder.DamageSound => m_DamageSound;
-
-    [Inject]
-    public void Construct(IPlayerLoopManager loopManager)
-    {
-        loopManager.GetInitEvent.SubscribeWithState(this, (_, self) => self.Initialize());
-    }
+    private Dictionary<string, AudioSource> m_KeySoundPairs = new Dictionary<string, AudioSource>();
 
     /// <summary>
     /// インスタンス生成
     /// </summary>
-    private void Initialize()
+    void IInitializable.Initialize()
     {
-        m_AttackSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.AttackSound).GetComponent<AudioSource>();
-        m_MissSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.MissSound).GetComponent<AudioSource>();
-        m_DamageSound = MonoBehaviour.Instantiate(m_CharacterMasterSetup.DamageSound).GetComponent<AudioSource>();
+        foreach (var pack in m_SoundSetup.SoundPacks)
+        {
+            var sound = MonoBehaviour.Instantiate(pack.Sound).GetComponent<AudioSource>();
+            m_KeySoundPairs.Add(pack.Key, sound);
+        }
     }
+
+    bool ISoundHolder.TryGetSound(string key, out AudioSource sound) => m_KeySoundPairs.TryGetValue(key, out sound);
 }
