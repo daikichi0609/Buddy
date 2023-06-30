@@ -120,7 +120,7 @@ public class CellTrapHandler : ActorComponentBase, ITrapHandler
         m_GameObject.SetActive(false);
 
         var effect = Instantiate(m_Setup.EffectObject);
-        m_Effect.SetEffect(effect);
+        m_Effect.RegisterEffect(effect);
     }
 
     protected override void Dispose()

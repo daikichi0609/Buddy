@@ -10,7 +10,7 @@ public interface IEffectHandler : IDisposable
     /// エフェクトセット
     /// </summary>
     /// <param name="effect"></param>
-    void SetEffect(GameObject effect);
+    void RegisterEffect(GameObject effect);
 
     /// <summary>
     /// エフェクト再生
@@ -26,17 +26,23 @@ public class EffectHandler : IEffectHandler
     /// <summary>
     /// エフェクトプレハブ
     /// </summary>
-    private GameObject m_Effect;
+    private GameObject m_ParentObject;
+    private ParticleSystemHolder m_ParticleSystemHolder;
 
     /// <summary>
     /// エフェクトセット
     /// </summary>
     /// <param name="effect"></param>
     /// <param name="pos"></param>
-    public void SetEffect(GameObject effect)
+    public void RegisterEffect(GameObject effect)
     {
-        m_Effect = effect;
-        m_Effect.SetActive(false);
+#if DEBUG
+        if (m_ParentObject != null)
+            Debug.Log("既にParticleSystemが登録済みです。上書きします。");
+#endif
+
+        m_ParentObject = effect;
+        m_ParticleSystemHolder = m_ParentObject.GetComponent<ParticleSystemHolder>();
     }
 
     /// <summary>
@@ -52,13 +58,20 @@ public class EffectHandler : IEffectHandler
 
     private async Task PlayInternal(Vector3 pos, float time)
     {
-        m_Effect.transform.position = pos;
-        m_Effect.SetActive(true);
+        m_ParentObject.transform.position = pos;
+
+        foreach (var effect in m_ParticleSystemHolder.ParticleSystems)
+            effect.Play();
 
         await Task.Delay((int)(time * 1000));
 
-        m_Effect.SetActive(false);
+        foreach (var effect in m_ParticleSystemHolder.ParticleSystems)
+            effect.Stop();
     }
 
-    void IDisposable.Dispose() => MonoBehaviour.Destroy(m_Effect);
+    void IDisposable.Dispose()
+    {
+        MonoBehaviour.Destroy(m_ParentObject);
+        m_ParticleSystemHolder = null;
+    }
 }

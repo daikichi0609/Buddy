@@ -50,7 +50,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -4932,7 +4932,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -9773,6 +9773,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1914421638728954945}
+  - component: {fileID: 1040113003785941627}
   m_Layer: 0
   m_Name: Explosion
   m_TagString: Untagged
@@ -9798,6 +9799,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1040113003785941627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917329542002115417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b58d5cfcc34243ef8ecad7c71e2e17d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ParticleSystems:
+  - {fileID: 1756365878751623445}
+  - {fileID: 1755970760241016467}
+  - {fileID: 1755907659740825979}
 --- !u!1 &1917428495167799265
 GameObject:
   m_ObjectHideFlags: 0
@@ -9848,7 +9865,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
