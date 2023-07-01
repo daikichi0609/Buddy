@@ -34,3 +34,12 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 2bc59f581ca7b460bb7465e3000bfaa7,
       type: 3}
     m_Key: TrapActivate
+  - m_Sound: {fileID: 5087174154848842170, guid: 156d28e16a4134f5ba7125a4f381dea3,
+      type: 3}
+    m_Key: ItemPickUp
+  - m_Sound: {fileID: 5087174154848842170, guid: fc525c2acd51a477d9ee40a8664601e0,
+      type: 3}
+    m_Key: ItemPickUpEnemy
+  - m_Sound: {fileID: 5087174154848842170, guid: 8b62214fa23b24158a61df58f9d45bb8,
+      type: 3}
+    m_Key: Stairs

@@ -47,9 +47,12 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     [Inject]
     private ITeamInventory m_TeamInventory;
     [Inject]
-    private IObjectPoolController m_ObjectPoolContoroller;
-    [Inject]
     private IDungeonItemSpawner m_ItemSpawner;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+
+    private static readonly string ITEM_PICKUP = "ItemPickUp";
+    private static readonly string ITEM_PICKUP_ENEMY = "ItemPickUpEnemy";
 
     private ICharaTypeHolder m_Type;
     private ICharaMove m_CharaMove;
@@ -95,7 +98,11 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
         if (m_Type.Type == CHARA_TYPE.FRIEND)
         {
             if (m_TeamInventory.TryPut(item.Setup) == true)
+            {
                 OnPutItem(item);
+                if (m_SoundHolder.TryGetSound(ITEM_PICKUP, out var sound) == true)
+                    sound.Play();
+            }
             else
                 m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item));
         }
@@ -106,6 +113,8 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
             {
                 m_PocketItem = item.Setup;
                 OnPutItem(item);
+                if (m_SoundHolder.TryGetSound(ITEM_PICKUP_ENEMY, out var sound) == true)
+                    sound.Play();
             }
             else
                 m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item));

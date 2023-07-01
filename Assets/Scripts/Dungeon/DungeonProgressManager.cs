@@ -85,6 +85,10 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     private IYesorNoQuestionUiManager m_QuestionManager;
     [Inject]
     private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+
+    private static readonly string STAIRS = "Stairs";
 
     /// <summary>
     /// 現在の階層
@@ -172,11 +176,10 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     /// <returns></returns>
     async Task IDungeonProgressManager.NextFloor()
     {
-        // ユニット停止
-        m_TurnManager.StopUnitAct();
-
-        // UI非表示
-        m_QuestionManager.Deactivate();
+        m_TurnManager.StopUnitAct(); // ユニット停止
+        m_QuestionManager.Deactivate(); // UI非表示
+        if (m_SoundHolder.TryGetSound(STAIRS, out var sound) == true) // 音
+            sound.Play();
 
         int maxFloor = m_ProgressHolder.CurrentDungeonSetup.FloorCount;
         // すでに最上階にいるならチェックポイントへ
