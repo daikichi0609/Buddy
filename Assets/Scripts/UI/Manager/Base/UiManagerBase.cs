@@ -92,6 +92,11 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected abstract IUiBase UiInterface { get; }
 
     /// <summary>
+    /// 説明文
+    /// </summary>
+    protected abstract string FixLogText { get; }
+
+    /// <summary>
     /// 選択肢の購読と選択肢
     /// </summary>
     protected abstract OptionElement CreateOptionElement();
@@ -176,8 +181,12 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
 
         UiInterface.SetActive(true); // 表示
 
-        // バトルログは消す
-        m_BattleLogManager.Deactive();
+        // バトルログで説明
+        if (FixLogText != string.Empty)
+        {
+            var log = m_BattleLogManager.FixLogForUi(FixLogText);
+            m_Disposables.Add(log);
+        }
     }
     void IUiManager.Activate() => Activate();
 

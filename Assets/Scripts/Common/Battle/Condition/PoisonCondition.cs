@@ -32,7 +32,7 @@ public class PoisonCondition : Condition
         m_OnFinish.Add(disposable);
 
         var pos = owner.GetInterface<ICharaMove>().Position;
-        await m_EffectHandler.Play(pos);
+        await m_EffectHandler.Play(pos, 0.5f);
     }
 
     protected override async Task EffectInternal(ICollector owner)

@@ -28,12 +28,12 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     private IItemUseUiManager m_ItemUseUiManager;
     [Inject]
     private ITeamInventory m_TeamInventory;
-    [Inject]
-    private IMenuUiManager m_MenuUiManager;
 
     [SerializeField]
     private BagUi m_BagUi = new BagUi();
     protected override IUiBase UiInterface => m_BagUi;
+
+    protected override string FixLogText => "アイテムを選択する。";
 
     protected override OptionElement CreateOptionElement()
     {

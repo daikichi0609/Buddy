@@ -25,6 +25,8 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
     protected override IUiBase UiInterface => m_UiInterface;
 
+    protected override string FixLogText => "コマンドを選択する。";
+
     protected override OptionElement CreateOptionElement() => new OptionElement(m_OptionMethod, new string[2] { "バッグ", "ステータス" });
 
     protected void Awake()

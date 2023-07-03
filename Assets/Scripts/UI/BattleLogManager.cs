@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using Zenject;
+using System;
 
 public interface IBattleLogManager
 {
@@ -18,6 +19,13 @@ public interface IBattleLogManager
     /// ログを非表示
     /// </summary>
     void Deactive();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="log"></param>
+    /// <returns></returns>
+    IDisposable FixLogForUi(string log);
 }
 
 public class BattleLogManager : MonoBehaviour, IBattleLogManager
@@ -37,6 +45,7 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
     /// 表示時間計測タイマー
     /// </summary>
     private float m_Timer;
+    private bool m_Update = true;
 
     private static readonly int MAX_LOG = 4;
 
@@ -92,8 +101,32 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
     /// </summary>
     private void OnUpdate()
     {
+        if (m_Update == false)
+            return;
+
         m_Timer += Time.deltaTime;
         if (m_Timer >= LOG_TIME)
             Deactive();
+    }
+
+    IDisposable IBattleLogManager.FixLogForUi(string log)
+    {
+        var sb = new StringBuilder();
+        sb.Append(log);
+        sb.Append("\n");
+        sb.Append("\n");
+        sb.Append("Enter: 決定");
+        sb.Append("\n");
+        sb.Append("Qキー: 戻る");
+
+        m_Text.text = sb.ToString();
+        m_BattleLog.SetActive(true);
+        m_Update = false;
+
+        return Disposable.CreateWithState(this, self =>
+        {
+            self.m_Update = true;
+            self.Deactive();
+        });
     }
 }

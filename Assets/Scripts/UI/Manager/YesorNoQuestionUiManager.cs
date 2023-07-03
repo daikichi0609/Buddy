@@ -40,6 +40,8 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
     private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
     protected override IUiBase UiInterface => m_Interface;
 
+    protected override string FixLogText => "";
+
     /// <summary>
     /// 質問タイプ
     /// Activateする前にセットする

@@ -218,5 +218,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // アイテム使用キャラ選択Ui
+        Container.Bind<IUseCharaUiManager>()
+            .To<UseCharaUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

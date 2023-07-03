@@ -30,10 +30,14 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private ISoundHolder m_SoundHolder;
+    [Inject]
+    private IUseCharaUiManager m_UseCharaUiManager;
 
     [SerializeField]
     private ItemUseUi m_ItemUseUi = new ItemUseUi();
     protected override IUiBase UiInterface => m_ItemUseUi;
+
+    protected override string FixLogText => "どうする？";
 
     /// <summary>
     /// 使うアイテムセットアップ
@@ -54,9 +58,8 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 if (tuple.optionIndex == index)
                 {
                     var self = tuple.Item2;
-                    self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                        self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
-                    self.DeactivateAll();
+                    self.m_UseCharaUiManager.ItemSetup = m_ItemSetup;
+                    self.m_UseCharaUiManager.Activate(this);
                 }
             });
             m_Disposables.Add(eat);
