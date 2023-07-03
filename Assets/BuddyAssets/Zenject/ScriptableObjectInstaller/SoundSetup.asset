@@ -43,3 +43,9 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 8b62214fa23b24158a61df58f9d45bb8,
       type: 3}
     m_Key: Stairs
+  - m_Sound: {fileID: 5087174154848842170, guid: a16f68a321a734b0385d12ca6fe1ed74,
+      type: 3}
+    m_Key: Poison
+  - m_Sound: {fileID: 5087174154848842170, guid: d61a76640a44140cfbee8c8b614c346a,
+      type: 3}
+    m_Key: Sleep
