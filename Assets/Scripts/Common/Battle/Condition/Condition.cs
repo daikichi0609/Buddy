@@ -8,6 +8,13 @@ using System;
 public interface ICondition
 {
     /// <summary>
+    /// エフェクト登録
+    /// </summary>
+    /// <param name="effectHolder"></param>
+    /// <param name="soundHolder"></param>
+    void Register(IEffectHolder effectHolder, ISoundHolder soundHolder);
+
+    /// <summary>
     /// 開始時
     /// </summary>
     /// <param name="owner"></param>
@@ -41,13 +48,21 @@ public interface ICondition
 
 public abstract class Condition : ICondition
 {
-    public Condition(int remainingTurn) => m_RemainingTurn = remainingTurn;
+    public Condition(int remainingTurn)
+    {
+        m_RemainingTurn = remainingTurn;
+    }
 
     /// <summary>
     /// 残り継続ターン
     /// </summary>
-    private int m_RemainingTurn;
+    protected int m_RemainingTurn;
     bool ICondition.IsFinish => m_RemainingTurn == 0;
+
+    /// <summary>
+    /// エフェクト
+    /// </summary>
+    protected IEffectHandler m_EffectHandler = new EffectHandler();
 
     /// <summary>
     /// 他バフとの共存が可能か
@@ -74,11 +89,34 @@ public abstract class Condition : ICondition
         }
     }
 
+    /// <summary>
+    /// エフェクト登録
+    /// </summary>
+    /// <param name="effectHolder"></param>
+    /// <param name="soundHolder"></param>
+    protected abstract void Register(IEffectHolder effectHolder, ISoundHolder soundHolder);
+    void ICondition.Register(IEffectHolder effectHolder, ISoundHolder soundHolder) => Register(effectHolder, soundHolder);
+
+    /// <summary>
+    /// Condition付与時
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <returns></returns>
     protected abstract Task OnStart(ICollector owner);
     async Task ICondition.OnStart(ICollector owner) => await OnStart(owner);
 
+    /// <summary>
+    /// Condition効果
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <returns></returns>
     protected abstract Task EffectInternal(ICollector owner);
 
+    /// <summary>
+    /// Condition終了時
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <returns></returns>
     protected abstract Task OnFinish(ICollector owner);
     async Task ICondition.OnFinish(ICollector owner) => await OnFinish(owner);
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UniRx;
+using Zenject;
 
 public interface ICharaCondition : IActorInterface
 {
@@ -28,6 +29,11 @@ public interface ICharaCondition : IActorInterface
 
 public class CharaCondition : ActorComponentBase, ICharaCondition
 {
+    [Inject]
+    private IEffectHolder m_EffectHolder;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+
     /// <summary>
     /// 現在かかっている状態異常まとめ
     /// </summary>
@@ -57,6 +63,7 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
             }
 
         m_CharaCondition.Add(condition);
+        condition.Register(m_EffectHolder, m_SoundHolder);
         await condition.OnStart(Owner);
     }
 

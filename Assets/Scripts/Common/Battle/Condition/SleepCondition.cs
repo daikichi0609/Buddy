@@ -9,8 +9,15 @@ public class SleepCondition : Condition
     protected override bool CanOverlapping => false;
 
     private static readonly Color32 ms_BarColor = new Color32(157, 204, 244, 255);
+    private static readonly string SLEEP = "Sleep";
 
     public SleepCondition(int remainingTurn) : base(remainingTurn) { }
+
+    protected override void Register(IEffectHolder effectHolder, ISoundHolder soundHolder)
+    {
+        if (effectHolder.TryGetEffect(SLEEP, out var effect) == true && soundHolder.TryGetSoundObject(SLEEP, out var sound) == true)
+            m_EffectHandler.RegisterEffect(effect, sound);
+    }
 
     protected override async Task OnStart(ICollector owner)
     {
@@ -49,7 +56,8 @@ public class SleepCondition : Condition
             m_OnFinish.Add(disposable);
         }
 
-        await Task.Delay(500);
+        var pos = owner.GetInterface<ICharaMove>().Position;
+        await m_EffectHandler.Play(pos);
     }
 
     protected override async Task EffectInternal(ICollector owner)

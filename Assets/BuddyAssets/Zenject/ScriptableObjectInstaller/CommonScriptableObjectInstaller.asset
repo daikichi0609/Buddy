@@ -19,4 +19,5 @@ MonoBehaviour:
   m_DungeonCharacterSaveData: {fileID: 11400000, guid: 3649a4c86320345c4b489e0f417f1b9f,
     type: 2}
   m_MasterData: {fileID: 11400000, guid: b5f921f56974c4d4389484cac827d904, type: 2}
+  m_EffectSetup: {fileID: 11400000, guid: 6b6c5e6e0b8a04b799fc10c7439030e8, type: 2}
   m_SoundSetup: {fileID: 11400000, guid: 5f40fc772c1a848f4a167a5a93409b49, type: 2}

@@ -43,7 +43,7 @@ public class EffectHandler : IEffectHandler
     {
 #if DEBUG
         if (m_ParentObject != null)
-            Debug.Log("既にParticleSystemが登録済みです。上書きします。");
+            Debug.LogWarning("既にParticleSystemが登録済みです。上書きします。");
 #endif
 
         m_ParentObject = effect;

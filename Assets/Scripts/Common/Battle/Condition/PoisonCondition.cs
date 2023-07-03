@@ -12,10 +12,15 @@ public class PoisonCondition : Condition
     private static readonly float POISON_DAMAGE_RATIO = 0.03f;
     public static readonly int POISON_DAMAGE_INTERVAL = 3;
     public static readonly int POISON_REMAINING_TURN = 30;
-
-    private int m_TurnCount;
+    private static readonly string POISON = "Poison";
 
     public PoisonCondition(int remainingTurn) : base(remainingTurn) { }
+
+    protected override void Register(IEffectHolder effectHolder, ISoundHolder soundHolder)
+    {
+        if (effectHolder.TryGetEffect(POISON, out var effect) == true && soundHolder.TryGetSoundObject(POISON, out var sound) == true)
+            m_EffectHandler.RegisterEffect(effect, sound);
+    }
 
     protected override async Task OnStart(ICollector owner)
     {
@@ -26,7 +31,8 @@ public class PoisonCondition : Condition
         var disposable = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(disposable);
 
-        await Task.Delay(500);
+        var pos = owner.GetInterface<ICharaMove>().Position;
+        await m_EffectHandler.Play(pos);
     }
 
     protected override async Task EffectInternal(ICollector owner)
@@ -34,7 +40,7 @@ public class PoisonCondition : Condition
         if (owner.RequireInterface<ICharaAutoRecovery>(out var recovery) == true)
             recovery.Reset();
 
-        if (++m_TurnCount % POISON_DAMAGE_INTERVAL == 0)
+        if (m_RemainingTurn % POISON_DAMAGE_INTERVAL == 0)
         {
             AttackPercentageInfo info = new AttackPercentageInfo(default, default, POISON_DAMAGE_RATIO, 100f, DIRECTION.NONE);
 

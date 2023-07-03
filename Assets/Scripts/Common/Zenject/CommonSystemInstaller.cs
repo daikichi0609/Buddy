@@ -53,5 +53,19 @@ public class CommonSystemInstaller : MonoInstaller
             .FromComponentOn(m_CommonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // エフェクト保持
+        Container.Bind(typeof(IEffectHolder), typeof(IInitializable))
+            .To<EffectHolder>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
+        // サウンド保持
+        Container.Bind(typeof(ISoundHolder), typeof(IInitializable))
+            .To<SoundHolder>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
     }
 }

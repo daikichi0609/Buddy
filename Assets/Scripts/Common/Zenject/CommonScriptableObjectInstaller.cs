@@ -43,7 +43,14 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
     private MasterDataHolder m_MasterData;
 
     /// <summary>
-    /// マスターデータ
+    /// エフェクトデータ
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private EffectSetup m_EffectSetup;
+
+    /// <summary>
+    /// サウンドデータ
     /// </summary>
     [SerializeField]
     [Expandable]
@@ -56,6 +63,7 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
         Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
         Container.BindInstance(m_DungeonCharacterSaveData).AsSingle();
         Container.BindInstance(m_MasterData.CharacterMasterSetup).AsSingle();
+        Container.BindInstance(m_EffectSetup).AsSingle();
         Container.BindInstance(m_SoundSetup).AsSingle();
     }
 }
