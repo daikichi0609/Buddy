@@ -35,7 +35,10 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
 
     [SerializeField]
     private ItemUseUi m_ItemUseUi = new ItemUseUi();
-    protected override IUiBase UiInterface => m_ItemUseUi;
+    protected override IUiBase CurrentUiInterface => m_ItemUseUi;
+
+    private Subject<int> m_OptionMethod = new Subject<int>();
+    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "どうする？";
 
@@ -45,7 +48,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     private ItemSetup m_ItemSetup;
     ItemSetup IItemUseUiManager.ItemSetup { get => m_ItemSetup; set => m_ItemSetup = value; }
 
-    protected override OptionElement CreateOptionElement()
+    protected override OptionElement[] CreateOptionElement()
     {
         int optionIndex = 0;
         List<string> strings = new List<string>();
@@ -95,6 +98,6 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         optionIndex++;
         strings.Add("やめる");
 
-        return new OptionElement(m_OptionMethod, strings.ToArray(), optionIndex);
+        return new OptionElement[] { new OptionElement(m_OptionMethod, strings.ToArray(), optionIndex) };
     }
 }

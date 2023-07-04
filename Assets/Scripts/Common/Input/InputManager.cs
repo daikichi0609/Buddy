@@ -28,6 +28,10 @@ public enum KeyCodeFlag
 
     // Ui決定
     Return = 1 << 9,
+
+    One = 1 << 10,
+    Two = 1 << 11,
+    Three = 1 << 12,
 }
 
 public readonly struct InputInfo
@@ -51,7 +55,7 @@ public interface IInputManager
     IObservable<InputInfo> InputEvent { get; }
     IObservable<InputInfo> InputStartEvent { get; }
 
-    IDisposable SetActiveUi(IUiBase ui);
+    IDisposable SetActiveUi(IUiManager ui);
     bool IsUiPopUp { get; }
 }
 
@@ -76,7 +80,7 @@ public class InputManager : MonoBehaviour, IInputManager
     /// <summary>
     /// 今表示中のUi
     /// </summary>
-    private IUiBase m_ActiveUi;
+    private IUiManager m_ActiveUi;
 
     /// <summary>
     /// UI表示中かどうか
@@ -88,7 +92,7 @@ public class InputManager : MonoBehaviour, IInputManager
     /// </summary>
     /// <param name="ui"></param>
     /// <returns></returns>
-    IDisposable IInputManager.SetActiveUi(IUiBase ui)
+    IDisposable IInputManager.SetActiveUi(IUiManager ui)
     {
         m_ActiveUi = ui;
         return Disposable.CreateWithState(this, self => self.m_ActiveUi = null);
@@ -147,6 +151,15 @@ public class InputManager : MonoBehaviour, IInputManager
         if (Input.GetKey(KeyCode.Return))
             flag |= KeyCodeFlag.Return;
 
+        if (Input.GetKey(KeyCode.Alpha1))
+            flag |= KeyCodeFlag.One;
+
+        if (Input.GetKey(KeyCode.Alpha2))
+            flag |= KeyCodeFlag.Two;
+
+        if (Input.GetKey(KeyCode.Alpha3))
+            flag |= KeyCodeFlag.Three;
+
         return flag;
     }
 
@@ -184,6 +197,15 @@ public class InputManager : MonoBehaviour, IInputManager
 
         if (Input.GetKeyDown(KeyCode.Return))
             flag |= KeyCodeFlag.Return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            flag |= KeyCodeFlag.One;
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            flag |= KeyCodeFlag.Two;
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            flag |= KeyCodeFlag.Three;
 
         return flag;
     }

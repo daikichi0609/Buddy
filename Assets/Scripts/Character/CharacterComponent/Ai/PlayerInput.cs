@@ -24,6 +24,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaMove m_CharaMove;
     private ICharaTurn m_CharaTurn;
     private ICharaLastActionHolder m_LastActionHolder;
+    private ICharaSkillHandler m_CharaSkill;
 
     protected override void Register(ICollector owner)
     {
@@ -39,6 +40,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_LastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
+        m_CharaSkill = Owner.GetInterface<ICharaSkillHandler>();
     }
 
     /// <summary>
@@ -87,18 +89,9 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (await DetectInputAttack(flag) == true)
             return true;
 
-        return false;
-    }
-
-    /// <summary>
-    /// 攻撃
-    /// </summary>
-    /// <param name="flag"></param>
-    /// <returns></returns>
-    private async Task<bool> DetectInputAttack(KeyCodeFlag flag)
-    {
-        if (flag.HasBitFlag(KeyCodeFlag.E))
-            return await m_CharaBattle.NormalAttack();
+        // 攻撃
+        if (await DetectInputSkill(flag) == true)
+            return true;
 
         return false;
     }
@@ -139,5 +132,37 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         }
 
         return await m_CharaMove.Move(dir);
+    }
+
+    /// <summary>
+    /// 攻撃
+    /// </summary>
+    /// <param name="flag"></param>
+    /// <returns></returns>
+    private async Task<bool> DetectInputAttack(KeyCodeFlag flag)
+    {
+        if (flag.HasBitFlag(KeyCodeFlag.E))
+            return await m_CharaBattle.NormalAttack();
+
+        return false;
+    }
+
+    /// <summary>
+    /// 攻撃
+    /// </summary>
+    /// <param name="flag"></param>
+    /// <returns></returns>
+    private async Task<bool> DetectInputSkill(KeyCodeFlag flag)
+    {
+        if (flag.HasBitFlag(KeyCodeFlag.One))
+            return await m_CharaSkill.Skill(1);
+
+        if (flag.HasBitFlag(KeyCodeFlag.Two))
+            return await m_CharaSkill.Skill(2);
+
+        if (flag.HasBitFlag(KeyCodeFlag.Three))
+            return await m_CharaSkill.Skill(3);
+
+        return false;
     }
 }

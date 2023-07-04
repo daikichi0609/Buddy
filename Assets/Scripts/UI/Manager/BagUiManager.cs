@@ -21,7 +21,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
         /// <summary>
         /// アイテムの要素数
         /// </summary>
-        public int ItemElementCount => m_Texts.Count;
+        public int ItemElementCount => m_Texts.Length;
     }
 
     [Inject]
@@ -31,11 +31,14 @@ public class BagUiManager : UiManagerBase, IBagUiManager
 
     [SerializeField]
     private BagUi m_BagUi = new BagUi();
-    protected override IUiBase UiInterface => m_BagUi;
+    protected override IUiBase CurrentUiInterface => m_BagUi;
+
+    private Subject<int> m_OptionMethod = new Subject<int>();
+    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "アイテムを選択する。";
 
-    protected override OptionElement CreateOptionElement()
+    protected override OptionElement[] CreateOptionElement()
     {
         var items = m_TeamInventory.Items; // 全てのアイテム
         int itemCount = items.Length; // アイテム数
@@ -66,7 +69,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
             index++;
         }
 
-        return new OptionElement(m_OptionMethod, names, methodCount);
+        return new OptionElement[] { new OptionElement(m_OptionMethod, names, methodCount) };
     }
 }
 

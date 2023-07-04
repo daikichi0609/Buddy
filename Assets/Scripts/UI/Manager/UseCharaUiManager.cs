@@ -28,12 +28,13 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     private IItemManager m_ItemManager;
     [Inject]
     private IDungeonHandler m_DungeonHandler;
-    [Inject]
-    private ISoundHolder m_SoundHolder;
 
     [SerializeField]
     private UseCharaUi m_ItemUseUi = new UseCharaUi();
-    protected override IUiBase UiInterface => m_ItemUseUi;
+    protected override IUiBase CurrentUiInterface => m_ItemUseUi;
+
+    private Subject<int> m_OptionMethod = new Subject<int>();
+    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "誰が？";
 
@@ -43,7 +44,7 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     private ItemSetup m_ItemSetup;
     ItemSetup IUseCharaUiManager.ItemSetup { get => m_ItemSetup; set => m_ItemSetup = value; }
 
-    protected override OptionElement CreateOptionElement()
+    protected override OptionElement[] CreateOptionElement()
     {
         List<string> strings = new List<string>();
 
@@ -61,6 +62,6 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
             strings.Add(status.CurrentStatus.OriginParam.GivenName);
         }
 
-        return new OptionElement(m_OptionMethod, strings.ToArray(), m_UnitHolder.FriendList.Count);
+        return new OptionElement[] { new OptionElement(m_OptionMethod, strings.ToArray(), m_UnitHolder.FriendList.Count) };
     }
 }

@@ -38,7 +38,10 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 
     [SerializeField]
     private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
-    protected override IUiBase UiInterface => m_Interface;
+    protected override IUiBase CurrentUiInterface => m_Interface;
+
+    private Subject<int> m_OptionMethod = new Subject<int>();
+    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "";
 
@@ -51,7 +54,7 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 
     private static readonly string[] OptionText = new string[2] { "はい", "いいえ" };
 
-    protected override OptionElement CreateOptionElement()
+    protected override OptionElement[] CreateOptionElement()
     {
         var s = m_Question switch
         {
@@ -74,7 +77,7 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
             m_Disposables.Add(disposable);
         }
 
-        return new OptionElement(m_OptionMethod, OptionText);
+        return new OptionElement[] { new OptionElement(m_OptionMethod, OptionText) };
     }
 }
 

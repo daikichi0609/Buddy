@@ -14,6 +14,7 @@ public class UnitInjector : Injector
         diContainer.InstantiateComponent<CharaInventory>(target);
         diContainer.InstantiateComponent<CharaLog>(target);
         diContainer.InstantiateComponent<CharaMove>(target);
+        diContainer.InstantiateComponent<CharaSkillHandler>(target);
         diContainer.InstantiateComponent<CharaSound>(target);
         diContainer.InstantiateComponent<CharaStatus>(target);
         diContainer.InstantiateComponent<CharaTurn>(target);

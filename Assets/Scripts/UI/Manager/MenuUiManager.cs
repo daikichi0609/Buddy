@@ -20,20 +20,27 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
     [Inject]
     private IBagUiManager m_BagUiManager;
+    [Inject]
+    private ICharaSkillUiManager m_SkillUiManager;
 
     [SerializeField]
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
-    protected override IUiBase UiInterface => m_UiInterface;
+    protected override IUiBase CurrentUiInterface => m_UiInterface;
+
+    private Subject<int> m_OptionMethod = new Subject<int>();
+    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "コマンドを選択する。";
 
-    protected override OptionElement CreateOptionElement()
+    protected override OptionElement[] CreateOptionElement()
     {
-        return new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" });
+        return new OptionElement[] { new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
     }
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         SubscribeMenuOpen();
 
         m_OptionMethod.SubscribeWithState(this, (index, self) =>
@@ -64,7 +71,11 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
         m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
         {
             if (self.m_InputManager.IsUiPopUp == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
+            {
                 self.Activate();
+                if (m_SoundHolder.TryGetSound(DECIDE, out var sound) == true)
+                    sound.Play();
+            }
         }).AddTo(this);
     }
 
@@ -74,8 +85,6 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private void OpenBag()
     {
         Deactivate();
-
-        // 新しくUiを開く
         m_BagUiManager.Activate(this);
     }
 
@@ -85,6 +94,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private void CheckSkill()
     {
         Deactivate();
+        m_SkillUiManager.Activate(this);
     }
 
     /// <summary>
@@ -93,6 +103,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private void CheckCleverness()
     {
         Deactivate();
+        m_SkillUiManager.Activate(this);
     }
 
     /// <summary>

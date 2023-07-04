@@ -44,6 +44,16 @@ public readonly struct OptionElement
 public interface IUiManager
 {
     /// <summary>
+    /// 親Ui
+    /// </summary>
+    IUiManager ParentUi { set; }
+
+    /// <summary>
+    /// 入力購読終わり
+    /// </summary>
+    CompositeDisposable Disposables { get; }
+
+    /// <summary>
     /// UI表示
     /// </summary>
     void Activate();
@@ -62,16 +72,6 @@ public interface IUiManager
     /// 親Ui含めUI非表示
     /// </summary>
     void DeactivateAll();
-
-    /// <summary>
-    /// 親Ui
-    /// </summary>
-    IUiManager ParentUi { set; }
-
-    /// <summary>
-    /// 入力購読終わり
-    /// </summary>
-    CompositeDisposable Disposables { get; }
 }
 
 /// <summary>
@@ -85,11 +85,18 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected ITurnManager m_TurnManager;
     [Inject]
     protected IBattleLogManager m_BattleLogManager;
+    [Inject]
+    protected ISoundHolder m_SoundHolder;
+
+    protected static readonly string DECIDE = "UiDecide";
+    private static readonly string MOVE = "UiMove";
+    private static readonly string QUIT = "UiQuit";
 
     /// <summary>
     /// Ui操作インターフェイス
     /// </summary>
-    protected abstract IUiBase UiInterface { get; }
+    protected abstract IUiBase CurrentUiInterface { get; }
+    protected ReactiveProperty<int> m_Depth = new ReactiveProperty<int>();
 
     /// <summary>
     /// 説明文
@@ -99,12 +106,24 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// 選択肢の購読と選択肢
     /// </summary>
-    protected abstract OptionElement CreateOptionElement();
+    protected abstract OptionElement[] CreateOptionElement();
 
     /// <summary>
     /// 選択肢メソッド
     /// </summary>
-    protected Subject<int> m_OptionMethod = new Subject<int>();
+    protected abstract Subject<int> CurrentOptionSubject { get; }
+
+    /// <summary>
+    /// 選択肢Idの変動
+    /// </summary>
+    private Subject<int> m_OnOptionIdChange = new Subject<int>();
+    protected IObservable<int> OnOptionIdChange => m_OnOptionIdChange;
+
+    /// <summary>
+    /// 親Ui
+    /// </summary>
+    private IUiManager m_ParentUi;
+    IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
 
     /// <summary>
     /// Deactive時
@@ -112,11 +131,14 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected CompositeDisposable m_Disposables = new CompositeDisposable();
     CompositeDisposable IUiManager.Disposables => m_Disposables;
 
-    /// <summary>
-    /// 親Ui
-    /// </summary>
-    private IUiManager m_ParentUi;
-    IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
+    protected virtual void Awake()
+    {
+        m_OnOptionIdChange.SubscribeWithState(this, (_, self) =>
+        {
+            if (self.m_SoundHolder.TryGetSound(MOVE, out var sound) == true)
+                sound.Play();
+        }).AddTo(this);
+    }
 
     /// <summary>
     /// 入力受付
@@ -130,28 +152,39 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         // Qで閉じる
         if (flag.HasBitFlag(KeyCodeFlag.Q))
         {
-            Deactivate();
+            if (m_Depth.Value > 0)
+                m_Depth.Value--;
+            else
+                Deactivate();
+
+            if (m_SoundHolder.TryGetSound(QUIT, out var sound) == true)
+                sound.Play();
             return;
         }
 
         //決定ボタン 該当メソッド実行
         if (flag.HasBitFlag(KeyCodeFlag.Return))
         {
-            UiInterface.InvokeOptionMethod();
+            CurrentUiInterface.InvokeOptionMethod();
+
+            if (m_SoundHolder.TryGetSound(DECIDE, out var sound) == true)
+                sound.Play();
             return;
         }
 
         //上にカーソル移動
         if (flag.HasBitFlag(KeyCodeFlag.W))
         {
-            UiInterface.AddOptionId(-1);
+            var id = CurrentUiInterface.AddOptionId(-1);
+            m_OnOptionIdChange.OnNext(id);
             return;
         }
 
         //下にカーソル移動
         if (flag.HasBitFlag(KeyCodeFlag.S))
         {
-            UiInterface.AddOptionId(1);
+            var id = CurrentUiInterface.AddOptionId(1);
+            m_OnOptionIdChange.OnNext(id);
             return;
         }
     }
@@ -172,14 +205,10 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         var input = m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) => self.DetectInput(input.KeyCodeFlag));
         m_Disposables.Add(input);
 
-        var closeUi = m_InputManager.SetActiveUi(this.UiInterface);
+        var closeUi = m_InputManager.SetActiveUi(this);
         m_Disposables.Add(closeUi); // 閉じるとき
 
-        // 初期化
-        var option = CreateOptionElement();
-        UiInterface.Initialize(m_Disposables, option);
-
-        UiInterface.SetActive(true); // 表示
+        InitializeUi(); // Uiの初期化
 
         // バトルログで説明
         if (FixLogText != string.Empty)
@@ -197,8 +226,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// </summary>
     protected void Deactivate(bool openParent = true)
     {
-        // Ui非表示
-        UiInterface.SetActive(false);
+        FinalizeUi();
 
         // 入力購読終わり
         m_Disposables.Clear();
@@ -225,4 +253,27 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         Deactivate(false);
     }
     void IUiManager.DeactivateAll() => DeactivateAll();
+
+    /// <summary>
+    /// Uiの初期化
+    /// 操作するUiが一つの場合
+    /// </summary>
+    protected virtual void InitializeUi()
+    {
+        // 初期化
+        var option = CreateOptionElement();
+
+        CurrentUiInterface.Initialize(m_Disposables, option[0]);
+        CurrentUiInterface.SetActive(true); // 表示
+    }
+
+    /// <summary>
+    /// Uiの終了時
+    /// 操作するUiが一つの場合
+    /// </summary>
+    protected virtual void FinalizeUi()
+    {
+        // Ui非表示
+        CurrentUiInterface.SetActive(false);
+    }
 }

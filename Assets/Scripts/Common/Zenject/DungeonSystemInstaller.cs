@@ -225,5 +225,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // キャラスキル確認Ui
+        Container.Bind<ICharaSkillUiManager>()
+            .To<CharaSkillUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

@@ -512,6 +512,7 @@ GameObject:
   - component: {fileID: 6708228895649888748}
   - component: {fileID: 4725086640029721936}
   - component: {fileID: 2019420444800351006}
+  - component: {fileID: 1139521562512237598}
   m_Layer: 0
   m_Name: RAGON
   m_TagString: Untagged
@@ -580,8 +581,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aff126964a14e8ca0e8b985a578c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AnimationState:
-    value: 0
   m_CharaAnimator: {fileID: 6708228895649888748}
 --- !u!114 &2019420444800351006
 MonoBehaviour:
@@ -598,6 +597,18 @@ MonoBehaviour:
   m_CharaObject: {fileID: 6708228895657210888}
   m_MoveObject: {fileID: 6708228895657210888}
   m_MeshRenderer: {fileID: 6708228895654054326}
+--- !u!114 &1139521562512237598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6708228895657210888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c383c6755abb4f62a452ff074a5616d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6708228895657213584
 GameObject:
   m_ObjectHideFlags: 0

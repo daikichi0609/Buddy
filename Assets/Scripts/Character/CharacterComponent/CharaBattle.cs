@@ -133,8 +133,8 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     public static readonly float ms_NormalAttackHitTime = 0.4f;
     public static readonly float ms_DamageTotalTime = 0.5f;
 
-    private static readonly float HIT_PROB = 0.95f;
-    private static readonly float CRITICAL_PROB = 0.05f;
+    public static readonly float HIT_PROB = 0.95f;
+    public static readonly float CRITICAL_PROB = 0.05f;
 
     protected override void Register(ICollector owner)
     {

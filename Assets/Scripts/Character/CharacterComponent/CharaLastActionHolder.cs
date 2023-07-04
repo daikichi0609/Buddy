@@ -16,6 +16,7 @@ public enum CHARA_ACTION
     MOVE,
     WAIT,
     ITEM_USE,
+    SKILL,
 }
 
 public interface ICharaLastActionHolder : IActorInterface

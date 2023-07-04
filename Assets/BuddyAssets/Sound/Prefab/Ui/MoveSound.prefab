@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5087174154848842169}
   - component: {fileID: 5087174154848842168}
   m_Layer: 0
-  m_Name: SleepSound
+  m_Name: MoveSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 0ca6e47792971442ea12a660c071728a, type: 3}
+  m_audioClip: {fileID: 8300000, guid: b21582b917ec34719a6c58ee4e6a963c, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

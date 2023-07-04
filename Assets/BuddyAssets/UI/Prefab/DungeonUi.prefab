@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -350, y: 400}
+  m_AnchoredPosition: {x: -350, y: 380}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6448765885798446976
@@ -117,7 +117,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -150, y: 400}
+  m_AnchoredPosition: {x: -150, y: 380}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7657574442024336404
@@ -397,7 +397,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6587\u7AE0"
+  m_Text: 
 --- !u!1 &935763247171617444
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,7 +433,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0.8, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2235,6 +2235,7 @@ GameObject:
   - component: {fileID: 8834388007192585418}
   - component: {fileID: 2597828620121566292}
   - component: {fileID: 5430287450459124184}
+  - component: {fileID: 160309425034668826}
   m_Layer: 0
   m_Name: DungeonUi
   m_TagString: Untagged
@@ -2442,6 +2443,30 @@ MonoBehaviour:
     - {fileID: 6349329629219628403}
     - {fileID: 3803391344684145273}
     - {fileID: 8315551059171484821}
+--- !u!114 &160309425034668826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862151906042642185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c7c9aa95cfc4d67ac253ec34bbeb77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DescriptionText: {fileID: 4956610447393922130}
+  m_SkillUi:
+  - m_Ui: {fileID: 2988092225770204629}
+    m_Texts:
+    - {fileID: 7560144248142920157}
+    - {fileID: 7120862294849583404}
+  - m_Ui: {fileID: 2988092225770204629}
+    m_Texts:
+    - {fileID: 9060904691457742386}
+    - {fileID: 466696816700606591}
+    - {fileID: 653256565452814221}
+    - {fileID: 1722129041600633377}
 --- !u!1 &1862151906064468696
 GameObject:
   m_ObjectHideFlags: 0
@@ -3763,7 +3788,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u304B\u3044\u3066\u3093\u304E\u308A"
+  m_Text: ------
 --- !u!1 &4252888329936139438
 GameObject:
   m_ObjectHideFlags: 0
@@ -4247,7 +4272,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u308C\u3093\u305E\u304F\u304E\u308A"
+  m_Text: ------
 --- !u!1 &7796679380821507022
 GameObject:
   m_ObjectHideFlags: 0
@@ -4407,7 +4432,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Leader
+  m_Text: ------
 --- !u!1 &8362782949548751806
 GameObject:
   m_ObjectHideFlags: 0
@@ -4805,7 +4830,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Leader
+  m_Text: ------
 --- !u!1 &9169635330907860933
 GameObject:
   m_ObjectHideFlags: 0

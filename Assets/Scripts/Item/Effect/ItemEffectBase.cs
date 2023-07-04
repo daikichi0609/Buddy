@@ -145,43 +145,13 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         var status = ctx.Owner.GetInterface<ICharaStatus>();
         ctx.BattleLogManager.Log(status.CurrentStatus.OriginParam.GivenName + "は" + ctx.ItemSetup.ItemName + "を投げた！");
 
-        // 飛ばす方向
         var move = ctx.Owner.GetInterface<ICharaMove>();
-        var dir = move.Direction;
-        var dirV3 = dir.ToV3Int();
-        var currentPos = move.Position;
+        var pos = move.Position;
+        var dirV3 = move.Direction.ToV3Int();
+        var targetType = ctx.Owner.GetInterface<ICharaTypeHolder>().TargetType; // ターゲットタイプ
 
-        // ターゲットタイプ
-        var targetType = ctx.Owner.GetInterface<ICharaTypeHolder>().TargetType;
-        // ヒットしたキャラ
-        ICollector target = null;
-        bool isHit = false;
-
-        int flyDistance;
-
-        for (flyDistance = 1; flyDistance <= distance; flyDistance++)
-        {
-            // 攻撃マス
-            var targetPos = currentPos + dirV3 * flyDistance;
-
-            // 攻撃対象ユニットが存在するか調べる
-            if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(targetPos, out target, targetType) == true)
-            {
-                isHit = true;
-                break;
-            }
-
-            // 地形チェック
-            var terrain = ctx.DungeonHandler.GetCellId(targetPos);
-            // 壁だったら走査終了
-            if (terrain == TERRAIN_ID.WALL)
-            {
-                flyDistance--; // 手前に落ちる
-                break;
-            }
-        }
-
-        await ctx.ItemManager.FlyItem(ctx.ItemSetup, currentPos, dirV3 * flyDistance, !isHit);
+        var isHit = Utility.TryGetForwardUnit(pos, dirV3, THROW_DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance);
+        await ctx.ItemManager.FlyItem(ctx.ItemSetup, pos, dirV3 * flyDistance, !isHit);
         return target;
     }
 

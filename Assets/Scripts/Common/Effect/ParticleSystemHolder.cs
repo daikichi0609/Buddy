@@ -25,7 +25,7 @@ public class ParticleSystemHolder : MonoBehaviour
         {
             self.m_IsPlaying = false;
             foreach (var particle in self.m_ParticleSystems)
-                particle.Play();
+                particle.Stop();
         });
     }
 }

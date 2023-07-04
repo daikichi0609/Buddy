@@ -10,6 +10,32 @@ public static class Utility
         var index = UnityEngine.Random.Range(0, list.Count);
         return list[index];
     }
+
+    public static bool TryGetForwardUnit(Vector3Int pos, Vector3Int dir, int distance, CHARA_TYPE target, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, out ICollector hit, out int flyDistance)
+    {
+        hit = null; // ヒットしたキャラ
+
+        for (flyDistance = 1; flyDistance <= distance; flyDistance++)
+        {
+            // 攻撃マス
+            var targetPos = pos + dir * flyDistance;
+
+            // 攻撃対象ユニットが存在するか調べる
+            if (unitFinder.TryGetSpecifiedPositionUnit(targetPos, out hit, target) == true)
+                break;
+
+            // 地形チェック
+            var terrain = dungeonHandler.GetCellId(targetPos);
+            // 壁だったら走査終了
+            if (terrain == TERRAIN_ID.WALL)
+            {
+                flyDistance--; // 手前まで飛ぶ
+                break;
+            }
+        }
+
+        return hit != null;
+    }
 }
 
 public static class Coroutine

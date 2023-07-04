@@ -15,7 +15,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
     [Inject]
     private ISoundHolder m_SoundHolder;
 
-    private static readonly string ATTACK_SOUND = "Attack";
+    public static readonly string ATTACK_SOUND = "Attack";
     private static readonly string DAMAGE_SOUND = "Damage";
     private static readonly string MISS_SOUND = "Miss";
 

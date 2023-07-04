@@ -49,3 +49,12 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: d61a76640a44140cfbee8c8b614c346a,
       type: 3}
     m_Key: Sleep
+  - m_Sound: {fileID: 5087174154848842170, guid: 1eaabd6becc4646a8b166b980a2f2d69,
+      type: 3}
+    m_Key: UiDecide
+  - m_Sound: {fileID: 5087174154848842170, guid: cd206e121e6b749f6bb6579d72d923fa,
+      type: 3}
+    m_Key: UiMove
+  - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
+      type: 3}
+    m_Key: UiQuit
