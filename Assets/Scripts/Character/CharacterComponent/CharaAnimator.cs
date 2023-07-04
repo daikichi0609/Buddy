@@ -32,6 +32,11 @@ public enum ANIMATION_TYPE
     /// 眠り
     /// </summary>
     SLEEP,
+
+    /// <summary>
+    /// スキル
+    /// </summary>
+    SKILL,
 }
 
 public interface ICharaAnimator : IActorInterface
@@ -107,6 +112,7 @@ public class CharaAnimator : ActorComponentBase, ICharaAnimator
             ANIMATION_TYPE.ATTACK => "IsAttacking",
             ANIMATION_TYPE.DAMAGE => "IsDamaging",
             ANIMATION_TYPE.SLEEP => "IsSleeping",
+            ANIMATION_TYPE.SKILL => "UsingSkill",
             _ => "",
         };
 

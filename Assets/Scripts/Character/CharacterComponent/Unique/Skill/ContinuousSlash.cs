@@ -30,14 +30,11 @@ public class ContinuousSlash : Skill
 
         while (attackCount > 0)
         {
-            var anim = ctx.Owner.GetInterface<ICharaAnimator>();
-            var animWait = anim.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime);
-
-            var wait = Task.Delay((int)(CharaBattle.ms_NormalAttackHitTime * 1000));
-            await Task.WhenAll(animWait, wait);
-
             if (ctx.SoundHolder.TryGetSound(CharaSound.ATTACK_SOUND, out var sound) == true)
                 sound.Play();
+
+            var anim = ctx.Owner.GetInterface<ICharaAnimator>();
+            await anim.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime);
 
             // 角抜け確認
             if (ctx.DungeonHandler.CanMove(move.Position, move.Direction) == false ||

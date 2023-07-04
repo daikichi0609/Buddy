@@ -28,4 +28,10 @@ public class ParticleSystemHolder : MonoBehaviour
                 particle.Stop();
         });
     }
+
+    public IDisposable Play(ICollector unit)
+    {
+        var objectHolder = unit.GetInterface<ICharaObjectHolder>();
+        return Play(objectHolder.CharaObject.transform.position);
+    }
 }

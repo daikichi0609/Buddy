@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 public class VaccumSlash : Skill
@@ -9,8 +10,10 @@ public class VaccumSlash : Skill
     private static readonly float ATK_MAG = 1.5f;
     private static readonly int DISTANCE = 10;
 
+    private static readonly string VACCUM_SLASH = "VaccumSlash";
+
     /// <summary>
-    /// 周囲攻撃
+    /// 遠距離攻撃
     /// </summary>
     /// <returns></returns>
     /// <exception cref="System.NotImplementedException"></exception>
@@ -25,14 +28,17 @@ public class VaccumSlash : Skill
         var status = ctx.Owner.GetInterface<ICharaStatus>().CurrentStatus;
         ctx.BattleLogManager.Log(status.OriginParam.GivenName + "は" + Name + "を使った！");
 
-        var anim = ctx.Owner.GetInterface<ICharaAnimator>();
-        var animWait = anim.PlayAnimation(ANIMATION_TYPE.ATTACK, CharaBattle.ms_NormalAttackTotalTime);
-
-        var wait = Task.Delay((int)(CharaBattle.ms_NormalAttackHitTime * 1000));
-        await Task.WhenAll(animWait, wait);
-
-        if (ctx.SoundHolder.TryGetSound(CharaSound.ATTACK_SOUND, out var sound) == true)
+        if (ctx.SoundHolder.TryGetSound(VACCUM_SLASH, out var sound) == true)
             sound.Play();
+
+        IDisposable disposable = null;
+        if (ctx.EffectHolder.TryGetEffect(VACCUM_SLASH, out var effect) == true)
+            disposable = effect.Play(ctx.Owner);
+
+        var anim = ctx.Owner.GetInterface<ICharaAnimator>();
+        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, CharaBattle.ms_NormalAttackTotalTime);
+
+        disposable?.Dispose();
 
         if (Utility.TryGetForwardUnit(pos, dirV3, DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance) == true)
         {

@@ -13,12 +13,24 @@ MonoBehaviour:
   m_Name: EffectSetup
   m_EditorClassIdentifier: 
   m_EffectPacks:
+  - m_Effect: {fileID: 6465702491425445387, guid: dd9052ecb111d48418fba4ae049f8026,
+      type: 3}
+    m_Key: LevelUp
+  - m_Effect: {fileID: 2719147716907671266, guid: 76a1651cf2bd2473b90b8bd304ff4ee1,
+      type: 3}
+    m_Key: Damage
   - m_Effect: {fileID: 4144994383060866251, guid: 97d4e752ed99248619f1783a8cfc4c03,
       type: 3}
     m_Key: Poison
   - m_Effect: {fileID: 4144994383060866251, guid: 5f8d1d72420de4072b0a219af8f84baa,
       type: 3}
     m_Key: Sleep
-  - m_Effect: {fileID: 6465702491425445387, guid: dd9052ecb111d48418fba4ae049f8026,
+  - m_Effect: {fileID: 6703862223934966215, guid: 467928d518d1e429681bf53009c6a290,
       type: 3}
-    m_Key: LevelUp
+    m_Key: SpinningSlash
+  - m_Effect: {fileID: 6726034346824606501, guid: 1b1357634d59e495db886cfc3622f2ac,
+      type: 3}
+    m_Key: VaccumSlash
+  - m_Effect: {fileID: 8258253318684563254, guid: 32d1728b88b2f406a8689a0d3f24bb14,
+      type: 3}
+    m_Key: RagonSpear
