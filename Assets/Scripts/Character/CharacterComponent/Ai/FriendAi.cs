@@ -81,12 +81,12 @@ public partial class FriendAi : CharaAi, IFriendAi
                         m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
                         myId == playerId)
                     {
-                        m_CharaMove.Face(dir);
+                        await m_CharaMove.Face(dir);
                         result = m_CharaMove.Wait();
                     }
                     else if (dir.IsDiagonal() == false)
                     {
-                        m_CharaMove.Face(dir);
+                        await m_CharaMove.Face(dir);
                         result = m_CharaMove.Wait();
                     }
                     else

@@ -5,12 +5,26 @@ using UniRx;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Zenject;
+using System;
 
 public interface ICharaObjectHolder : IActorInterface
 {
+    /// <summary>
+    /// 移動させるGameObject
+    /// </summary>
     GameObject MoveObject { get; }
 
+    /// <summary>
+    /// キャラクターオブジェクト
+    /// </summary>
     GameObject CharaObject { get; }
+
+    /// <summary>
+    /// 親子関係構築
+    /// </summary>
+    /// <param name="follow"></param>
+    /// <returns></returns>
+    IDisposable Follow(GameObject follow);
 }
 
 public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
@@ -84,5 +98,16 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
         m_MeshRenderer.material.DOColor(RED_COLOR, FLASH_SPEED);
         await Task.Delay(100);
         m_MeshRenderer.material.DOColor(DEFAULT_COLOR, FLASH_SPEED);
+    }
+
+    /// <summary>
+    /// 追従させる
+    /// </summary>
+    /// <param name="follow"></param>
+    /// <returns></returns>
+    IDisposable ICharaObjectHolder.Follow(GameObject follow)
+    {
+        follow.transform.parent = m_MoveObject.gameObject.transform;
+        return Disposable.CreateWithState(follow, follow => follow.transform.parent = null);
     }
 }

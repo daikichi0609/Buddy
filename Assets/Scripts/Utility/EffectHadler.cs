@@ -9,8 +9,14 @@ public interface IEffectHandler : IDisposable
     /// <summary>
     /// エフェクトセット
     /// </summary>
-    /// <param name="effect"></param>
-    void RegisterEffect(GameObject effect, GameObject sound);
+    /// <param name="gameObject"></param>
+    void RegisterEffect(GameObject gameObject, GameObject sound);
+
+    /// <summary>
+    /// エフェクトセット
+    /// </summary>
+    /// <param name="holder"></param>
+    void RegisterEffect(ParticleSystemHolder holder, GameObject sound);
 
     /// <summary>
     /// エフェクト再生
@@ -26,7 +32,6 @@ public class EffectHandler : IEffectHandler
     /// <summary>
     /// エフェクトプレハブ
     /// </summary>
-    private GameObject m_ParentObject;
     private ParticleSystemHolder m_ParticleSystemHolder;
 
     /// <summary>
@@ -37,19 +42,22 @@ public class EffectHandler : IEffectHandler
     /// <summary>
     /// エフェクトセット
     /// </summary>
-    /// <param name="effect"></param>
+    /// <param name="holder"></param>
     /// <param name="pos"></param>
-    void IEffectHandler.RegisterEffect(GameObject effect, GameObject sound)
+    private void RegisterEffect(ParticleSystemHolder holder, GameObject sound)
     {
 #if DEBUG
-        if (m_ParentObject != null)
+        if (m_ParticleSystemHolder != null)
             Debug.LogWarning("既にParticleSystemが登録済みです。上書きします。");
+        if (m_AudioSource != null)
+            Debug.LogWarning("既にAudioSourceが登録済みです。上書きします。");
 #endif
 
-        m_ParentObject = effect;
-        m_ParticleSystemHolder = m_ParentObject.GetComponent<ParticleSystemHolder>();
+        m_ParticleSystemHolder = holder;
         m_AudioSource = sound.GetComponent<AudioSource>();
     }
+    void IEffectHandler.RegisterEffect(ParticleSystemHolder holder, GameObject sound) => RegisterEffect(holder, sound);
+    void IEffectHandler.RegisterEffect(GameObject gameObject, GameObject sound) => RegisterEffect(gameObject.GetComponent<ParticleSystemHolder>(), sound);
 
     /// <summary>
     /// エフェクト再生
@@ -65,21 +73,14 @@ public class EffectHandler : IEffectHandler
 
     private async Task PlayInternal(Vector3 pos, float time)
     {
-        m_ParentObject.transform.position = pos;
-
-        foreach (var effect in m_ParticleSystemHolder.ParticleSystems)
-            effect.Play();
-
+        var stop = m_ParticleSystemHolder.Play(pos);
         await Task.Delay((int)(time * 1000));
-
-        foreach (var effect in m_ParticleSystemHolder.ParticleSystems)
-            effect.Stop();
+        stop.Dispose();
     }
 
     void IDisposable.Dispose()
     {
-        MonoBehaviour.Destroy(m_ParentObject);
-        m_ParticleSystemHolder = null;
+        MonoBehaviour.Destroy(m_ParticleSystemHolder.gameObject);
         MonoBehaviour.Destroy(m_AudioSource.gameObject);
     }
 }

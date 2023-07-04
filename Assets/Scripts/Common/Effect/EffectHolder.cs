@@ -4,7 +4,8 @@ using Zenject;
 
 public interface IEffectHolder
 {
-    bool TryGetEffect(string key, out GameObject gameObject);
+    bool TryGetEffectObject(string key, out GameObject gameObject);
+    bool TryGetEffect(string key, out ParticleSystemHolder holder);
 }
 
 public class EffectHolder : IEffectHolder, IInitializable
@@ -12,7 +13,7 @@ public class EffectHolder : IEffectHolder, IInitializable
     [Inject]
     private EffectSetup m_EffectSetup;
 
-    private Dictionary<string, GameObject> m_KeySoundPairs = new Dictionary<string, GameObject>();
+    private Dictionary<string, List<GameObject>> m_KeySoundPairs = new Dictionary<string, List<GameObject>>();
 
     /// <summary>
     /// インスタンス生成
@@ -21,10 +22,52 @@ public class EffectHolder : IEffectHolder, IInitializable
     {
         foreach (var pack in m_EffectSetup.EffectPacks)
         {
-            var sound = MonoBehaviour.Instantiate(pack.Effect);
-            m_KeySoundPairs.Add(pack.Key, sound);
+            var effect = MonoBehaviour.Instantiate(pack.Effect);
+            var list = new List<GameObject>();
+            list.Add(effect);
+            m_KeySoundPairs.Add(pack.Key, list);
         }
     }
 
-    bool IEffectHolder.TryGetEffect(string key, out GameObject gameObject) => m_KeySoundPairs.TryGetValue(key, out gameObject);
+    private bool TryGetEffect(string key, out GameObject gameObject)
+    {
+        gameObject = null;
+        if (m_KeySoundPairs.TryGetValue(key, out var list) == true)
+        {
+            foreach (var effect in list)
+            {
+                if (gameObject != null)
+                    break;
+
+                var holderSystems = effect.GetComponent<ParticleSystemHolder>();
+                if (holderSystems.IsPlaying == true)
+                    break;
+
+                gameObject = effect;
+            }
+
+            if (gameObject != null)
+                return true;
+            else
+            {
+                var newEffect = MonoBehaviour.Instantiate(list[0]);
+                list.Add(newEffect);
+                gameObject = newEffect;
+                return true;
+            }
+        }
+        else
+            return false;
+    }
+    bool IEffectHolder.TryGetEffectObject(string key, out GameObject gameObject) => TryGetEffect(key, out gameObject);
+    bool IEffectHolder.TryGetEffect(string key, out ParticleSystemHolder holder)
+    {
+        if (TryGetEffect(key, out var gameObject) == true)
+        {
+            holder = gameObject.GetComponent<ParticleSystemHolder>();
+            return holder != null;
+        }
+        holder = null;
+        return false;
+    }
 }

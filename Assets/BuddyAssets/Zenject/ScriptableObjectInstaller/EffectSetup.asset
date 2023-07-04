@@ -19,3 +19,6 @@ MonoBehaviour:
   - m_Effect: {fileID: 4144994383060866251, guid: 5f8d1d72420de4072b0a219af8f84baa,
       type: 3}
     m_Key: Sleep
+  - m_Effect: {fileID: 6465702491425445387, guid: dd9052ecb111d48418fba4ae049f8026,
+      type: 3}
+    m_Key: LevelUp

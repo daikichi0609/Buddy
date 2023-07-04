@@ -134,7 +134,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         var dir = direction.ToDirEnum();
         if (onlyFace == true)
         {
-            m_CharaMove.Face(dir);
+            await m_CharaMove.Face(dir);
             return false; // ターン消費しない
         }
 

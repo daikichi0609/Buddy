@@ -73,9 +73,9 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
             if (tuple.optionIndex == index)
             {
                 var self = tuple.Item2;
+                self.DeactivateAll();
                 self.m_ItemSetup.Effect.ThrowStraight(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
                     self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
-                self.DeactivateAll();
             }
         });
         m_Disposables.Add(throwStraight);

@@ -7,7 +7,8 @@ public class PoisonTrap : TrapEffectBase
 {
     protected override async Task EffectInternal(TrapEffectContext ctx)
     {
-        await ctx.EffectHandler.Play(ctx.EffectPos);
+        await ctx.EffectHandler.Play(ctx.EffectPos, 0.5f);
+        await Task.Delay(100);
 
         // 毒状態にする
         var condition = ctx.Owner.GetInterface<ICharaCondition>();

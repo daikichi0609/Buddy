@@ -10,6 +10,7 @@ public class UnitInjector : Injector
         diContainer.InstantiateComponent<CharaBattle>(target);
         diContainer.InstantiateComponent<CharaCellEventChecker>(target);
         diContainer.InstantiateComponent<CharaCondition>(target);
+        diContainer.InstantiateComponent<CharaEffect>(target);
         diContainer.InstantiateComponent<CharaInventory>(target);
         diContainer.InstantiateComponent<CharaLog>(target);
         diContainer.InstantiateComponent<CharaMove>(target);

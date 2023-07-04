@@ -27,7 +27,10 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
     protected override string FixLogText => "コマンドを選択する。";
 
-    protected override OptionElement CreateOptionElement() => new OptionElement(m_OptionMethod, new string[2] { "バッグ", "ステータス" });
+    protected override OptionElement CreateOptionElement()
+    {
+        return new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" });
+    }
 
     protected void Awake()
     {
@@ -35,10 +38,21 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
         m_OptionMethod.SubscribeWithState(this, (index, self) =>
         {
+            // バッグを開く
             if (index == 0)
                 self.OpenBag();
+            // スキル確認
             else if (index == 1)
-                self.CheckStatus();
+                self.CheckSkill();
+            // 賢さ確認
+            else if (index == 2)
+                self.CheckCleverness();
+            // 作戦
+            else if (index == 3)
+                self.CheckStrategy();
+            // 閉じる
+            else
+                self.Deactivate();
         }).AddTo(this);
     }
 
@@ -66,9 +80,25 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     }
 
     /// <summary>
-    /// ステータスの確認
+    /// スキル確認
     /// </summary>
-    private void CheckStatus()
+    private void CheckSkill()
+    {
+        Deactivate();
+    }
+
+    /// <summary>
+    /// 賢さ確認
+    /// </summary>
+    private void CheckCleverness()
+    {
+        Deactivate();
+    }
+
+    /// <summary>
+    /// スキル確認
+    /// </summary>
+    private void CheckStrategy()
     {
         Deactivate();
     }

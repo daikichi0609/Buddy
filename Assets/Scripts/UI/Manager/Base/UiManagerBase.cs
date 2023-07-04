@@ -187,6 +187,8 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
             var log = m_BattleLogManager.FixLogForUi(FixLogText);
             m_Disposables.Add(log);
         }
+        else
+            m_BattleLogManager.Deactive();
     }
     void IUiManager.Activate() => Activate();
 

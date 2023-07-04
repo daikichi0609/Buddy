@@ -49,9 +49,9 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
 
         var use = m_OptionMethod.SubscribeWithState(this, (index, self) =>
         {
+            self.DeactivateAll();
             self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.FriendList[index], self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
                 self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
-            self.DeactivateAll();
         });
         m_Disposables.Add(use);
 

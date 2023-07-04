@@ -31,7 +31,7 @@ public class PoisonCondition : Condition
         var disposable = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(disposable);
 
-        var pos = owner.GetInterface<ICharaMove>().Position;
+        var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
         await m_EffectHandler.Play(pos, 0.5f);
     }
 
@@ -46,8 +46,9 @@ public class PoisonCondition : Condition
 
             var turn = owner.GetInterface<ICharaTurn>();
             await turn.WaitFinishActing();
+            var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
+            await m_EffectHandler.Play(pos, 0.5f);
             await owner.GetInterface<ICharaBattle>().DamagePercentage(info);
-            await Task.Delay(100);
         }
     }
 

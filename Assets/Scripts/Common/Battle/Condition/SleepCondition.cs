@@ -56,13 +56,14 @@ public class SleepCondition : Condition
             m_OnFinish.Add(disposable);
         }
 
-        var pos = owner.GetInterface<ICharaMove>().Position;
+        var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
         await m_EffectHandler.Play(pos, 0.5f);
     }
 
     protected override async Task EffectInternal(ICollector owner)
     {
-        await Task.Delay(500);
+        var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
+        await m_EffectHandler.Play(pos, 0.5f);
     }
 
     protected override async Task OnFinish(ICollector owner)

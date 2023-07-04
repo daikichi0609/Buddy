@@ -4,6 +4,7 @@ using UnityEngine;
 using Zenject;
 using UniRx;
 using System;
+using UnityEngine.Analytics;
 
 public interface ITeamLevelHandler
 {
@@ -56,7 +57,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     [Inject]
     private ISoundHolder m_SoundHolder;
 
-    private static readonly string LEVEL_UP_SOUND = "LevelUp";
+    private static readonly string LEVEL_UP = "LevelUp";
 
     /// <summary>
     /// 経験値テーブル
@@ -118,10 +119,13 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
                 self.m_LevelChanged.OnNext(diff); // レベル変動時
         });
 
-        // レベルアップテキスト
+        // レベルアップ演出
         m_LevelChanged.SubscribeWithState(this, (_, self) =>
         {
-            if (self.m_SoundHolder.TryGetSound(LEVEL_UP_SOUND, out var sound) == true)
+            foreach (var unit in self.m_UnitHolder.FriendList)
+                unit.GetInterface<ICharaEffect>().EffectFollow(LEVEL_UP);
+
+            if (m_SoundHolder.TryGetSound(LEVEL_UP, out var sound) == true)
                 sound.Play();
 
             var player = m_UnitHolder.Player;

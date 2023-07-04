@@ -204,7 +204,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return true;
         }
 
-        m_CharaMove.Face(direction); // 向く
+        await m_CharaMove.Face(direction); // 向く
         var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
@@ -276,7 +276,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         if (result.IsHit == false)
             return;
 
-        m_CharaMove.Face(attackDir.ToOppositeDir());
+        await m_CharaMove.Face(attackDir.ToOppositeDir());
 
         await DamageInternal(result);
     }

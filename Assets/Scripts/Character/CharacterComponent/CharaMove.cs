@@ -32,7 +32,7 @@ public interface ICharaMove : IActorInterface
     /// 向き直る
     /// </summary>
     /// <param name="direction"></param>
-    void Face(DIRECTION direction);
+    Task Face(DIRECTION direction);
 
     /// <summary>
     /// 移動
@@ -180,15 +180,30 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// 向きを変える
     /// </summary>
     /// <param name="direction"></param>
-    private void Face(DIRECTION direction)
+    private Task Face(DIRECTION direction)
     {
         if (direction == DIRECTION.NONE)
-            return;
+            return Task.CompletedTask;
 
         Direction = direction;
         CharaObject.transform.rotation = Quaternion.LookRotation(direction.ToV3Int());
+        return Task.CompletedTask;
     }
-    void ICharaMove.Face(DIRECTION direction) => Face(direction);
+    async Task ICharaMove.Face(DIRECTION direction)
+    {
+        // 移動失敗
+        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
+        {
+            await m_CharaTurn.WaitFinishActing();
+            ticket.OnFail(Owner);
+
+            var acting = m_CharaTurn.RegisterActing();
+            await Task.Delay(500);
+            acting.Dispose();
+            return;
+        }
+        await Face(direction);
+    }
 
     /// <summary>
     /// 移動
@@ -215,7 +230,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         }
 
         //向きを変える
-        Face(direction);
+        await Face(direction);
 
         //壁抜けはできない
         if (m_DungeonHandler.CanMove(Position, direction) == false)
