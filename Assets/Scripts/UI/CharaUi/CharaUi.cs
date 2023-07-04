@@ -27,6 +27,12 @@ public interface ICharaUi
     /// </summary>
     /// <returns></returns>
     IDisposable ChangeBarColor(Color32 color);
+
+    /// <summary>
+    /// 表示切り替え
+    /// </summary>
+    /// <param name="isActive"></param>
+    void SetActive(bool isActive);
 }
 
 public class CharaUi : MonoBehaviour, ICharaUi
@@ -36,6 +42,9 @@ public class CharaUi : MonoBehaviour, ICharaUi
     /// </summary>
     private ICharaStatus m_Target;
     bool ICharaUi.IsTarget(ICharaStatus target) => target == m_Target;
+
+    [SerializeField]
+    private GameObject m_CharaUi;
 
     [SerializeField]
     private Text m_CharaName;
@@ -104,4 +113,6 @@ public class CharaUi : MonoBehaviour, ICharaUi
         m_FillImage.color = color;
         return Disposable.CreateWithState(this, self => self.m_IsChangingColor = false);
     }
+
+    void ICharaUi.SetActive(bool isActive) => m_CharaUi.SetActive(isActive);
 }

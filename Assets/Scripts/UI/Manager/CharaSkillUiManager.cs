@@ -21,6 +21,8 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
 
     [Inject]
     private IUnitHolder m_UnitHolder;
+    [Inject]
+    private ICharaUiManager m_CharaUiManager;
 
     [SerializeField]
     private Text m_DescriptionText;
@@ -62,7 +64,10 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
             }
 
             if (depth.NewValue != 1)
-                m_DescriptionText.text = string.Empty;
+                self.m_DescriptionText.text = string.Empty;
+            else
+                self.ChangeDescriptionText(self.m_Unit, 0);
+
         }).AddTo(this);
 
         OnOptionIdChange.SubscribeWithState(this, (id, self) =>
@@ -77,11 +82,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
             }
 
             if (self.m_Depth.Value == 1)
-            {
-                var skillHandler = self.m_Unit.GetInterface<ICharaSkillHandler>();
-                if (skillHandler.TryGetSkill(id, out var skill) == true)
-                    self.m_DescriptionText.text = skill.Description;
-            }
+                self.ChangeDescriptionText(self.m_Unit, id);
         }).AddTo(this);
     }
 
@@ -127,6 +128,18 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     }
 
     /// <summary>
+    /// 説明文更新
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <param name="index"></param>
+    private void ChangeDescriptionText(ICollector unit, int index)
+    {
+        var skillHandler = unit.GetInterface<ICharaSkillHandler>();
+        if (skillHandler.TryGetSkill(index, out var skill) == true)
+            m_DescriptionText.text = skill.Description;
+    }
+
+    /// <summary>
     /// Uiの初期化
     /// </summary>
     protected override void InitializeUi()
@@ -143,6 +156,9 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
         }
 
         m_Unit = m_UnitHolder.FriendList[0];
+
+        var disposable = m_CharaUiManager.SetActive(false);
+        m_Disposables.Add(disposable);
     }
 
     /// <summary>

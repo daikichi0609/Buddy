@@ -4,9 +4,23 @@ using UnityEngine;
 using UniRx;
 using NaughtyAttributes;
 using Zenject;
+using System;
 
 public interface ICharaUiManager
 {
+    /// <summary>
+    /// 表示切り替え
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <returns></returns>
+    IDisposable SetActive(bool isActive);
+
+    /// <summary>
+    /// Ui取得
+    /// </summary>
+    /// <param name="status"></param>
+    /// <param name="ui"></param>
+    /// <returns></returns>
     bool TryGetCharaUi(ICharaStatus status, out ICharaUi ui);
 }
 
@@ -19,11 +33,25 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
     [Inject]
     private IUnitHolder m_UnitHolder;
 
+    private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
+
     /// <summary>
     /// キャンバス
     /// </summary>
     [SerializeField]
-    private GameObject m_Canvas;
+    private GameObject m_ParentObject;
+
+    IDisposable ICharaUiManager.SetActive(bool isActive)
+    {
+        foreach (var ui in m_CharacterUiList)
+            ui.SetActive(isActive);
+
+        return Disposable.CreateWithState((this, isActive), tuple =>
+        {
+            foreach (var ui in tuple.Item1.m_CharacterUiList)
+                ui.SetActive(!tuple.isActive);
+        });
+    }
 
     /// <summary>
     /// プレハブ
@@ -47,8 +75,6 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
         ui = null;
         return false;
     }
-
-    private static readonly Vector3 ms_Diff = new Vector3(0f, -210f, 0f);
 
     private void Awake()
     {
@@ -78,7 +104,7 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
         foreach (var unit in units)
         {
             GameObject obj = Instantiate(m_CharacterUiPrefab);
-            obj.transform.SetParent(m_Canvas.transform, false);
+            obj.transform.SetParent(m_ParentObject.transform, false);
             obj.transform.SetAsFirstSibling();
             ICharaUi ui = obj.GetComponent<CharaUi>();
             m_CharacterUiList.Add(ui);

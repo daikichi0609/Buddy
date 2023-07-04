@@ -32,8 +32,9 @@ public abstract class Skill : ISkill
     protected abstract string Name { get; }
     string ISkill.Name => Name;
 
+    protected string CT => "CT:" + CoolTime + "\n";
     protected abstract string Description { get; }
-    string ISkill.Description => Description;
+    string ISkill.Description => CT + Description;
 
     protected abstract int CoolTime { get; }
     int ISkill.CoolTime => CoolTime;
