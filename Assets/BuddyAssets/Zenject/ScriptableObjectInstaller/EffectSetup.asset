@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EffectSetup
   m_EditorClassIdentifier: 
   m_EffectPacks:
-  - m_Effect: {fileID: 6465702491425445387, guid: dd9052ecb111d48418fba4ae049f8026,
+  - m_Effect: {fileID: 2982547388373098645, guid: dd9052ecb111d48418fba4ae049f8026,
       type: 3}
     m_Key: LevelUp
   - m_Effect: {fileID: 2719147716907671266, guid: 76a1651cf2bd2473b90b8bd304ff4ee1,

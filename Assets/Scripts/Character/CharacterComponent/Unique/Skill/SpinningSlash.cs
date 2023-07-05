@@ -16,7 +16,6 @@ public class SpinningSlash : Skill
     /// 周囲攻撃
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="System.NotImplementedException"></exception>
     protected override async Task SkillEffect(SkillContext ctx)
     {
         var move = ctx.Owner.GetInterface<ICharaMove>();

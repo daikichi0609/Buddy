@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using DG.Tweening;
 
 public class VaccumSlash : Skill
 {
@@ -31,16 +32,21 @@ public class VaccumSlash : Skill
         if (ctx.SoundHolder.TryGetSound(VACCUM_SLASH, out var sound) == true)
             sound.Play();
 
-        IDisposable disposable = null;
-        if (ctx.EffectHolder.TryGetEffect(VACCUM_SLASH, out var effect) == true)
-            disposable = effect.Play(ctx.Owner);
-
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
-        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, CharaBattle.ms_NormalAttackTotalTime);
+        var animTask = anim.PlayAnimation(ANIMATION_TYPE.SKILL, CharaBattle.ms_NormalAttackTotalTime);
 
-        disposable?.Dispose();
+        bool hit = Utility.TryGetForwardUnit(pos, dirV3, DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance) == true;
 
-        if (Utility.TryGetForwardUnit(pos, dirV3, DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance) == true)
+        if (ctx.EffectHolder.TryGetEffect(VACCUM_SLASH, out var effect) == true)
+        {
+            var effectMoveTask = effect.transform.DOLocalMove(dirV3 * flyDistance, 0.5f).SetRelative(true).SetEase(Ease.Linear).AsyncWaitForCompletion();
+            IDisposable disposable = effect.Play(ctx.Owner);
+
+            await Task.WhenAll(animTask, effectMoveTask);
+            disposable?.Dispose();
+        }
+
+        if (hit == true)
         {
             var attackInfo = new AttackInfo(ctx.Owner, status.OriginParam.GivenName, (int)(status.Atk * ATK_MAG), CharaBattle.HIT_PROB, CharaBattle.CRITICAL_PROB, false, move.Direction); // 攻撃情報
             var battle = target.GetInterface<ICharaBattle>();

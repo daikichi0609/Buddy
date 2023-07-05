@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 1370935586537870645, guid: a7e9fc3d4872349e78506d3d8b441dda,
         type: 3}
       propertyPath: m_Name
-      value: Stairs
+      value: Stairs Variant
       objectReference: {fileID: 0}
     - target: {fileID: 5130764016253014934, guid: a7e9fc3d4872349e78506d3d8b441dda,
         type: 3}
@@ -21,6 +21,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7226649512970816339, guid: a7e9fc3d4872349e78506d3d8b441dda,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7226649512970816339, guid: a7e9fc3d4872349e78506d3d8b441dda,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7226649512970816339, guid: a7e9fc3d4872349e78506d3d8b441dda,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7226649512970816339, guid: a7e9fc3d4872349e78506d3d8b441dda,
         type: 3}

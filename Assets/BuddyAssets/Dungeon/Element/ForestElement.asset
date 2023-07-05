@@ -15,5 +15,5 @@ MonoBehaviour:
   m_Room: {fileID: 1360919824113597614, guid: 45165db6163ec4d76a735801de90ce4f, type: 3}
   m_Path: {fileID: 3820241247379512989, guid: 7e8c4de57fd7a45d8b28282285c622ec, type: 3}
   m_Wall: {fileID: 6286310497864102225, guid: ee2374b35845c4f06a38dd2ca7b50223, type: 3}
-  m_Stairs: {fileID: 5665641618207039357, guid: 316a3089f8356466f89167544edcd98f,
+  m_Stairs: {fileID: 3611137922286253241, guid: 905ed7eb84768418a92498ec19b62d71,
     type: 3}
