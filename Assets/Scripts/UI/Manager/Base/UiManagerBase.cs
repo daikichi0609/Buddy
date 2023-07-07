@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
-using UnityEngine.UI;
+using NaughtyAttributes;
 using Zenject;
 
 /// <summary>
@@ -77,6 +77,7 @@ public interface IUiManager
 /// <summary>
 /// 左上メニューと説明のUi
 /// </summary>
+[Serializable]
 public abstract class UiManagerBase : MonoBehaviour, IUiManager
 {
     [Inject]
@@ -87,21 +88,34 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected IBattleLogManager m_BattleLogManager;
     [Inject]
     protected ISoundHolder m_SoundHolder;
+    [Inject]
+    protected IMiniMapRenderer m_MiniMapRenderer;
 
     protected static readonly string DECIDE = "UiDecide";
     private static readonly string MOVE = "UiMove";
     private static readonly string QUIT = "UiQuit";
 
     /// <summary>
-    /// Ui操作インターフェイス
+    /// 操作するUi
     /// </summary>
-    protected abstract IUiBase CurrentUiInterface { get; }
+    [SerializeField, ReorderableList]
+    protected UiBase[] m_UiManaged;
+    protected IUiBase CurrentUi => m_UiManaged[m_Depth.Value];
     protected ReactiveProperty<int> m_Depth = new ReactiveProperty<int>();
+    [ShowNativeProperty]
+    protected abstract int MaxDepth { get; }
 
     /// <summary>
-    /// 説明文
+    /// 選択肢イベント
     /// </summary>
-    protected abstract string FixLogText { get; }
+    protected Subject<int>[] m_OptionMethods;
+    protected Subject<int> CurrentOptionSubject => m_OptionMethods[m_Depth.Value];
+
+    /// <summary>
+    /// 選択肢Idの変動
+    /// </summary>
+    private Subject<int> m_OnOptionIdChange = new Subject<int>();
+    protected IObservable<int> OnOptionIdChange => m_OnOptionIdChange;
 
     /// <summary>
     /// 選択肢の購読と選択肢
@@ -109,15 +123,9 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     protected abstract OptionElement[] CreateOptionElement();
 
     /// <summary>
-    /// 選択肢メソッド
+    /// 説明文
     /// </summary>
-    protected abstract Subject<int> CurrentOptionSubject { get; }
-
-    /// <summary>
-    /// 選択肢Idの変動
-    /// </summary>
-    private Subject<int> m_OnOptionIdChange = new Subject<int>();
-    protected IObservable<int> OnOptionIdChange => m_OnOptionIdChange;
+    protected abstract string FixLogText { get; }
 
     /// <summary>
     /// 親Ui
@@ -133,60 +141,15 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
 
     protected virtual void Awake()
     {
+        m_OptionMethods = new Subject<int>[MaxDepth];
+        for (int i = 0; i < MaxDepth; i++)
+            m_OptionMethods[i] = new Subject<int>();
+
         m_OnOptionIdChange.SubscribeWithState(this, (_, self) =>
         {
             if (self.m_SoundHolder.TryGetSound(MOVE, out var sound) == true)
                 sound.Play();
         }).AddTo(this);
-    }
-
-    /// <summary>
-    /// 入力受付
-    /// </summary>
-    /// <param name="flag"></param>
-    private void DetectInput(KeyCodeFlag flag)
-    {
-        if (m_TurnManager.NoOneActing == false)
-            return;
-
-        // Qで閉じる
-        if (flag.HasBitFlag(KeyCodeFlag.Q))
-        {
-            if (m_Depth.Value > 0)
-                m_Depth.Value--;
-            else
-                Deactivate();
-
-            if (m_SoundHolder.TryGetSound(QUIT, out var sound) == true)
-                sound.Play();
-            return;
-        }
-
-        //決定ボタン 該当メソッド実行
-        if (flag.HasBitFlag(KeyCodeFlag.Return))
-        {
-            CurrentUiInterface.InvokeOptionMethod();
-
-            if (m_SoundHolder.TryGetSound(DECIDE, out var sound) == true)
-                sound.Play();
-            return;
-        }
-
-        //上にカーソル移動
-        if (flag.HasBitFlag(KeyCodeFlag.W))
-        {
-            var id = CurrentUiInterface.AddOptionId(-1);
-            m_OnOptionIdChange.OnNext(id);
-            return;
-        }
-
-        //下にカーソル移動
-        if (flag.HasBitFlag(KeyCodeFlag.S))
-        {
-            var id = CurrentUiInterface.AddOptionId(1);
-            m_OnOptionIdChange.OnNext(id);
-            return;
-        }
     }
 
     /// <summary>
@@ -256,24 +219,80 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
 
     /// <summary>
     /// Uiの初期化
-    /// 操作するUiが一つの場合
     /// </summary>
-    protected virtual void InitializeUi()
+    protected void InitializeUi()
     {
         // 初期化
         var option = CreateOptionElement();
 
-        CurrentUiInterface.Initialize(m_Disposables, option[0]);
-        CurrentUiInterface.SetActive(true); // 表示
+        for (int i = 0; i < m_UiManaged.Length; i++)
+        {
+            IUiBase ui = m_UiManaged[i];
+            bool changeColor = i == 0 ? true : false;
+            ui.Initialize(m_Disposables, option[i], changeColor);
+            ui.SetActive(true); // 表示
+        }
     }
 
     /// <summary>
     /// Uiの終了時
-    /// 操作するUiが一つの場合
     /// </summary>
-    protected virtual void FinalizeUi()
+    private void FinalizeUi()
     {
         // Ui非表示
-        CurrentUiInterface.SetActive(false);
+        for (int i = 0; i < m_UiManaged.Length; i++)
+        {
+            IUiBase ui = m_UiManaged[i];
+            ui.SetActive(false); // 非表示
+        }
+    }
+
+    /// <summary>
+    /// 入力受付
+    /// </summary>
+    /// <param name="flag"></param>
+    private void DetectInput(KeyCodeFlag flag)
+    {
+        if (m_TurnManager.NoOneActing == false)
+            return;
+
+        // Qで閉じる
+        if (flag.HasBitFlag(KeyCodeFlag.Q))
+        {
+            if (m_Depth.Value > 0)
+                m_Depth.Value--;
+            else
+                Deactivate();
+
+            if (m_SoundHolder.TryGetSound(QUIT, out var sound) == true)
+                sound.Play();
+            return;
+        }
+
+        //決定ボタン 該当メソッド実行
+        if (flag.HasBitFlag(KeyCodeFlag.Return))
+        {
+            CurrentUi.InvokeOptionMethod();
+
+            if (m_SoundHolder.TryGetSound(DECIDE, out var sound) == true)
+                sound.Play();
+            return;
+        }
+
+        //上にカーソル移動
+        if (flag.HasBitFlag(KeyCodeFlag.W))
+        {
+            var id = CurrentUi.AddOptionId(-1);
+            m_OnOptionIdChange.OnNext(id);
+            return;
+        }
+
+        //下にカーソル移動
+        if (flag.HasBitFlag(KeyCodeFlag.S))
+        {
+            var id = CurrentUi.AddOptionId(1);
+            m_OnOptionIdChange.OnNext(id);
+            return;
+        }
     }
 }

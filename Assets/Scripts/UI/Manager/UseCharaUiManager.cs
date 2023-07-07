@@ -12,12 +12,6 @@ public interface IUseCharaUiManager : IUiManager
 
 public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
 {
-    [Serializable]
-    private class UseCharaUi : UiBase
-    {
-
-    }
-
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
@@ -29,14 +23,8 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     [Inject]
     private IDungeonHandler m_DungeonHandler;
 
-    [SerializeField]
-    private UseCharaUi m_ItemUseUi = new UseCharaUi();
-    protected override IUiBase CurrentUiInterface => m_ItemUseUi;
-
-    private Subject<int> m_OptionMethod = new Subject<int>();
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
-
     protected override string FixLogText => "誰が？";
+    protected override int MaxDepth => 1;
 
     /// <summary>
     /// 使うアイテムセットアップ
@@ -48,7 +36,7 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     {
         List<string> strings = new List<string>();
 
-        var use = m_OptionMethod.SubscribeWithState(this, (index, self) =>
+        var use = m_OptionMethods[0].SubscribeWithState(this, (index, self) =>
         {
             // アクション登録
             var player = self.m_UnitHolder.Player;
@@ -66,6 +54,6 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
             strings.Add(status.CurrentStatus.OriginParam.GivenName);
         }
 
-        return new OptionElement[] { new OptionElement(m_OptionMethod, strings.ToArray(), m_UnitHolder.FriendList.Count) };
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], strings.ToArray(), m_UnitHolder.FriendList.Count) };
     }
 }

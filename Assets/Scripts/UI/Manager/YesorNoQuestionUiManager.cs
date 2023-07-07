@@ -26,24 +26,17 @@ public interface IYesorNoQuestionUiManager : IUiManager
 
 public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 {
-    [Serializable]
-    public class QuestionUi : UiBase
-    {
-        [SerializeField]
-        public Text m_QuestionText;
-    }
-
     [Inject]
     protected IDungeonProgressManager m_DungeonProgressManager;
 
-    [SerializeField]
-    private YesorNoQuestionUiManager.QuestionUi m_Interface = new QuestionUi();
-    protected override IUiBase CurrentUiInterface => m_Interface;
-
-    private Subject<int> m_OptionMethod = new Subject<int>();
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
-
+    protected override int MaxDepth => 1;
     protected override string FixLogText => "";
+
+    /// <summary>
+    /// 質問テキスト
+    /// </summary>
+    [SerializeField]
+    private Text m_QuestionText;
 
     /// <summary>
     /// 質問タイプ
@@ -56,9 +49,17 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
 
     protected override OptionElement[] CreateOptionElement()
     {
+        var s = m_Question switch
+        {
+            QUESTION_TYPE.STAIRS => "先に進みますか？",
+
+            QUESTION_TYPE.NONE or _ => "",
+        };
+        m_QuestionText.text = s;
+
         if (m_Question == QUESTION_TYPE.STAIRS)
         {
-            var disposable = m_OptionMethod.SubscribeWithState(this, (index, self) =>
+            var disposable = m_OptionMethods[0].SubscribeWithState(this, (index, self) =>
             {
                 if (index == 0)
                     self.m_DungeonProgressManager.NextFloor();
@@ -69,20 +70,7 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
             m_Disposables.Add(disposable);
         }
 
-        return new OptionElement[] { new OptionElement(m_OptionMethod, OptionText) };
-    }
-
-    protected override void InitializeUi()
-    {
-        var s = m_Question switch
-        {
-            QUESTION_TYPE.STAIRS => "先に進みますか？",
-
-            QUESTION_TYPE.NONE or _ => "",
-        };
-        m_Interface.m_QuestionText.text = s;
-
-        base.InitializeUi();
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], OptionText) };
     }
 }
 

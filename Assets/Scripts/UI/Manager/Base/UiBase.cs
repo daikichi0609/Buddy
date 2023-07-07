@@ -17,6 +17,12 @@ public interface IUiBase
     void Initialize(CompositeDisposable disposable, OptionElement element, bool changeColor = true);
 
     /// <summary>
+    /// 初期化
+    /// </summary>
+    /// <param name="disposables"></param>
+    void Initialize(OptionElement element, bool changeColor = true);
+
+    /// <summary>
     /// Ui表示・非表示
     /// </summary>
     /// <param name="active"></param>
@@ -48,9 +54,15 @@ public interface IUiBase
     /// テキストカラーをリセット
     /// </summary>
     void ResetTextColor();
+
+    /// <summary>
+    /// テキスト数
+    /// </summary>
+    int TextCount { get; }
 }
 
-public abstract class UiBase : IUiBase
+[Serializable]
+public class UiBase : IUiBase
 {
     /// <summary>
     /// 操作するUi
@@ -63,6 +75,7 @@ public abstract class UiBase : IUiBase
     /// </summary>
     [SerializeField]
     protected Text[] m_Texts;
+    int IUiBase.TextCount => m_Texts.Length;
 
     /// <summary>
     /// Ui表示中かどうか
@@ -95,11 +108,15 @@ public abstract class UiBase : IUiBase
     /// <summary>
     /// 初期化処理。手動で呼ぶ。
     /// </summary>
-    protected void Initialize(CompositeDisposable disposable, OptionElement element, bool changeColor)
+    void IUiBase.Initialize(CompositeDisposable disposable, OptionElement element, bool changeColor)
     {
+        Initialize(element, changeColor);
+
         // 有効な選択肢の変更
         OptionIdChanged.SubscribeWithState(this, (option, self) => self.ChangeTextColor(option)).AddTo(disposable);
-
+    }
+    protected void Initialize(OptionElement element, bool changeColor)
+    {
         // 選択肢メソッド初期化
         m_OptionMethod = element.OptionMethod;
         m_OptionCount = element.MethodCount;
@@ -109,11 +126,11 @@ public abstract class UiBase : IUiBase
 
         // 有効中の選択肢初期化
         m_OptionId.Value = 0;
+
         if (changeColor == false)
             ResetTextColor();
     }
-
-    void IUiBase.Initialize(CompositeDisposable disposable, OptionElement element, bool changeColor) => Initialize(disposable, element, changeColor);
+    void IUiBase.Initialize(OptionElement element, bool changeColor) => Initialize(element, changeColor);
 
     /// <summary>
     /// 選択肢テキスト変更

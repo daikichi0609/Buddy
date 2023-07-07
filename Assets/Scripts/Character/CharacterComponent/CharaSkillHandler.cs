@@ -5,8 +5,6 @@ using Zenject;
 
 public interface ICharaSkillHandler : IActorInterface
 {
-    bool TryGetSkill(int index, out ISkill skill);
-
     /// <summary>
     /// スキル登録
     /// </summary>
@@ -19,46 +17,60 @@ public interface ICharaSkillHandler : IActorInterface
     /// <param name="index"></param>
     /// <returns></returns>
     Task<bool> Skill(int index);
+
+    /// <summary>
+    /// スキル取得（あるなら）
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="skill"></param>
+    /// <returns></returns>
+    bool TryGetSkill(int index, out SkillHolder skill);
+}
+
+public sealed class SkillHolder
+{
+    /// <summary>
+    /// スキル
+    /// </summary>
+    private ISkill Skill { get; }
+    public ISkill GetSkill => Skill;
+
+    /// <summary>
+    /// クールタイム
+    /// </summary>
+    private int m_CoolTime;
+    public int CoolTime => m_CoolTime;
+
+    /// <summary>
+    /// アクティブであるかどうか
+    /// </summary>
+    private bool m_IsActive;
+    public bool IsActive { get => m_IsActive; set => m_IsActive = value; }
+
+    public SkillHolder(ISkill skill) => Skill = skill;
+
+    /// <summary>
+    /// クールタイム短縮
+    /// </summary>
+    public void CoolDown()
+    {
+        if (m_CoolTime > 0)
+            m_CoolTime--;
+    }
+
+    /// <summary>
+    /// スキル効果
+    /// </summary>
+    /// <returns></returns>
+    public async Task Activate(SkillContext ctx)
+    {
+        m_CoolTime = Skill.CoolTime;
+        await Skill.Skill(ctx);
+    }
 }
 
 public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
 {
-    private sealed class SkillHolder
-    {
-        /// <summary>
-        /// スキル
-        /// </summary>
-        private ISkill Skill { get; }
-        public ISkill GetSkill => Skill;
-
-        /// <summary>
-        /// クールタイム
-        /// </summary>
-        private int m_CoolTime;
-        public int CoolTime => m_CoolTime;
-
-        public SkillHolder(ISkill skill) => Skill = skill;
-
-        /// <summary>
-        /// クールタイム短縮
-        /// </summary>
-        public void CoolDown()
-        {
-            if (m_CoolTime > 0)
-                m_CoolTime--;
-        }
-
-        /// <summary>
-        /// スキル効果
-        /// </summary>
-        /// <returns></returns>
-        public async Task Activate(SkillContext ctx)
-        {
-            m_CoolTime = Skill.CoolTime;
-            await Skill.Skill(ctx);
-        }
-    }
-
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
@@ -93,13 +105,19 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
         m_TurnManager.OnTurnEnd.SubscribeWithState(this, (_, self) => self.CoolDown()).AddTo(Owner.Disposables);
     }
 
-    bool ICharaSkillHandler.TryGetSkill(int index, out ISkill skill)
+    /// <summary>
+    /// スキル取得（あるなら）
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="skill"></param>
+    /// <returns></returns>
+    bool ICharaSkillHandler.TryGetSkill(int index, out SkillHolder skill)
     {
         skill = null;
         if (index < 0 || index >= m_Skills.Count)
             return false;
 
-        skill = m_Skills[index].GetSkill;
+        skill = m_Skills[index];
         return skill != null;
     }
 

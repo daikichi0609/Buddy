@@ -51,13 +51,6 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// </summary>
     private async void DetectInput()
     {
-        // 眠り状態
-        if (await m_CharaAbnormal.Sleep() == true)
-        {
-            await m_CharaTurn.TurnEnd();
-            return;
-        }
-
         // すでに行動済みなら再帰抜ける
         if (m_LastActionHolder.LastAction != CHARA_ACTION.NONE)
             return;
@@ -86,6 +79,10 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         // 行動許可ないなら何もしない。行動中なら何もしない。
         if (m_CharaTurn.IsActing == true)
             return false;
+
+        // 眠り状態
+        if (await m_CharaAbnormal.Sleep() == true)
+            return true;
 
         // Ui操作中なら再帰終了
         if (m_InputManager.IsUiPopUp == true)

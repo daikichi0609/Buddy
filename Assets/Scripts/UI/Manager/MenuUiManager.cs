@@ -15,23 +15,14 @@ public interface IMenuUiManager : IUiManager
 /// </summary>
 public class MenuUiManager : UiManagerBase, IMenuUiManager
 {
-    [Serializable]
-    public class MenuUi : UiBase { }
-
     [Inject]
     private IBagUiManager m_BagUiManager;
     [Inject]
     private ICharaSkillUiManager m_SkillUiManager;
     [Inject]
-    private IMiniMapRenderer m_MiniMapRenderer;
+    private ICharaClevernessUiManager m_ClevernessUiManager;
 
-    [SerializeField]
-    private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
-    protected override IUiBase CurrentUiInterface => m_UiInterface;
-
-    private Subject<int> m_OptionMethod = new Subject<int>();
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
-
+    protected override int MaxDepth => 1;
     protected override string FixLogText => "コマンドを選択する。";
 
     protected override void Awake()
@@ -40,7 +31,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
         SubscribeMenuOpen();
 
-        m_OptionMethod.SubscribeWithState(this, (index, self) =>
+        m_OptionMethods[0].SubscribeWithState(this, (index, self) =>
         {
             // バッグを開く
             if (index == 0)
@@ -62,14 +53,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
     protected override OptionElement[] CreateOptionElement()
     {
-        return new OptionElement[] { new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
-    }
-
-    protected override void InitializeUi()
-    {
-        base.InitializeUi();
-        var disposable = m_MiniMapRenderer.SetActive(false);
-        m_Disposables.Add(disposable);
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
     }
 
     /// <summary>
@@ -112,7 +96,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private void CheckCleverness()
     {
         Deactivate();
-        m_SkillUiManager.Activate(this);
+        m_ClevernessUiManager.Activate(this);
     }
 
     /// <summary>

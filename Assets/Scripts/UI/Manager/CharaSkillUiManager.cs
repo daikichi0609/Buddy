@@ -16,9 +16,6 @@ public interface ICharaSkillUiManager : IUiManager
 /// </summary>
 public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
 {
-    [Serializable]
-    private class CharacterSkillUi : UiBase { }
-
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
@@ -27,46 +24,42 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     [SerializeField]
     private Text m_DescriptionText;
 
-    [SerializeField, ReorderableList]
-    private CharacterSkillUi[] m_SkillUi;
-    protected override IUiBase CurrentUiInterface => m_SkillUi[m_Depth.Value];
-
-    private Subject<int>[] m_OptionMethods = new Subject<int>[] { new Subject<int>(), new Subject<int>() };
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethods[m_Depth.Value];
-
+    protected override int MaxDepth => 2;
     protected override string FixLogText => "スキルを確認する。";
-
-    private ICollector m_Unit;
+    private int m_UnitIndex;
+    private ICollector CurrentUnit => m_UnitHolder.FriendList[m_UnitIndex];
 
     protected override void Awake()
     {
         base.Awake();
 
-        m_OptionMethods[0].SubscribeWithState(this, (option, self) =>
-        {
-            self.m_Depth.Value++;
-        }).AddTo(this);
+        // Depth上げ
+        m_OptionMethods[0].SubscribeWithState(this, (option, self) => self.m_Depth.Value++).AddTo(this);
 
+        // Depth変更時
         m_Depth
             .Zip(m_Depth.Skip(1), (x, y) => new { OldValue = x, NewValue = y })
             .SubscribeWithState(this, (depth, self) =>
         {
-
+            // 戻ったなら前Uiのテキストカラーリセット
             if (depth.NewValue < depth.OldValue)
             {
-                IUiBase ui = self.m_SkillUi[depth.OldValue];
+                IUiBase ui = self.m_UiManaged[depth.OldValue];
                 ui.ResetTextColor();
             }
+            // 進んだならそのUiのテキストカラー有効化
             else
             {
-                IUiBase ui = self.m_SkillUi[depth.NewValue];
+                IUiBase ui = self.m_UiManaged[depth.NewValue];
                 ui.ChangeTextColor();
             }
 
+            // 説明文なし
             if (depth.NewValue != 1)
                 self.m_DescriptionText.text = string.Empty;
+            // 説明文更新
             else
-                self.ChangeDescriptionText(self.m_Unit, 0);
+                self.ChangeDescriptionText(CurrentUnit, 0);
 
         }).AddTo(this);
 
@@ -74,19 +67,29 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
         {
             if (self.m_Depth.Value == 0)
             {
-                self.m_Unit = self.m_UnitHolder.FriendList[id];
-                var skillNames = self.CreateSkillNames(self.m_Unit, out var _);
-
-                IUiBase ui = self.m_SkillUi[1];
-                ui.ChangeText(skillNames);
+                m_UnitIndex = id;
+                IUiBase ui = self.m_UiManaged[1];
+                var e1 = CreateOptionElement1();
+                ui.Initialize(e1, false);
             }
 
             if (self.m_Depth.Value == 1)
-                self.ChangeDescriptionText(self.m_Unit, id);
+                self.ChangeDescriptionText(CurrentUnit, id);
         }).AddTo(this);
     }
 
     protected override OptionElement[] CreateOptionElement()
+    {
+        var disposable = m_CharaUiManager.SetActive(false);
+        m_Disposables.Add(disposable);
+
+        var e0 = CreateOptionElement0();
+        var e1 = CreateOptionElement1();
+
+        return new OptionElement[] { e0, e1 };
+    }
+
+    private OptionElement CreateOptionElement0()
     {
         string[] unitNames = new string[2];
         for (int i = 0; i < unitNames.Length; i++)
@@ -96,12 +99,13 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
             unitNames[i] = status.CurrentStatus.OriginParam.GivenName;
         }
 
-        var e0 = new OptionElement(m_OptionMethods[0], unitNames);
+        return new OptionElement(m_OptionMethods[0], unitNames);
+    }
 
-        var skillNames = CreateSkillNames(m_UnitHolder.FriendList[0], out var skillCount);
-        var e1 = new OptionElement(m_OptionMethods[1], skillNames, skillCount);
-
-        return new OptionElement[] { e0, e1 };
+    private OptionElement CreateOptionElement1()
+    {
+        var skillNames = CreateSkillNames(CurrentUnit, out var skillCount);
+        return new OptionElement(m_OptionMethods[1], skillNames, skillCount);
     }
 
     /// <summary>
@@ -118,7 +122,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
         {
             if (skillHandler.TryGetSkill(i, out var skill) == true)
             {
-                skillNames[i] = skill.Name;
+                skillNames[i] = skill.GetSkill.Name;
                 skillCount++;
             }
             else
@@ -136,42 +140,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     {
         var skillHandler = unit.GetInterface<ICharaSkillHandler>();
         if (skillHandler.TryGetSkill(index, out var skill) == true)
-            m_DescriptionText.text = skill.Description;
-    }
-
-    /// <summary>
-    /// Uiの初期化
-    /// </summary>
-    protected override void InitializeUi()
-    {
-        // 初期化
-        var option = CreateOptionElement();
-
-        for (int i = 0; i < m_SkillUi.Length; i++)
-        {
-            IUiBase ui = m_SkillUi[i];
-            bool changeColor = i == 0 ? true : false;
-            ui.Initialize(m_Disposables, option[i], changeColor);
-            ui.SetActive(true); // 表示
-        }
-
-        m_Unit = m_UnitHolder.FriendList[0];
-
-        var disposable = m_CharaUiManager.SetActive(false);
-        m_Disposables.Add(disposable);
-    }
-
-    /// <summary>
-    /// Uiの終了時
-    /// </summary>
-    protected override void FinalizeUi()
-    {
-        // Ui非表示
-        for (int i = 0; i < m_SkillUi.Length; i++)
-        {
-            IUiBase ui = m_SkillUi[i];
-            ui.SetActive(false); // 非表示
-        }
+            m_DescriptionText.text = skill.GetSkill.Description;
     }
 }
 

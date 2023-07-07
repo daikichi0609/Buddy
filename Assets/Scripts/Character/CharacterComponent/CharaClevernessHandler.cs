@@ -89,7 +89,7 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
     }
 
     /// <summary>
-    /// スキル発動
+    /// かしこさ有効化
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>

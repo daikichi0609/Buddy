@@ -232,5 +232,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // キャラかしこさ確認Ui
+        Container.Bind<ICharaClevernessUiManager>()
+            .To<CharaClevernessUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

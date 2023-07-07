@@ -15,35 +15,20 @@ public interface IBagUiManager : IUiManager
 /// </summary>
 public class BagUiManager : UiManagerBase, IBagUiManager
 {
-    [Serializable]
-    private class BagUi : UiBase
-    {
-        /// <summary>
-        /// アイテムの要素数
-        /// </summary>
-        public int ItemElementCount => m_Texts.Length;
-    }
-
     [Inject]
     private IItemUseUiManager m_ItemUseUiManager;
     [Inject]
     private ITeamInventory m_TeamInventory;
 
-    [SerializeField]
-    private BagUi m_BagUi = new BagUi();
-    protected override IUiBase CurrentUiInterface => m_BagUi;
-
-    private Subject<int> m_OptionMethod = new Subject<int>();
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
-
     protected override string FixLogText => "アイテムを選択する。";
+    protected override int MaxDepth => 1;
 
     protected override OptionElement[] CreateOptionElement()
     {
         var items = m_TeamInventory.Items; // 全てのアイテム
         int itemCount = items.Length; // アイテム数
 
-        int itemTextCount = m_BagUi.ItemElementCount; // バッグのアイテム数
+        int itemTextCount = ((IUiBase)m_UiManaged[0]).TextCount; // バッグのアイテム数
         var names = new string[itemTextCount]; // バッグのアイテム名
 
         int index = 0;
@@ -51,7 +36,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
         {
             var item = items[index];
             var name = item.ItemName;
-            var disposable = m_OptionMethod.SubscribeWithState((index, m_ItemUseUiManager, item), (i, tuple) =>
+            var disposable = m_OptionMethods[0].SubscribeWithState((index, m_ItemUseUiManager, item), (i, tuple) =>
             {
                 if (i == tuple.index)
                 {
@@ -69,7 +54,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
             index++;
         }
 
-        return new OptionElement[] { new OptionElement(m_OptionMethod, names, methodCount) };
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], names, methodCount) };
     }
 }
 

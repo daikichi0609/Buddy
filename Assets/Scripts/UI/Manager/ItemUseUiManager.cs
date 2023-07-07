@@ -12,12 +12,6 @@ public interface IItemUseUiManager : IUiManager
 
 public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
 {
-    [Serializable]
-    private class ItemUseUi : UiBase
-    {
-
-    }
-
     [Inject]
     private IUnitHolder m_UnitHolder;
     [Inject]
@@ -31,13 +25,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     [Inject]
     private IUseCharaUiManager m_UseCharaUiManager;
 
-    [SerializeField]
-    private ItemUseUi m_ItemUseUi = new ItemUseUi();
-    protected override IUiBase CurrentUiInterface => m_ItemUseUi;
-
-    private Subject<int> m_OptionMethod = new Subject<int>();
-    protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
-
+    protected override int MaxDepth => 1;
     protected override string FixLogText => "どうする？";
 
     /// <summary>
@@ -54,7 +42,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         // 食べる
         if (m_ItemSetup.CanEat == true)
         {
-            var eat = m_OptionMethod.SubscribeWithState((optionIndex, this), (index, tuple) =>
+            var eat = m_OptionMethods[0].SubscribeWithState((optionIndex, this), (index, tuple) =>
             {
                 if (tuple.optionIndex == index)
                 {
@@ -69,7 +57,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         }
 
         // 投げる
-        var throwStraight = m_OptionMethod.SubscribeWithState((optionIndex, this), (index, tuple) =>
+        var throwStraight = m_OptionMethods[0].SubscribeWithState((optionIndex, this), (index, tuple) =>
         {
             if (tuple.optionIndex == index)
             {
@@ -88,7 +76,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         strings.Add("投げる");
 
         // やめる
-        var quit = m_OptionMethod.SubscribeWithState((optionIndex, this), (index, tuple) =>
+        var quit = m_OptionMethods[0].SubscribeWithState((optionIndex, this), (index, tuple) =>
         {
             if (tuple.optionIndex == index)
             {
@@ -100,6 +88,6 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         optionIndex++;
         strings.Add("やめる");
 
-        return new OptionElement[] { new OptionElement(m_OptionMethod, strings.ToArray(), optionIndex) };
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], strings.ToArray(), optionIndex) };
     }
 }

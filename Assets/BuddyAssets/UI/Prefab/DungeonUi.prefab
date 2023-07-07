@@ -2236,6 +2236,7 @@ GameObject:
   - component: {fileID: 2597828620121566292}
   - component: {fileID: 5430287450459124184}
   - component: {fileID: 160309425034668826}
+  - component: {fileID: 5245349435179945650}
   m_Layer: 0
   m_Name: DungeonUi
   m_TagString: Untagged
@@ -2272,8 +2273,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82125047a68a54c9896e52db8b66dc33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiInterface:
-    m_Ui: {fileID: 1862151905730288890}
+  m_UiManaged:
+  - m_Ui: {fileID: 1862151905730288890}
     m_Texts:
     - {fileID: 1862151905742929910}
     - {fileID: 1862151906394117908}
@@ -2292,8 +2293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff566e94732d4224b8ca6321db38b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BagUi:
-    m_Ui: {fileID: 1862151905272087390}
+  m_UiManaged:
+  - m_Ui: {fileID: 1862151905272087390}
     m_Texts:
     - {fileID: 1862151906161280445}
     - {fileID: 1862151905293140410}
@@ -2316,12 +2317,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cfe208addb1f4d5e91298a7557a3132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Interface:
-    m_Ui: {fileID: 1862151905268190488}
+  m_UiManaged:
+  - m_Ui: {fileID: 1862151905268190488}
     m_Texts:
     - {fileID: 1862151906064468698}
     - {fileID: 1862151906249412913}
-    m_QuestionText: {fileID: 1862151905209488589}
+  m_QuestionText: {fileID: 1862151905209488589}
 --- !u!114 &4092083852894976188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2419,8 +2420,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d04bdcabc1414cb89cbdfa29890226b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ItemUseUi:
-    m_Ui: {fileID: 1143247985109724003}
+  m_UiManaged:
+  - m_Ui: {fileID: 1143247985109724003}
     m_Texts:
     - {fileID: 8812403615756855767}
     - {fileID: 5198568965497409223}
@@ -2437,8 +2438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e05e3836ffe04aa6bf15e75f66d2f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ItemUseUi:
-    m_Ui: {fileID: 9169635330907860933}
+  m_UiManaged:
+  - m_Ui: {fileID: 9169635330907860933}
     m_Texts:
     - {fileID: 6349329629219628403}
     - {fileID: 3803391344684145273}
@@ -2455,8 +2456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83c7c9aa95cfc4d67ac253ec34bbeb77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DescriptionText: {fileID: 4956610447393922130}
-  m_SkillUi:
+  m_UiManaged:
   - m_Ui: {fileID: 2988092225770204629}
     m_Texts:
     - {fileID: 7560144248142920157}
@@ -2467,6 +2467,31 @@ MonoBehaviour:
     - {fileID: 466696816700606591}
     - {fileID: 653256565452814221}
     - {fileID: 1722129041600633377}
+  m_DescriptionText: {fileID: 4956610447393922130}
+--- !u!114 &5245349435179945650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1862151906042642185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b6f92f80abb4c739ce8eef39ddef6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiManaged:
+  - m_Ui: {fileID: 2988092225770204629}
+    m_Texts:
+    - {fileID: 7560144248142920157}
+    - {fileID: 7120862294849583404}
+  - m_Ui: {fileID: 2988092225770204629}
+    m_Texts:
+    - {fileID: 9060904691457742386}
+    - {fileID: 466696816700606591}
+    - {fileID: 653256565452814221}
+    - {fileID: 1722129041600633377}
+  m_DescriptionText: {fileID: 4956610447393922130}
 --- !u!1 &1862151906064468696
 GameObject:
   m_ObjectHideFlags: 0
