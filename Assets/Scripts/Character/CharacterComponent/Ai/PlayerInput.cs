@@ -6,6 +6,7 @@ using UniRx;
 using System.Threading.Tasks;
 using Zenject;
 using System;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public interface IPlayerInput : IActorInterface
 {
@@ -25,6 +26,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private ICharaTurn m_CharaTurn;
     private ICharaLastActionHolder m_LastActionHolder;
     private ICharaSkillHandler m_CharaSkill;
+    private ICharaStatusAbnormality m_CharaAbnormal;
 
     protected override void Register(ICollector owner)
     {
@@ -41,6 +43,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_LastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaSkill = Owner.GetInterface<ICharaSkillHandler>();
+        m_CharaAbnormal = Owner.GetInterface<ICharaStatusAbnormality>();
     }
 
     /// <summary>
@@ -48,6 +51,13 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     /// </summary>
     private async void DetectInput()
     {
+        // 眠り状態
+        if (await m_CharaAbnormal.Sleep() == true)
+        {
+            await m_CharaTurn.TurnEnd();
+            return;
+        }
+
         // すでに行動済みなら再帰抜ける
         if (m_LastActionHolder.LastAction != CHARA_ACTION.NONE)
             return;

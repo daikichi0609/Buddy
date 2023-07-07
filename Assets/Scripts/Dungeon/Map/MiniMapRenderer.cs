@@ -6,10 +6,16 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using static UnityEditor.PlayerSettings;
 
 public interface IMiniMapRenderer
 {
+    /// <summary>
+    /// 表示切り替え
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <returns></returns>
+    IDisposable SetActive(bool isActive);
+
     /// <summary>
     /// アイコン登録
     /// </summary>
@@ -379,5 +385,11 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
 
         m_MapTerrains.Clear();
         m_StairsIcons.Clear();
+    }
+
+    IDisposable IMiniMapRenderer.SetActive(bool isActive)
+    {
+        m_MiniMapwindow.SetActive(isActive);
+        return Disposable.CreateWithState((this, isActive), tuple => tuple.Item1.m_MiniMapwindow.SetActive(!isActive));
     }
 }

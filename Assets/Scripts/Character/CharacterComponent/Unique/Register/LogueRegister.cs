@@ -16,5 +16,8 @@ public class LogueRegister : ActorComponentBase
         skill.RegisterSkill(new ContinuousSlash());
         skill.RegisterSkill(new SpinningSlash());
         skill.RegisterSkill(new VaccumSlash());
+
+        var cleverness = Owner.GetInterface<ICharaClevernessHandler>();
+        cleverness.RegisterCleverness(new CriticalRatioUp());
     }
 }

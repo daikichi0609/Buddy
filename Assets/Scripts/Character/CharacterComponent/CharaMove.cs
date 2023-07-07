@@ -58,13 +58,6 @@ public interface ICharaMove : IActorInterface
     /// </summary>
     /// <param name="pos"></param>
     void Warp(Vector3Int pos);
-
-    /// <summary>
-    /// 失敗登録
-    /// </summary>
-    /// <param name="ticket"></param>
-    /// <returns></returns>
-    IDisposable RegisterFailureTicket(FailureTicket<ICollector> ticket);
 }
 
 public interface ICharaMoveEvent : IActorEvent
@@ -131,12 +124,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     }
 
     /// <summary>
-    /// 確率で移動を失敗させる
-    /// </summary>
-    private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
-    IDisposable ICharaMove.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
-
-    /// <summary>
     /// 移動前に呼ばれる
     /// </summary>
     private Subject<Unit> m_OnMoveStart = new Subject<Unit>();
@@ -189,21 +176,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         CharaObject.transform.rotation = Quaternion.LookRotation(direction.ToV3Int());
         return Task.CompletedTask;
     }
-    async Task ICharaMove.Face(DIRECTION direction)
-    {
-        // 移動失敗
-        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
-        {
-            await m_CharaTurn.WaitFinishActing();
-            ticket.OnFail(Owner);
-
-            var acting = m_CharaTurn.RegisterActing();
-            await Task.Delay(500);
-            acting.Dispose();
-            return;
-        }
-        await Face(direction);
-    }
+    Task ICharaMove.Face(DIRECTION direction) => Face(direction);
 
     /// <summary>
     /// 移動
@@ -216,18 +189,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         if (m_MovingTask != null)
             while (m_MovingTask.IsCompleted == false)
                 await Task.Delay(1);
-
-        // 移動失敗
-        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
-        {
-            await m_CharaTurn.WaitFinishActing();
-            ticket.OnFail(Owner);
-
-            var acting = m_CharaTurn.RegisterActing();
-            await Task.Delay(500);
-            acting.Dispose();
-            return true;
-        }
 
         //向きを変える
         await Face(direction);
@@ -313,7 +274,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     async Task ICharaMove.ForcedMove(DIRECTION dir)
     {
         await m_CharaTurn.WaitFinishActing();
-        Face(dir);
+        await Face(dir);
         Vector3Int destinationPos = Position + dir.ToV3Int();
         await MoveInternal(destinationPos, dir);
     }

@@ -53,6 +53,13 @@ public partial class EnemyAi : CharaAi, IEnemyAi
     /// </summary>
     protected override async void DecideAndExecuteAction()
     {
+        // 眠り状態
+        if (await m_CharaAbnormal.Sleep() == true)
+        {
+            await m_CharaTurn.TurnEnd();
+            return;
+        }
+
         var result = false;
 
         EnemyActionClue clue = ConsiderAction(m_CharaMove.Position);

@@ -22,6 +22,8 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private IBagUiManager m_BagUiManager;
     [Inject]
     private ICharaSkillUiManager m_SkillUiManager;
+    [Inject]
+    private IMiniMapRenderer m_MiniMapRenderer;
 
     [SerializeField]
     private MenuUiManager.MenuUi m_UiInterface = new MenuUi();
@@ -31,11 +33,6 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     protected override Subject<int> CurrentOptionSubject => m_OptionMethod;
 
     protected override string FixLogText => "コマンドを選択する。";
-
-    protected override OptionElement[] CreateOptionElement()
-    {
-        return new OptionElement[] { new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
-    }
 
     protected override void Awake()
     {
@@ -61,6 +58,18 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
             else
                 self.Deactivate();
         }).AddTo(this);
+    }
+
+    protected override OptionElement[] CreateOptionElement()
+    {
+        return new OptionElement[] { new OptionElement(m_OptionMethod, new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
+    }
+
+    protected override void InitializeUi()
+    {
+        base.InitializeUi();
+        var disposable = m_MiniMapRenderer.SetActive(false);
+        m_Disposables.Add(disposable);
     }
 
     /// <summary>

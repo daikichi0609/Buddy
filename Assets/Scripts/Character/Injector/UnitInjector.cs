@@ -9,6 +9,7 @@ public class UnitInjector : Injector
     {
         diContainer.InstantiateComponent<CharaBattle>(target);
         diContainer.InstantiateComponent<CharaCellEventChecker>(target);
+        diContainer.InstantiateComponent<CharaClevernessHandler>(target);
         diContainer.InstantiateComponent<CharaCondition>(target);
         diContainer.InstantiateComponent<CharaEffect>(target);
         diContainer.InstantiateComponent<CharaInventory>(target);
@@ -17,6 +18,7 @@ public class UnitInjector : Injector
         diContainer.InstantiateComponent<CharaSkillHandler>(target);
         diContainer.InstantiateComponent<CharaSound>(target);
         diContainer.InstantiateComponent<CharaStatus>(target);
+        diContainer.InstantiateComponent<CharaStatusAbnormality>(target);
         diContainer.InstantiateComponent<CharaTurn>(target);
         diContainer.InstantiateComponent<CharaTypeHolder>(target);
         diContainer.InstantiateComponent<CharaLastActionHolder>(target);

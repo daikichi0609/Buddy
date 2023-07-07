@@ -36,7 +36,7 @@ public class RagonSpear : Skill
             disposable = effect.Play(ctx.Owner);
 
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
-        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, CharaBattle.ms_NormalAttackTotalTime);
+        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, 1f);
 
         disposable?.Dispose();
 

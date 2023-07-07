@@ -88,7 +88,7 @@ public class ItemManager : IItemManager
     {
         var content = m_ObjectPoolContoroller.GetObject(setup);
         content.transform.position = from + new Vector3(0f, ItemHandler.OFFSET_Y, 0f);
-        await content.transform.DOLocalMove(dir, 0.5f).SetRelative(true).SetEase(Ease.Linear).AsyncWaitForCompletion();
+        await content.transform.DOLocalMove(dir, 0.3f).SetRelative(true).SetEase(Ease.Linear).AsyncWaitForCompletion();
 
         if (isDrop == true)
         {

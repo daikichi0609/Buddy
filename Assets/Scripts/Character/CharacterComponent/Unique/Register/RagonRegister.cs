@@ -14,5 +14,10 @@ public class RagonRegister : ActorComponentBase
 
         var skill = Owner.GetInterface<ICharaSkillHandler>();
         skill.RegisterSkill(new RagonSpear());
+
+        var cleverness = Owner.GetInterface<ICharaClevernessHandler>();
+        cleverness.RegisterCleverness(new AttackUp());
+        cleverness.RegisterCleverness(new AttackWithPoison());
+        cleverness.RegisterCleverness(new AttackUpIfPoison());
     }
 }

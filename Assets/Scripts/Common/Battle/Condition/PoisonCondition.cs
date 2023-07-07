@@ -28,6 +28,9 @@ public class PoisonCondition : Condition
         string log = status.CurrentStatus.OriginParam.GivenName + "は毒状態になった！";
         owner.GetInterface<ICharaLog>().Log(log);
 
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
+        abnormal.IsPoison = true;
+
         var disposable = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(disposable);
 
@@ -59,6 +62,10 @@ public class PoisonCondition : Condition
         var status = owner.GetInterface<ICharaStatus>();
         string log = status.CurrentStatus.OriginParam.GivenName + "の毒は治った！";
         owner.GetInterface<ICharaLog>().Log(log);
+
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
+        abnormal.IsPoison = false;
+
         await Task.Delay(500);
     }
 }

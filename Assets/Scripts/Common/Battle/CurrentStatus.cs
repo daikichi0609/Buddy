@@ -7,9 +7,47 @@ using UniRx;
 public class CurrentStatus
 {
     /// <summary>
+    /// 元セットアップ
+    /// </summary>
+    [ShowNativeProperty]
+    public CharacterSetup Setup { get; }
+
+    /// <summary>
+    /// 元ステータス
+    /// </summary>
+    [ShowNativeProperty]
+    public BattleStatus.Parameter OriginParam { get; }
+
+    /// <summary>
     /// バフ
     /// </summary>
     private List<BuffTicket> m_BuffList = new List<BuffTicket>();
+
+    // レベル
+    [ShowNativeProperty]
+    public int Lv { get; set; }
+    private float LvMag => 1f + Lv * 0.1f;
+
+    // ヒットポイント
+    [ShowNativeProperty]
+    public int Hp { get; private set; }
+    public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
+    private float LvMaxHpMag => 1f + LvMag * 0.01f;
+
+    // 攻撃力
+    [ShowNativeProperty]
+    public int Atk => (int)(OriginParam.Atk * LvAtkMag * GetBuffMag(PARAMETER_TYPE.ATK));
+    private float LvAtkMag => 1f + LvMag * 0.1f;
+
+    // 防御力
+    [ShowNativeProperty]
+    public int Def => (int)(OriginParam.Def * LvDefMag * GetBuffMag(PARAMETER_TYPE.DEF));
+    private float LvDefMag => 1f + LvMag * 0.1f;
+
+    /// <summary>
+    /// クリティカル率
+    /// </summary>
+    public float Cr => 1f * GetBuffMag(PARAMETER_TYPE.CR);
 
     /// <summary>
     /// 初期化
@@ -24,72 +62,29 @@ public class CurrentStatus
     }
 
     /// <summary>
-    /// 元セットアップ
+    /// 回復、ダメージメソッド
     /// </summary>
-    [ShowNativeProperty]
-    public CharacterSetup Setup { get; }
-
-    /// <summary>
-    /// 元ステータス
-    /// </summary>
-    [ShowNativeProperty]
-    public BattleStatus.Parameter OriginParam { get; }
-
-    // レベル
-    [ShowNativeProperty]
-    public int Lv { get; set; }
-    private float LvMag => 1f + Lv * 0.1f;
-
-    // ヒットポイント
-    [ShowNativeProperty]
-    public int Hp { get; private set; }
-    public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
-    private float LvMaxHpMag => 1f + LvMag * 0.01f;
+    /// <param name="add"></param>
+    /// <param name="canDead"></param>
     public void RecoverHp(int add, bool canDead = true)
     {
         int min = canDead ? 0 : 1;
         Hp = Math.Clamp(Hp + add, min, MaxHp);
     }
 
-    // 攻撃力
-    [ShowNativeProperty]
-    public int Atk => (int)(OriginParam.Atk * LvAtkMag * BuffAtkMag);
-    private float LvAtkMag => 1f + LvMag * 0.1f;
-    public float BuffAtkMag
+    /// <summary>
+    /// バフ倍率取得
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    private float GetBuffMag(PARAMETER_TYPE type)
     {
-        get
-        {
-            float mag = 1f;
-            foreach (var buff in m_BuffList)
-                mag += buff.AtkMag;
-
-            return mag;
-        }
+        float mag = 1f;
+        foreach (var buff in m_BuffList)
+            if (buff.Type == PARAMETER_TYPE.CR)
+                mag += buff.Mag;
+        return mag;
     }
-
-    // 防御力
-    [ShowNativeProperty]
-    public int Def => (int)(OriginParam.Def * LvDefMag * BuffDefMag);
-    private float LvDefMag => 1f + LvMag * 0.1f;
-    public float BuffDefMag
-    {
-        get
-        {
-            float mag = 1f;
-            foreach (var buff in m_BuffList)
-                mag += buff.DefMag;
-
-            return mag;
-        }
-    }
-
-    // 速さ
-    [ShowNativeProperty]
-    public int Agi { get; set; }
-
-    // 抵抗率
-    [ShowNativeProperty]
-    public float Res { get; set; }
 
     /// <summary>
     /// バフを付与する
@@ -103,14 +98,22 @@ public class CurrentStatus
     }
 }
 
+public enum PARAMETER_TYPE
+{
+    ATK,
+    DEF,
+    CR,
+}
+
 public readonly struct BuffTicket
 {
-    public float AtkMag { get; }
-    public float DefMag { get; }
+    public PARAMETER_TYPE Type { get; }
+    public float Mag { get; }
 
-    public BuffTicket(float atkMag, float defMag)
+    public BuffTicket(PARAMETER_TYPE type, float mag)
     {
-        AtkMag = atkMag;
-        DefMag = defMag;
+        Type = type;
+        Mag = mag;
     }
 }
+

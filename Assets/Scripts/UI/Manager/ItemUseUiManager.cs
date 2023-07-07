@@ -29,8 +29,6 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
-    private ISoundHolder m_SoundHolder;
-    [Inject]
     private IUseCharaUiManager m_UseCharaUiManager;
 
     [SerializeField]
@@ -75,6 +73,10 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         {
             if (tuple.optionIndex == index)
             {
+                // アクション登録
+                var player = tuple.Item2.m_UnitHolder.Player;
+                player.GetInterface<ICharaLastActionHolder>().RegisterAction(CHARA_ACTION.ITEM_USE);
+
                 var self = tuple.Item2;
                 self.DeactivateAll();
                 self.m_ItemSetup.Effect.ThrowStraight(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,

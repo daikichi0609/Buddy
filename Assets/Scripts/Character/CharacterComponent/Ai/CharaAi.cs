@@ -29,6 +29,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected ICharaBattle m_CharaBattle;
     protected ICharaTurn m_CharaTurn;
     protected ICharaTypeHolder m_TypeHolder;
+    protected ICharaStatusAbnormality m_CharaAbnormal;
 
     protected override void Register(ICollector owner)
     {
@@ -42,6 +43,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaBattle = Owner.GetInterface<ICharaBattle>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
+        m_CharaAbnormal = Owner.GetInterface<ICharaStatusAbnormality>();
     }
 
     /// <summary>

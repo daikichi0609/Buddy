@@ -173,9 +173,6 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         // アイテム消費
         inventory.Consume(item);
 
-        // アクション登録
-        owner.GetInterface<ICharaLastActionHolder>().RegisterAction(CHARA_ACTION.ITEM_USE);
-
         // ターン消費
         await owner.GetInterface<ICharaTurn>().TurnEnd();
     }

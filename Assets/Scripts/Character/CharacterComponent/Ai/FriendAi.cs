@@ -37,6 +37,13 @@ public partial class FriendAi : CharaAi, IFriendAi
     /// </summary>
     protected override async void DecideAndExecuteAction()
     {
+        // 眠り状態
+        if (await m_CharaAbnormal.Sleep() == true)
+        {
+            await m_CharaTurn.TurnEnd();
+            return;
+        }
+
         var result = false;
 
         FriendActionClue clue = ConsiderAction(m_CharaMove.Position);

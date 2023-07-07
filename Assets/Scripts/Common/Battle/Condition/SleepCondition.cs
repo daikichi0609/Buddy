@@ -25,30 +25,11 @@ public class SleepCondition : Condition
         string log = status.CurrentStatus.OriginParam.GivenName + "は眠ってしまった！";
         owner.GetInterface<ICharaLog>().Log(log);
 
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
+        abnormal.IsSleeping = true;
+
         var colorChange = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(colorChange);
-
-        var ticket = new FailureTicket<ICollector>(1f, owner =>
-             {
-                 var status = owner.GetInterface<ICharaStatus>();
-                 string log = status.CurrentStatus.OriginParam.GivenName + "は眠っている";
-                 owner.GetInterface<ICharaLog>().Log(log);
-
-                 var last = owner.GetInterface<ICharaLastActionHolder>();
-                 last.RegisterAction(CHARA_ACTION.WAIT);
-             });
-
-        if (owner.RequireInterface<ICharaBattle>(out var battle) == true)
-        {
-            var disposable = battle.RegisterFailureTicket(ticket);
-            m_OnFinish.Add(disposable);
-        }
-
-        if (owner.RequireInterface<ICharaMove>(out var move) == true)
-        {
-            var disposable = move.RegisterFailureTicket(ticket);
-            m_OnFinish.Add(disposable);
-        }
 
         if (owner.RequireInterface<ICharaAnimator>(out var anim) == true)
         {
@@ -73,6 +54,9 @@ public class SleepCondition : Condition
         var status = owner.GetInterface<ICharaStatus>();
         string log = status.CurrentStatus.OriginParam.GivenName + "は目を覚ました！";
         owner.GetInterface<ICharaLog>().Log(log);
+
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
+        abnormal.IsSleeping = false;
 
         await Task.Delay(500);
     }

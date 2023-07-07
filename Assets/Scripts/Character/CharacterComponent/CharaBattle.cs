@@ -36,13 +36,6 @@ public interface ICharaBattle : IActorInterface
     /// <param name="ratio"></param>
     /// <returns></returns>
     Task<AttackResult> DamagePercentage(AttackPercentageInfo attackInfo);
-
-    /// <summary>
-    /// 失敗登録
-    /// </summary>
-    /// <param name="ticket"></param>
-    /// <returns></returns>
-    IDisposable RegisterFailureTicket(FailureTicket<ICollector> ticket);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -92,12 +85,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
     private ICharaTurn m_CharaTurn;
     private ICharaAnimator m_CharaAnimator;
-
-    /// <summary>
-    /// 確率で攻撃を失敗させる
-    /// </summary>
-    private FailureProbabilitySystem<ICollector> m_FailureProbabilitySystem = new FailureProbabilitySystem<ICollector>();
-    IDisposable ICharaBattle.RegisterFailureTicket(FailureTicket<ICollector> ticket) => m_FailureProbabilitySystem.Register(ticket);
 
     /// <summary>
     /// 攻撃前に呼ばれる
@@ -191,18 +178,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         // 誰かが行動中なら攻撃できない
         if (m_TurnManager.NoOneActing == false)
             return false;
-
-        // 攻撃失敗
-        if (m_FailureProbabilitySystem.Judge(out var ticket) == true)
-        {
-            await m_CharaTurn.WaitFinishActing();
-            ticket.OnFail(Owner);
-
-            var acting = m_CharaTurn.RegisterActing();
-            await Task.Delay(500);
-            acting.Dispose();
-            return true;
-        }
 
         await m_CharaMove.Face(direction); // 向く
         var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB, false, direction); // 攻撃情報　

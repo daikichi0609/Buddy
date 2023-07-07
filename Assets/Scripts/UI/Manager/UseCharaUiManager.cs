@@ -50,6 +50,10 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
 
         var use = m_OptionMethod.SubscribeWithState(this, (index, self) =>
         {
+            // アクション登録
+            var player = self.m_UnitHolder.Player;
+            player.GetInterface<ICharaLastActionHolder>().RegisterAction(CHARA_ACTION.ITEM_USE);
+
             self.DeactivateAll();
             self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.FriendList[index], self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
                 self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
