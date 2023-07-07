@@ -203,7 +203,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         if (m_UnitFinder.TryGetSpecifiedPositionUnit(destinationPos, out var unit) == true)
         {
             // プレイヤーキャラでないなら、もしくは相手がプレイヤーキャラでないなら入れ違わない
-            if (m_Type.Type != CHARA_TYPE.FRIEND || unit.GetInterface<ICharaTypeHolder>().Type != CHARA_TYPE.FRIEND)
+            if (m_Type.Type != CHARA_TYPE.FRIEND || unit.GetInterface<ICharaTypeHolder>().Type != CHARA_TYPE.FRIEND || unit.GetInterface<ICharaStatusAbnormality>().IsSleeping == true)
                 return false;
             else
             {

@@ -45,6 +45,14 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
         owner.Register<ICharaCondition>(this);
     }
 
+    protected override async void Dispose()
+    {
+        foreach (var condition in m_CharaCondition)
+            await condition.OnFinish(Owner);
+        m_CharaCondition.Clear();
+        base.Dispose();
+    }
+
     /// <summary>
     /// 状態異常追加
     /// </summary>
@@ -84,7 +92,7 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
     /// 状態異常終了
     /// </summary>
     /// <returns></returns>
-    async Task ICharaCondition.FinishCondition()
+    private async Task FinishCondition()
     {
         for (int i = 0; i < m_CharaCondition.Count; i++)
         {
@@ -96,4 +104,5 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
             }
         }
     }
+    Task ICharaCondition.FinishCondition() => FinishCondition();
 }

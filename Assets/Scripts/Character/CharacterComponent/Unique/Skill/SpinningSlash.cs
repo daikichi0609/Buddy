@@ -7,7 +7,7 @@ public class SpinningSlash : Skill
     protected override string Name => "かいてんぎり";
     protected override string Description => "目の前の敵をまとめて攻撃する。";
 
-    protected override int CoolTime => 8;
+    protected override int CoolTime => 12;
     private static readonly float ATK_MAG = 1.2f;
 
     private static readonly string SPINNING_SLASH = "SpinningSlash";

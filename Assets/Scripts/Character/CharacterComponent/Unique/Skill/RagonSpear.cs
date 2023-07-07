@@ -6,8 +6,8 @@ public class RagonSpear : Skill
     protected override string Name => "ラゴン・スピア";
     protected override string Description => "前方2マスまでの敵をまとめて攻撃する。";
 
-    protected override int CoolTime => 7;
-    private static readonly float ATK_MAG = 1.5f;
+    protected override int CoolTime => 10;
+    private static readonly float ATK_MAG = 1.3f;
     private static readonly int DISTANCE = 2;
 
     private static readonly string RAGON_SPEAR = "RagonSpear";

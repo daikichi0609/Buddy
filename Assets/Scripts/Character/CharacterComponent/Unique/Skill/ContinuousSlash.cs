@@ -8,8 +8,8 @@ public class ContinuousSlash : Skill
     protected override string Name => "れんぞくぎり";
     protected override string Description => "目の前の敵1体に2-5回の間、連続で攻撃をする。";
 
-    protected override int CoolTime => 6;
-    private static readonly float ATK_MAG = 0.8f;
+    protected override int CoolTime => 10;
+    private static readonly float ATK_MAG = 1.0f;
 
     /// <summary>
     /// 連続攻撃

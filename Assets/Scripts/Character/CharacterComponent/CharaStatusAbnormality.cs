@@ -36,6 +36,13 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
         owner.Register(this);
     }
 
+    protected override void Initialize()
+    {
+        base.Initialize();
+        m_CharaStatus = Owner.GetInterface<ICharaStatus>();
+        m_LastAction = Owner.GetInterface<ICharaLastActionHolder>();
+    }
+
     protected override void Dispose()
     {
         m_IsPoison = false;
