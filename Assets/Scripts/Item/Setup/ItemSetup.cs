@@ -50,6 +50,7 @@ public class ItemSetup : PrefabSetup
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
             { "体力回復", typeof(RecoverHp).FullName },
             { "固定ダメージ", typeof(CauseFixedDamage).FullName },
+            { "毒", typeof(BePoison).FullName },
             { "眠り", typeof(FallAsleep).FullName },
         };
     }
@@ -90,24 +91,7 @@ public class ItemSetup : PrefabSetup
     /// <param name="type"></param>
     private void CreateItemEffectAssetInternal(Type type)
     {
-        // サンプル
-        if (type == typeof(SampleItemEffect))
-            m_Effect = ScriptableObject.CreateInstance<SampleItemEffect>();
-
-        // 空腹値回復
-        if (type == typeof(RecoverHp))
-            m_Effect = ScriptableObject.CreateInstance<RecoverHp>();
-
-        // 直線投擲
-        if (type == typeof(CauseFixedDamage))
-            m_Effect = ScriptableObject.CreateInstance<CauseFixedDamage>();
-
-        if (type == typeof(FallAsleep))
-            m_Effect = ScriptableObject.CreateInstance<FallAsleep>();
-
-        if (m_Effect == null)
-            return;
-
+        m_Effect = (ItemEffectBase)ScriptableObject.CreateInstance(type);
         m_Effect.name = type.ToString();
     }
 #endif
