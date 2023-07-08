@@ -24,6 +24,9 @@ public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
     [SerializeField]
     private Text m_DescriptionText;
 
+    [SerializeField]
+    private GameObject[] m_CheckMarks;
+
     protected override int MaxDepth => 2;
     protected override string FixLogText => "かしこさを確認する。";
     private int m_UnitIndex;
@@ -33,7 +36,13 @@ public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
     {
         base.Awake();
 
-        m_OptionMethods[0].SubscribeWithState(this, (option, self) => self.m_Depth.Value++).AddTo(this);
+        m_OptionMethods[0].SubscribeWithState(this, (_, self) => self.m_Depth.Value++).AddTo(this);
+        m_OptionMethods[1].SubscribeWithState(this, (option, self) =>
+        {
+            var clevernessHandler = self.CurrentUnit.GetInterface<ICharaClevernessHandler>();
+            bool result = clevernessHandler.SwitchActivate(option);
+            m_CheckMarks[option].SetActive(result);
+        }).AddTo(this);
 
         m_Depth
             .Zip(m_Depth.Skip(1), (x, y) => new { OldValue = x, NewValue = y })
@@ -98,6 +107,16 @@ public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
 
     private OptionElement CreateOptionElement1()
     {
+        IUiBase ui = m_UiManaged[1];
+        for (int i = 0; i < ui.TextCount; i++)
+        {
+            var clevernessHandler = CurrentUnit.GetInterface<ICharaClevernessHandler>();
+            if (clevernessHandler.TryGetCleverness(i, out var cleverness) == true)
+                m_CheckMarks[i].SetActive(cleverness.IsActive);
+            else
+                m_CheckMarks[i].SetActive(false);
+        }
+
         var skillNames = CreateClevernessNames(CurrentUnit, out var skillCount);
         return new OptionElement(m_OptionMethods[1], skillNames, skillCount);
     }

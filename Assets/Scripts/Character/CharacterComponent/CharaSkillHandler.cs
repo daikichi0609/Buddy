@@ -25,6 +25,13 @@ public interface ICharaSkillHandler : IActorInterface
     /// <param name="skill"></param>
     /// <returns></returns>
     bool TryGetSkill(int index, out SkillHolder skill);
+
+    /// <summary>
+    /// 有効化切り替え
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    bool SwitchActivate(int index);
 }
 
 public sealed class SkillHolder
@@ -33,7 +40,6 @@ public sealed class SkillHolder
     /// スキル
     /// </summary>
     private ISkill Skill { get; }
-    public ISkill GetSkill => Skill;
 
     /// <summary>
     /// クールタイム
@@ -46,6 +52,9 @@ public sealed class SkillHolder
     /// </summary>
     private bool m_IsActive;
     public bool IsActive { get => m_IsActive; set => m_IsActive = value; }
+
+    public string Name => Skill.Name;
+    public string Description => Skill.Description;
 
     public SkillHolder(ISkill skill) => Skill = skill;
 
@@ -62,7 +71,7 @@ public sealed class SkillHolder
     /// スキル効果
     /// </summary>
     /// <returns></returns>
-    public async Task Activate(SkillContext ctx)
+    public async Task SkillInternal(SkillContext ctx)
     {
         m_CoolTime = Skill.CoolTime;
         await Skill.Skill(ctx);
@@ -106,22 +115,6 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     }
 
     /// <summary>
-    /// スキル取得（あるなら）
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="skill"></param>
-    /// <returns></returns>
-    bool ICharaSkillHandler.TryGetSkill(int index, out SkillHolder skill)
-    {
-        skill = null;
-        if (index < 0 || index >= m_Skills.Count)
-            return false;
-
-        skill = m_Skills[index];
-        return skill != null;
-    }
-
-    /// <summary>
     /// クールタイム進める
     /// </summary>
     private void CoolDown()
@@ -137,6 +130,7 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     void ICharaSkillHandler.RegisterSkill(ISkill skill)
     {
         var holder = new SkillHolder(skill);
+        holder.IsActive = true;
         m_Skills.Add(holder);
     }
 
@@ -161,7 +155,33 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
         m_LastAction.RegisterAction(CHARA_ACTION.SKILL);
 
         SkillContext ctx = new SkillContext(Owner, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, m_EffectHolder, m_SoundHolder);
-        await skillHolder.Activate(ctx);
+        await skillHolder.SkillInternal(ctx);
         return true;
     }
+
+    bool ICharaSkillHandler.SwitchActivate(int index)
+    {
+        if (TryGetSkill(index, out var skill) == false)
+            return false;
+
+        skill.IsActive = !skill.IsActive;
+        return skill.IsActive;
+    }
+
+    /// <summary>
+    /// スキル取得（あるなら）
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="skill"></param>
+    /// <returns></returns>
+    private bool TryGetSkill(int index, out SkillHolder skill)
+    {
+        skill = null;
+        if (index < 0 || index >= m_Skills.Count)
+            return false;
+
+        skill = m_Skills[index];
+        return skill != null;
+    }
+    bool ICharaSkillHandler.TryGetSkill(int index, out SkillHolder skill) => TryGetSkill(index, out skill);
 }

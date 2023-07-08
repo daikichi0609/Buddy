@@ -6,57 +6,60 @@ using Zenject;
 
 public interface ICharaClevernessHandler : IActorInterface
 {
-    bool TryGetCleverness(int index, out ICleverness skill);
-
     /// <summary>
     /// スキル登録
     /// </summary>
-    /// <param name="skill"></param>
-    void RegisterCleverness(ICleverness skill);
+    /// <param name="cleverness"></param>
+    void RegisterCleverness(ICleverness cleverness);
 
     /// <summary>
     /// 賢さ有効化
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    void Activate(int index);
+    bool SwitchActivate(int index);
+
+    /// <summary>
+    /// 賢さ取得
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="cleverness"></param>
+    /// <returns></returns>
+    bool TryGetCleverness(int index, out ClevernessHolder cleverness);
+}
+
+public sealed class ClevernessHolder
+{
+    /// <summary>
+    /// スキル
+    /// </summary>
+    private ICleverness Cleverness { get; }
+
+    /// <summary>
+    /// クールタイム
+    /// </summary>
+    private IDisposable m_Disposable;
+    public bool IsActive => m_Disposable != null;
+
+    public string Name => Cleverness.Name;
+    public string Description => Cleverness.Description;
+
+    public ClevernessHolder(ICleverness cleverness) => Cleverness = cleverness;
+
+    /// <summary>
+    /// 賢さ有効化
+    /// </summary>
+    /// <returns></returns>
+    public void Activate(ClevernessContext ctx) => m_Disposable = Cleverness.Activate(ctx);
+
+    /// <summary>
+    /// 賢さ無効化
+    /// </summary>
+    public void Deactivate() => m_Disposable?.Dispose();
 }
 
 public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandler
 {
-    private sealed class ClevernessHolder
-    {
-        /// <summary>
-        /// スキル
-        /// </summary>
-        private ICleverness Cleverness { get; }
-        public ICleverness GetCleverness => Cleverness;
-
-        /// <summary>
-        /// クールタイム
-        /// </summary>
-        private IDisposable m_Disposable;
-        public bool IsActive => m_Disposable != null;
-
-        public ClevernessHolder(ICleverness cleverness) => Cleverness = cleverness;
-
-        /// <summary>
-        /// 賢さ有効化
-        /// </summary>
-        /// <returns></returns>
-        public void Activate(ClevernessContext ctx) => m_Disposable = Cleverness.Activate(ctx);
-
-        /// <summary>
-        /// 賢さ無効化
-        /// </summary>
-        public void Deactivate() => m_Disposable?.Dispose();
-    }
-
-    [Inject]
-    private IDungeonHandler m_DungeonHandler;
-    [Inject]
-    private IUnitFinder m_UnitFinder;
-
     /// <summary>
     /// 登録されたスキル
     /// </summary>
@@ -68,16 +71,6 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
         owner.Register(this);
     }
 
-    bool ICharaClevernessHandler.TryGetCleverness(int index, out ICleverness cleverness)
-    {
-        cleverness = null;
-        if (index < 0 || index >= m_Clevernesses.Count)
-            return false;
-
-        cleverness = m_Clevernesses[index].GetCleverness;
-        return cleverness != null;
-    }
-
     /// <summary>
     /// スキル登録
     /// </summary>
@@ -85,23 +78,47 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
     void ICharaClevernessHandler.RegisterCleverness(ICleverness cleverness)
     {
         var holder = new ClevernessHolder(cleverness);
+        ClevernessContext ctx = new ClevernessContext(Owner);
+        holder.Activate(ctx);
+
         m_Clevernesses.Add(holder);
     }
 
     /// <summary>
-    /// かしこさ有効化
+    /// かしこさ切り替え
     /// </summary>
-    /// <param name="key"></param>
+    /// <param name="index"></param>
     /// <returns></returns>
-    void ICharaClevernessHandler.Activate(int key)
+    bool ICharaClevernessHandler.SwitchActivate(int index)
     {
-        int index = key - 1;
-        if (index < 0 || index >= m_Clevernesses.Count)
-            return;
+        if (TryGetCleverness(index, out var cleverness) == false)
+            return false;
 
-        var clevernessHolder = m_Clevernesses[index];
+        if (cleverness.IsActive == false)
+        {
+            ClevernessContext ctx = new ClevernessContext(Owner);
+            cleverness.Activate(ctx);
+        }
+        else
+            cleverness.Deactivate();
 
-        ClevernessContext ctx = new ClevernessContext(Owner, m_DungeonHandler, m_UnitFinder);
-        clevernessHolder.Activate(ctx);
+        return cleverness.IsActive;
     }
+
+    /// <summary>
+    /// 賢さ取得（あるなら）
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="cleverness"></param>
+    /// <returns></returns>
+    private bool TryGetCleverness(int index, out ClevernessHolder cleverness)
+    {
+        cleverness = null;
+        if (index < 0 || index >= m_Clevernesses.Count)
+            return false;
+
+        cleverness = m_Clevernesses[index];
+        return cleverness != null;
+    }
+    bool ICharaClevernessHandler.TryGetCleverness(int index, out ClevernessHolder cleverness) => TryGetCleverness(index, out cleverness);
 }

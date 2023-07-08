@@ -51,20 +51,8 @@ public readonly struct ClevernessContext
     /// </summary>
     public ICollector Owner { get; }
 
-    /// <summary>
-    /// ダンジョン
-    /// </summary>
-    public IDungeonHandler DungeonHandler { get; }
-
-    /// <summary>
-    /// ユニット取得
-    /// </summary>
-    public IUnitFinder UnitFinder { get; }
-
-    public ClevernessContext(ICollector owner, IDungeonHandler dungeonHandler, IUnitFinder unitFinder)
+    public ClevernessContext(ICollector owner)
     {
         Owner = owner;
-        DungeonHandler = dungeonHandler;
-        UnitFinder = unitFinder;
     }
 }

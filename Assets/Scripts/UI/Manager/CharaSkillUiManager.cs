@@ -24,6 +24,9 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     [SerializeField]
     private Text m_DescriptionText;
 
+    [SerializeField]
+    private GameObject[] m_CheckMarks;
+
     protected override int MaxDepth => 2;
     protected override string FixLogText => "スキルを確認する。";
     private int m_UnitIndex;
@@ -35,6 +38,13 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
 
         // Depth上げ
         m_OptionMethods[0].SubscribeWithState(this, (option, self) => self.m_Depth.Value++).AddTo(this);
+
+        m_OptionMethods[1].SubscribeWithState(this, (option, self) =>
+        {
+            var skillHandler = self.CurrentUnit.GetInterface<ICharaSkillHandler>();
+            bool result = skillHandler.SwitchActivate(option);
+            m_CheckMarks[option].SetActive(result);
+        }).AddTo(this);
 
         // Depth変更時
         m_Depth
@@ -104,6 +114,16 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
 
     private OptionElement CreateOptionElement1()
     {
+        IUiBase ui = m_UiManaged[1];
+        for (int i = 0; i < ui.TextCount; i++)
+        {
+            var skillHandler = CurrentUnit.GetInterface<ICharaSkillHandler>();
+            if (skillHandler.TryGetSkill(i, out var skill) == true)
+                m_CheckMarks[i].SetActive(skill.IsActive);
+            else
+                m_CheckMarks[i].SetActive(false);
+        }
+
         var skillNames = CreateSkillNames(CurrentUnit, out var skillCount);
         return new OptionElement(m_OptionMethods[1], skillNames, skillCount);
     }
@@ -122,7 +142,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
         {
             if (skillHandler.TryGetSkill(i, out var skill) == true)
             {
-                skillNames[i] = skill.GetSkill.Name;
+                skillNames[i] = skill.Name;
                 skillCount++;
             }
             else
@@ -140,7 +160,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     {
         var skillHandler = unit.GetInterface<ICharaSkillHandler>();
         if (skillHandler.TryGetSkill(index, out var skill) == true)
-            m_DescriptionText.text = skill.GetSkill.Description;
+            m_DescriptionText.text = skill.Description;
     }
 }
 
