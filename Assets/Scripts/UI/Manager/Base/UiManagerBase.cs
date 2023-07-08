@@ -96,6 +96,11 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     private static readonly string QUIT = "UiQuit";
 
     /// <summary>
+    /// ミニマップを表示するか
+    /// </summary>
+    protected abstract bool IsActiveMiniMap { get; }
+
+    /// <summary>
     /// 操作するUi
     /// </summary>
     [SerializeField, ReorderableList]
@@ -181,6 +186,13 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
         }
         else
             m_BattleLogManager.Deactive();
+
+        // ミニマップの非表示
+        if (IsActiveMiniMap == false)
+        {
+            var disposable = m_MiniMapRenderer.SetActive(false);
+            m_Disposables.Add(disposable);
+        }
     }
     void IUiManager.Activate() => Activate();
 

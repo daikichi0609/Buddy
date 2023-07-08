@@ -27,6 +27,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     [SerializeField]
     private GameObject[] m_CheckMarks;
 
+    protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 2;
     protected override string FixLogText => "スキルを確認する。";
     private int m_UnitIndex;

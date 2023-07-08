@@ -110,10 +110,10 @@ public class UiBase : IUiBase
     /// </summary>
     void IUiBase.Initialize(CompositeDisposable disposable, OptionElement element, bool changeColor)
     {
-        Initialize(element, changeColor);
-
         // 有効な選択肢の変更
         OptionIdChanged.SubscribeWithState(this, (option, self) => self.ChangeTextColor(option)).AddTo(disposable);
+
+        Initialize(element, changeColor);
     }
     protected void Initialize(OptionElement element, bool changeColor)
     {

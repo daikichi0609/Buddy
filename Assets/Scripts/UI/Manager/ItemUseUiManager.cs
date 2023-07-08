@@ -25,6 +25,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     [Inject]
     private IUseCharaUiManager m_UseCharaUiManager;
 
+    protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 1;
     protected override string FixLogText => "どうする？";
 

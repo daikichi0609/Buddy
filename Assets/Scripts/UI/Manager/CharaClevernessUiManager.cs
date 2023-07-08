@@ -27,6 +27,7 @@ public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
     [SerializeField]
     private GameObject[] m_CheckMarks;
 
+    protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 2;
     protected override string FixLogText => "かしこさを確認する。";
     private int m_UnitIndex;

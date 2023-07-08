@@ -20,6 +20,7 @@ public class BagUiManager : UiManagerBase, IBagUiManager
     [Inject]
     private ITeamInventory m_TeamInventory;
 
+    protected override bool IsActiveMiniMap => false;
     protected override string FixLogText => "アイテムを選択する。";
     protected override int MaxDepth => 1;
 

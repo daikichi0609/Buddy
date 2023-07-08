@@ -23,6 +23,7 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     [Inject]
     private IDungeonHandler m_DungeonHandler;
 
+    protected override bool IsActiveMiniMap => false;
     protected override string FixLogText => "誰が？";
     protected override int MaxDepth => 1;
 

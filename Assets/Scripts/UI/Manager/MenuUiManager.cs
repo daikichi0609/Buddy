@@ -22,6 +22,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     [Inject]
     private ICharaClevernessUiManager m_ClevernessUiManager;
 
+    protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 1;
     protected override string FixLogText => "コマンドを選択する。";
 

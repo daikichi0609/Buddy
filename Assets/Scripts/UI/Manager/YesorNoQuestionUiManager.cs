@@ -29,6 +29,7 @@ public class YesorNoQuestionUiManager : UiManagerBase, IYesorNoQuestionUiManager
     [Inject]
     protected IDungeonProgressManager m_DungeonProgressManager;
 
+    protected override bool IsActiveMiniMap => true;
     protected override int MaxDepth => 1;
     protected override string FixLogText => "";
 
