@@ -81,7 +81,7 @@ public class CurrentStatus
     {
         float mag = 1f;
         foreach (var buff in m_BuffList)
-            if (buff.Type == PARAMETER_TYPE.CR)
+            if (buff.Type == type)
                 mag += buff.Mag;
         return mag;
     }

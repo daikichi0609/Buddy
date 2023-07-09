@@ -44,8 +44,9 @@ public sealed class SkillHolder
     /// <summary>
     /// クールタイム
     /// </summary>
-    private int m_CoolTime;
-    public int CoolTime => m_CoolTime;
+    private int m_CurrentCoolTime;
+    public int CurrentCoolTime => m_CurrentCoolTime;
+    public int MaxCoolTime => Skill.CoolTime;
 
     /// <summary>
     /// アクティブであるかどうか
@@ -63,8 +64,8 @@ public sealed class SkillHolder
     /// </summary>
     public void CoolDown()
     {
-        if (m_CoolTime > 0)
-            m_CoolTime--;
+        if (m_CurrentCoolTime > 0)
+            m_CurrentCoolTime--;
     }
 
     /// <summary>
@@ -73,7 +74,7 @@ public sealed class SkillHolder
     /// <returns></returns>
     public async Task SkillInternal(SkillContext ctx)
     {
-        m_CoolTime = Skill.CoolTime;
+        m_CurrentCoolTime = Skill.CoolTime;
         await Skill.Skill(ctx);
     }
 }
@@ -146,9 +147,9 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
             return false;
 
         var skillHolder = m_Skills[index];
-        if (skillHolder.CoolTime > 0)
+        if (skillHolder.CurrentCoolTime > 0)
         {
-            m_BattleLogManager.Log("クールダウン中。残り" + skillHolder.CoolTime + "ターンで使用可能。");
+            m_BattleLogManager.Log("クールダウン中。残り" + skillHolder.CurrentCoolTime + "ターンで使用可能。");
             return false;
         }
 

@@ -7,7 +7,7 @@ public class VaccumSlash : Skill
     protected override string Name => "しんくうぎり";
     protected override string Description => "遠くの敵を攻撃する。";
 
-    protected override int CoolTime => 15;
+    protected override int CoolTime => 30;
     private static readonly float ATK_MAG = 1.5f;
     private static readonly int DISTANCE = 10;
 

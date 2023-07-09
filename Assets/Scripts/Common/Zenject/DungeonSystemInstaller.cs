@@ -239,5 +239,12 @@ public class DungeonSystemInstaller : MonoInstaller
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();
+
+        // スキルCT確認Ui
+        Container.Bind<SkillCoolTimeUiManager>()
+            .To<SkillCoolTimeUiManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }
