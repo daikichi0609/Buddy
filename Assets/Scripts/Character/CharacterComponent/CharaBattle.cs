@@ -64,6 +64,21 @@ public interface ICharaBattleEvent : IActorEvent
     /// 死亡時
     /// </summary>
     IObservable<AttackResult> OnDead { get; }
+
+    /// <summary>
+    /// ダメージイベント登録
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    IDisposable RegisterOnDamageEvent(BattleSystem.OnDamageEvent damageEvent);
+    BattleSystem.OnDamageEvent OnDamageEvent { get; }
+
+    /// <summary>
+    /// 攻撃後非同期イベント
+    /// </summary>
+    /// <param name="task"></param>
+    /// <returns></returns>
+    IDisposable RegisterOnPostAttackEvent(Func<AttackResult, Task> func);
 }
 
 public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
@@ -83,7 +98,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaMove m_CharaMove;
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
-    private ICharaTurn m_CharaTurn;
     private ICharaAnimator m_CharaAnimator;
 
     /// <summary>
@@ -116,6 +130,24 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private Subject<AttackResult> m_OnDead = new Subject<AttackResult>();
     IObservable<AttackResult> ICharaBattleEvent.OnDead => m_OnDead;
 
+    /// <summary>
+    /// ダメージを与える直前に呼ばれる
+    /// </summary>
+    private BattleSystem.OnDamageEvent m_DamageEvent;
+    BattleSystem.OnDamageEvent ICharaBattleEvent.OnDamageEvent => m_DamageEvent;
+    IDisposable ICharaBattleEvent.RegisterOnDamageEvent(BattleSystem.OnDamageEvent damageEvent)
+    {
+        m_DamageEvent += damageEvent;
+        return Disposable.CreateWithState((this, damageEvent), tuple => tuple.Item1.m_DamageEvent -= tuple.damageEvent);
+    }
+
+    private List<Func<AttackResult, Task>> m_OnPostAttackEvents = new List<Func<AttackResult, Task>>();
+    IDisposable ICharaBattleEvent.RegisterOnPostAttackEvent(Func<AttackResult, Task> func)
+    {
+        m_OnPostAttackEvents.Add(func);
+        return Disposable.CreateWithState((this, func), tuple => tuple.Item1.m_OnPostAttackEvents.Remove(tuple.func));
+    }
+
     public static readonly float ms_NormalAttackTotalTime = 0.7f;
     public static readonly float ms_NormalAttackHitTime = 0.4f;
     public static readonly float ms_DamageTotalTime = 0.5f;
@@ -137,7 +169,6 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaStatus = Owner.GetInterface<ICharaStatus>();
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
-        m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
 
         // 攻撃時、アクション登録
@@ -211,6 +242,10 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
 
         // モーション終わりに実行
         m_OnAttackEnd.OnNext(result);
+
+        // 攻撃終了時イベント
+        foreach (var func in m_OnPostAttackEvents)
+            await func(result);
 
         return result;
     }

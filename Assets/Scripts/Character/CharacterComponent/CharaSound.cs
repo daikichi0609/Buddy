@@ -18,6 +18,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
     public static readonly string ATTACK_SOUND = "Attack";
     private static readonly string DAMAGE_SOUND = "Damage";
     private static readonly string MISS_SOUND = "Miss";
+    private static readonly string CRITICAL_DAMAGE_SOUND = "Critical";
 
     protected override void Register(ICollector owner)
     {
@@ -48,9 +49,15 @@ public class CharaSound : ActorComponentBase, ICharaSound
             }).AddTo(Owner.Disposables);
 
             // ダメージ音
-            battle.OnDamageEnd.SubscribeWithState(this, (_, self) =>
+            battle.OnDamageEnd.SubscribeWithState(this, (result, self) =>
             {
-                if (self.m_SoundHolder.TryGetSound(DAMAGE_SOUND, out var sound) == true)
+                if (result.IsCritical == false)
+                {
+                    if (self.m_SoundHolder.TryGetSound(DAMAGE_SOUND, out var sound) == true)
+                        sound.Play();
+                }
+                else
+                    if (self.m_SoundHolder.TryGetSound(CRITICAL_DAMAGE_SOUND, out var sound) == true)
                     sound.Play();
             }).AddTo(Owner.Disposables);
         }

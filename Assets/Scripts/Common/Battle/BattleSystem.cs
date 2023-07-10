@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class BattleSystem
 {
+    public delegate int OnDamageEvent(int damage, AttackInfo info, ICollector defender);
+
     public static AttackResult Damage(AttackInfo info, ICollector defender)
     {
         var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
@@ -16,6 +18,9 @@ public static class BattleSystem
         random = UnityEngine.Random.Range(0.8f, 1f);
         int power = (int)(info.Atk * random);
         int damage = info.IgnoreDefence ? power : power - defenderStatus.Def;
+
+        if (info.Attacker.RequireEvent<ICharaBattleEvent>(out var battleEvent) == true && battleEvent.OnDamageEvent != null)
+            damage = battleEvent.OnDamageEvent.Invoke(damage, info, defender);
 
         // 急所判定
         random = UnityEngine.Random.Range(0, 1f);
