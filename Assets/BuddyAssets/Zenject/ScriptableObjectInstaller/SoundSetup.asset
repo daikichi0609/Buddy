@@ -25,6 +25,9 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 9acd612c7b095473db42d39e9d4ca660,
       type: 3}
     m_Key: Miss
+  - m_Sound: {fileID: 8713785440656138478, guid: 24b1e222b384f445f991fa152d2db2d7,
+      type: 3}
+    m_Key: Heal
   - m_Sound: {fileID: 5087174154848842170, guid: 45bf19b62fe0241029f48812b35dc7a3,
       type: 3}
     m_Key: LevelUp
@@ -61,3 +64,12 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
       type: 3}
     m_Key: UiQuit
+  - m_Sound: {fileID: 5087174154848842170, guid: 502aceaa278dc457ea36cdb40ac32ab0,
+      type: 3}
+    m_Key: SpinningSlash
+  - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
+      type: 3}
+    m_Key: VaccumSlash
+  - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
+      type: 3}
+    m_Key: RagonSpear

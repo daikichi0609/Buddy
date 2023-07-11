@@ -19,6 +19,9 @@ MonoBehaviour:
   - m_Effect: {fileID: 2719147716907671266, guid: 76a1651cf2bd2473b90b8bd304ff4ee1,
       type: 3}
     m_Key: Damage
+  - m_Effect: {fileID: 857792063300074425, guid: dccc0654813844c769a5392c97739cd2,
+      type: 3}
+    m_Key: Heal
   - m_Effect: {fileID: 4144994383060866251, guid: 97d4e752ed99248619f1783a8cfc4c03,
       type: 3}
     m_Key: Poison

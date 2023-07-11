@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8124742285784771388}
   - component: {fileID: -7309016253849581733}
   m_Layer: 0
-  m_Name: PearSleep
+  m_Name: Pear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

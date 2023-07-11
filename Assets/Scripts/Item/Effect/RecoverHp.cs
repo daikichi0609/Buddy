@@ -8,11 +8,9 @@ public class RecoverHp : ItemEffectBase
     [SerializeField, Header("体力回復値")]
     private int m_Recover;
 
-    protected override Task EffectInternal(ItemEffectContext ctx)
+    protected override async Task EffectInternal(ItemEffectContext ctx)
     {
         if (ctx.Owner.RequireInterface<ICharaStatus>(out var status) == true)
-            status.CurrentStatus.RecoverHp(m_Recover);
-
-        return Task.CompletedTask;
+            await status.RecoverHp(m_Recover);
     }
 }

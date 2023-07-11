@@ -6,6 +6,7 @@ using NaughtyAttributes;
 using Zenject;
 using UniRx;
 using System;
+using System.Threading.Tasks;
 
 public interface ICharaStatus : IActorInterface
 {
@@ -34,6 +35,13 @@ public interface ICharaStatus : IActorInterface
     CurrentStatus CurrentStatus { get; }
 
     /// <summary>
+    /// 回復（エフェクトあり）
+    /// </summary>
+    /// <param name="recover"></param>
+    /// <returns></returns>
+    Task RecoverHp(int recover);
+
+    /// <summary>
     /// HPバーの色変更
     /// </summary>
     /// <param name="color"></param>
@@ -51,11 +59,18 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private IUnitHolder m_UnitHolder;
     [Inject]
     private ICharaUiManager m_CharaUiManager;
+    [Inject]
+    private IEffectHolder m_EffectHolder;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
+    [Inject]
+    private IBattleLogManager m_BattleLogManager;
 
     private int EnemyLevelBase { get; set; }
     int ICharaStatus.EnemyLevelBase { set => EnemyLevelBase = value; }
 
     private static readonly int ENEMY_RATIO = 3;
+    private static readonly string HEAL = "Heal";
 
     /// <summary>
     /// 現在のステータス
@@ -68,6 +83,24 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     {
         base.Register(owner);
         owner.Register(this);
+    }
+
+    /// <summary>
+    /// 回復
+    /// </summary>
+    /// <param name="recover"></param>
+    /// <returns></returns>
+    async Task ICharaStatus.RecoverHp(int recover)
+    {
+        if (m_EffectHolder.TryGetEffect(HEAL, out var effect) == true)
+            effect.Play(Owner);
+        if (m_SoundHolder.TryGetSound(HEAL, out var sound) == true)
+            sound.Play();
+
+        await Task.Delay(500);
+
+        int d = m_CurrentStatus.RecoverHp(recover);
+        m_BattleLogManager.Log(m_CurrentStatus.OriginParam.GivenName + "の体力は" + d.ToString() + "回復した！");
     }
 
     /// <summary>

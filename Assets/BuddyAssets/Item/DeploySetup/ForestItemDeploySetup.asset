@@ -15,9 +15,11 @@ MonoBehaviour:
   m_ItemPacks:
   - m_Setup: {fileID: 11400000, guid: 57c3da565d3de46cd8cb39ce1b7fa034, type: 2}
     m_Weight: 10
+  - m_Setup: {fileID: 11400000, guid: 6a3554999319244c3b3226e83e965eaa, type: 2}
+    m_Weight: 50
   - m_Setup: {fileID: 11400000, guid: e570c6f71bfaf412cbe9517abc6bd0dc, type: 2}
     m_Weight: 50
   - m_Setup: {fileID: 11400000, guid: b3726798b801246e5ae92fabe4fbfeed, type: 2}
-    m_Weight: 30
+    m_Weight: 25
   - m_Setup: {fileID: 11400000, guid: 9329b923d21884ea2b521ae9f058f89f, type: 2}
-    m_Weight: 30
+    m_Weight: 25

@@ -56,8 +56,11 @@ public class SleepCondition : Condition
         m_OnFinish.Dispose();
 
         var status = owner.GetInterface<ICharaStatus>();
-        string log = status.CurrentStatus.OriginParam.GivenName + "は目を覚ました！";
-        owner.GetInterface<ICharaLog>().Log(log);
+        if (status.CurrentStatus.IsDead == false)
+        {
+            string log = status.CurrentStatus.OriginParam.GivenName + "は目を覚ました！";
+            owner.GetInterface<ICharaLog>().Log(log);
+        }
 
         var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
         abnormal.IsSleeping = false;

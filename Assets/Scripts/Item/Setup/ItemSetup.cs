@@ -48,6 +48,7 @@ public class ItemSetup : PrefabSetup
         return new DropdownList<string>()
         {
             { "UNDEFINE", typeof(SampleItemEffect).FullName },
+            { "空腹値回復", typeof(RecoverHungryDesire).FullName },
             { "体力回復", typeof(RecoverHp).FullName },
             { "固定ダメージ", typeof(CauseFixedDamage).FullName },
             { "毒", typeof(BePoison).FullName },

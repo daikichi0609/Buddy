@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7273695149672835225
+--- !u!114 &-1097099866595867882
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dffdad2afe8a4f31bf88a903cd69c44, type: 3}
-  m_Name: CauseFixedDamage
+  m_Script: {fileID: 11500000, guid: da35f8c2a4ade452388e0fcec1d06a6a, type: 3}
+  m_Name: RecoverHp
   m_EditorClassIdentifier: 
-  m_Damage: 15
+  m_Recover: 50
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23,11 +23,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
-  m_Name: Branch
+  m_Name: BananaSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 7947475297059854699, guid: f40cbfeb9d7494c65937ecc0d58021fd,
+  m_Prefab: {fileID: 3620758811206726282, guid: 8596de2ad51c14d7294f2c21e2e68cfc,
     type: 3}
-  m_ItemName: "\u30D4\u30FC\u30CA\u30C3\u30C4"
-  m_Effect: {fileID: -7273695149672835225}
-  m_CanEat: 0
-  m_Type: CauseFixedDamage
+  m_ItemName: "\u30D0\u30CA\u30CA"
+  m_Effect: {fileID: -1097099866595867882}
+  m_CanEat: 1
+  m_Recover: 5
+  m_Type: RecoverHp

@@ -67,10 +67,12 @@ public class CurrentStatus
     /// </summary>
     /// <param name="add"></param>
     /// <param name="canDead"></param>
-    public void RecoverHp(int add, bool canDead = true)
+    public int RecoverHp(int add, bool canDead = true)
     {
         int min = canDead ? 0 : 1;
+        int prevHp = Hp;
         Hp = Math.Clamp(Hp + add, min, MaxHp);
+        return Hp - prevHp;
     }
 
     /// <summary>

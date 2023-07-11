@@ -28,7 +28,7 @@ public class DungeonEnemyAutoSpawner : IDungeonEnemyAutoSpawner, IInitializable
     [Inject]
     private DungeonProgressHolder m_DungeonProgressHolder;
 
-    private static int SPAWN_INTERVAL = 10;
+    private static int SPAWN_INTERVAL = 15;
     private int m_SpawnTurnCount;
 
     void IInitializable.Initialize()
