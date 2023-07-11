@@ -34,7 +34,11 @@ public class PoisonCondition : Condition
         var disposable = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(disposable);
 
-        var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
+        var holder = owner.GetInterface<ICharaObjectHolder>();
+        var color = holder.RegisterColor(ms_BarColor);
+        m_OnFinish.Add(color);
+
+        var pos = holder.CharaObject.transform.position;
         await m_EffectHandler.Play(pos, 0.5f);
     }
 

@@ -25,6 +25,13 @@ public interface ICharaObjectHolder : IActorInterface
     /// <param name="follow"></param>
     /// <returns></returns>
     IDisposable Follow(GameObject follow);
+
+    /// <summary>
+    /// 色登録
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    IDisposable RegisterColor(Color32 color);
 }
 
 public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
@@ -51,9 +58,20 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     /// </summary>
     [SerializeField]
     private SkinnedMeshRenderer m_MeshRenderer;
+    private Color32 m_CurrentColor = DEFAULT_COLOR;
+    IDisposable ICharaObjectHolder.RegisterColor(Color32 color)
+    {
+        m_CurrentColor = color;
+        m_MeshRenderer.material.color = m_CurrentColor;
+        return Disposable.CreateWithState(this, self =>
+        {
+            self.m_CurrentColor = DEFAULT_COLOR;
+            self.m_MeshRenderer.material.color = self.m_CurrentColor;
+        });
+    }
 
-    private static readonly Color DEFAULT_COLOR = new Color(1f, 1f, 1f, 1f);
-    private static readonly Color RED_COLOR = new Color(1f, 0.4f, 0.4f, 1f);
+    private static readonly Color32 DEFAULT_COLOR = new Color32(255, 255, 255, 255);
+    private static readonly Color32 RED_COLOR = new Color32(255, 108, 108, 255);
     private static readonly float FLASH_SPEED = 0.1f;
 
     protected override void Initialize()
@@ -91,13 +109,10 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     /// <returns></returns>
     async private Task RedFlash()
     {
-        m_MeshRenderer.material.DOColor(RED_COLOR, FLASH_SPEED);
-        await Task.Delay(100);
-        m_MeshRenderer.material.DOColor(DEFAULT_COLOR, FLASH_SPEED);
-        await Task.Delay(100);
-        m_MeshRenderer.material.DOColor(RED_COLOR, FLASH_SPEED);
-        await Task.Delay(100);
-        m_MeshRenderer.material.DOColor(DEFAULT_COLOR, FLASH_SPEED);
+        await m_MeshRenderer.material.DOColor(RED_COLOR, FLASH_SPEED).AsyncWaitForCompletion();
+        await m_MeshRenderer.material.DOColor(m_CurrentColor, FLASH_SPEED).AsyncWaitForCompletion();
+        await m_MeshRenderer.material.DOColor(RED_COLOR, FLASH_SPEED).AsyncWaitForCompletion();
+        await m_MeshRenderer.material.DOColor(m_CurrentColor, FLASH_SPEED).AsyncWaitForCompletion();
     }
 
     /// <summary>
