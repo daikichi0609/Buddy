@@ -24,7 +24,7 @@ MonoBehaviour:
     m_Key: Heal
   - m_Effect: {fileID: 7059658453140631162, guid: ddf70b48092ac443d9719517bd694bde,
       type: 3}
-    m_Key: Eat
+    m_Key: ItemEat
   - m_Effect: {fileID: 4144994383060866251, guid: 97d4e752ed99248619f1783a8cfc4c03,
       type: 3}
     m_Key: Poison
