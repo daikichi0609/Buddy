@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
@@ -9,7 +10,7 @@ public interface ICharaSkillHandler : IActorInterface
     /// スキル登録
     /// </summary>
     /// <param name="skill"></param>
-    void RegisterSkill(ISkill skill);
+    IDisposable RegisterSkill(ISkill skill);
 
     /// <summary>
     /// スキル発動
@@ -128,11 +129,12 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     /// スキル登録
     /// </summary>
     /// <param name="skill"></param>
-    void ICharaSkillHandler.RegisterSkill(ISkill skill)
+    IDisposable ICharaSkillHandler.RegisterSkill(ISkill skill)
     {
         var holder = new SkillHolder(skill);
         holder.IsActive = true;
         m_Skills.Add(holder);
+        return Disposable.CreateWithState((this, holder), tuple => tuple.Item1.m_Skills.Remove(holder));
     }
 
     /// <summary>

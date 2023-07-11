@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2489073920378911347}
   - component: {fileID: 5637207920635477287}
   - component: {fileID: 59206195645774684}
-  - component: {fileID: 8956647720972753667}
   m_Layer: 0
   m_Name: BOXMAN
   m_TagString: Untagged
@@ -76,18 +75,6 @@ MonoBehaviour:
   m_CharaObject: {fileID: 7437906401129777486}
   m_MoveObject: {fileID: 8497573164149189218}
   m_MeshRenderer: {fileID: 7437906401116145232}
---- !u!114 &8956647720972753667
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8497573164149189218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: deb0d5552247b4539b9c863d037be45c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &7437906401129877234
 PrefabInstance:
   m_ObjectHideFlags: 0

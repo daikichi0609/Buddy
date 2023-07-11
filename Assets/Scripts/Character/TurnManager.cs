@@ -164,7 +164,7 @@ public class TurnManager : ITurnManager, IInitializable
 
             // 死んでるキャラは行動させない
             var status = unit.GetInterface<ICharaStatus>();
-            if (status.IsDead == true)
+            if (status.CurrentStatus.IsDead == true)
             {
 #if DEBUG
                 Debug.Log(status.CurrentStatus.OriginParam.GivenName + "は死亡しているので無視します。");

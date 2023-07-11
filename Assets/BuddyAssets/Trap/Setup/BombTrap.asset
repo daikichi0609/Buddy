@@ -18,7 +18,7 @@ MonoBehaviour:
     type: 3}
   m_SoundObject: {fileID: 5087174154848842170, guid: 588b992cb4ff34ff4a61886637e39411,
     type: 3}
-  m_TrapEffect: {fileID: 3069249077738780471}
+  m_Effect: {fileID: 3069249077738780471}
   m_Type: BombTrap
 --- !u!114 &3069249077738780471
 MonoBehaviour:

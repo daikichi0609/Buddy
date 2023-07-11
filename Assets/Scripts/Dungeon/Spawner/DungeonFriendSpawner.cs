@@ -55,7 +55,10 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
             if (m_TeamStatusHolder.TryGetLeaderStatus(out var status) == true)
                 e.SetStatus(status);
             else
-                e.SetStatus(setup as CharacterSetup);
+            {
+                e.SetStatus(setup);
+                m_TeamStatusHolder.RegisterLeaderStatus(e.CurrentStatus);
+            }
 
         leader.Initialize();
         PostSpawnLeader(leader);
@@ -108,17 +111,20 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
         gameObject.transform.position = pos;
 
         // 初期化
-        var leader = gameObject.GetComponent<ICollector>();
-        if (leader.RequireInterface<ICharaStatus>(out var e) == true)
+        var friend = gameObject.GetComponent<ICollector>();
+        if (friend.RequireInterface<ICharaStatus>(out var e) == true)
             if (m_TeamStatusHolder.TryGetFriendStatus(out var status) == true)
                 e.SetStatus(status);
             else
-                e.SetStatus(setup as CharacterSetup);
+            {
+                e.SetStatus(setup);
+                m_TeamStatusHolder.RegisterFriendStatus(e.CurrentStatus);
+            }
 
-        leader.Initialize();
+        friend.Initialize();
 
         // 追加
-        m_UnitHolder.AddFriend(leader);
+        m_UnitHolder.AddFriend(friend);
 
         return Task.CompletedTask;
     }

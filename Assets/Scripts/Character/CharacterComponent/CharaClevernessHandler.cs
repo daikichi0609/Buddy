@@ -10,7 +10,7 @@ public interface ICharaClevernessHandler : IActorInterface
     /// スキル登録
     /// </summary>
     /// <param name="cleverness"></param>
-    void RegisterCleverness(ICleverness cleverness);
+    IDisposable RegisterCleverness(ICleverness cleverness);
 
     /// <summary>
     /// 賢さ有効化
@@ -75,13 +75,14 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
     /// スキル登録
     /// </summary>
     /// <param name="cleverness"></param>
-    void ICharaClevernessHandler.RegisterCleverness(ICleverness cleverness)
+    IDisposable ICharaClevernessHandler.RegisterCleverness(ICleverness cleverness)
     {
         var holder = new ClevernessHolder(cleverness);
         ClevernessContext ctx = new ClevernessContext(Owner);
         holder.Activate(ctx);
 
         m_Clevernesses.Add(holder);
+        return Disposable.CreateWithState((this, holder), tuple => tuple.Item1.m_Clevernesses.Remove(tuple.holder));
     }
 
     /// <summary>

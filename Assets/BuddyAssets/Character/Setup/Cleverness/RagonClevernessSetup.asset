@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6339913011769111089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7facf7028fef441290f22ecc8d58523, type: 3}
+  m_Name: AttackUp
+  m_EditorClassIdentifier: 
+--- !u!114 &-6034261266476120450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a30f5ac1c0224a128b715c25dcc0e6b, type: 3}
+  m_Name: AttackUpIfPoison
+  m_EditorClassIdentifier: 
+--- !u!114 &-5766875149737224351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7e717f578c444f584742f4ee39742d, type: 3}
+  m_Name: AttackWithPoison
+  m_EditorClassIdentifier: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d921a77ed398540bd9ebb24ff4268ca5, type: 3}
+  m_Name: RagonClevernessSetup
+  m_EditorClassIdentifier: 
+  m_Clevernesses:
+  - {fileID: -6339913011769111089}
+  - {fileID: -5766875149737224351}
+  - {fileID: -6034261266476120450}
+  m_Type: AttackUpIfPoison

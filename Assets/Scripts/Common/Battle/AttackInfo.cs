@@ -87,3 +87,40 @@ public readonly struct AttackPercentageInfo
         Direction = dir;
     }
 }
+
+public readonly struct AttackFixedInfo
+{
+    /// <summary>
+    /// 攻撃者
+    /// </summary>
+    public ICollector Attacker { get; }
+
+    /// <summary>
+    /// 攻撃者（名前）
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    /// 攻撃力
+    /// </summary>
+    public int Damage { get; }
+
+    /// <summary>
+    /// 命中率
+    /// </summary>
+    public float Dex { get; }
+
+    /// <summary>
+    /// 攻撃方向
+    /// </summary>
+    public DIRECTION Direction { get; }
+
+    public AttackFixedInfo(ICollector attacker, string name, int damage, float dex, DIRECTION dir)
+    {
+        Attacker = attacker;
+        Name = name;
+        Damage = damage;
+        Dex = dex;
+        Direction = dir;
+    }
+}

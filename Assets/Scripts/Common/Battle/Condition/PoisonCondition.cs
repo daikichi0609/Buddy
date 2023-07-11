@@ -9,7 +9,7 @@ public class PoisonCondition : Condition
     protected override bool CanOverlapping => false;
 
     private static readonly Color32 ms_BarColor = new Color32(167, 87, 168, 255);
-    private static readonly float POISON_DAMAGE_RATIO = 0.03f;
+    private static readonly int POISON_DAMAGE = 2;
     public static readonly int POISON_DAMAGE_INTERVAL = 3;
     public static readonly int POISON_REMAINING_TURN = 30;
     private static readonly string POISON = "Poison";
@@ -45,13 +45,13 @@ public class PoisonCondition : Condition
 
         if (m_RemainingTurn % POISON_DAMAGE_INTERVAL == 0)
         {
-            AttackPercentageInfo info = new AttackPercentageInfo(default, default, POISON_DAMAGE_RATIO, 100f, DIRECTION.NONE);
+            AttackFixedInfo info = new AttackFixedInfo(default, default, POISON_DAMAGE, 100f, DIRECTION.NONE);
 
             var turn = owner.GetInterface<ICharaTurn>();
             await turn.WaitFinishActing();
             var pos = owner.GetInterface<ICharaObjectHolder>().CharaObject.transform.position;
             await m_EffectHandler.Play(pos, 0.5f);
-            await owner.GetInterface<ICharaBattle>().DamagePercentage(info);
+            await owner.GetInterface<ICharaBattle>().Damage(info);
         }
     }
 

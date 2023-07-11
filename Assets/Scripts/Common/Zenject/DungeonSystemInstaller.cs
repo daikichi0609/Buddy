@@ -117,7 +117,7 @@ public class DungeonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
-        // インベントリ
+        // ステータス保存
         Container.Bind<ITeamStatusHolder>()
             .To<TeamStatusHolder>()
             .FromNew()

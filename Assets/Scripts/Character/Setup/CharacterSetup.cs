@@ -17,6 +17,22 @@ public class CharacterSetup : PrefabSetup
     public BattleStatus Status => m_Status;
 
     /// <summary>
+    /// スキル
+    /// </summary>
+    [SerializeField, Header("スキル")]
+    [Expandable]
+    private SkillSetup m_SkillSetup;
+    public SkillSetup SkillSetup => m_SkillSetup;
+
+    /// <summary>
+    /// 賢さ
+    /// </summary>
+    [SerializeField, Header("賢さ")]
+    [Expandable]
+    private ClevernessSetup m_ClevernessSetup;
+    public ClevernessSetup ClevernesssSetup => m_ClevernessSetup;
+
+    /// <summary>
     /// アウトゲーム用Prefab
     /// </summary>
     [SerializeField, Header("アウトゲーム用Prefab")]

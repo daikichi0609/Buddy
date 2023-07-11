@@ -8,8 +8,13 @@ public interface ITeamStatusHolder
     /// ステータス保存
     /// </summary>
     /// <param name="leaderStatus"></param>
+    void RegisterLeaderStatus(CurrentStatus leaderStatus);
+
+    /// <summary>
+    /// ステータス保存
+    /// </summary>
     /// <param name="friendStatus"></param>
-    void RegisterStatus(CurrentStatus leaderStatus, CurrentStatus friendStatus);
+    void RegisterFriendStatus(CurrentStatus friendStatus);
 
     /// <summary>
     /// リーダーステータス取得
@@ -36,18 +41,14 @@ public class TeamStatusHolder : ITeamStatusHolder
     /// <summary>
     /// バディステータス
     /// </summary>
-    private CurrentStatus m_FrinedStatus;
+    private CurrentStatus m_FriendStatus;
 
     /// <summary>
     /// ステータス登録
     /// </summary>
     /// <param name="leaderStatus"></param>
-    /// <param name="friendStatus"></param>
-    void ITeamStatusHolder.RegisterStatus(CurrentStatus leaderStatus, CurrentStatus friendStatus)
-    {
-        m_LeaderStatus = leaderStatus;
-        m_FrinedStatus = friendStatus;
-    }
+    void ITeamStatusHolder.RegisterLeaderStatus(CurrentStatus leaderStatus) => m_LeaderStatus = leaderStatus;
+    void ITeamStatusHolder.RegisterFriendStatus(CurrentStatus friendStatus) => m_FriendStatus = friendStatus;
 
     /// <summary>
     /// リーダーステータス取得
@@ -67,7 +68,7 @@ public class TeamStatusHolder : ITeamStatusHolder
     /// <returns></returns>
     bool ITeamStatusHolder.TryGetFriendStatus(out CurrentStatus status)
     {
-        status = m_FrinedStatus;
+        status = m_FriendStatus;
         return status != null;
     }
 }

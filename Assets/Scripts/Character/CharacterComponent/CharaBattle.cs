@@ -35,7 +35,14 @@ public interface ICharaBattle : IActorInterface
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    Task<AttackResult> DamagePercentage(AttackPercentageInfo attackInfo);
+    Task<AttackResult> Damage(AttackPercentageInfo attackInfo);
+
+    /// <summary>
+    /// 固定ダメージ
+    /// </summary>
+    /// <param name="attackInfo"></param>
+    /// <returns></returns>
+    Task<AttackResult> Damage(AttackFixedInfo attackInfo);
 }
 
 public interface ICharaBattleEvent : IActorEvent
@@ -267,9 +274,21 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// </summary>
     /// <param name="ratio"></param>
     /// <returns></returns>
-    async Task<AttackResult> ICharaBattle.DamagePercentage(AttackPercentageInfo attackInfo)
+    async Task<AttackResult> ICharaBattle.Damage(AttackPercentageInfo attackInfo)
     {
         var result = BattleSystem.DamagePercentage(attackInfo, Owner);
+        await Damage(result, attackInfo.Direction);
+        return result;
+    }
+
+    /// <summary>
+    /// 固定ダメージ
+    /// </summary>
+    /// <param name="ratio"></param>
+    /// <returns></returns>
+    async Task<AttackResult> ICharaBattle.Damage(AttackFixedInfo attackInfo)
+    {
+        var result = BattleSystem.DamageFixed(attackInfo, Owner);
         await Damage(result, attackInfo.Direction);
         return result;
     }

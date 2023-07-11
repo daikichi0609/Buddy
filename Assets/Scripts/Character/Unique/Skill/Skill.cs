@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NaughtyAttributes;
 using UnityEngine;
 
 public interface ISkill
@@ -27,15 +28,18 @@ public interface ISkill
     Task Skill(SkillContext ctx);
 }
 
-public abstract class Skill : ISkill
+public abstract class Skill : ScriptableObject, ISkill
 {
+    [ShowNativeProperty]
     protected abstract string Name { get; }
     string ISkill.Name => Name;
 
     protected string CT => "CT:" + CoolTime + "\n";
+    [ShowNativeProperty]
     protected abstract string Description { get; }
     string ISkill.Description => CT + Description;
 
+    [ShowNativeProperty]
     protected abstract int CoolTime { get; }
     int ISkill.CoolTime => CoolTime;
 

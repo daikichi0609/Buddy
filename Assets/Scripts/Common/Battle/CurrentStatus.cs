@@ -27,6 +27,7 @@ public class CurrentStatus
     [ShowNativeProperty]
     public int Lv { get; set; }
     private float LvMag => 1f + Lv * 0.1f;
+    public bool IsDead => Hp == 0;
 
     // ヒットポイント
     [ShowNativeProperty]

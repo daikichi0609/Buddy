@@ -17,7 +17,6 @@ public class VaccumSlash : Skill
     /// 遠距離攻撃
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="System.NotImplementedException"></exception>
     protected override async Task SkillEffect(SkillContext ctx)
     {
         var move = ctx.Owner.GetInterface<ICharaMove>();

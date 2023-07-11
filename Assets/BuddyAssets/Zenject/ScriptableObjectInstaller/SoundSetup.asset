@@ -19,6 +19,9 @@ MonoBehaviour:
   - m_Sound: {fileID: 8713785440656138478, guid: 368dd7a29e15845f88bfa7d00ade6606,
       type: 3}
     m_Key: Damage
+  - m_Sound: {fileID: 8713785440656138478, guid: d9d4b1427147c455c8c2448cb664283f,
+      type: 3}
+    m_Key: Critical
   - m_Sound: {fileID: 5087174154848842170, guid: 9acd612c7b095473db42d39e9d4ca660,
       type: 3}
     m_Key: Miss

@@ -34,11 +34,6 @@ public interface ICharaStatus : IActorInterface
     CurrentStatus CurrentStatus { get; }
 
     /// <summary>
-    /// 死んでいるか
-    /// </summary>
-    bool IsDead { get; }
-
-    /// <summary>
     /// HPバーの色変更
     /// </summary>
     /// <param name="color"></param>
@@ -69,8 +64,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private CurrentStatus m_CurrentStatus;
     CurrentStatus ICharaStatus.CurrentStatus => m_CurrentStatus;
 
-    bool ICharaStatus.IsDead => m_CurrentStatus.Hp == 0;
-
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -98,11 +91,35 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     void ICharaStatus.SetStatus(CharacterSetup setup)
     {
         var status = setup.Status;
+        bool isPlayer = status is PlayerStatus;
 
-        if (status is PlayerStatus)
+        if (isPlayer == true)
             SetFriendStatus(setup, status as PlayerStatus);
-        else if (status is EnemyStatus)
+        else
             SetEnemyStatus(setup, status as EnemyStatus);
+
+        if (setup.SkillSetup != null)
+        {
+            var skillHandler = Owner.GetInterface<ICharaSkillHandler>();
+            foreach (var skill in setup.SkillSetup.SkillEffects)
+            {
+                var disposable = skillHandler.RegisterSkill(skill);
+                if (isPlayer == false)
+                    Owner.Disposables.Add(disposable);
+            }
+
+        }
+
+        if (setup.ClevernesssSetup != null)
+        {
+            var clevernessHandler = Owner.GetInterface<ICharaClevernessHandler>();
+            foreach (var cleverness in setup.ClevernesssSetup.ClevernessEffects)
+            {
+                var disposable = clevernessHandler.RegisterCleverness(cleverness);
+                if (isPlayer == false)
+                    Owner.Disposables.Add(disposable);
+            }
+        }
     }
 
     /// <summary>

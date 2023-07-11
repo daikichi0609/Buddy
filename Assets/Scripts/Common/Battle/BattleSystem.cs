@@ -6,6 +6,12 @@ public static class BattleSystem
 {
     public delegate int OnDamageEvent(int damage, AttackInfo info, ICollector defender);
 
+    /// <summary>
+    /// ダメージ
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="defender"></param>
+    /// <returns></returns>
     public static AttackResult Damage(AttackInfo info, ICollector defender)
     {
         var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
@@ -43,6 +49,12 @@ public static class BattleSystem
         return new AttackResult(info.Attacker, defender, isHit, damage, isCritical, defenderStatus.Hp, isDead);
     }
 
+    /// <summary>
+    /// 割合ダメージ
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="defender"></param>
+    /// <returns></returns>
     public static AttackResult DamagePercentage(AttackPercentageInfo info, ICollector defender)
     {
         var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
@@ -55,5 +67,24 @@ public static class BattleSystem
 
         bool isDead = defenderStatus.Hp == 0;
         return new AttackResult(info.Attacker, defender, isHit, damage, false, defenderStatus.Hp, isDead);
+    }
+
+    /// <summary>
+    /// 固定ダメージ
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="defender"></param>
+    /// <returns></returns>
+    public static AttackResult DamageFixed(AttackFixedInfo info, ICollector defender)
+    {
+        var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
+
+        var random = UnityEngine.Random.Range(0, 1f);
+        bool isHit = info.Dex >= random;
+        if (isHit == true)
+            defenderStatus.RecoverHp(-info.Damage);
+
+        bool isDead = defenderStatus.Hp == 0;
+        return new AttackResult(info.Attacker, defender, isHit, info.Damage, false, defenderStatus.Hp, isDead);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using NaughtyAttributes;
 
 public interface ICleverness
 {
@@ -29,14 +30,17 @@ public interface ICleverness
     IDisposable Activate(ClevernessContext ctx);
 }
 
-public abstract class Cleverness : ICleverness
+public abstract class Cleverness : ScriptableObject, ICleverness
 {
+    [ShowNativeProperty]
     protected abstract string Name { get; }
     string ICleverness.Name => Name;
 
+    [ShowNativeProperty]
     protected abstract string Description { get; }
     string ICleverness.Description => Description;
 
+    [ShowNativeProperty]
     protected abstract bool CanSwitch { get; }
     bool ICleverness.CanSwitch => CanSwitch;
 

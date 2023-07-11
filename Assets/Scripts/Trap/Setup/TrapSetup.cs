@@ -35,8 +35,8 @@ public class TrapSetup : PrefabSetup
     /// </summary>
     [SerializeField, Header("トラップ効果")]
     [Expandable]
-    private TrapEffectBase m_TrapEffect;
-    public ITrap TrapEffect => m_TrapEffect;
+    private TrapEffectBase m_Effect;
+    public ITrap TrapEffect => m_Effect;
 
     /// <summary>
     /// 生成するトラップタイプ
@@ -68,16 +68,27 @@ public class TrapSetup : PrefabSetup
     [Button]
     private void CreateTrapEffectAsset()
     {
-        if (m_TrapEffect != null)
-            DestroyImmediate(m_TrapEffect, true);
+        DestroyEffectAsset();
 
-        CreateTrapEffectAssetInternal(Type.GetType(m_Type));
+        var t = Type.GetType(m_Type);
+        CreateTrapEffectAssetInternal(t);
 
-        AssetDatabase.AddObjectToAsset(m_TrapEffect, this);
+        AssetDatabase.AddObjectToAsset(m_Effect, this);
         AssetDatabase.SaveAssets();
 
         EditorUtility.SetDirty(this);
-        EditorUtility.SetDirty(m_TrapEffect);
+        EditorUtility.SetDirty(m_Effect);
+    }
+
+    /// <summary>
+    /// 効果アセットがすでにあるなら消す
+    /// </summary>
+    /// <returns></returns>
+    [Button]
+    private void DestroyEffectAsset()
+    {
+        if (m_Effect != null)
+            DestroyImmediate(m_Effect, true);
     }
 
     /// <summary>
@@ -86,8 +97,8 @@ public class TrapSetup : PrefabSetup
     /// <param name="type"></param>
     private void CreateTrapEffectAssetInternal(Type type)
     {
-        m_TrapEffect = (TrapEffectBase)ScriptableObject.CreateInstance(type);
-        m_TrapEffect.name = type.ToString();
+        m_Effect = (TrapEffectBase)ScriptableObject.CreateInstance(type);
+        m_Effect.name = type.ToString();
     }
 #endif
 }
