@@ -24,6 +24,8 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
     private IDungeonHandler m_DungeonHandler;
     [Inject]
     private IUseCharaUiManager m_UseCharaUiManager;
+    [Inject]
+    private IEffectHolder m_EffectHolder;
 
     protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 1;
@@ -69,7 +71,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
                 var self = tuple.Item2;
                 self.DeactivateAll();
                 self.m_ItemSetup.Effect.ThrowStraight(self.m_UnitHolder.Player, self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
+                    self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_EffectHolder, self.m_SoundHolder);
             }
         });
         m_Disposables.Add(throwStraight);

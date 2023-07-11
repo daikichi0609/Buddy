@@ -80,6 +80,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private ICharaTurn m_CharaTurn;
     private ICharaAnimator m_CharaAnimator;
+    private ICharaStatusAbnormality m_Abnormal;
 
     /// <summary>
     /// 位置
@@ -152,6 +153,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
+        m_Abnormal = Owner.GetInterface<ICharaStatusAbnormality>();
 
         // ----- 初期化 ----- //
         Direction = DIRECTION.UNDER;
@@ -170,6 +172,9 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private Task Face(DIRECTION direction)
     {
         if (direction == DIRECTION.NONE)
+            return Task.CompletedTask;
+
+        if (m_Abnormal.IsSleeping == true)
             return Task.CompletedTask;
 
         Direction = direction;

@@ -67,9 +67,9 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 502aceaa278dc457ea36cdb40ac32ab0,
       type: 3}
     m_Key: SpinningSlash
-  - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
+  - m_Sound: {fileID: 5087174154848842170, guid: aa32d3ebe31d144a3ac8bad83584591b,
       type: 3}
     m_Key: VaccumSlash
-  - m_Sound: {fileID: 5087174154848842170, guid: 0d0f7a9296d04455f94471b27bc16ede,
+  - m_Sound: {fileID: 8258253318684563254, guid: 32d1728b88b2f406a8689a0d3f24bb14,
       type: 3}
     m_Key: RagonSpear

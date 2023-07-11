@@ -22,6 +22,8 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
     private IItemManager m_ItemManager;
     [Inject]
     private IDungeonHandler m_DungeonHandler;
+    [Inject]
+    private IEffectHolder m_EffectHolder;
 
     protected override bool IsActiveMiniMap => false;
     protected override string FixLogText => "誰が？";
@@ -45,7 +47,7 @@ public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
 
             self.DeactivateAll();
             self.m_ItemSetup.Effect.Eat(self.m_UnitHolder.FriendList[index], self.m_ItemSetup, self.m_TeamInventory, self.m_ItemManager,
-                self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_SoundHolder);
+                self.m_DungeonHandler, self.m_UnitFinder, self.m_BattleLogManager, self.m_EffectHolder, self.m_SoundHolder);
         });
         m_Disposables.Add(use);
 
