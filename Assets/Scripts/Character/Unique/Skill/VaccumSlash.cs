@@ -34,7 +34,7 @@ public class VaccumSlash : Skill
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
         var animTask = anim.PlayAnimation(ANIMATION_TYPE.SKILL, CharaBattle.ms_NormalAttackTotalTime);
 
-        bool hit = Utility.TryGetForwardUnit(pos, dirV3, DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance) == true;
+        bool hit = Positional.TryGetForwardUnit(pos, dirV3, DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance) == true;
 
         if (ctx.EffectHolder.TryGetEffect(VACCUM_SLASH, out var effect) == true)
         {

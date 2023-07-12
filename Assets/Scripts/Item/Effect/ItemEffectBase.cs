@@ -171,7 +171,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         var dirV3 = move.Direction.ToV3Int();
         var targetType = ctx.Owner.GetInterface<ICharaTypeHolder>().TargetType; // ターゲットタイプ
 
-        var isHit = Utility.TryGetForwardUnit(pos, dirV3, THROW_DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance);
+        var isHit = Positional.TryGetForwardUnit(pos, dirV3, THROW_DISTANCE, targetType, ctx.DungeonHandler, ctx.UnitFinder, out var target, out var flyDistance);
         await ctx.ItemManager.FlyItem(ctx.ItemSetup, pos, dirV3 * flyDistance, !isHit);
         return target;
     }

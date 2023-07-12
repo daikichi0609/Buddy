@@ -37,7 +37,7 @@ public class RagonSpear : Skill
             disposable = effect.Play(ctx.Owner);
 
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
-        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, 1f);
+        await anim.PlayAnimation(ANIMATION_TYPE.SKILL, 0.5f);
 
         disposable?.Dispose();
 
@@ -69,20 +69,11 @@ public class RagonSpear : Skill
     {
         List<DIRECTION> list = new List<DIRECTION>();
 
-        for (int x = -DISTANCE; x <= DISTANCE; x++)
-            for (int z = -DISTANCE; z <= DISTANCE; z++)
-            {
-                if (x != 0 && z != 0 && x != z)
-                    continue;
-
-                var dirV3 = new UnityEngine.Vector3Int(x, 0, z);
-                var pos = ctx.Position + dirV3;
-                if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(pos, out var target, ctx.TypeHolder.TargetType) == true)
-                {
-                    var dir = dirV3.ToDirEnum();
-                    list.Add(dir);
-                }
-            }
+        foreach (var dir in Positional.Directions)
+        {
+            if (Positional.TryGetForwardUnit(ctx.Position, dir, DISTANCE, ctx.TypeHolder.TargetType, ctx.DungeonHandler, ctx.UnitFinder, out var hit, out var flyDistance) == true)
+                list.Add(dir.ToDirEnum());
+        }
 
         dirs = list.ToArray();
         return dirs.Length != 0;

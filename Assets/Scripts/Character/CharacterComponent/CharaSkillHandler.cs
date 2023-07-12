@@ -165,6 +165,10 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     /// <returns></returns>
     private async Task<bool> Skill(int index)
     {
+        // 誰かが行動中なら攻撃できない
+        if (m_TurnManager.NoOneActing == false)
+            return false;
+
         if (index < 0 || index >= m_Skills.Count)
             return false;
 
@@ -221,7 +225,7 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
             var skill = m_Skills[i];
             if (skill.IsActive == false || skill.CurrentCoolTime != 0)
                 continue;
-            if (skill.ShouldUse(new SkillTargetContext(m_CharaMove.Position, m_UnitFinder, m_Type), out dirs) == true)
+            if (skill.ShouldUse(new SkillTargetContext(m_CharaMove.Position, m_UnitFinder, m_DungeonHandler, m_Type), out dirs) == true)
             {
                 index = i;
                 return true;

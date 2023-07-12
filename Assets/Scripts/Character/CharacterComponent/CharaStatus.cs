@@ -179,7 +179,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
         // 死亡時にダンジョンシーンを抜ける
         if (Owner.RequireEvent<ICharaBattleEvent>(out var battle) == true)
         {
-            battle.OnDead.SubscribeWithState(this, (_, self) => self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(Owner.Disposables);
+            battle.OnDead.SubscribeWithState(this, async (_, self) => await self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.PLAYER_DEAD)).AddTo(Owner.Disposables);
         }
 
         // レベル変動時にステータスに反映

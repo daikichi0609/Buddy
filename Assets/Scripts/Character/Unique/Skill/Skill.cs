@@ -105,12 +105,15 @@ public readonly struct SkillTargetContext
 
     public IUnitFinder UnitFinder { get; }
 
+    public IDungeonHandler DungeonHandler { get; }
+
     public ICharaTypeHolder TypeHolder { get; }
 
-    public SkillTargetContext(Vector3Int pos, IUnitFinder unitFinder, ICharaTypeHolder typeHolder)
+    public SkillTargetContext(Vector3Int pos, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, ICharaTypeHolder typeHolder)
     {
         Position = pos;
         UnitFinder = unitFinder;
+        DungeonHandler = dungeonHandler;
         TypeHolder = typeHolder;
     }
 }
