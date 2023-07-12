@@ -32,6 +32,8 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
     private ITurnManager m_TurnManager;
     [Inject]
     private IBattleLogManager m_BattleLogManager;
+    [Inject]
+    private ISoundHolder m_SoundHolder;
 
     /// <summary>
     /// 空腹値
@@ -67,11 +69,12 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         "はやく、なにかたべないと！",
         "たおれてしまう！"
     };
+    private static readonly string HUNGRY = "Hungry";
 
     /// <summary>
     /// 空腹値減少インターバル
     /// </summary>
-    private static readonly int HUNGRY_TURN = 2;
+    private static readonly int HUNGRY_TURN = 3;
 
     /// <summary>
     /// 空腹による体力減少インターバル
@@ -95,7 +98,10 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
                 if (self.IsStarvate == true)
                     self.Starvate();
                 else
+                {
+                    self.StarvateIndex = 0;
                     self.MakeHungry();
+                }
             }).AddTo(Owner.Disposables);
         }
     }
@@ -125,6 +131,10 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
 
         if (StarvateIndex < STARVATE_MESSAGE.Length)
         {
+            if (StarvateIndex == 0)
+                if (m_SoundHolder.TryGetSound(HUNGRY, out var sound) == true)
+                    sound.Play();
+
             m_BattleLogManager.Log(STARVATE_MESSAGE[StarvateIndex]);
             StarvateIndex++;
         }
@@ -141,15 +151,22 @@ public class CharaStarvation : ActorComponentBase, ICharaStarvation
         if (currentTurn % HUNGRY_TURN != 0)
             return;
 
-        if (Owner.RequireInterface<ICharaStatus>(out var status) == false)
-            return;
-
         m_Hungry = Mathf.Clamp(++m_Hungry, 0, MAX_HUNGRY);
 
+        // 8割メッセ
         if (m_Hungry == HUNGRY_08)
+        {
+            if (m_SoundHolder.TryGetSound(HUNGRY, out var sound) == true)
+                sound.Play();
             m_BattleLogManager.Log(MESSAGE_08);
+        }
 
+        // 9割メッセ
         if (m_Hungry == HUNGRY_09)
+        {
+            if (m_SoundHolder.TryGetSound(HUNGRY, out var sound) == true)
+                sound.Play();
             m_BattleLogManager.Log(MESSAGE_09);
+        }
     }
 }

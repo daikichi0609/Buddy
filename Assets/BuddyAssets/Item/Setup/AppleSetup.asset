@@ -17,7 +17,7 @@ MonoBehaviour:
   m_ItemName: "\u308A\u3093\u3054"
   m_Effect: {fileID: 4959158461624972608}
   m_CanEat: 1
-  m_Recover: 30
+  m_Recover: 50
   m_Type: RecoverHungryDesire
 --- !u!114 &4959158461624972608
 MonoBehaviour:

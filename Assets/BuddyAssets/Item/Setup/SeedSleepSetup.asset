@@ -17,7 +17,7 @@ MonoBehaviour:
   m_ItemName: "\u3059\u3084\u3059\u3084\u30D4\u30FC\u30C1"
   m_Effect: {fileID: 1608672371832384807}
   m_CanEat: 1
-  m_Recover: 5
+  m_Recover: 10
   m_Type: FallAsleep
 --- !u!114 &1608672371832384807
 MonoBehaviour:

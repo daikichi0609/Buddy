@@ -114,6 +114,10 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
             e.Dispose();
         }
 
+        // 空腹値回復
+        if (ctx.Owner.RequireInterface<ICharaStarvation>(out var starvation) == true)
+            starvation.RecoverHungry(item.Recover);
+
         await EffectInternal(ctx);
         await PostEffect(owner, item, inventory);
     }

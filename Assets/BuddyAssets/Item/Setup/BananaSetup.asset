@@ -30,5 +30,5 @@ MonoBehaviour:
   m_ItemName: "\u30D0\u30CA\u30CA"
   m_Effect: {fileID: -1097099866595867882}
   m_CanEat: 1
-  m_Recover: 5
+  m_Recover: 10
   m_Type: RecoverHp
