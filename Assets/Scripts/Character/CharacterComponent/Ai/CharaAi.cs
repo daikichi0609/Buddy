@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using Zenject;
-using static AStarSearch;
 
 public interface IAiAction : IActorInterface
 {
@@ -30,6 +29,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected ICharaTurn m_CharaTurn;
     protected ICharaTypeHolder m_TypeHolder;
     protected ICharaStatusAbnormality m_CharaAbnormal;
+    protected ICharaSkillHandler m_CharaSkill;
 
     protected override void Register(ICollector owner)
     {
@@ -44,6 +44,7 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
         m_TypeHolder = Owner.GetInterface<ICharaTypeHolder>();
         m_CharaAbnormal = Owner.GetInterface<ICharaStatusAbnormality>();
+        m_CharaSkill = Owner.GetInterface<ICharaSkillHandler>();
     }
 
     /// <summary>
@@ -51,17 +52,6 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// </summary>
     protected abstract void DecideAndExecuteAction();
     void IAiAction.DecideAndExecuteAction() => DecideAndExecuteAction();
-
-    /// <summary>
-    /// ランダムなターゲットへの方向を返す 主に攻撃前
-    /// </summary>
-    /// <param name="targetList"></param>
-    protected DIRECTION LotteryDirection(List<ICollector> targets)
-    {
-        var target = targets.RandomLottery();
-        var direction = (target.GetInterface<ICharaMove>().Position - m_CharaMove.Position).ToDirEnum();
-        return direction;
-    }
 
     /// <summary>
     /// 移動する
@@ -129,9 +119,9 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// <param name="target"></param>
     /// <param name="targets"></param>
     /// <returns></returns>
-    protected bool TryGetCandidateAttack(AroundCell<ICollector> aroundCell, out List<ICollector> targets)
+    protected bool TryGetCandidateAttack(AroundCell<ICollector> aroundCell, out DIRECTION[] dirs)
     {
-        targets = new List<ICollector>();
+        List<DIRECTION> list = new List<DIRECTION>();
         var baseInfo = aroundCell.CenterCell.GetInterface<ICellInfoHandler>();
 
         foreach (KeyValuePair<DIRECTION, ICollector> pair in aroundCell.AroundCells)
@@ -139,16 +129,17 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
             var info = pair.Value.GetInterface<ICellInfoHandler>();
 
             // Unit存在判定
-            if (m_UnitFinder.TryGetSpecifiedPositionUnit(info.Position, out var collector, m_TypeHolder.TargetType) == false)
+            if (m_UnitFinder.IsUnitOn(info.Position, m_TypeHolder.TargetType) == false)
                 continue;
 
             // 壁抜け判定
             if (m_DungeonHandler.CanMove(baseInfo.Position, pair.Key) == false)
                 continue;
 
-            targets.Add(collector);
+            list.Add(pair.Key);
         }
 
-        return targets.Count != 0;
+        dirs = list.ToArray();
+        return dirs.Length != 0;
     }
 }

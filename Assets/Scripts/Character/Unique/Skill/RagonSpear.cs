@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class RagonSpear : Skill
@@ -59,6 +60,31 @@ public class RagonSpear : Skill
             // 壁だったら走査終了
             if (terrain == TERRAIN_ID.WALL)
                 break;
+
+            distance++;
         }
+    }
+
+    protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
+    {
+        List<DIRECTION> list = new List<DIRECTION>();
+
+        for (int x = -DISTANCE; x <= DISTANCE; x++)
+            for (int z = -DISTANCE; z <= DISTANCE; z++)
+            {
+                if (x != 0 && z != 0 && x != z)
+                    continue;
+
+                var dirV3 = new UnityEngine.Vector3Int(x, 0, z);
+                var pos = ctx.Position + dirV3;
+                if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(pos, out var target, ctx.TypeHolder.TargetType) == true)
+                {
+                    var dir = dirV3.ToDirEnum();
+                    list.Add(dir);
+                }
+            }
+
+        dirs = list.ToArray();
+        return dirs.Length != 0;
     }
 }

@@ -52,4 +52,9 @@ public class VaccumSlash : Skill
             await battle.Damage(attackInfo);
         }
     }
+
+    protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
+    {
+        throw new NotImplementedException();
+    }
 }

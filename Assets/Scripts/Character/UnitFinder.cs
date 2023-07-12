@@ -24,28 +24,14 @@ public interface IUnitFinder
     /// <param name="list"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-    bool TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, CHARA_TYPE target = CHARA_TYPE.NONE);
+    bool TryGetSpecifiedRoomUnitList(int roomId, out ICollector[] targets, CHARA_TYPE target = CHARA_TYPE.NONE);
 
     /// <summary>
     /// ユニットいるか
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IsUnitOn(Vector3Int pos);
-
-    /// <summary>
-    /// プレイヤーいるか
-    /// </summary>
-    /// <param name="pos"></param>
-    /// <returns></returns>
-    bool IsPlayerOn(Vector3Int pos);
-
-    /// <summary>
-    /// 敵いるか
-    /// </summary>
-    /// <param name="pos"></param>
-    /// <returns></returns>
-    bool IsEnemyOn(Vector3Int pos);
+    bool IsUnitOn(Vector3Int pos, CHARA_TYPE target = CHARA_TYPE.NONE);
 }
 
 public class UnitFinder : IUnitFinder
@@ -103,9 +89,10 @@ public class UnitFinder : IUnitFinder
     /// </summary>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    private bool TryGetSpecifiedRoomUnitList(int roomId, CHARA_TYPE target, out List<ICollector> val)
+    private bool TryGetSpecifiedRoomUnitList(int roomId, CHARA_TYPE target, out ICollector[] targets)
     {
-        val = new List<ICollector>();
+        var list = new List<ICollector>();
+        targets = null;
         if (roomId < 0)
             return false;
 
@@ -121,7 +108,7 @@ public class UnitFinder : IUnitFinder
                 foreach (var cell in roomList)
                     if (cell.RequireInterface<ICellInfoHandler>(out var info) == true)
                         if (move.Position == info.Position)
-                            val.Add(unit);
+                            list.Add(unit);
             }
         }
 
@@ -135,27 +122,30 @@ public class UnitFinder : IUnitFinder
                 foreach (var cell in roomList)
                     if (cell.RequireInterface<ICellInfoHandler>(out var info) == true)
                         if (move.Position == info.Position)
-                            val.Add(unit);
+                            list.Add(unit);
             }
         }
 
-        return val.Count != 0;
+        targets = list.ToArray();
+        return targets.Length != 0;
     }
 
-    bool IUnitFinder.TryGetSpecifiedRoomUnitList(int roomId, out List<ICollector> list, CHARA_TYPE target) => TryGetSpecifiedRoomUnitList(roomId, target, out list);
+    bool IUnitFinder.TryGetSpecifiedRoomUnitList(int roomId, out ICollector[] targets, CHARA_TYPE target) => TryGetSpecifiedRoomUnitList(roomId, target, out targets);
 
     /// <summary>
     /// ユニットが存在するかを返す
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool IUnitFinder.IsUnitOn(Vector3Int pos)
+    bool IUnitFinder.IsUnitOn(Vector3Int pos, CHARA_TYPE target)
     {
-        if (IsPlayerOn(pos) == true)
-            return true;
+        if (target == CHARA_TYPE.NONE || target == CHARA_TYPE.FRIEND)
+            if (IsFriendOn(pos) == true)
+                return true;
 
-        if (IsEnemyOn(pos) == true)
-            return true;
+        if (target == CHARA_TYPE.NONE || target == CHARA_TYPE.ENEMY)
+            if (IsEnemyOn(pos) == true)
+                return true;
 
         return false;
     }
@@ -165,7 +155,7 @@ public class UnitFinder : IUnitFinder
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private bool IsPlayerOn(Vector3Int pos)
+    private bool IsFriendOn(Vector3Int pos)
     {
         foreach (ICollector player in m_UnitHolder.FriendList)
         {
@@ -175,8 +165,6 @@ public class UnitFinder : IUnitFinder
         }
         return false;
     }
-
-    bool IUnitFinder.IsPlayerOn(Vector3Int pos) => IsPlayerOn(pos);
 
     /// <summary>
     /// 敵が存在するかを返す
@@ -193,6 +181,4 @@ public class UnitFinder : IUnitFinder
         }
         return false;
     }
-
-    bool IUnitFinder.IsEnemyOn(Vector3Int pos) => IsEnemyOn(pos);
 }

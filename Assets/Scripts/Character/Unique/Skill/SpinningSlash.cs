@@ -51,4 +51,9 @@ public class SpinningSlash : Skill
             }
         }
     }
+
+    protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
+    {
+        throw new NotImplementedException();
+    }
 }

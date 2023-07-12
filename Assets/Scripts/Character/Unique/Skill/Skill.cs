@@ -26,6 +26,12 @@ public interface ISkill
     /// </summary>
     /// <returns></returns>
     Task Skill(SkillContext ctx);
+
+    /// <summary>
+    /// スキルが有効な状況か
+    /// </summary>
+    /// <returns></returns>
+    bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dir);
 }
 
 public abstract class Skill : ScriptableObject, ISkill
@@ -45,6 +51,9 @@ public abstract class Skill : ScriptableObject, ISkill
 
     protected abstract Task SkillEffect(SkillContext ctx);
     Task ISkill.Skill(SkillContext ctx) => SkillEffect(ctx);
+
+    protected abstract bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs);
+    bool ISkill.ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs) => ExistTarget(ctx, out dirs);
 }
 
 public readonly struct SkillContext
@@ -87,5 +96,21 @@ public readonly struct SkillContext
         BattleLogManager = battleLogManager;
         EffectHolder = effectHolder;
         SoundHolder = soundHolder;
+    }
+}
+
+public readonly struct SkillTargetContext
+{
+    public Vector3Int Position { get; }
+
+    public IUnitFinder UnitFinder { get; }
+
+    public ICharaTypeHolder TypeHolder { get; }
+
+    public SkillTargetContext(Vector3Int pos, IUnitFinder unitFinder, ICharaTypeHolder typeHolder)
+    {
+        Position = pos;
+        UnitFinder = unitFinder;
+        TypeHolder = typeHolder;
     }
 }

@@ -19,7 +19,8 @@ public enum ENEMY_STATE
     NONE,
     SEARCHING,
     CHASING,
-    ATTACKING
+    ATTACKING,
+    SKILL
 }
 
 public partial class EnemyAi : CharaAi, IEnemyAi
@@ -62,14 +63,19 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 
         var result = false;
 
-        EnemyActionClue clue = ConsiderAction(m_CharaMove.Position);
+        var clue = ConsiderAction(m_CharaMove.Position);
         DIRECTION dir = DIRECTION.NONE;
 
         switch (clue.State)
         {
+            case ENEMY_STATE.SKILL:
+                dir = clue.TargetDirections.RandomLottery();
+                result = await m_CharaSkill.Skill(clue.SkillIndex, dir);
+                break;
+
             case ENEMY_STATE.ATTACKING:
-                dir = LotteryDirection(clue.TargetList);
-                result = await m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
+                dir = clue.TargetDirections.RandomLottery();
+                result = await m_CharaBattle.NormalAttack(dir);
                 break;
 
             case ENEMY_STATE.CHASING:
@@ -77,7 +83,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
                 List<ICollector> candidates = new List<ICollector>();
                 float minDistance = 100f;
 
-                foreach (ICollector candidate in clue.TargetList)
+                foreach (ICollector candidate in clue.TargetUnits)
                 {
                     var move = candidate.GetInterface<ICharaMove>();
                     var distance = (m_CharaMove.Position - move.Position).magnitude;
@@ -234,39 +240,29 @@ public partial class EnemyAi : CharaAi, IEnemyAi
 public partial class EnemyAi
 {
     //敵AI
-    private EnemyActionClue ConsiderAction(Vector3Int currentPos)
+    private ActionClue<ENEMY_STATE> ConsiderAction(Vector3Int currentPos)
     {
+        if (m_CharaSkill.ShouldUseSkill(out var index, out var dirs) == true)
+            return new ActionClue<ENEMY_STATE>(ENEMY_STATE.SKILL, dirs, null, index);
+
         var aroundCell = m_DungeonHandler.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, out var attack) == true)
-            return new EnemyActionClue(ENEMY_STATE.ATTACKING, attack);
+            return new ActionClue<ENEMY_STATE>(ENEMY_STATE.ATTACKING, attack, null);
 
         if (TryGetCandidateChase(currentPos, m_TypeHolder.TargetType, out var chase) == true)
-            return new EnemyActionClue(ENEMY_STATE.CHASING, chase);
+            return new ActionClue<ENEMY_STATE>(ENEMY_STATE.CHASING, null, chase);
 
-        return new EnemyActionClue(ENEMY_STATE.SEARCHING, null);
+        return new ActionClue<ENEMY_STATE>(ENEMY_STATE.SEARCHING, null, null);
     }
 
-    private bool TryGetCandidateChase(Vector3Int pos, CHARA_TYPE target, out List<ICollector> targets)
+    private bool TryGetCandidateChase(Vector3Int pos, CHARA_TYPE target, out ICollector[] targets)
     {
-        targets = new List<ICollector>();
-
+        targets = null;
         if (m_DungeonHandler.TryGetRoomId(pos, out var roomId) == false)
             return false;
 
         return m_UnitFinder.TryGetSpecifiedRoomUnitList(roomId, out targets, target);
-    }
-}
-
-public readonly struct EnemyActionClue
-{
-    public ENEMY_STATE State { get; }
-    public List<ICollector> TargetList { get; }
-
-    public EnemyActionClue(ENEMY_STATE state, List<ICollector> targetList)
-    {
-        State = state;
-        TargetList = targetList;
     }
 }

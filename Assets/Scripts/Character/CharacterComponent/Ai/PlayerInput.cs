@@ -162,13 +162,13 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private async Task<bool> DetectInputSkill(KeyCodeFlag flag)
     {
         if (flag.HasBitFlag(KeyCodeFlag.One))
-            return await m_CharaSkill.Skill(1);
+            return await m_CharaSkill.Skill(0);
 
         if (flag.HasBitFlag(KeyCodeFlag.Two))
-            return await m_CharaSkill.Skill(2);
+            return await m_CharaSkill.Skill(1);
 
         if (flag.HasBitFlag(KeyCodeFlag.Three))
-            return await m_CharaSkill.Skill(3);
+            return await m_CharaSkill.Skill(2);
 
         return false;
     }

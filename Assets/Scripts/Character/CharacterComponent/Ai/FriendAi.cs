@@ -18,6 +18,7 @@ public enum FRIEND_STATE
     NONE,
     CHASING,
     ATTACKING,
+    SKILL,
 }
 
 public partial class FriendAi : CharaAi, IFriendAi
@@ -46,14 +47,19 @@ public partial class FriendAi : CharaAi, IFriendAi
 
         var result = false;
 
-        FriendActionClue clue = ConsiderAction(m_CharaMove.Position);
+        var clue = ConsiderAction(m_CharaMove.Position);
         DIRECTION dir = DIRECTION.NONE;
 
         switch (clue.State)
         {
+            case FRIEND_STATE.SKILL:
+                dir = clue.TargetDirections.RandomLottery();
+                result = await m_CharaSkill.Skill(clue.SkillIndex, dir);
+                break;
+
             case FRIEND_STATE.ATTACKING:
-                dir = LotteryDirection(clue.TargetList);
-                result = await m_CharaBattle.NormalAttack(dir, m_TypeHolder.TargetType);
+                dir = clue.TargetDirections.RandomLottery();
+                result = await m_CharaBattle.NormalAttack(dir);
                 break;
 
             case FRIEND_STATE.CHASING:
@@ -102,7 +108,6 @@ public partial class FriendAi : CharaAi, IFriendAi
                 else
                     result = await FollowAstarPath(m_UnitHolder.Player);
 
-
                 break;
         }
 
@@ -122,26 +127,48 @@ public partial class FriendAi : CharaAi, IFriendAi
 public partial class FriendAi
 {
     //味方AI
-    private FriendActionClue ConsiderAction(Vector3Int currentPos)
+    private ActionClue<FRIEND_STATE> ConsiderAction(Vector3Int currentPos)
     {
+        if (m_CharaSkill.ShouldUseSkill(out var index, out var dirs) == true)
+            return new ActionClue<FRIEND_STATE>(FRIEND_STATE.SKILL, dirs, null, index);
+
         var aroundCell = m_DungeonHandler.GetAroundCell(currentPos);
 
         // 攻撃対象候補が１つでもあるなら攻撃する
         if (TryGetCandidateAttack(aroundCell, out var attack) == true)
-            return new FriendActionClue(FRIEND_STATE.ATTACKING, attack);
+            return new ActionClue<FRIEND_STATE>(FRIEND_STATE.ATTACKING, attack, null);
 
-        return new FriendActionClue(FRIEND_STATE.CHASING, null);
+        return new ActionClue<FRIEND_STATE>(FRIEND_STATE.CHASING, null, null);
     }
 }
 
-public readonly struct FriendActionClue
+public readonly struct ActionClue<T>
 {
-    public FRIEND_STATE State { get; }
-    public List<ICollector> TargetList { get; }
+    /// <summary>
+    /// 行動
+    /// </summary>
+    public T State { get; }
 
-    public FriendActionClue(FRIEND_STATE state, List<ICollector> targetList)
+    /// <summary>
+    /// 方向
+    /// </summary>
+    public DIRECTION[] TargetDirections { get; }
+
+    /// <summary>
+    /// ターゲット
+    /// </summary>
+    public ICollector[] TargetUnits { get; }
+
+    /// <summary>
+    /// スキルインデックス
+    /// </summary>
+    public int SkillIndex { get; }
+
+    public ActionClue(T state, DIRECTION[] targetDirections, ICollector[] targetUnits, int skillIndex = -1)
     {
         State = state;
-        TargetList = targetList;
+        TargetDirections = targetDirections;
+        TargetUnits = targetUnits;
+        SkillIndex = skillIndex;
     }
 }

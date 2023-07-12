@@ -70,6 +70,6 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: aa32d3ebe31d144a3ac8bad83584591b,
       type: 3}
     m_Key: VaccumSlash
-  - m_Sound: {fileID: 8258253318684563254, guid: 32d1728b88b2f406a8689a0d3f24bb14,
+  - m_Sound: {fileID: 5087174154848842170, guid: f27a31bce8e1a47d1bc4bbafbc3e4cf6,
       type: 3}
     m_Key: RagonSpear

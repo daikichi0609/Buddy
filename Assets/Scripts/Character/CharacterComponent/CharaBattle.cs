@@ -19,9 +19,8 @@ public interface ICharaBattle : IActorInterface
     /// 通常攻撃、方向指定
     /// </summary>
     /// <param name="direction"></param>
-    /// <param name="target"></param>
     /// <returns></returns>
-    Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target);
+    Task<bool> NormalAttack(DIRECTION direction);
 
     /// <summary>
     /// 被ダメージ
@@ -106,6 +105,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private CurrentStatus Status => m_CharaStatus.CurrentStatus;
     private ICharaAnimator m_CharaAnimator;
+    private ICharaTypeHolder m_Type;
 
     /// <summary>
     /// 攻撃前に呼ばれる
@@ -177,6 +177,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_CharaMove = Owner.GetInterface<ICharaMove>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
+        m_Type = Owner.GetInterface<ICharaTypeHolder>();
 
         // 攻撃時、アクション登録
         m_OnAttackStart.SubscribeWithState(this, (_, self) =>
@@ -204,14 +205,14 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     /// <summary>
     /// 通常攻撃・プレイヤー操作
     /// </summary>
-    async Task<bool> ICharaBattle.NormalAttack() => await NormalAttack(m_CharaMove.Direction, CHARA_TYPE.ENEMY);
+    async Task<bool> ICharaBattle.NormalAttack() => await NormalAttack(m_CharaMove.Direction);
 
     /// <summary>
     /// 通常攻撃
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="target"></param>
-    private async Task<bool> NormalAttack(DIRECTION direction, CHARA_TYPE target)
+    private async Task<bool> NormalAttack(DIRECTION direction)
     {
         // 誰かが行動中なら攻撃できない
         if (m_TurnManager.NoOneActing == false)
@@ -222,11 +223,12 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点
+        var target = m_Type.TargetType;
         await AttackInternal(attackPos, target, attackInfo);
         return true;
     }
 
-    Task<bool> ICharaBattle.NormalAttack(DIRECTION direction, CHARA_TYPE target) => NormalAttack(direction, target);
+    Task<bool> ICharaBattle.NormalAttack(DIRECTION direction) => NormalAttack(direction);
 
     /// <summary>
     /// 攻撃

@@ -15,7 +15,6 @@ public class ContinuousSlash : Skill
     /// 連続攻撃
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="System.NotImplementedException"></exception>
     protected override async Task SkillEffect(SkillContext ctx)
     {
         int attackCount = Random.Range(2, 6);
@@ -53,5 +52,10 @@ public class ContinuousSlash : Skill
             else
                 break;
         }
+    }
+
+    protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
+    {
+        throw new System.NotImplementedException();
     }
 }
