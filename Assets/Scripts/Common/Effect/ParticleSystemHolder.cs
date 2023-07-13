@@ -14,17 +14,19 @@ public class ParticleSystemHolder : MonoBehaviour
     private bool m_IsPlaying;
     public bool IsPlaying => m_IsPlaying;
 
-    public IDisposable Play(Vector3 pos)
+    public IDisposable Play(Vector3 pos, Vector3 addRot = new Vector3())
     {
         transform.position = pos;
+        transform.eulerAngles += addRot;
         m_IsPlaying = true;
         foreach (var particle in m_ParticleSystems)
             particle.Play();
 
-        return Disposable.CreateWithState(this, self =>
+        return Disposable.CreateWithState((this, addRot), tuple =>
         {
-            self.m_IsPlaying = false;
-            foreach (var particle in self.m_ParticleSystems)
+            tuple.Item1.transform.eulerAngles -= tuple.addRot;
+            tuple.Item1.m_IsPlaying = false;
+            foreach (var particle in tuple.Item1.m_ParticleSystems)
                 particle.Stop();
         });
     }
@@ -32,6 +34,6 @@ public class ParticleSystemHolder : MonoBehaviour
     public IDisposable Play(ICollector unit)
     {
         var objectHolder = unit.GetInterface<ICharaObjectHolder>();
-        return Play(objectHolder.CharaObject.transform.position);
+        return Play(objectHolder.CharaObject.transform.position, objectHolder.CharaObject.transform.eulerAngles);
     }
 }
