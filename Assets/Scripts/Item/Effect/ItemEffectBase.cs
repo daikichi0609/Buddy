@@ -146,16 +146,12 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         if (target != null)
         {
             if (item.CanEat == true)
-            {
                 await Eat(target, item, inventory, itemManager, dungeonHandler, unitFinder, battleLogManager, effectHolder, soundHolder);
-                return;
-            }
             else
-            {
                 await EffectInternal(new ItemEffectContext(target, item, itemManager, dungeonHandler, unitFinder, battleLogManager));
-                await PostEffect(owner, item, inventory);
-            }
         }
+
+        await PostEffect(owner, item, inventory);
     }
 
     /// <summary>

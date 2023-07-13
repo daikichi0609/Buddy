@@ -90,7 +90,7 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
 
         return false;
     }
-    async Task<bool> ICharaCellEventChecker.CheckStairsCell() => await CheckStairsCell();
+    Task<bool> ICharaCellEventChecker.CheckStairsCell() => CheckStairsCell();
 
     /// <summary>
     /// アイテムチェック

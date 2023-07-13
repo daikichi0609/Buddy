@@ -154,7 +154,7 @@ public class TurnManager : ITurnManager, IInitializable
         // 行動可能なキャラがいないなら、インクリメントする
         // indexが範囲外なら新しくキューを作る
         if (m_ActionIndex >= m_ActionUnits.Count)
-            NextTurn();
+            await NextTurn();
 
         // indexが範囲内なら行動させる
         else
@@ -194,10 +194,10 @@ public class TurnManager : ITurnManager, IInitializable
     /// <summary>
     /// 次のターン
     /// </summary>
-    private void NextTurn()
+    private async Task NextTurn()
     {
         m_TotalTurnCount.Value++;
-        CheckStairsCell();
+        await CheckStairsCell();
         CreateActionList();
         NextUnitAct();
     }
@@ -228,12 +228,12 @@ public class TurnManager : ITurnManager, IInitializable
     /// <summary>
     /// 階段チェック
     /// </summary>
-    private void CheckStairsCell()
+    private async Task CheckStairsCell()
     {
         // 階段チェック
         var player = m_UnitHolder.Player;
         var checker = player.GetInterface<ICharaCellEventChecker>();
-        checker.CheckStairsCell();
+        await checker.CheckStairsCell();
     }
 }
 
