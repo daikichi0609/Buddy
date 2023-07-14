@@ -24,7 +24,7 @@ public interface IFadeManager
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task StartFadeWhite(Action whiteOutEvent);
+    Task StartFadeWhite(Action whileEvent, Action leaveEvent);
 
     /// <summary>
     /// 明転
@@ -89,30 +89,24 @@ public class FadeManager : MonoBehaviour, IFadeManager
         m_DungeonName.text = dungeonName;
         m_FloorText.text = where;
 
-        FadeOutScreen(m_BlackScreen);
-        await Task.Delay(1000);
-        FadeInText();
+        await FadeOutScreen(m_BlackScreen);
+        await FadeInText();
         blackOutEvent?.Invoke();
-        await Task.Delay(1000);
-        FadeOutText();
-        await Task.Delay(1000);
-        FadeInScreen(m_BlackScreen);
-        await Task.Delay(1000);
+        await FadeOutText();
+        await FadeInScreen(m_BlackScreen);
     }
 
     /// <summary>
-    /// 階移動暗転
+    /// ホワイトアウト
     /// </summary>
-    /// <param name="whiteOutEvent"></param>
+    /// <param name="whileEvent"></param>
+    /// <param name="leaveEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.StartFadeWhite(Action whiteOutEvent)
+    async Task IFadeManager.StartFadeWhite(Action whileEvent, Action leaveEvent)
     {
-        FadeOutScreen(m_WhiteScreen);
-        await Task.Delay(1000);
-        whiteOutEvent?.Invoke();
-        await Task.Delay(1000);
-        FadeInScreen(m_WhiteScreen);
-        await Task.Delay(500);
+        await FadeOutScreen(m_WhiteScreen);
+        whileEvent?.Invoke();
+        await FadeInScreen(m_WhiteScreen);
     }
 
     /// <summary>
@@ -126,12 +120,9 @@ public class FadeManager : MonoBehaviour, IFadeManager
         m_FloorText.text = where;
         m_BlackScreen.DOFade(1f, 0.001f);
 
-        FadeInText();
-        await Task.Delay(1000);
-        FadeOutText();
-        await Task.Delay(1000);
-        FadeInScreen(m_BlackScreen);
-        await Task.Delay(1000);
+        await FadeInText();
+        await FadeOutText();
+        await FadeInScreen(m_BlackScreen);
     }
 
     /// <summary>
@@ -145,12 +136,9 @@ public class FadeManager : MonoBehaviour, IFadeManager
         m_FloorText.text = where;
         m_BlackScreen.DOFade(1f, 0.001f);
 
-        FadeInText();
-        await Task.Delay(1000);
-        FadeOutText();
-        await Task.Delay(1000);
-        FadeInScreen(m_BlackScreen);
-        await Task.Delay(1000);
+        await FadeInText();
+        await FadeOutText();
+        await FadeInScreen(m_BlackScreen);
         completeEvent?.Invoke();
     }
 
@@ -166,8 +154,7 @@ public class FadeManager : MonoBehaviour, IFadeManager
         task.allowSceneActivation = false;
 
         // 暗転
-        FadeOutScreen(m_BlackScreen);
-        await Task.Delay(1000);
+        await FadeOutScreen(m_BlackScreen);
 
         // シーン切り替え
         task.allowSceneActivation = true;
@@ -176,28 +163,30 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// <summary>
     /// スクリーン暗転
     /// </summary>
-    private void FadeOutScreen(Image screen) => screen.DOFade(1f, FADE_SPEED);
+    private Task FadeOutScreen(Image screen) => screen.DOFade(1f, FADE_SPEED).AsyncWaitForCompletion();
 
     /// <summary>
     /// スクリーン明転
     /// </summary>
-    private void FadeInScreen(Image screen) => screen.DOFade(0f, FADE_SPEED);
+    private Task FadeInScreen(Image screen) => screen.DOFade(0f, FADE_SPEED).AsyncWaitForCompletion();
 
     /// <summary>
     /// テキスト表示
     /// </summary>
-    private void FadeInText()
+    private async Task FadeInText()
     {
-        m_FloorText.DOFade(1f, FADE_SPEED);
-        m_DungeonName.DOFade(1f, FADE_SPEED);
+        var text = m_FloorText.DOFade(1f, FADE_SPEED).AsyncWaitForCompletion();
+        var name = m_DungeonName.DOFade(1f, FADE_SPEED).AsyncWaitForCompletion();
+        await Task.WhenAll(text, name);
     }
 
     /// <summary>
     /// テキスト非表示
     /// </summary>
-    private void FadeOutText()
+    private async Task FadeOutText()
     {
-        m_FloorText.DOFade(0f, FADE_SPEED);
-        m_DungeonName.DOFade(0f, FADE_SPEED);
+        var text = m_FloorText.DOFade(0f, FADE_SPEED).AsyncWaitForCompletion();
+        var name = m_DungeonName.DOFade(0f, FADE_SPEED).AsyncWaitForCompletion();
+        await Task.WhenAll(text, name);
     }
 }

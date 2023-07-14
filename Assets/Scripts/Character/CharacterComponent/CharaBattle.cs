@@ -215,7 +215,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     private async Task<bool> NormalAttack(DIRECTION direction)
     {
         // 誰かが行動中なら攻撃できない
-        if (m_TurnManager.NoOneActing == false)
+        if (m_UnitHolder.NoOneActing == false)
             return false;
 
         await m_CharaMove.Face(direction); // 向く

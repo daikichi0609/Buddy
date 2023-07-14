@@ -94,7 +94,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
     /// <param name="battleLogManager"></param>
     /// <returns></returns>
     private async Task Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder,
-        IBattleLogManager battleLogManager, IEffectHolder effectHolder, ISoundHolder soundHolder)
+        IBattleLogManager battleLogManager, IEffectHolder effectHolder, ISoundHolder soundHolder, bool finishTurn = true)
     {
         var ctx = new ItemEffectContext(owner, item, itemManager, dungeonHandler, unitFinder, battleLogManager);
 
@@ -119,7 +119,8 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
             starvation.RecoverHungry(item.Recover);
 
         await EffectInternal(ctx);
-        await PostEffect(owner, item, inventory);
+        if (finishTurn == true)
+            await PostEffect(owner, item, inventory);
     }
     Task IItemEffect.Eat(ICollector owner, ItemSetup item, ITeamInventory inventory, IItemManager itemManager, IDungeonHandler dungeonHandler, IUnitFinder unitFinder,
         IBattleLogManager battleLogManager, IEffectHolder effectHolder, ISoundHolder sound) => Eat(owner, item, inventory, itemManager, dungeonHandler, unitFinder, battleLogManager, effectHolder, sound);
@@ -146,7 +147,7 @@ public class ItemEffectBase : ScriptableObject, IItemEffect
         if (target != null)
         {
             if (item.CanEat == true)
-                await Eat(target, item, inventory, itemManager, dungeonHandler, unitFinder, battleLogManager, effectHolder, soundHolder);
+                await Eat(target, item, inventory, itemManager, dungeonHandler, unitFinder, battleLogManager, effectHolder, soundHolder, false);
             else
                 await EffectInternal(new ItemEffectContext(target, item, itemManager, dungeonHandler, unitFinder, battleLogManager));
         }

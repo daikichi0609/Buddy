@@ -21,10 +21,8 @@ public class HomeInitializer : SceneInitializer
 
     private Fungus.Flowchart m_DeparturedFlowChart;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-
         MessageBroker.Default.Receive<HomeInitializerInfo>().SubscribeWithState(this, (info, self) =>
         {
             self.LeaderPos = info.LeaderPos;

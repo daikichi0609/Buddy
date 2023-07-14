@@ -25,6 +25,9 @@ public class SkillCoolTimeUiManager : MonoBehaviour
     private void Update()
     {
         var leader = m_UnitHolder.Player;
+        if (leader == null)
+            return;
+
         var skillHandler = leader.GetInterface<ICharaSkillHandler>();
 
         for (int i = 0; i < m_Texts.Length; i++)

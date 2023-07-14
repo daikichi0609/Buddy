@@ -252,7 +252,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6e75a4a1f34d4fa6adaff9890b814c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Initialize: 0
   m_DungeonUiSystem: {fileID: 1968606174}
 --- !u!114 &699530423
 MonoBehaviour:
@@ -757,6 +756,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DungeonUi
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126199722139832230, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126199722139832230, guid: 706c0944bdc85487b8200ab5c8ed0d49,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 706c0944bdc85487b8200ab5c8ed0d49, type: 3}

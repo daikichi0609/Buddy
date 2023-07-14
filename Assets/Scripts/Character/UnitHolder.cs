@@ -56,6 +56,11 @@ public interface IUnitHolder
     /// 敵リムーブ時イベント
     /// </summary>
     IObservable<int> OnEnemyRemove { get; }
+
+    /// <summary>
+    /// 誰もアクション中でない
+    /// </summary>
+    bool NoOneActing { get; }
 }
 
 public class UnitHolder : IUnitHolder
@@ -115,5 +120,24 @@ public class UnitHolder : IUnitHolder
     {
         m_FriendList.Clear();
         m_EnemyList.Clear();
+    }
+
+    /// <summary>
+    /// 全てのキャラが行動中でない
+    /// </summary>
+    bool IUnitHolder.NoOneActing
+    {
+        get
+        {
+            foreach (ICollector player in m_FriendList)
+                if (player.GetInterface<ICharaTurn>().IsActing == true)
+                    return false;
+
+            foreach (ICollector enemy in m_EnemyList)
+                if (enemy.GetInterface<ICharaTurn>().IsActing == true)
+                    return false;
+
+            return true;
+        }
     }
 }

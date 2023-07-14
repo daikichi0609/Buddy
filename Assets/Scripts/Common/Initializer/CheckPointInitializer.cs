@@ -26,10 +26,8 @@ public class CheckPointInitializer : SceneInitializer
     private Fungus.Flowchart m_ArrivalFlowChart;
     private Fungus.Flowchart m_DeparturedFlowChart;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-
         MessageBroker.Default.Receive<CheckPointInitializerInfo>().SubscribeWithState(this, (info, self) =>
         {
             self.LeaderStartPos = info.LeaderStartPos;

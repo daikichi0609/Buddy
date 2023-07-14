@@ -148,12 +148,8 @@ public class DungeonDeployer : IDungeonDeployer
     [Inject]
     private DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
-    private IDungeonProgressManager m_DungeonProgressManager;
-    [Inject]
     private IInstantiater m_Instantiater;
 
-    [Inject]
-    private DiContainer m_DiContainer;
     private static IInjector ms_CellInjector = new CellInjector();
 
     /// <summary>
@@ -301,15 +297,14 @@ public class DungeonDeployer : IDungeonDeployer
     /// </summary>
     /// <param name="map"></param>
     /// <param name="range"></param>
-    Task IDungeonDeployer.DeployDungeon(TERRAIN_ID[,] map, Range range, DungeonElementSetup setup)
+    async Task IDungeonDeployer.DeployDungeon(TERRAIN_ID[,] map, Range range, DungeonElementSetup setup)
     {
         var rangeList = new List<Range>();
         rangeList.Add(range);
-        DeployDungeonTerrain(map, setup);
+        await DeployDungeonTerrain(map, setup);
         CreateRoomCellList(rangeList);
 
         m_OnDungeonDeoloy.OnNext(map);
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -418,7 +413,7 @@ public class DungeonDeployer : IDungeonDeployer
         {
             // 初期化
             var cell = m_DungeonHandler.GetRandomRoomEmptyCell(); //何もない部屋座標を取得
-            var trap = m_DungeonProgressManager.GetRandomTrapSetup();
+            var trap = m_DungeonProgressHolder.GetRandomTrapSetup();
             var trapHolder = cell.GetInterface<ITrapHandler>();
             trapHolder.SetTrap(trap);
         }

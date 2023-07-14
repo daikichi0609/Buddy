@@ -21,18 +21,6 @@ public interface ITurnManager
     IObservable<int> OnTurnEnd { get; }
 
     /// <summary>
-    /// 誰もアクションしていない
-    /// </summary>
-    bool NoOneActing { get; }
-
-    /// <summary>
-    /// アクション禁止
-    /// </summary>
-    /// <param name="collector"></param>
-    /// <returns></returns>
-    IDisposable RegisterProhibit(ICollector collector);
-
-    /// <summary>
     /// 次のユニットを行動させる
     /// </summary>
     void NextUnitAct();
@@ -46,9 +34,16 @@ public interface ITurnManager
     /// ユニット除去
     /// </summary>
     void RemoveUnit(ICollector unit);
+
+    /// <summary>
+    /// アクション禁止
+    /// </summary>
+    /// <param name="collector"></param>
+    /// <returns></returns>
+    IDisposable RegisterProhibit(ICollector collector);
 }
 
-public class TurnManager : ITurnManager, IInitializable
+public class TurnManager : ITurnManager
 {
     [Inject]
     private IUnitHolder m_UnitHolder;
@@ -57,7 +52,6 @@ public class TurnManager : ITurnManager, IInitializable
     /// 再帰を止めるフラグ
     /// </summary>
     private bool m_IsStop;
-
     /// <summary>
     /// 再帰停止
     /// </summary>
@@ -78,26 +72,6 @@ public class TurnManager : ITurnManager, IInitializable
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
-    /// <summary>
-    /// 全てのキャラが行動中でない
-    /// </summary>
-    private bool NoOneActing
-    {
-        get
-        {
-            foreach (ICollector player in m_UnitHolder.FriendList)
-                if (player.GetInterface<ICharaTurn>().IsActing == true)
-                    return false;
-
-            foreach (ICollector enemy in m_UnitHolder.EnemyList)
-                if (enemy.GetInterface<ICharaTurn>().IsActing == true)
-                    return false;
-
-            return true;
-        }
-    }
-    bool ITurnManager.NoOneActing => NoOneActing;
-
     private Queue<ProhibitRequest> m_ProhibitRequests = new Queue<ProhibitRequest>();
     private bool ProhibitAllAction => m_ProhibitRequests.Count != 0;
     IDisposable ITurnManager.RegisterProhibit(ICollector collector)
@@ -111,8 +85,6 @@ public class TurnManager : ITurnManager, IInitializable
     {
         dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) => self.CreateActionList());
     }
-
-    void IInitializable.Initialize() => NextUnitAct();
 
     /// <summary>
     /// 任意のユニットを除く

@@ -64,7 +64,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     {
         m_InputManager.InputStartEvent.SubscribeWithState(this, (input, self) =>
         {
-            if (self.m_InputManager.IsUiPopUp == false && self.m_TurnManager.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
+            if (self.m_InputManager.IsUiPopUp == false && self.m_UnitHolder.NoOneActing == true && input.KeyCodeFlag.HasBitFlag(KeyCodeFlag.M))
             {
                 self.Activate();
                 if (m_SoundHolder.TryGetSound(DECIDE, out var sound) == true)

@@ -44,15 +44,11 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// </summary>
     protected ICollector m_Friend;
 
-    protected virtual void Awake()
-    {
-        m_LoopManager.GetInitEvent.SubscribeWithState(this, async (_, self) => await self.OnStart()).AddTo(this);
-    }
-
     /// <summary>
     /// スタート処理
     /// </summary>
     protected abstract Task OnStart();
+    private async void Start() => await OnStart();
 
     /// <summary>
     /// 移動後イベント

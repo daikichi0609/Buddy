@@ -431,6 +431,7 @@ GameObject:
   - component: {fileID: 1263038317}
   - component: {fileID: 1263038316}
   - component: {fileID: 1263038315}
+  - component: {fileID: 1263038319}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -450,8 +451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6e75a4a1f34d4fa6adaff9890b814c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Initialize: 1
-  m_SpawnRandomEnemy: 1
   m_DungeonUiSystem: {fileID: 1862151905159314750}
 --- !u!114 &1263038316
 MonoBehaviour:
@@ -484,6 +483,7 @@ MonoBehaviour:
   _monoInstallers:
   - {fileID: 1263038316}
   - {fileID: 1263038315}
+  - {fileID: 1263038319}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -516,6 +516,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1263038319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263038314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74607d8a464244862a7ef877b72f2b52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1497189446
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,26 +689,6 @@ PrefabInstance:
     - target: {fileID: 516316289897796291, guid: 706c0944bdc85487b8200ab5c8ed0d49,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1421070820783247361, guid: 706c0944bdc85487b8200ab5c8ed0d49,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1421070820783247361, guid: 706c0944bdc85487b8200ab5c8ed0d49,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1421070820783247361, guid: 706c0944bdc85487b8200ab5c8ed0d49,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1421070820783247361, guid: 706c0944bdc85487b8200ab5c8ed0d49,
-        type: 3}
-      propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1862151905272087390, guid: 706c0944bdc85487b8200ab5c8ed0d49,

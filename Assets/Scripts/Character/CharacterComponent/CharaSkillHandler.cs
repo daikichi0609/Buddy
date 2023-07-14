@@ -103,6 +103,8 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
+    private IUnitHolder m_UnitHolder;
+    [Inject]
     private IBattleLogManager m_BattleLogManager;
     [Inject]
     private IEffectHolder m_EffectHolder;
@@ -166,7 +168,7 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     private async Task<bool> Skill(int index)
     {
         // 誰かが行動中なら攻撃できない
-        if (m_TurnManager.NoOneActing == false)
+        if (m_UnitHolder.NoOneActing == false)
             return false;
 
         if (index < 0 || index >= m_Skills.Count)

@@ -31,7 +31,7 @@ public interface IDungeonItemSpawner
 public class DungeonItemSpawner : IDungeonItemSpawner
 {
     [Inject]
-    private IDungeonProgressManager m_DungeonProgressManager;
+    private DungeonProgressHolder m_DungeonProgress;
     [Inject]
     private IObjectPoolController m_ObjectPoolController;
     [Inject]
@@ -79,7 +79,7 @@ public class DungeonItemSpawner : IDungeonItemSpawner
         for (int i = 0; i < count; i++)
         {
             // 使うもの
-            var setup = m_DungeonProgressManager.GetRandomItemSetup();
+            var setup = m_DungeonProgress.GetRandomItemSetup();
             // 初期化
             var cellPos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
             var pos = new Vector3Int(cellPos.x, 0, cellPos.z);

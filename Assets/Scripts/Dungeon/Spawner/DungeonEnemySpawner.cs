@@ -25,7 +25,7 @@ public interface IDungeonEnemySpawner
 public class DungeonEnemySpawner : IDungeonEnemySpawner
 {
     [Inject]
-    private IDungeonProgressManager m_DungeonProgressManager;
+    private DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
     private IObjectPoolController m_ObjectPoolController;
     [Inject]
@@ -67,7 +67,7 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
         for (int i = 0; i < count; i++)
         {
             // 敵のセットアップをランダム取得
-            var setup = m_DungeonProgressManager.GetRandomEnemySetup();
+            var setup = m_DungeonProgressHolder.GetRandomEnemySetup();
 
             // 座標
             var cellPos = m_DungeonHandler.GetRandomRoomEmptyCellPosition(); //何もない部屋座標を取得
@@ -92,7 +92,7 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
         }
 
         // 敵のセットアップをランダム取得
-        var setup = m_DungeonProgressManager.GetRandomEnemySetup();
+        var setup = m_DungeonProgressHolder.GetRandomEnemySetup();
         Vector3 pos = default;
 
         while (true)

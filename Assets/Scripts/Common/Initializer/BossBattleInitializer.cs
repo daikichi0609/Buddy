@@ -18,6 +18,8 @@ public class BossBattleInitializer : SceneInitializer
     private IUnitHolder m_UnitHolder;
     [Inject]
     private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
+    [Inject]
+    private ITurnManager m_TurnManager;
 
     protected override string FungusMessage => "BossBattleStart";
     private static readonly float OFFSET_Y = 0.5f;
@@ -40,10 +42,8 @@ public class BossBattleInitializer : SceneInitializer
     /// </summary>
     private ICollector m_Boss;
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-
         LeaderStartPos = new Vector3(10f, OFFSET_Y, 5f);
         FriendStartPos = new Vector3(12f, OFFSET_Y, 5f);
         LeaderEndPos = new Vector3(10f, OFFSET_Y, 10f);
@@ -67,8 +67,7 @@ public class BossBattleInitializer : SceneInitializer
         await DeployBossMap(bossBattleSetup); // ステージ生成
 
         CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラ生成
-
-        await BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
+        BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
         // 明転
         await m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
@@ -96,17 +95,19 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override async Task FungusMethod() => await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle());
+    public override async Task FungusMethod()
+    {
+        await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle(), () => m_TurnManager.NextUnitAct());
+    }
 
     /// <summary>
     /// ボスキャラ生成
     /// 会話フロー生成
-    /// マップ生成
     /// </summary>
     /// <param name="setup"></param>
     /// <param name="pos"></param>
     /// <returns></returns>
-    private async Task BossSetup(BossBattleSetup setup, Vector3 pos)
+    private void BossSetup(BossBattleSetup setup, Vector3 pos)
     {
         // ボス
         var boss = setup.BossCharacterSetup;
@@ -119,8 +120,6 @@ public class BossBattleInitializer : SceneInitializer
         // 会話フロー生成
         m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(setup.ArrivalFlow).GetComponent<Fungus.Flowchart>();
         m_DefeatedFlowChart = m_Instantiater.InstantiatePrefab(setup.DefeatedFlow).GetComponent<Fungus.Flowchart>();
-
-        await DeployBossMap(setup);
     }
 
     /// <summary>

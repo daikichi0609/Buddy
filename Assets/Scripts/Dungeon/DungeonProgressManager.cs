@@ -12,33 +12,15 @@ using Zenject;
 public interface IDungeonProgressManager
 {
     /// <summary>
-    /// ランダムな敵キャラクターセットアップを取得
+    /// 現在の階層
     /// </summary>
-    /// <returns></returns>
-    CharacterSetup GetRandomEnemySetup();
-
-    /// <summary>
-    /// ランダムなアイテムセットアップを取得
-    /// </summary>
-    /// <returns></returns>
-    ItemSetup GetRandomItemSetup();
-
-    /// <summary>
-    /// ランダムな罠セットアップを取得
-    /// </summary>
-    /// <returns></returns>
-    TrapSetup GetRandomTrapSetup();
+    int CurrentFloor { get; }
+    IObservable<int> FloorChanged { get; }
 
     /// <summary>
     /// 次の階層へ
     /// </summary>
     Task NextFloor();
-
-    /// <summary>
-    /// 現在の階層
-    /// </summary>
-    int CurrentFloor { get; }
-    IObservable<int> FloorChanged { get; }
 
     /// <summary>
     /// ゲーム終了
@@ -67,14 +49,12 @@ public enum FINISH_REASON
     BOSS_DEAD,
 }
 
-public class DungeonProgressManager : IDungeonProgressManager, IInitializable
+public class DungeonProgressManager : IDungeonProgressManager
 {
     [Inject]
     private DungeonProgressHolder m_ProgressHolder;
     [Inject]
     private IFadeManager m_FadeManager;
-    [Inject]
-    private IBGMHandler m_BGMHandler;
     [Inject]
     private IDungeonDeployer m_DungeonDeployer;
     [Inject]
@@ -96,79 +76,6 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
     private ReactiveProperty<int> m_CurrentFloor = new ReactiveProperty<int>(1);
     int IDungeonProgressManager.CurrentFloor => m_CurrentFloor.Value;
     IObservable<int> IDungeonProgressManager.FloorChanged => m_CurrentFloor;
-
-    async void IInitializable.Initialize() => await InitializeDungeon();
-
-    /// <summary>
-    /// ダンジョン初期化
-    /// </summary>
-    private async Task InitializeDungeon()
-    {
-        string where = m_CurrentFloor.Value.ToString() + "F";
-
-        var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
-        await m_DungeonDeployer.DeployDungeon(elementSetup);
-        await m_DungeonContentsDeployer.DeployAll();
-
-        var bgm = MonoBehaviour.Instantiate(m_ProgressHolder.CurrentDungeonSetup.BGM);
-        m_BGMHandler.SetBGM(bgm);
-
-        m_DungeonCharacterProgressManager.AdoptSaveData();
-
-        // 明転
-        await m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
-    }
-
-    /// <summary>
-    /// ランダムな敵キャラセットアップを重み抽選
-    /// </summary>
-    /// <returns></returns>
-    CharacterSetup IDungeonProgressManager.GetRandomEnemySetup()
-    {
-        var t = m_ProgressHolder.CurrentDungeonSetup.EnemyTable;
-        int length = t.EnemyPacks.Length;
-        int[] weights = new int[length];
-
-        for (int i = 0; i < length; i++)
-            weights[i] = t.EnemyPacks[i].Weight;
-
-        var index = WeightedRandomSelector.SelectIndex(weights);
-        return t.EnemyPacks[index].Setup;
-    }
-
-    /// <summary>
-    /// アイテムセットアップを重み抽選
-    /// </summary>
-    /// <returns></returns>
-    ItemSetup IDungeonProgressManager.GetRandomItemSetup()
-    {
-        var d = m_ProgressHolder.CurrentDungeonSetupHolder.ItemDeploySetup;
-        int length = d.ItemPacks.Length;
-        int[] weights = new int[length];
-
-        for (int i = 0; i < length; i++)
-            weights[i] = d.ItemPacks[i].Weight;
-
-        var index = WeightedRandomSelector.SelectIndex(weights);
-        return d.ItemPacks[index].Setup;
-    }
-
-    /// <summary>
-    /// 罠セットアップを重み抽選
-    /// </summary>
-    /// <returns></returns>
-    TrapSetup IDungeonProgressManager.GetRandomTrapSetup()
-    {
-        var d = m_ProgressHolder.CurrentDungeonSetupHolder.TrapDeploySetup;
-        int length = d.TrapPacks.Length;
-        int[] weights = new int[length];
-
-        for (int i = 0; i < length; i++)
-            weights[i] = d.TrapPacks[i].Weight;
-
-        var index = WeightedRandomSelector.SelectIndex(weights);
-        return d.TrapPacks[index].Setup;
-    }
 
     /// <summary>
     /// 次の階
@@ -197,6 +104,7 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
         // 暗転 & ダンジョン再構築
         string where = m_CurrentFloor.Value.ToString() + "F";
         await m_FadeManager.StartFade(async () => await RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
+        m_TurnManager.NextUnitAct();
     }
 
     /// <summary>
@@ -212,7 +120,6 @@ public class DungeonProgressManager : IDungeonProgressManager, IInitializable
         var setup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(setup);
         await m_DungeonContentsDeployer.DeployAll();
-        m_TurnManager.NextUnitAct();
     }
 
     /// <summary>

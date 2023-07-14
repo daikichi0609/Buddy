@@ -24,8 +24,6 @@ public class DungeonEnemyAutoSpawner : IDungeonEnemyAutoSpawner, IInitializable
     [Inject]
     private ITurnManager m_TurnManager;
     [Inject]
-    private IDungeonProgressManager m_DungeonProgressManager;
-    [Inject]
     private DungeonProgressHolder m_DungeonProgressHolder;
 
     private static int SPAWN_INTERVAL = 15;
@@ -69,7 +67,7 @@ public class DungeonEnemyAutoSpawner : IDungeonEnemyAutoSpawner, IInitializable
         }
 
         // 敵のセットアップをランダム取得
-        var setup = m_DungeonProgressManager.GetRandomEnemySetup();
+        var setup = m_DungeonProgressHolder.GetRandomEnemySetup();
         Vector3 pos = default;
 
         while (true)

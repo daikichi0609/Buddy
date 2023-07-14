@@ -83,13 +83,13 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     [Inject]
     protected IInputManager m_InputManager;
     [Inject]
-    protected ITurnManager m_TurnManager;
-    [Inject]
     protected IBattleLogManager m_BattleLogManager;
     [Inject]
     protected ISoundHolder m_SoundHolder;
     [Inject]
     protected IMiniMapRenderer m_MiniMapRenderer;
+    [Inject]
+    protected IUnitHolder m_UnitHolder;
 
     protected static readonly string DECIDE = "UiDecide";
     private static readonly string MOVE = "UiMove";
@@ -265,7 +265,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <param name="flag"></param>
     private void DetectInput(KeyCodeFlag flag)
     {
-        if (m_TurnManager.NoOneActing == false)
+        if (m_UnitHolder.NoOneActing == false)
             return;
 
         // Qで閉じる

@@ -126,8 +126,6 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     {
         m_PlayerPos.SubscribeWithState(this, (pos, self) =>
         {
-            self.m_DungeonHandler.TryGetRoomId(pos, out var playerRoom);
-
             foreach (var e in self.m_EnemyIcons)
             {
                 if (e.Key.RequireInterface<ICharaMove>(out var move) == false)
