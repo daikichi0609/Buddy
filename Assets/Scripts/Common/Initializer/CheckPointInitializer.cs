@@ -56,7 +56,7 @@ public class CheckPointInitializer : SceneInitializer
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
 
         // 明転
-        await m_FadeManager.TurnBright(() => _ = OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
+        await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
     }
 
     /// <summary>
@@ -87,10 +87,10 @@ public class CheckPointInitializer : SceneInitializer
     /// </summary>
     public override async Task FungusMethod()
     {
-        await m_FadeManager.StartFade(() =>
+        await m_FadeManager.StartFade(this, self =>
         {
-            AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
-            SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
+            AllowOperation(self.m_Leader, self.LeaderPos, self.m_CameraHandler);
+            SetTalkFlow(self.m_Friend, self.m_DeparturedFlowChart, self.FriendPos, self.m_ConversationManager);
         }, string.Empty, string.Empty);
     }
 }

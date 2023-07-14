@@ -50,6 +50,6 @@ public class HomeInitializer : SceneInitializer
         SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
 
         // 仮
-        await m_FadeManager.TurnBright(async () => await OnTurnBright(), "", "");
+        await m_FadeManager.TurnBright(this, self => self.OnTurnBright(), "", "");
     }
 }

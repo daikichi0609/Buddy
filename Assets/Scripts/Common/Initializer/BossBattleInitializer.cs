@@ -70,7 +70,7 @@ public class BossBattleInitializer : SceneInitializer
         BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
         // 明転
-        await m_FadeManager.TurnBright(() => _ = OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
+        await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class BossBattleInitializer : SceneInitializer
     /// </summary>
     public override async Task FungusMethod()
     {
-        await m_FadeManager.StartFadeWhite(async () => await ReadyToBossBattle(), () => m_TurnManager.NextUnitAct());
+        await m_FadeManager.StartFadeWhite(this, async self => await self.ReadyToBossBattle(), this, self => self.m_TurnManager.NextUnitAct());
     }
 
     /// <summary>

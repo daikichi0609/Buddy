@@ -103,7 +103,7 @@ public class DungeonProgressManager : IDungeonProgressManager
 
         // 暗転 & ダンジョン再構築
         string where = m_CurrentFloor.Value.ToString() + "F";
-        await m_FadeManager.StartFade(async () => await RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
+        await m_FadeManager.StartFade(this, async self => await self.RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
         m_TurnManager.NextUnitAct();
     }
 
