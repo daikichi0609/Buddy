@@ -11,7 +11,7 @@ public interface ITeamLevelHandler
     /// <summary>
     /// Exp
     /// </summary>
-    float Exp { get; set; }
+    float Exp { get; }
 
     /// <summary>
     /// レベル
@@ -33,6 +33,12 @@ public interface ITeamLevelHandler
     /// レベル変動時
     /// </summary>
     IObservable<int> OnLevelChanged { get; }
+
+    /// <summary>
+    /// 外から初期化する用
+    /// </summary>
+    /// <param name="exp"></param>
+    void SetExp(float exp);
 }
 
 public class LevelInfo
@@ -58,6 +64,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     private ISoundHolder m_SoundHolder;
 
     private static readonly string LEVEL_UP = "LevelUp";
+    private static readonly float EXP_MOVE = 0.5f;
 
     /// <summary>
     /// 経験値テーブル
@@ -69,7 +76,15 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     /// 累計経験値
     /// </summary>
     private ReactiveProperty<float> m_TotalExp = new ReactiveProperty<float>();
-    float ITeamLevelHandler.Exp { get => m_TotalExp.Value; set => m_TotalExp.Value = value; }
+    float ITeamLevelHandler.Exp { get => m_TotalExp.Value; }
+    void ITeamLevelHandler.SetExp(float exp)
+    {
+        LevelUpEffect = false;
+        m_TotalExp.Value = exp;
+        UpdateLevelInfo();
+        LevelUpEffect = true;
+    }
+    private bool LevelUpEffect { get; set; }
 
     /// <summary>
     /// レベル情報
@@ -122,6 +137,9 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
         // レベルアップ演出
         m_LevelChanged.SubscribeWithState(this, (_, self) =>
         {
+            if (self.LevelUpEffect == false)
+                return;
+
             foreach (var unit in self.m_UnitHolder.FriendList)
                 unit.GetInterface<ICharaEffect>().EffectFollow(LEVEL_UP);
 
@@ -151,7 +169,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
                     self.m_DungeonHandler.TryGetRoomId(buddyPos, out var buddyId) == true &&
                     playerId == buddyId)
                 {
-                    self.AddExperience(0.5f);
+                    self.AddExperience(EXP_MOVE);
                     return;
                 }
 
@@ -160,7 +178,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
                     var pos = playerPos + dir;
                     if (buddyPos == pos)
                     {
-                        self.AddExperience(0.5f);
+                        self.AddExperience(EXP_MOVE);
                         return;
                     }
                 }

@@ -42,7 +42,7 @@ public class DungeonCharacterProgressManager : IDungeonCharacterProgressManager
     /// </summary>
     void IDungeonCharacterProgressManager.AdoptSaveData()
     {
-        m_TeamLevelHandler.Exp = m_DungeonCharacterSaveData.Exp;
+        m_TeamLevelHandler.SetExp(m_DungeonCharacterSaveData.Exp);
         m_UnitHolder.Player.GetInterface<ICharaStarvation>().Hungry = m_DungeonCharacterSaveData.Hugry;
         m_TeamInventory.SetItems(m_DungeonCharacterSaveData.Items);
     }
