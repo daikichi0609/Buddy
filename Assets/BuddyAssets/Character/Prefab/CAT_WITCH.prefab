@@ -45,6 +45,8 @@ GameObject:
   - component: {fileID: 9034633841995211629}
   - component: {fileID: 7364645524889406339}
   - component: {fileID: -5107901334221037234}
+  - component: {fileID: -8268772011929776744}
+  - component: {fileID: -2942673491322240468}
   m_Layer: 0
   m_Name: CAT_WITCH
   m_TagString: Untagged
@@ -113,8 +115,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aff126964a14e8ca0e8b985a578c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AnimationState:
-    value: 0
   m_CharaAnimator: {fileID: 9034633841995211629}
 --- !u!114 &-5107901334221037234
 MonoBehaviour:
@@ -131,6 +131,36 @@ MonoBehaviour:
   m_CharaObject: {fileID: 9034633841985723659}
   m_MoveObject: {fileID: 9034633841985723659}
   m_MeshRenderer: {fileID: 9034633841990975813}
+--- !u!136 &-8268772011929776744
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9034633841985723659}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!54 &-2942673491322240468
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9034633841985723659}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 50
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 116
+  m_CollisionDetection: 0
 --- !u!1 &9034633841985725231
 GameObject:
   m_ObjectHideFlags: 0

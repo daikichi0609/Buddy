@@ -70,14 +70,14 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         // ----- キャラクター生成 ----- //
         // リーダー
         var leader = m_CurrentCharacterHolder.Leader;
-        var l = m_Instantiater.InstantiatePrefab(leader.OutGamePrefab, ms_OutGameUnitInjector);
+        var l = m_Instantiater.InstantiatePrefab(leader.Prefab, ms_OutGameUnitInjector);
         l.transform.position = leaderPos;
         m_Leader = l.GetComponent<ActorComponentCollector>();
         m_Leader.Initialize();
 
         // バディ
         var friend = m_CurrentCharacterHolder.Friend;
-        var f = m_Instantiater.InstantiatePrefab(friend.OutGamePrefab, ms_OutGameUnitInjector);
+        var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
         f.transform.position = friendPos;
         m_Friend = f.GetComponent<ActorComponentCollector>();
         m_Friend.Initialize();
@@ -94,11 +94,12 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     {
         var controller = chara.GetInterface<ICharaController>();
         controller.Wrap(wrapPos);
-        IOutGamePlayerInput leader = chara.GetInterface<IOutGamePlayerInput>();
-        leader.CanOperate = true; // 操作可能
+        var input = chara.GetInterface<IOutGamePlayerInput>();
+        input.CanOperate = true; // 操作可能
 
         // カメラを追従させる
-        cameraHandler.SetParent(controller.MoveObject);
+        var objectHolder = chara.GetInterface<ICharaObjectHolder>();
+        cameraHandler.SetParent(objectHolder.MoveObject);
     }
 
     /// <summary>

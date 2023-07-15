@@ -41,8 +41,8 @@ public class HomeInitializer : SceneInitializer
         // キャラ生成
         CreateOutGameCharacter(LeaderPos, FriendPos);
 
-        var leader = m_Leader.GetInterface<ICharaController>().MoveObject;
-        leader.GetComponent<Rigidbody>().useGravity = true;
+        var leader = m_Leader.GetInterface<ICharaController>().Rigidbody;
+        leader.useGravity = true;
 
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.FriendFlow).GetComponent<Fungus.Flowchart>();
 
@@ -50,6 +50,6 @@ public class HomeInitializer : SceneInitializer
         SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
 
         // 仮
-        await m_FadeManager.TurnBright(this, self => self.OnTurnBright(), "", "");
+        await m_FadeManager.TurnBright(this, self => self.OnTurnBright(), string.Empty, string.Empty);
     }
 }

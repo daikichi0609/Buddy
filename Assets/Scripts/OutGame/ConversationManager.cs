@@ -50,22 +50,20 @@ public class ConversationManager : MonoBehaviour, IConversationManager
     /// </summary>
     /// <param name="pos"></param>
     /// <param name="player"></param>
-    /// <param name="dir"></param>
+    /// <param name="dest"></param>
     /// <returns></returns>
-    bool IConversationManager.TryTalk(Vector3 pos, ICollector player, out Vector3 dir)
+    bool IConversationManager.TryTalk(Vector3 pos, ICollector player, out Vector3 dest)
     {
-        dir = new Vector3();
-
         foreach (var talk in m_Talkable)
-        {
-            if (talk.TryInteract(pos, out dir) == true)
+            if (talk.TryInteract(pos, out dest) == true)
             {
                 m_TalkingPlayer = player;
                 var input = m_TalkingPlayer.GetInterface<IOutGamePlayerInput>();
                 input.CanOperate = false;
                 return true;
             }
-        }
+
+        dest = new Vector3();
         return false;
     }
 

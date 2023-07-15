@@ -31,11 +31,4 @@ public class CharacterSetup : PrefabSetup
     [Expandable]
     private ClevernessSetup m_ClevernessSetup;
     public ClevernessSetup ClevernesssSetup => m_ClevernessSetup;
-
-    /// <summary>
-    /// アウトゲーム用Prefab
-    /// </summary>
-    [SerializeField, Header("アウトゲーム用Prefab")]
-    private GameObject m_OutGamePrefab;
-    public GameObject OutGamePrefab => m_OutGamePrefab;
 }

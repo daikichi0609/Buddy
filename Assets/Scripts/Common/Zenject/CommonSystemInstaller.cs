@@ -19,6 +19,13 @@ public class CommonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // オブジェクトプール
+        Container.Bind<IObjectPoolController>()
+            .To<ObjectPoolController>()
+            .FromNew()
+            .AsSingle()
+            .NonLazy();
+
         // PlayerLoop
         Container.Bind<IPlayerLoopManager>()
             .To<PlayerLoopManager>()

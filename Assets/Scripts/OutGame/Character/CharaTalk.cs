@@ -20,7 +20,7 @@ public interface ICharaTalk : IActorInterface
     /// 話しかけられる
     /// </summary>
     /// <returns></returns>
-    bool TryInteract(Vector3 pos, out Vector3 dir);
+    bool TryInteract(Vector3 pos, out Vector3 dest);
 }
 
 public class CharaTalk : ActorComponentBase, ICharaTalk
@@ -58,10 +58,10 @@ public class CharaTalk : ActorComponentBase, ICharaTalk
     bool ICharaTalk.TryTalk()
     {
         var pos = m_CharaController.Position;
-        if (m_ConversationManager.TryTalk(pos, Owner, out var dir) == true)
+        if (m_ConversationManager.TryTalk(pos, Owner, out var dest) == true)
         {
-            m_CharaController.Face(dir);
-            m_CharaController.StopAnimation(ANIMATION_TYPE.MOVE);
+            m_CharaController.Face(dest);
+            m_CharaController.StopAnimation();
             return true;
         }
         return false;
@@ -72,14 +72,17 @@ public class CharaTalk : ActorComponentBase, ICharaTalk
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    bool ICharaTalk.TryInteract(Vector3 pos, out Vector3 dir)
+    bool ICharaTalk.TryInteract(Vector3 pos, out Vector3 dest)
     {
-        dir = m_CharaController.Position - pos;
+        dest = m_CharaController.Position;
+
+        var dir = pos - dest;
         var distance = dir.magnitude;
+        // 会話成功
         if (distance <= TALK_DISTANCE)
         {
-            m_CharaController.Face(dir.ToOppositeDir());
-            m_CharaController.StopAnimation(ANIMATION_TYPE.IDLE);
+            m_CharaController.Face(pos);
+            m_CharaController.StopAnimation();
             m_FlowChart.SendFungusMessage(SPOKEN_MESSAGE);
             return true;
         }

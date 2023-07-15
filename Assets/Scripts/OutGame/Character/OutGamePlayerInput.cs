@@ -61,7 +61,7 @@ public class OutGamePlayerInput : ActorComponentBase, IOutGamePlayerInput
         if (DetectInputMove(flag) == true)
             return;
         else
-            m_CharaController.StopAnimation(ANIMATION_TYPE.MOVE); // 移動アニメーション終了
+            m_CharaController.StopAnimation(); // 移動アニメーション終了
     }
 
     /// <summary>

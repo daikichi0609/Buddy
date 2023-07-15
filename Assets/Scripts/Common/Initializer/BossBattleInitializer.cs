@@ -111,7 +111,7 @@ public class BossBattleInitializer : SceneInitializer
     {
         // ボス
         var boss = setup.BossCharacterSetup;
-        var b = m_Instantiater.InstantiatePrefab(boss.OutGamePrefab);
+        var b = m_Instantiater.InstantiatePrefab(boss.Prefab);
         b.transform.position = pos;
         m_Boss = b.GetComponent<ActorComponentCollector>();
         var controller = m_Boss.GetInterface<ICharaController>();

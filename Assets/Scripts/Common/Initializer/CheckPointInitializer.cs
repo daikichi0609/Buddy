@@ -75,8 +75,8 @@ public class CheckPointInitializer : SceneInitializer
         await Task.Delay(500);
 
         // 向き合う
-        leader.Face(friend.Position - leader.Position);
-        friend.Face(leader.Position - friend.Position);
+        leader.Face(friend.Position);
+        friend.Face(leader.Position);
 
         // 会話開始
         m_ArrivalFlowChart.SendFungusMessage(FungusMessage);

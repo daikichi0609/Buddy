@@ -578,6 +578,8 @@ GameObject:
   - component: {fileID: 5673021825587871945}
   - component: {fileID: 3223632071951924029}
   - component: {fileID: 3638960377285755439}
+  - component: {fileID: 3231849314181805117}
+  - component: {fileID: 3940910089220204488}
   m_Layer: 0
   m_Name: DORCHE
   m_TagString: Untagged
@@ -646,8 +648,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aff126964a14e8ca0e8b985a578c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AnimationState:
-    value: 0
   m_CharaAnimator: {fileID: 5673021825587871945}
 --- !u!114 &3638960377285755439
 MonoBehaviour:
@@ -664,6 +664,36 @@ MonoBehaviour:
   m_CharaObject: {fileID: 5673021825595449471}
   m_MoveObject: {fileID: 5673021825595449471}
   m_MeshRenderer: {fileID: 5673021825592273829}
+--- !u!136 &3231849314181805117
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5673021825595449471}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!54 &3940910089220204488
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5673021825595449471}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 50
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 116
+  m_CollisionDetection: 0
 --- !u!1 &5673021825595449737
 GameObject:
   m_ObjectHideFlags: 0
