@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WarriorStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: "\u304B\u307C\u3061\u3083\u304F\u3093"
+    m_GivenName: "\u30A6\u30A9\u30FC\u30EA\u30A2"
     m_MaxHp: 5
     m_Atk: 15
     m_Def: 15

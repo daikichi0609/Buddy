@@ -10,9 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2ed03c0699af4e36abbb68ee9f04c33, type: 3}
-  m_Name: PrideEnemyTableSetup_2
+  m_Name: SnowEnemyTableSetup_3
   m_EditorClassIdentifier: 
   m_EnemyPack:
+  - m_Setup: {fileID: 11400000, guid: 9b4082844d922405392ac5e07404d40b, type: 2}
+    m_Weight: 100
+  - m_Setup: {fileID: 11400000, guid: a626a384a9b644a3c9d205f9bf8d03ec, type: 2}
+    m_Weight: 100
   - m_Setup: {fileID: 11400000, guid: bb4d1a269b08341d68a6a3604d6255b9, type: 2}
     m_Weight: 100
   - m_Setup: {fileID: 11400000, guid: 3321265f15cea41a89d68fac34c6fb01, type: 2}
@@ -23,9 +27,17 @@ MonoBehaviour:
     m_Weight: 100
   - m_Setup: {fileID: 11400000, guid: faa22a81eb0ed4c7eacd82a10be258e2, type: 2}
     m_Weight: 100
+  - m_Setup: {fileID: 11400000, guid: 0bb5db38277b14da4b3d5b0ebf0ba55a, type: 2}
+    m_Weight: 100
+  - m_Setup: {fileID: 11400000, guid: c185a03cfacfe4a5ab45dc549aa5938a, type: 2}
+    m_Weight: 100
   - m_Setup: {fileID: 11400000, guid: 0a5c1d123c5594ac293fde9248cae039, type: 2}
-    m_Weight: 5
+    m_Weight: 25
   - m_Setup: {fileID: 11400000, guid: 59e17c2ef5dbb405f99b2868950369f4, type: 2}
-    m_Weight: 5
+    m_Weight: 25
   - m_Setup: {fileID: 11400000, guid: aa27f531557a64079bb474645a799c40, type: 2}
+    m_Weight: 5
+  - m_Setup: {fileID: 11400000, guid: cb836b1ca5b824acbb9d7008d96862f4, type: 2}
+    m_Weight: 5
+  - m_Setup: {fileID: 11400000, guid: 743cb2e1eca0b41f992b571018d31ee8, type: 2}
     m_Weight: 5

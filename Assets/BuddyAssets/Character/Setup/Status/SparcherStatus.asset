@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SparcherStatus
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: "\u3060\u3044\u3053\u3093"
+    m_GivenName: "\u30B9\u30D1\u30FC\u30C1\u30E3"
     m_MaxHp: 5
     m_Atk: 20
     m_Def: 0

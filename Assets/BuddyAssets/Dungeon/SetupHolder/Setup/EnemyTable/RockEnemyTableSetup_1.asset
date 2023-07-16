@@ -10,12 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2ed03c0699af4e36abbb68ee9f04c33, type: 3}
-  m_Name: ForestEnemyTableSetup_3
+  m_Name: RockEnemyTableSetup_1
   m_EditorClassIdentifier: 
   m_EnemyPack:
   - m_Setup: {fileID: 11400000, guid: 9b4082844d922405392ac5e07404d40b, type: 2}
-    m_Weight: 100
+    m_Weight: 50
   - m_Setup: {fileID: 11400000, guid: a626a384a9b644a3c9d205f9bf8d03ec, type: 2}
-    m_Weight: 100
+    m_Weight: 50
   - m_Setup: {fileID: 11400000, guid: bb4d1a269b08341d68a6a3604d6255b9, type: 2}
-    m_Weight: 10
+    m_Weight: 50
+  - m_Setup: {fileID: 11400000, guid: afd5e5ba7cd92443eb0e7ab5dc443e38, type: 2}
+    m_Weight: 50
+  - m_Setup: {fileID: 11400000, guid: faa22a81eb0ed4c7eacd82a10be258e2, type: 2}
+    m_Weight: 50
+  - m_Setup: {fileID: 11400000, guid: c185a03cfacfe4a5ab45dc549aa5938a, type: 2}
+    m_Weight: 100
+  - m_Setup: {fileID: 11400000, guid: 0bb5db38277b14da4b3d5b0ebf0ba55a, type: 2}
+    m_Weight: 100
+  - m_Setup: {fileID: 11400000, guid: cb836b1ca5b824acbb9d7008d96862f4, type: 2}
+    m_Weight: 5

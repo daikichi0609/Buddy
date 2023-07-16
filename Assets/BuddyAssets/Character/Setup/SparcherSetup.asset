@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
   m_Name: SparcherSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 4643029047571362941, guid: 41967709ee84e4577ab48ac5f8f7f1e3,
+  m_Prefab: {fileID: 3046716845987966166, guid: ec5343be2a0534cb8b78476aeaf37669,
     type: 3}
-  m_Status: {fileID: 11400000, guid: 38c5e2ea7765745e8a0334cf8774d20e, type: 2}
+  m_Status: {fileID: 11400000, guid: 2e7cd6cff84824d99a083d00d58fdc33, type: 2}
   m_SkillSetup: {fileID: 0}
   m_ClevernessSetup: {fileID: 0}

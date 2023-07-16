@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UndeathSetup
   m_EditorClassIdentifier: 
   m_Param:
-    m_GivenName: "\u30D7\u30EA\u30B9"
+    m_GivenName: "\u30A2\u30F3\u30C7\u30B9"
     m_MaxHp: 170
     m_Atk: 22
     m_Def: 5

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
   m_Name: WarriorSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 6967327199222666282, guid: 8e121f2b3993c4a21b6ae3902bd9a2d7,
+  m_Prefab: {fileID: 5008774163446746968, guid: b4f67554b909b418399b858ec9e06348,
     type: 3}
-  m_Status: {fileID: 11400000, guid: d53d4a00c8420452f96eaeb1af0c3179, type: 2}
+  m_Status: {fileID: 11400000, guid: d2e10e00674394559977017ba0f5ad28, type: 2}
+  m_SkillSetup: {fileID: 0}
+  m_ClevernessSetup: {fileID: 0}

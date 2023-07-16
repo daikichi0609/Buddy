@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
   m_Name: UndeathSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 6242634136981913730, guid: cc04dfeb4cbf24be38e63757daf45bbc,
+  m_Prefab: {fileID: 3517223827217059037, guid: 84f351139f4d54bb89ff978109f81e7b,
     type: 3}
-  m_Status: {fileID: 11400000, guid: 98ff8e4e0d6cc4dada0897a985d580da, type: 2}
+  m_Status: {fileID: 11400000, guid: 74c72ebb960974f33bc4c764b241183f, type: 2}
   m_SkillSetup: {fileID: 0}
   m_ClevernessSetup: {fileID: 0}

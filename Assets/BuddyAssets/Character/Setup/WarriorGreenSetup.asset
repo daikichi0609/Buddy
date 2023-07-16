@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
   m_Name: WarriorGreenSetup
   m_EditorClassIdentifier: 
-  m_Prefab: {fileID: 6967327199222666282, guid: 8e121f2b3993c4a21b6ae3902bd9a2d7,
+  m_Prefab: {fileID: 1382403048912075344, guid: 644492bfe137c4f11a75e8767a7db68e,
     type: 3}
-  m_Status: {fileID: 11400000, guid: d53d4a00c8420452f96eaeb1af0c3179, type: 2}
+  m_Status: {fileID: 11400000, guid: 500ee714dcd2d482190a1b72bcefe513, type: 2}
+  m_SkillSetup: {fileID: 0}
+  m_ClevernessSetup: {fileID: 0}
