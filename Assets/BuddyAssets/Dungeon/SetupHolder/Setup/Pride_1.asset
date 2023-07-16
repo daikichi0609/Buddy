@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070548b6f87644ffcace57c8e162dccd, type: 3}
+  m_Name: Pride_1
+  m_EditorClassIdentifier: 
+  m_DungeonName: "\u30D7\u30EA\u30C7\u30ED\u30FC\u30C9"
+  m_FloorCount: 6
+  m_MapSize: {x: 22, y: 22}
+  m_RoomCountRange: {x: 3, y: 4}
+  m_EnemyTable: {fileID: 0}
+  m_EnemyCountRange: {x: 2, y: 4}
+  m_MonsterHouseRate: 0
+  m_TrapCountRange: {x: 0, y: 2}
+  m_ItemCountRange: {x: 3, y: 5}
+  m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
+  m_ElementSetup: {fileID: 11400000, guid: 8372e4af5b4d74faca40a9df5bb8e000, type: 2}
+  m_CheckPointSetup: {fileID: 0}

@@ -502,8 +502,6 @@ GameObject:
   - component: {fileID: 9534960}
   - component: {fileID: 5481978}
   - component: {fileID: 13629902}
-  - component: {fileID: 3977465892903216866}
-  - component: {fileID: 8368670230745479104}
   m_Layer: 0
   m_Name: war_bear
   m_TagString: Untagged
@@ -578,33 +576,6 @@ CapsuleCollider:
   m_Height: 1.03
   m_Direction: 1
   m_Center: {x: 0, y: 0.52, z: 0.03}
---- !u!114 &3977465892903216866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 145822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 521b2d735b7024995ab465d9e3ed5d4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8368670230745479104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 145822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7976f50a305442aba19e88d66e058e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MoveObject: {fileID: 145822}
-  m_CharaObject: {fileID: 145822}
-  m_CharaAnimator: {fileID: 9534960}
 --- !u!1 &159276
 GameObject:
   m_ObjectHideFlags: 0

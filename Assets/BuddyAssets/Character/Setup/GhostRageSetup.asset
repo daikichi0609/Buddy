@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
+  m_Name: GhostRageSetup
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 839072768629819688, guid: 9e64b8c3c5b6e4804ab618c1db2c1a26, type: 3}
+  m_Status: {fileID: 11400000, guid: f593bf0bc4bd14024b92dfc8a3e7a2da, type: 2}
+  m_SkillSetup: {fileID: 0}
+  m_ClevernessSetup: {fileID: 0}

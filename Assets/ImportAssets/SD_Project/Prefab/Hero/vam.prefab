@@ -533,7 +533,6 @@ GameObject:
   - component: {fileID: 9508082}
   - component: {fileID: 5496866}
   - component: {fileID: 13645944}
-  - component: {fileID: 13660238}
   m_Layer: 0
   m_Name: vam
   m_TagString: Untagged
@@ -608,20 +607,6 @@ CapsuleCollider:
   m_Height: 1.03
   m_Direction: 1
   m_Center: {x: 0, y: 0.52, z: 0.03}
---- !u!136 &13660238
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 162520}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.4
-  m_Height: 1.03
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.48, z: 0.03}
 --- !u!1 &167318
 GameObject:
   m_ObjectHideFlags: 0

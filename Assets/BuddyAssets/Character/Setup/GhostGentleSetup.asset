@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
+  m_Name: GhostGentleSetup
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 4159095666271800686, guid: ce3b69df08c2a4c5da98265c19faac92,
+    type: 3}
+  m_Status: {fileID: 11400000, guid: 9e1ac5c7553c34f2894e5a438fada355, type: 2}
+  m_SkillSetup: {fileID: 0}
+  m_ClevernessSetup: {fileID: 0}

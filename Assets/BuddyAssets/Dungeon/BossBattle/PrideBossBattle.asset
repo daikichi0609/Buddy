@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbef0049f419f4198a21fcf0f6bea551, type: 3}
+  m_Name: PrideBossBattle
+  m_EditorClassIdentifier: 
+  m_BossBattleName: "\u30D7\u30EA\u30C7\u30ED\u30FC\u30C9"
+  m_WhereName: "\u7D42\u70B9"
+  m_ElementSetup: {fileID: 11400000, guid: 8372e4af5b4d74faca40a9df5bb8e000, type: 2}
+  m_BossCharacterSetup: {fileID: 11400000, guid: 3439b0805d75d43a6b82b528ad5961d9,
+    type: 2}
+  m_ArrivalFlow: {fileID: 5498602457853490414, guid: 5ed3ac06e527f4a27b8592cd8e85b2ba,
+    type: 3}
+  m_DefeatedFlow: {fileID: 5498602457853490414, guid: 3cb26710d7ca6449e985f3e52246c165,
+    type: 3}
+  m_BGM: {fileID: 8854493409717249264, guid: a8c5732c413dd4a9f8f76d27a26e688f, type: 3}
