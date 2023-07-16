@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Fungus;
 using UnityEngine;
 
 public interface IConversationManager
@@ -8,7 +9,7 @@ public interface IConversationManager
     /// 会話先登録
     /// </summary>
     /// <param name="chara"></param>
-    void Register(ICharaTalk talk);
+    void Register(ICollector chara, Flowchart flowchart, Vector3 pos);
 
     /// <summary>
     /// 話しかけられる相手がいるなら会話開始
@@ -37,12 +38,24 @@ public class ConversationManager : MonoBehaviour, IConversationManager
     private ICollector m_TalkingPlayer;
 
     /// <summary>
-    /// 会話先として登録
+    /// 会話フローを持たせて登録
     /// </summary>
-    /// <param name="talk"></param>
-    void IConversationManager.Register(ICharaTalk talk)
+    /// <param name="chara"></param>
+    /// <param name="flowchart"></param>
+    /// <param name="pos"></param>
+    /// <param name="conversationManager"></param>
+    void IConversationManager.Register(ICollector chara, Flowchart flowchart, Vector3 pos)
     {
-        m_Talkable.Add(talk);
+        // キャラを定位置に固定
+        var friendConroller = chara.GetInterface<ICharaController>();
+        friendConroller.Wrap(pos);
+        friendConroller.Rigidbody.constraints = RigidbodyConstraints.FreezeAll; // 位置固定
+
+        // 会話フローを持たせる
+        var friendTalk = chara.GetInterface<ICharaTalk>();
+        friendTalk.FlowChart = flowchart;
+
+        m_Talkable.Add(friendTalk);
     }
 
     /// <summary>

@@ -23,5 +23,12 @@ public class HomeSystemInstaller : MonoInstaller
             .FromComponentOn(m_HomeSystem)
             .AsSingle()
             .NonLazy();
+
+        // キャラクター初期化
+        Container.Bind<HomeCharacterManager>()
+            .To<HomeCharacterManager>()
+            .FromComponentOn(m_HomeSystem)
+            .AsSingle()
+            .NonLazy();
     }
 }

@@ -90,7 +90,7 @@ public class CheckPointInitializer : SceneInitializer
         await m_FadeManager.StartFade(this, self =>
         {
             AllowOperation(self.m_Leader, self.LeaderPos, self.m_CameraHandler);
-            SetTalkFlow(self.m_Friend, self.m_DeparturedFlowChart, self.FriendPos, self.m_ConversationManager);
+            self.m_ConversationManager.Register(self.m_Friend, self.m_DeparturedFlowChart, self.FriendPos);
         }, string.Empty, string.Empty);
     }
 }

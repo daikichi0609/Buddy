@@ -26,7 +26,7 @@ public class DungeonProgressHolder : ScriptableObject
     /// </summary>
     [SerializeField]
     private DUNGEON_THEME m_CurrentDungeonTheme;
-    public DUNGEON_THEME CurrentDungeonTheme { set => m_CurrentDungeonTheme = value; }
+    public DUNGEON_THEME CurrentDungeonTheme { get => m_CurrentDungeonTheme; set => m_CurrentDungeonTheme = value; }
 
     /// <summary>
     /// 現在のダンジョン進行度

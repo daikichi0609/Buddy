@@ -30,7 +30,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     [Inject]
     protected IInstantiater m_Instantiater;
 
-    private static IInjector ms_OutGameUnitInjector = new OutGameUnitInjector();
+    public static IInjector ms_OutGameUnitInjector = new OutGameUnitInjector();
 
     protected virtual string FungusMessage { get; }
 
@@ -100,25 +100,5 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         // カメラを追従させる
         var objectHolder = chara.GetInterface<ICharaObjectHolder>();
         cameraHandler.SetParent(objectHolder.MoveObject);
-    }
-
-    /// <summary>
-    /// 会話フローを持たせる
-    /// </summary>
-    /// <param name="chara"></param>
-    /// <param name="flowchart"></param>
-    /// <param name="pos"></param>
-    /// <param name="conversationManager"></param>
-    protected static void SetTalkFlow(ICollector chara, Flowchart flowchart, Vector3 pos, IConversationManager conversationManager)
-    {
-        // キャラを定位置に固定
-        var friendConroller = chara.GetInterface<ICharaController>();
-        friendConroller.Wrap(pos);
-        friendConroller.Rigidbody.constraints = RigidbodyConstraints.FreezeAll; // 位置固定
-
-        // 会話フローを持たせる
-        var friendTalk = chara.GetInterface<ICharaTalk>();
-        friendTalk.FlowChart = flowchart;
-        conversationManager.Register(friendTalk);
     }
 }

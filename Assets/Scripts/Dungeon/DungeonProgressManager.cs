@@ -35,9 +35,9 @@ public interface IDungeonProgressManager
 public enum DUNGEON_THEME
 {
     GRASS = 0,
-    ROCK = 1,
-    CRYSTAL = 2,
-    WHITE = 3,
+    PRIDE = 1,
+    ROCK = 2,
+    SNOW = 3,
 }
 
 /// <summary>

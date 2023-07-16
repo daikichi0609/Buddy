@@ -47,7 +47,7 @@ public class HomeInitializer : SceneInitializer
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.FriendFlow).GetComponent<Fungus.Flowchart>();
 
         AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
-        SetTalkFlow(m_Friend, m_DeparturedFlowChart, FriendPos, m_ConversationManager);
+        m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);
 
         // 仮
         await m_FadeManager.TurnBright(this, self => self.OnTurnBright(), string.Empty, string.Empty);
