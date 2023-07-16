@@ -8,25 +8,18 @@ using Zenject;
 public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonScriptableObjectInstaller>
 {
     /// <summary>
-    /// ホームセットアップ
+    /// インゲーム進行度
     /// </summary>
     [SerializeField]
     [Expandable]
-    private HomeSetup m_HomeSetup;
+    private InGameProgressHolder m_InGameProgressHolder;
 
     /// <summary>
     /// ダンジョン進行度
     /// </summary>
     [SerializeField]
     [Expandable]
-    private DungeonProgressHolder m_ProgressHolder;
-
-    /// <summary>
-    /// キャラクター情報
-    /// </summary>
-    [SerializeField]
-    [Expandable]
-    private CurrentCharacterHolder m_CurrentCharacterHolder;
+    private DungeonProgressHolder m_DungeonProgressHolder;
 
     /// <summary>
     /// ダンジョン途中キャラクター持ち越し情報
@@ -34,6 +27,20 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
     [SerializeField]
     [Expandable]
     private DungeonCharacterProgressSaveData m_DungeonCharacterSaveData;
+
+    /// <summary>
+    /// ホームセットアップ
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private HomeSetup m_HomeSetup;
+
+    /// <summary>
+    /// キャラクター情報
+    /// </summary>
+    [SerializeField]
+    [Expandable]
+    private CurrentCharacterHolder m_CurrentCharacterHolder;
 
     /// <summary>
     /// マスターデータ
@@ -58,8 +65,9 @@ public class CommonScriptableObjectInstaller : ScriptableObjectInstaller<CommonS
 
     public override void InstallBindings()
     {
+        Container.BindInstance(m_InGameProgressHolder).AsSingle();
         Container.BindInstance(m_HomeSetup).AsSingle();
-        Container.BindInstance(m_ProgressHolder).AsSingle();
+        Container.BindInstance(m_DungeonProgressHolder).AsSingle();
         Container.BindInstance(m_CurrentCharacterHolder).AsSingle();
         Container.BindInstance(m_DungeonCharacterSaveData).AsSingle();
         Container.BindInstance(m_MasterData.CharacterMasterSetup).AsSingle();

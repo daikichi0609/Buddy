@@ -48,6 +48,8 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     [Inject]
     private IItemManager m_ItemManager;
     [Inject]
+    private InGameProgressHolder m_InGameProgressHolder;
+    [Inject]
     private DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
     private CurrentCharacterHolder m_CurrentCharacterHolder;
@@ -167,7 +169,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     }
     private async Task DeployFriend(Vector3 pos)
     {
-        var setup = m_CurrentCharacterHolder.Friend; // Setup
+        var setup = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress); // Setup
         await m_FriendSpawner.SpawnFriend(setup, pos);
     }
 }

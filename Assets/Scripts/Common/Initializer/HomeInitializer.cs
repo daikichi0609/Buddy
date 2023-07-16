@@ -10,9 +10,9 @@ using Task = System.Threading.Tasks.Task;
 public class HomeInitializer : SceneInitializer
 {
     [Inject]
-    private HomeSetup m_HomeSetup;
-    [Inject]
     private IConversationManager m_ConversationManager;
+    [Inject]
+    private HomeSetup m_HomeSetup;
 
     protected override string FungusMessage => "Home";
 
@@ -44,7 +44,7 @@ public class HomeInitializer : SceneInitializer
         var leader = m_Leader.GetInterface<ICharaController>().Rigidbody;
         leader.useGravity = true;
 
-        m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.FriendFlow).GetComponent<Fungus.Flowchart>();
+        m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendFlow(m_InGameProgressHolder.Progress)).GetComponent<Fungus.Flowchart>();
 
         AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
         m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);

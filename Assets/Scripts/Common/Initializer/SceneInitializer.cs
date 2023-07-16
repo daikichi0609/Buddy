@@ -24,6 +24,8 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     [Inject]
     protected IFadeManager m_FadeManager;
     [Inject]
+    protected InGameProgressHolder m_InGameProgressHolder;
+    [Inject]
     protected DungeonProgressHolder m_DungeonProgressHolder;
     [Inject]
     protected CurrentCharacterHolder m_CurrentCharacterHolder;
@@ -76,7 +78,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         m_Leader.Initialize();
 
         // バディ
-        var friend = m_CurrentCharacterHolder.Friend;
+        var friend = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress);
         var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
         f.transform.position = friendPos;
         m_Friend = f.GetComponent<ActorComponentCollector>();

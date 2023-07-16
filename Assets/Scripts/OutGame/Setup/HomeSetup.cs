@@ -7,13 +7,6 @@ using UnityEngine;
 public class HomeSetup : ScriptableObject
 {
     /// <summary>
-    /// ホーム進行度
-    /// </summary>
-    [SerializeField, Header("ホーム進行度")]
-    private int m_Progress;
-    public int Progress => m_Progress;
-
-    /// <summary>
     /// ステージ
     /// </summary>
     [SerializeField, Header("ステージ")]
@@ -24,6 +17,6 @@ public class HomeSetup : ScriptableObject
     /// バディ会話フロー
     /// </summary>
     [SerializeField, Header("バディ会話フロー")]
-    private GameObject m_FriendFlow;
-    public GameObject FriendFlow => m_FriendFlow;
+    private GameObject[] m_FriendFlow;
+    public GameObject GetFriendFlow(int index) => m_FriendFlow[index];
 }

@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 5893306807403491656}
   - component: {fileID: 1546922527615870814}
   m_Layer: 0
-  m_Name: ForestCheckPoint_D01
+  m_Name: Dungeon_Ragon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

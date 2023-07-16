@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: CurrentCharacterHolder
   m_EditorClassIdentifier: 
   m_Leader: {fileID: 11400000, guid: 9c3685c5fbc27477cbb015226f46a1c5, type: 2}
-  m_Friend: {fileID: 11400000, guid: a47e46b6407684368874d3e1d978e777, type: 2}
+  m_Friend:
+  - {fileID: 11400000, guid: a47e46b6407684368874d3e1d978e777, type: 2}
+  - {fileID: 11400000, guid: 5144e8ac1bac3422fbe56ce674ea9b76, type: 2}
+  - {fileID: 11400000, guid: dd8e88c74112346cea130b83d5be123d, type: 2}

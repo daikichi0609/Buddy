@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6a4e9720631c44e7a8f9b6e3be6711f, type: 3}
   m_Name: HomeSetup
   m_EditorClassIdentifier: 
-  m_Progress: 0
   m_Stage: {fileID: 4131946162474604888, guid: f49dc1a65c42b4fd6b845a6d642fcae9, type: 3}
-  m_FriendFlow: {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5,
-    type: 3}
+  m_FriendFlow:
+  - {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5, type: 3}
+  - {fileID: 5498602457853490414, guid: be64fa8d2a7b04789aa9081dbe2391cd, type: 3}
+  - {fileID: 5498602457853490414, guid: f04062c843f0f47689aee85e746783f7, type: 3}

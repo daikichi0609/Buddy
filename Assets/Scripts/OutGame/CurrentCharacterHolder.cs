@@ -19,6 +19,6 @@ public class CurrentCharacterHolder : ScriptableObject
     /// </summary>
     [SerializeField]
     [Expandable]
-    private CharacterSetup m_Friend;
-    public CharacterSetup Friend { get => m_Friend; set => m_Friend = value; }
+    private CharacterSetup[] m_Friend;
+    public CharacterSetup GetFriend(int index) => m_Friend[index];
 }
