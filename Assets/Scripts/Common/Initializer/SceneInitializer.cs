@@ -17,6 +17,20 @@ public interface ISceneInitializer
     void AllowOperation();
 
     /// <summary>
+    /// Leaderの有効化切り替え
+    /// </summary>
+    /// <param name="isActivate"></param>
+    /// <returns></returns>
+    IDisposable SwitchLeaderActive(bool isActivate);
+
+    /// <summary>
+    /// Leaderの有効化切り替え
+    /// </summary>
+    /// <param name="isActivate"></param>
+    /// <returns></returns>
+    IDisposable SwitchFriendActive(bool isActivate);
+
+    /// <summary>
     /// Fungus用
     /// </summary>
     void FungusMethod();
@@ -107,4 +121,28 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         input.CanOperate = true; // 操作可能
     }
     void ISceneInitializer.AllowOperation() => AllowOperation();
+
+    /// <summary>
+    /// 有効化切り替え
+    /// </summary>
+    /// <param name="isActivate"></param>
+    /// <returns></returns>
+    IDisposable ISceneInitializer.SwitchLeaderActive(bool isActivate)
+    {
+        var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
+        objectHolder.MoveObject.SetActive(isActivate);
+        return Disposable.CreateWithState((objectHolder, isActivate), tuple => tuple.objectHolder.MoveObject.SetActive(!tuple.isActivate));
+    }
+
+    /// <summary>
+    /// 有効化切り替え
+    /// </summary>
+    /// <param name="isActivate"></param>
+    /// <returns></returns>
+    IDisposable ISceneInitializer.SwitchFriendActive(bool isActivate)
+    {
+        var objectHolder = m_Friend.GetInterface<ICharaObjectHolder>();
+        objectHolder.MoveObject.SetActive(isActivate);
+        return Disposable.CreateWithState((objectHolder, isActivate), tuple => tuple.objectHolder.MoveObject.SetActive(!tuple.isActivate));
+    }
 }

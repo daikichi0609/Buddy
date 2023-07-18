@@ -6,9 +6,11 @@ using UniRx;
 
 public enum TIMELINE_TYPE
 {
-    RAGON_INTRO = 0,
-    BERRY_INTRO = 1,
-    DORCHE_INTRO = 2,
+    NONE = -1,
+    INTRO = 0,
+    RAGON_INTRO = 1,
+    BERRY_INTRO = 2,
+    DORCHE_INTRO = 3,
 }
 
 public enum TIMELINE_FINISH_TYPE
@@ -18,11 +20,13 @@ public enum TIMELINE_FINISH_TYPE
 
 public readonly struct RegisterTimelineMessage
 {
+    public GameObject Camera { get; }
     public PlayableDirector Director { get; }
     public TIMELINE_TYPE Key { get; }
 
-    public RegisterTimelineMessage(PlayableDirector director, TIMELINE_TYPE key)
+    public RegisterTimelineMessage(GameObject camera, PlayableDirector director, TIMELINE_TYPE key)
     {
+        Camera = camera;
         Director = director;
         Key = key;
     }
@@ -43,6 +47,9 @@ public readonly struct FinishTimelineMessage
 public class TimelineRegister : MonoBehaviour
 {
     [SerializeField]
+    private GameObject m_Camera;
+
+    [SerializeField]
     private PlayableDirector m_Director;
 
     [SerializeField]
@@ -51,7 +58,11 @@ public class TimelineRegister : MonoBehaviour
     [SerializeField]
     private TIMELINE_FINISH_TYPE m_FinishType;
 
-    private void Awake() => MessageBroker.Default.Publish(new RegisterTimelineMessage(m_Director, m_Type));
+    private void Awake()
+    {
+        m_Camera.SetActive(false);
+        MessageBroker.Default.Publish(new RegisterTimelineMessage(m_Camera, m_Director, m_Type));
+    }
 
     public void OnFinish() => MessageBroker.Default.Publish(new FinishTimelineMessage(m_Type, m_FinishType));
 }
