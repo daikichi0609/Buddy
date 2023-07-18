@@ -76,7 +76,7 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// 会話開始前
     /// </summary>
-    async protected override Task OnTurnBright()
+    private async Task OnTurnBright()
     {
         // コントローラー取得
         ICharaController leader = m_Leader.GetInterface<ICharaController>();
@@ -95,9 +95,9 @@ public class BossBattleInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override async Task FungusMethod()
+    public override void FungusMethod()
     {
-        await m_FadeManager.StartFadeWhite(this, async self => await self.ReadyToBossBattle(), this, self => self.m_TurnManager.NextUnitAct());
+        m_FadeManager.StartFadeWhite(this, async self => await self.ReadyToBossBattle(), this, self => self.m_TurnManager.NextUnitAct());
     }
 
     /// <summary>

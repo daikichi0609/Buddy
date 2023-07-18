@@ -7,10 +7,19 @@ using Zenject;
 using UnityEditor.EditorTools;
 using Fungus;
 using Task = System.Threading.Tasks.Task;
+using System;
 
 public interface ISceneInitializer
 {
-    Task FungusMethod();
+    /// <summary>
+    /// 行動可能
+    /// </summary>
+    void AllowOperation();
+
+    /// <summary>
+    /// Fungus用
+    /// </summary>
+    void FungusMethod();
 }
 
 public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
@@ -40,6 +49,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// リーダーインスタンス
     /// </summary>
     protected ICollector m_Leader;
+    protected Vector3 LeaderPos { get; set; }
 
     /// <summary>
     /// バディインスタンス
@@ -53,14 +63,9 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     private async void Start() => await OnStart();
 
     /// <summary>
-    /// 移動後イベント
-    /// </summary>
-    protected virtual Task OnTurnBright() { return Task.CompletedTask; }
-
-    /// <summary>
     /// Fungusから呼ぶメソッド
     /// </summary>
-    public virtual Task FungusMethod() { return Task.CompletedTask; }
+    public virtual void FungusMethod() { }
 
     /// <summary>
     /// アウトゲームキャラ生成
@@ -77,6 +82,10 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         m_Leader = l.GetComponent<ActorComponentCollector>();
         m_Leader.Initialize();
 
+        // カメラを追従させる
+        var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
+        m_CameraHandler.SetParent(objectHolder.MoveObject);
+
         // バディ
         var friend = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress);
         var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
@@ -89,18 +98,13 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// <summary>
     /// 操作許可
     /// </summary>
-    /// <param name="chara"></param>
     /// <param name="wrapPos"></param>
-    /// <param name="cameraHandler"></param>
-    protected static void AllowOperation(ICollector chara, Vector3 wrapPos, ICameraHandler cameraHandler)
+    protected void AllowOperation()
     {
-        var controller = chara.GetInterface<ICharaController>();
-        controller.Wrap(wrapPos);
-        var input = chara.GetInterface<IOutGamePlayerInput>();
+        var controller = m_Leader.GetInterface<ICharaController>();
+        controller.Wrap(LeaderPos);
+        var input = m_Leader.GetInterface<IOutGamePlayerInput>();
         input.CanOperate = true; // 操作可能
-
-        // カメラを追従させる
-        var objectHolder = chara.GetInterface<ICharaObjectHolder>();
-        cameraHandler.SetParent(objectHolder.MoveObject);
     }
+    void ISceneInitializer.AllowOperation() => AllowOperation();
 }

@@ -14,6 +14,13 @@ public class HomeSetup : ScriptableObject
     public GameObject Stage => m_Stage;
 
     /// <summary>
+    /// BGM
+    /// </summary>
+    [SerializeField, Header("BGM")]
+    private GameObject m_BGM;
+    public GameObject BGM => m_BGM;
+
+    /// <summary>
     /// バディ会話フロー
     /// </summary>
     [SerializeField, Header("バディ会話フロー")]

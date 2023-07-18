@@ -15,6 +15,15 @@ public interface IFadeManager
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
+    Task StartFade<T>(T arg, Action<T> blackOutEvent);
+
+    /// <summary>
+    /// 暗転中にイベント
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
     Task StartFade<T>(T arg, Action<T> blackOutEvent, string dungeonName, string where);
 
     /// <summary>
@@ -33,6 +42,15 @@ public interface IFadeManager
     /// <param name="where"></param>
     /// <returns></returns>
     Task TurnBright(string dungeonName, string where);
+
+    /// <summary>
+    /// 明転
+    /// </summary>
+    /// <param name="completeEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    Task TurnBright<T>(T arg, Action<T> completeEvent);
 
     /// <summary>
     /// 明転終了後にイベント
@@ -80,6 +98,18 @@ public class FadeManager : MonoBehaviour, IFadeManager
     private static readonly float FADE_SPEED = 1f;
 
     /// <summary>
+    /// 暗転
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.StartFade<T>(T arg, Action<T> blackOutEvent)
+    {
+        await FadeOutScreen(m_BlackScreen);
+        blackOutEvent?.Invoke(arg);
+        await FadeInScreen(m_BlackScreen);
+    }
+
+    /// <summary>
     /// 階移動暗転
     /// </summary>
     /// <param name="blackOutEvent"></param>
@@ -124,6 +154,18 @@ public class FadeManager : MonoBehaviour, IFadeManager
         await FadeInText();
         await FadeOutText();
         await FadeInScreen(m_BlackScreen);
+    }
+
+    /// <summary>
+    /// 明転
+    /// </summary>
+    /// <param name="blackOutEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.TurnBright<T>(T arg, Action<T> completeEvent)
+    {
+        await m_BlackScreen.DOFade(1f, 0.001f).AsyncWaitForCompletion();
+        await FadeInScreen(m_BlackScreen);
+        completeEvent?.Invoke(arg);
     }
 
     /// <summary>

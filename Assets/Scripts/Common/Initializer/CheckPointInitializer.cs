@@ -17,7 +17,6 @@ public class CheckPointInitializer : SceneInitializer
     private Vector3 LeaderEndPos { get; set; }
     private Vector3 FriendEndPos { get; set; }
 
-    private Vector3 LeaderPos { get; set; }
     private Vector3 FriendPos { get; set; }
 
     /// <summary>
@@ -62,7 +61,7 @@ public class CheckPointInitializer : SceneInitializer
     /// <summary>
     /// 会話開始前
     /// </summary>
-    async protected override Task OnTurnBright()
+    private async Task OnTurnBright()
     {
         // コントローラー取得
         ICharaController leader = m_Leader.GetInterface<ICharaController>();
@@ -85,11 +84,11 @@ public class CheckPointInitializer : SceneInitializer
     /// <summary>
     /// 操作可能にする
     /// </summary>
-    public override async Task FungusMethod()
+    public override void FungusMethod()
     {
-        await m_FadeManager.StartFade(this, self =>
+        m_FadeManager.StartFade(this, self =>
         {
-            AllowOperation(self.m_Leader, self.LeaderPos, self.m_CameraHandler);
+            self.AllowOperation();
             self.m_ConversationManager.Register(self.m_Friend, self.m_DeparturedFlowChart, self.FriendPos);
         }, string.Empty, string.Empty);
     }

@@ -54,6 +54,13 @@ public class CommonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // カメラ
+        Container.Bind<ITimelineManager>()
+            .To<TimelineManager>()
+            .FromComponentOn(m_CommonSystem)
+            .AsSingle()
+            .NonLazy();
+
         // Fade
         Container.Bind<IFadeManager>()
             .To<FadeManager>()

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HomeSetup
   m_EditorClassIdentifier: 
   m_Stage: {fileID: 4131946162474604888, guid: f49dc1a65c42b4fd6b845a6d642fcae9, type: 3}
+  m_BGM: {fileID: 4431878860477061281, guid: 9f52844fdc62343929376cdce95643ef, type: 3}
   m_FriendFlow:
   - {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5, type: 3}
   - {fileID: 5498602457853490414, guid: be64fa8d2a7b04789aa9081dbe2391cd, type: 3}

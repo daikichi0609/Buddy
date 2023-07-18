@@ -4,10 +4,15 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public class HomeCharacterManager : MonoBehaviour
+public interface IHomeCharacterManager
+{
+
+}
+
+public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
 {
     [Inject]
-    private DungeonProgressHolder m_DungeonProgressHolder;
+    private InGameProgressHolder m_InGameInfoManager;
     [Inject]
     private IConversationManager m_ConversationManager;
     [Inject]
@@ -40,23 +45,7 @@ public class HomeCharacterManager : MonoBehaviour
             m_ConversationManager.Register(collector, flow, tf.position);
         }
 
-        switch (m_DungeonProgressHolder.CurrentDungeonTheme)
-        {
-            case DUNGEON_THEME.GRASS:
-                m_HomeCharacters[0].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
-                break;
-
-            case DUNGEON_THEME.PRIDE:
-                m_HomeCharacters[1].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
-                break;
-
-            case DUNGEON_THEME.ROCK:
-                m_HomeCharacters[2].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
-                break;
-
-            case DUNGEON_THEME.SNOW:
-                m_HomeCharacters[3].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
-                break;
-        }
+        int progress = m_InGameInfoManager.Progress;
+        m_HomeCharacters[progress].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
     }
 }

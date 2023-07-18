@@ -15,7 +15,12 @@ public class FungusMethod : MonoBehaviour
     /// <summary>
     /// InitializerのFungus用メソッド呼び出し
     /// </summary>
-    public async void CallInitializerFungusMethod() => await m_SceneInitializer.FungusMethod();
+    public void CallInitializerFungusMethod() => m_SceneInitializer.FungusMethod();
+
+    /// <summary>
+    /// 会話終了時
+    /// </summary>
+    public void OnFinishFlow() => m_ConversationManager.OnFinishTalking();
 
     /// <summary>
     /// ダンジョンシーンをロード
@@ -26,9 +31,4 @@ public class FungusMethod : MonoBehaviour
     ///  ホームシーンをロード
     /// </summary>
     public void LoadHomeScene() => m_FadeManager.LoadScene(SceneName.SCENE_HOME);
-
-    /// <summary>
-    /// 会話終了時
-    /// </summary>
-    public void OnFinishFlow() => m_ConversationManager.OnFinishTalking();
 }

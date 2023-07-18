@@ -13,10 +13,11 @@ public class HomeInitializer : SceneInitializer
     private IConversationManager m_ConversationManager;
     [Inject]
     private HomeSetup m_HomeSetup;
+    [Inject]
+    private ITimelineManager m_TimelineManager;
 
     protected override string FungusMessage => "Home";
 
-    private Vector3 LeaderPos { get; set; }
     private Vector3 FriendPos { get; set; }
 
     private Fungus.Flowchart m_DeparturedFlowChart;
@@ -37,19 +38,20 @@ public class HomeInitializer : SceneInitializer
     {
         // ステージ生成
         Instantiate(m_HomeSetup.Stage);
-
         // キャラ生成
         CreateOutGameCharacter(LeaderPos, FriendPos);
 
-        var leader = m_Leader.GetInterface<ICharaController>().Rigidbody;
-        leader.useGravity = true;
+        // BGM
+        var bgm = Instantiate(m_HomeSetup.BGM);
+        m_BGMHandler.SetBGM(bgm);
 
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendFlow(m_InGameProgressHolder.Progress)).GetComponent<Fungus.Flowchart>();
-
-        AllowOperation(m_Leader, LeaderPos, m_CameraHandler);
         m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);
 
-        // 仮
-        await m_FadeManager.TurnBright(this, self => self.OnTurnBright(), string.Empty, string.Empty);
+        int progress = m_InGameProgressHolder.Progress;
+        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false)
+            m_TimelineManager.Play((TIMELINE_TYPE)progress);
+        else
+            await m_FadeManager.TurnBright(this, self => self.AllowOperation());
     }
 }
