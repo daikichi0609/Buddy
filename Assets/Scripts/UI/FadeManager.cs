@@ -27,15 +27,6 @@ public interface IFadeManager
     Task StartFade<T>(T arg, Action<T> blackOutEvent, string dungeonName, string where);
 
     /// <summary>
-    /// ホワイトアウト中にイベント
-    /// </summary>
-    /// <param name="whiteOutEvent"></param>
-    /// <param name="dungeonName"></param>
-    /// <param name="where"></param>
-    /// <returns></returns>
-    Task StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent);
-
-    /// <summary>
     /// 明転
     /// </summary>
     /// <param name="dungeonName"></param>
@@ -60,6 +51,23 @@ public interface IFadeManager
     /// <param name="where"></param>
     /// <returns></returns>
     Task TurnBright<T>(T arg, Action<T> completeEvent, string dungeonName, string where);
+
+    /// <summary>
+    /// ホワイトアウト
+    /// </summary>
+    /// <param name="speed"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    Task StartFadeWhite(float speed, float time);
+
+    /// <summary>
+    /// ホワイトアウト中にイベント
+    /// </summary>
+    /// <param name="whiteOutEvent"></param>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    Task StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent);
 
     /// <summary>
     /// 暗転中にシーンをロード
@@ -97,6 +105,11 @@ public class FadeManager : MonoBehaviour, IFadeManager
     // フェイド速度
     private static readonly float FADE_SPEED = 1f;
 
+    private void Awake()
+    {
+        MessageBroker.Default.Receive<WhiteOutMessage>().SubscribeWithState(this, async (message, self) => await self.StartFadeWhite(message.Speed, message.Time)).AddTo(this);
+    }
+
     /// <summary>
     /// 暗転
     /// </summary>
@@ -124,20 +137,6 @@ public class FadeManager : MonoBehaviour, IFadeManager
         blackOutEvent?.Invoke(arg);
         await FadeOutText();
         await FadeInScreen(m_BlackScreen);
-    }
-
-    /// <summary>
-    /// ホワイトアウト
-    /// </summary>
-    /// <param name="whileEvent"></param>
-    /// <param name="leaveEvent"></param>
-    /// <returns></returns>
-    async Task IFadeManager.StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent)
-    {
-        await FadeOutScreen(m_WhiteScreen);
-        whileEvent?.Invoke(arg1);
-        await FadeInScreen(m_WhiteScreen);
-        leaveEvent.Invoke(arg2);
     }
 
     /// <summary>
@@ -186,6 +185,32 @@ public class FadeManager : MonoBehaviour, IFadeManager
     }
 
     /// <summary>
+    /// ホワイトアウト
+    /// </summary>
+    /// <returns></returns>
+    private async Task StartFadeWhite(float speed, float time)
+    {
+        await FadeOutScreen(m_WhiteScreen, speed);
+        await Task.Delay((int)(1000 * time));
+        await FadeInScreen(m_WhiteScreen, speed);
+    }
+    Task IFadeManager.StartFadeWhite(float speed, float time) => StartFadeWhite(speed, time);
+
+    /// <summary>
+    /// ホワイトアウト
+    /// </summary>
+    /// <param name="whileEvent"></param>
+    /// <param name="leaveEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent)
+    {
+        await FadeOutScreen(m_WhiteScreen);
+        whileEvent?.Invoke(arg1);
+        await FadeInScreen(m_WhiteScreen);
+        leaveEvent.Invoke(arg2);
+    }
+
+    /// <summary>
     /// 暗転中にシーンロード
     /// </summary>
     /// <param name="sceneName"></param>
@@ -206,12 +231,12 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// <summary>
     /// スクリーン暗転
     /// </summary>
-    private Task FadeOutScreen(Image screen) => screen.DOFade(1f, FADE_SPEED).AsyncWaitForCompletion();
+    private Task FadeOutScreen(Image screen, float speed = 1f) => screen.DOFade(speed, FADE_SPEED).AsyncWaitForCompletion();
 
     /// <summary>
     /// スクリーン明転
     /// </summary>
-    private Task FadeInScreen(Image screen) => screen.DOFade(0f, FADE_SPEED).AsyncWaitForCompletion();
+    private Task FadeInScreen(Image screen, float speed = 1f) => screen.DOFade(speed, FADE_SPEED).AsyncWaitForCompletion();
 
     /// <summary>
     /// テキスト表示

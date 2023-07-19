@@ -68,6 +68,13 @@ public class CommonSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // タイムラインダイアログ
+        Container.Bind<ITimelineDialogManager>()
+            .To<TimelineDialogManager>()
+            .FromComponentOn(m_CommonUiSystem)
+            .AsSingle()
+            .NonLazy();
+
         // エフェクト保持
         Container.Bind(typeof(IEffectHolder), typeof(IInitializable))
             .To<EffectHolder>()

@@ -37,7 +37,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         MessageBroker.Default.Receive<FinishTimelineMessage>().SubscribeWithState(this, (message, self) => self.Finish(message)).AddTo(this);
     }
 
-    void ITimelineManager.Play(TIMELINE_TYPE type)
+    private void Play(TIMELINE_TYPE type, bool finish = false)
     {
         if (m_CurrentDirector.TryGetValue(type, out var register) == false)
         {
@@ -47,8 +47,14 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
             return;
         }
 
-        m_FadeManager.StartFade((this, register), tuple => tuple.Item1.PlayInternal(tuple.register));
+        m_FadeManager.StartFade((this, register, finish), tuple =>
+        {
+            if (tuple.finish == true)
+                tuple.Item1.FinishInternal();
+            tuple.Item1.PlayInternal(tuple.register);
+        });
     }
+    void ITimelineManager.Play(TIMELINE_TYPE type) => Play(type);
 
     private void PlayInternal(RegisterTimelineMessage register)
     {
@@ -85,12 +91,16 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         }
         switch (message.FinishType)
         {
-            case TIMELINE_FINISH_TYPE.PLAYABLE:
+            case TIMELINE_FINISH_TYPE.PLAYER_PLAYABLE:
                 m_FadeManager.StartFade(this, self =>
                 {
                     self.FinishInternal();
                     self.m_SceneInitializer.AllowOperation();
                 });
+                break;
+
+            case TIMELINE_FINISH_TYPE.NEXT_TIMELINE:
+                Play(message.NextTimeline, true);
                 break;
         }
     }
