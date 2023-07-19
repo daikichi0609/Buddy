@@ -54,4 +54,16 @@ public class HomeInitializer : SceneInitializer
         else
             await m_FadeManager.TurnBright(this, self => self.AllowOperation());
     }
+
+    public override void FungusMethod()
+    {
+        m_FadeManager.StartFade(this, self =>
+        {
+            self.m_InGameProgressHolder.CurrentCompletedIntro = true; // フラグオン
+
+            var fController = self.m_Friend.GetInterface<ICharaController>();
+            fController.Wrap(self.FriendPos); // 元の位置に戻す
+        },
+        this, self => self.AllowOperation(false));
+    }
 }

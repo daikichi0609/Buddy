@@ -19,4 +19,5 @@ public class InGameProgressHolder : ScriptableObject
     [SerializeField]
     private bool[] m_IsCompletedIntro;
     public bool[] IsCompletedIntro => m_IsCompletedIntro;
+    public bool CurrentCompletedIntro { set => m_IsCompletedIntro[m_Progress] = value; }
 }

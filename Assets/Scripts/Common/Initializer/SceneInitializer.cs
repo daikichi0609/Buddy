@@ -14,7 +14,14 @@ public interface ISceneInitializer
     /// <summary>
     /// 行動可能
     /// </summary>
-    void AllowOperation();
+    void AllowOperation(bool wrap = true);
+
+    /// <summary>
+    /// 向かい合う
+    /// </summary>
+    /// <param name="leaderPos"></param>
+    /// <param name="friendPos"></param>
+    void FaceEachOther(Vector3 leaderPos, Vector3 friendPos);
 
     /// <summary>
     /// Leaderの有効化切り替え
@@ -31,7 +38,7 @@ public interface ISceneInitializer
     IDisposable SwitchFriendActive(bool isActivate);
 
     /// <summary>
-    /// Fungus用
+    /// Fungusから呼び出す用
     /// </summary>
     void FungusMethod();
 }
@@ -113,14 +120,34 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// 操作許可
     /// </summary>
     /// <param name="wrapPos"></param>
-    protected void AllowOperation()
+    protected void AllowOperation(bool wrap = true)
     {
-        var controller = m_Leader.GetInterface<ICharaController>();
-        controller.Wrap(LeaderPos);
+        if (wrap == true)
+        {
+            var controller = m_Leader.GetInterface<ICharaController>();
+            controller.Wrap(LeaderPos);
+        }
         var input = m_Leader.GetInterface<IOutGamePlayerInput>();
         input.CanOperate = true; // 操作可能
     }
-    void ISceneInitializer.AllowOperation() => AllowOperation();
+    void ISceneInitializer.AllowOperation(bool wrap) => AllowOperation(wrap);
+
+    /// <summary>
+    /// 向かい合う
+    /// </summary>
+    /// <param name="leaderPos"></param>
+    /// <param name="friendPos"></param>
+    void ISceneInitializer.FaceEachOther(Vector3 leaderPos, Vector3 friendPos)
+    {
+        var lController = m_Leader.GetInterface<ICharaController>();
+        lController.Wrap(leaderPos);
+
+        var fController = m_Friend.GetInterface<ICharaController>();
+        fController.Wrap(friendPos);
+
+        lController.Face(friendPos);
+        fController.Face(leaderPos);
+    }
 
     /// <summary>
     /// 有効化切り替え

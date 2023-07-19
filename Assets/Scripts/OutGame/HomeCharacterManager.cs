@@ -45,6 +45,11 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
             m_ConversationManager.Register(collector, flow, tf.position);
         }
 
+        OnUpdateProgress();
+    }
+
+    private void OnUpdateProgress()
+    {
         int progress = m_InGameInfoManager.Progress;
         m_HomeCharacters[progress].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
     }

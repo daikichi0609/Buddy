@@ -90,6 +90,6 @@ public class CheckPointInitializer : SceneInitializer
         {
             self.AllowOperation();
             self.m_ConversationManager.Register(self.m_Friend, self.m_DeparturedFlowChart, self.FriendPos);
-        }, string.Empty, string.Empty);
+        });
     }
 }

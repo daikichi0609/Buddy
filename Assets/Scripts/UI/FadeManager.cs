@@ -11,20 +11,25 @@ public interface IFadeManager
     /// <summary>
     /// 暗転中にイベント
     /// </summary>
-    /// <param name="blackOutEvent"></param>
-    /// <param name="dungeonName"></param>
-    /// <param name="where"></param>
+    /// <param name="whileEvent"></param>
     /// <returns></returns>
-    Task StartFade<T>(T arg, Action<T> blackOutEvent);
+    Task StartFade<T>(T arg, Action<T> whileEvent);
 
     /// <summary>
     /// 暗転中にイベント
     /// </summary>
-    /// <param name="blackOutEvent"></param>
+    /// <param name="whileEvent"></param>
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task StartFade<T>(T arg, Action<T> blackOutEvent, string dungeonName, string where);
+    Task StartFade<T>(T arg, Action<T> whileEvent, string dungeonName, string where);
+
+    /// <summary>
+    /// 暗転中にイベント
+    /// </summary>
+    /// <param name="whileEvent"></param>
+    /// <returns></returns>
+    Task StartFade<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> completedEvent);
 
     /// <summary>
     /// 明転
@@ -37,28 +42,20 @@ public interface IFadeManager
     /// <summary>
     /// 明転
     /// </summary>
-    /// <param name="completeEvent"></param>
+    /// <param name="completedEvent"></param>
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task TurnBright<T>(T arg, Action<T> completeEvent);
+    Task TurnBright<T>(T arg, Action<T> completedEvent);
 
     /// <summary>
     /// 明転終了後にイベント
     /// </summary>
-    /// <param name="completeEvent"></param>
+    /// <param name="completedEvent"></param>
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task TurnBright<T>(T arg, Action<T> completeEvent, string dungeonName, string where);
-
-    /// <summary>
-    /// ホワイトアウト
-    /// </summary>
-    /// <param name="speed"></param>
-    /// <param name="time"></param>
-    /// <returns></returns>
-    Task StartFadeWhite(float speed, float time);
+    Task TurnBright<T>(T arg, Action<T> completedEvent, string dungeonName, string where);
 
     /// <summary>
     /// ホワイトアウト中にイベント
@@ -67,7 +64,15 @@ public interface IFadeManager
     /// <param name="dungeonName"></param>
     /// <param name="where"></param>
     /// <returns></returns>
-    Task StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent);
+    Task StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> completedEvent);
+
+    /// <summary>
+    /// ホワイトアウト
+    /// </summary>
+    /// <param name="speed"></param>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    Task StartFadeWhite(float speed, float time);
 
     /// <summary>
     /// 暗転中にシーンをロード
@@ -113,36 +118,48 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// <summary>
     /// 暗転
     /// </summary>
-    /// <param name="blackOutEvent"></param>
+    /// <param name="whileEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.StartFade<T>(T arg, Action<T> blackOutEvent)
+    async Task IFadeManager.StartFade<T>(T arg, Action<T> whileEvent)
     {
         await FadeOutScreen(m_BlackScreen);
-        blackOutEvent?.Invoke(arg);
+        whileEvent?.Invoke(arg);
         await FadeInScreen(m_BlackScreen);
     }
 
     /// <summary>
     /// 階移動暗転
     /// </summary>
-    /// <param name="blackOutEvent"></param>
+    /// <param name="whileEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.StartFade<T>(T arg, Action<T> blackOutEvent, string dungeonName, string where)
+    async Task IFadeManager.StartFade<T>(T arg, Action<T> whileEvent, string dungeonName, string where)
     {
         m_DungeonName.text = dungeonName;
         m_FloorText.text = where;
 
         await FadeOutScreen(m_BlackScreen);
         await FadeInText();
-        blackOutEvent?.Invoke(arg);
+        whileEvent?.Invoke(arg);
         await FadeOutText();
         await FadeInScreen(m_BlackScreen);
     }
 
     /// <summary>
+    /// 階移動暗転
+    /// </summary>
+    /// <param name="whileEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.StartFade<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> completedEvent)
+    {
+        await FadeOutScreen(m_BlackScreen);
+        whileEvent?.Invoke(arg1);
+        await FadeInScreen(m_BlackScreen);
+        completedEvent?.Invoke(arg2);
+    }
+
+    /// <summary>
     /// チェックポイント -> ダンジョン
     /// </summary>
-    /// <param name="blackOutEvent"></param>
     /// <returns></returns>
     async Task IFadeManager.TurnBright(string dungeonName, string where)
     {
@@ -158,21 +175,19 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// <summary>
     /// 明転
     /// </summary>
-    /// <param name="blackOutEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.TurnBright<T>(T arg, Action<T> completeEvent)
+    async Task IFadeManager.TurnBright<T>(T arg, Action<T> completedEvent)
     {
         await m_BlackScreen.DOFade(1f, 0.001f).AsyncWaitForCompletion();
         await FadeInScreen(m_BlackScreen);
-        completeEvent?.Invoke(arg);
+        completedEvent?.Invoke(arg);
     }
 
     /// <summary>
     /// ダンジョン -> チェックポイント
     /// </summary>
-    /// <param name="blackOutEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.TurnBright<T>(T arg, Action<T> completeEvent, string dungeonName, string where)
+    async Task IFadeManager.TurnBright<T>(T arg, Action<T> completedEvent, string dungeonName, string where)
     {
         m_DungeonName.text = dungeonName;
         m_FloorText.text = where;
@@ -181,7 +196,7 @@ public class FadeManager : MonoBehaviour, IFadeManager
         await FadeInText();
         await FadeOutText();
         await FadeInScreen(m_BlackScreen);
-        completeEvent?.Invoke(arg);
+        completedEvent?.Invoke(arg);
     }
 
     /// <summary>
@@ -200,14 +215,14 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// ホワイトアウト
     /// </summary>
     /// <param name="whileEvent"></param>
-    /// <param name="leaveEvent"></param>
+    /// <param name="completedEvent"></param>
     /// <returns></returns>
-    async Task IFadeManager.StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> leaveEvent)
+    async Task IFadeManager.StartFadeWhite<T, U>(T arg1, Action<T> whileEvent, U arg2, Action<U> completedEvent)
     {
         await FadeOutScreen(m_WhiteScreen);
         whileEvent?.Invoke(arg1);
         await FadeInScreen(m_WhiteScreen);
-        leaveEvent.Invoke(arg2);
+        completedEvent.Invoke(arg2);
     }
 
     /// <summary>

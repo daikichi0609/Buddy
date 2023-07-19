@@ -20,6 +20,10 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     private IFadeManager m_FadeManager;
     [Inject]
     private ISceneInitializer m_SceneInitializer;
+    [Inject]
+    private IInstantiater m_Instantiater;
+
+    private static readonly string ms_FungusMessage = "Timeline";
 
     /// <summary>
     /// 現在再生中のタイムライン
@@ -34,9 +38,17 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     private void Awake()
     {
         MessageBroker.Default.Receive<RegisterTimelineMessage>().SubscribeWithState(this, (message, self) => self.m_CurrentDirector.Add(message.Key, message)).AddTo(this);
-        MessageBroker.Default.Receive<FinishTimelineMessage>().SubscribeWithState(this, (message, self) => self.Finish(message)).AddTo(this);
+
+        MessageBroker.Default.Receive<FinishTimelineBePlayableMessage>().SubscribeWithState(this, (message, self) => self.OnFinishBePlayable(message)).AddTo(this);
+        MessageBroker.Default.Receive<FinishTimelineNextTimelineMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextTimeline(message)).AddTo(this);
+        MessageBroker.Default.Receive<FinishTimelineNextFungusMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextFungus(message)).AddTo(this);
     }
 
+    /// <summary>
+    /// タイムライン再生
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="finish"></param>
     private void Play(TIMELINE_TYPE type, bool finish = false)
     {
         if (m_CurrentDirector.TryGetValue(type, out var register) == false)
@@ -56,6 +68,10 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     }
     void ITimelineManager.Play(TIMELINE_TYPE type) => Play(type);
 
+    /// <summary>
+    /// タイムライン再生
+    /// </summary>
+    /// <param name="register"></param>
     private void PlayInternal(RegisterTimelineMessage register)
     {
         // メインカメラオフ
@@ -80,7 +96,11 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         register.Director.Play();
     }
 
-    private void Finish(FinishTimelineMessage message)
+    /// <summary>
+    /// 操作可能
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishBePlayable(FinishTimelineBePlayableMessage message)
     {
         if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
         {
@@ -89,22 +109,60 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 #endif
             return;
         }
-        switch (message.FinishType)
-        {
-            case TIMELINE_FINISH_TYPE.PLAYER_PLAYABLE:
-                m_FadeManager.StartFade(this, self =>
-                {
-                    self.FinishInternal();
-                    self.m_SceneInitializer.AllowOperation();
-                });
-                break;
 
-            case TIMELINE_FINISH_TYPE.NEXT_TIMELINE:
-                Play(message.NextTimeline, true);
-                break;
-        }
+        m_FadeManager.StartFade(this, self =>
+        {
+            self.FinishInternal();
+            self.m_SceneInitializer.AllowOperation();
+        });
     }
 
+    /// <summary>
+    /// 続けてタイムライン再生
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishNextTimeline(FinishTimelineNextTimelineMessage message)
+    {
+        if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
+        {
+#if DEBUG
+            Debug.LogWarning("タイムラインが未登録です。" + message.Type.ToString());
+#endif
+            return;
+        }
+
+        Play(message.NextTimeline, true);
+    }
+
+    /// <summary>
+    /// 続けてFungus
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishNextFungus(FinishTimelineNextFungusMessage message)
+    {
+        if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
+        {
+#if DEBUG
+            Debug.LogWarning("タイムラインが未登録です。" + message.Type.ToString());
+#endif
+            return;
+        }
+
+        m_FadeManager.StartFade((this, message), tuple =>
+        {
+            tuple.Item1.FinishInternal();
+            tuple.Item1.m_SceneInitializer.FaceEachOther(tuple.message.PlayerPos, tuple.message.FriendPos);
+        },
+        (this, message), tuple =>
+        {
+            var fungus = tuple.Item1.m_Instantiater.InstantiatePrefab(tuple.message.FungusObject).GetComponent<Fungus.Flowchart>();
+            fungus.SendFungusMessage(ms_FungusMessage);
+        });
+    }
+
+    /// <summary>
+    /// タイムライン再生終了
+    /// </summary>
     private void FinishInternal()
     {
         m_OnFinish.Clear();
