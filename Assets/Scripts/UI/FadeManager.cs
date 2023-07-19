@@ -231,12 +231,12 @@ public class FadeManager : MonoBehaviour, IFadeManager
     /// <summary>
     /// スクリーン暗転
     /// </summary>
-    private Task FadeOutScreen(Image screen, float speed = 1f) => screen.DOFade(speed, FADE_SPEED).AsyncWaitForCompletion();
+    private Task FadeOutScreen(Image screen, float speed = 1f) => screen.DOFade(1f, speed).AsyncWaitForCompletion();
 
     /// <summary>
     /// スクリーン明転
     /// </summary>
-    private Task FadeInScreen(Image screen, float speed = 1f) => screen.DOFade(speed, FADE_SPEED).AsyncWaitForCompletion();
+    private Task FadeInScreen(Image screen, float speed = 1f) => screen.DOFade(0f, speed).AsyncWaitForCompletion();
 
     /// <summary>
     /// テキスト表示
