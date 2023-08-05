@@ -16,5 +16,5 @@ MonoBehaviour:
   m_Stage: {fileID: 919086014425020715, guid: 92c6b4428b4b84b47a43130d3183e4cc, type: 3}
   m_ArrivalFlow: {fileID: 5498602457853490414, guid: 1ecbd11dd3659403a81367c3a3a008f2,
     type: 3}
-  m_DepartureFlow: {fileID: 5498602457853490414, guid: 12d69efbe8a634898afc4cd8b520b25a,
+  m_DepartureFlow: {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5,
     type: 3}

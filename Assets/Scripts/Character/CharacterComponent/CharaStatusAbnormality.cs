@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
@@ -30,6 +31,18 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     private ICharaStatus m_CharaStatus;
     private ICharaLastActionHolder m_LastAction;
 
+    /// <summary>
+    /// 毒状態
+    /// </summary>
+    private bool m_IsPoison;
+    bool ICharaStatusAbnormality.IsPoison { get => m_IsPoison; set => m_IsPoison = value; }
+
+    /// <summary>
+    /// 眠り状態
+    /// </summary>
+    private bool m_IsSleeping;
+    bool ICharaStatusAbnormality.IsSleeping { get => m_IsSleeping; set => m_IsSleeping = value; }
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -49,18 +62,6 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
         m_IsSleeping = false;
         base.Dispose();
     }
-
-    /// <summary>
-    /// 毒状態
-    /// </summary>
-    private bool m_IsPoison;
-    bool ICharaStatusAbnormality.IsPoison { get => m_IsPoison; set => m_IsPoison = value; }
-
-    /// <summary>
-    /// 眠り状態
-    /// </summary>
-    private bool m_IsSleeping;
-    bool ICharaStatusAbnormality.IsSleeping { get => m_IsSleeping; set => m_IsSleeping = value; }
 
     /// <summary>
     /// 眠り状態
