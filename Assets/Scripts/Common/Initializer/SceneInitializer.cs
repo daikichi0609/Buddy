@@ -103,10 +103,6 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         m_Leader = l.GetComponent<ActorComponentCollector>();
         m_Leader.Initialize();
 
-        // カメラを追従させる
-        var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
-        m_CameraHandler.SetParent(objectHolder.MoveObject);
-
         // バディ
         var friend = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress);
         var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
@@ -129,6 +125,18 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         }
         var input = m_Leader.GetInterface<IOutGamePlayerInput>();
         input.CanOperate = true; // 操作可能
+
+        SetCamera();
+
+        /// <summary>
+        /// カメラ追従
+        /// </summary>
+        void SetCamera()
+        {
+            // カメラを追従させる
+            var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
+            m_CameraHandler.SetParent(objectHolder.MoveObject);
+        }
     }
     void ISceneInitializer.AllowOperation(bool wrap) => AllowOperation(wrap);
 
