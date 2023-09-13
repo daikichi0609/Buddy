@@ -9,6 +9,7 @@ using NaughtyAttributes;
 
 public interface ICharaSkillUiManager : IUiManager
 {
+
 }
 
 /// <summary>
@@ -16,8 +17,6 @@ public interface ICharaSkillUiManager : IUiManager
 /// </summary>
 public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
 {
-    [Inject]
-    private IUnitHolder m_UnitHolder;
     [Inject]
     private ICharaUiManager m_CharaUiManager;
 

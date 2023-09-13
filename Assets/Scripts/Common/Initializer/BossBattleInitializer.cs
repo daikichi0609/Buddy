@@ -69,6 +69,9 @@ public class BossBattleInitializer : SceneInitializer
         CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラ生成
         BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
+        // Ui非表示
+        MessageBroker.Default.Publish(new BattleUiSwitch(false));
+
         // 明転
         await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
     }
@@ -111,9 +114,10 @@ public class BossBattleInitializer : SceneInitializer
     {
         // ボス
         var boss = setup.BossCharacterSetup;
-        var b = m_Instantiater.InstantiatePrefab(boss.Prefab);
+        var b = m_Instantiater.InstantiatePrefab(boss.Prefab, ms_OutGameUnitInjector);
         b.transform.position = pos;
         m_Boss = b.GetComponent<ActorComponentCollector>();
+        m_Boss.Initialize();
         var controller = m_Boss.GetInterface<ICharaController>();
         controller.Face(DIRECTION.UNDER);
 
@@ -190,6 +194,10 @@ public class BossBattleInitializer : SceneInitializer
         var bgm = Instantiate(bossBattleSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
 
+        // Ui表示
+        MessageBroker.Default.Publish(new BattleUiSwitch(true));
+
+        // 前データ適用
         m_DungeonCharacterProgressManager.AdoptSaveData();
 
         // 敵がいなくなったら終了

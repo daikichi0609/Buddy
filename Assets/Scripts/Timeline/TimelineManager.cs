@@ -152,6 +152,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         {
             tuple.Item1.FinishInternal();
             tuple.Item1.m_SceneInitializer.FaceEachOther(tuple.message.PlayerPos, tuple.message.FriendPos);
+            tuple.Item1.m_SceneInitializer.SetCamera();
         },
         (this, message), tuple =>
         {

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static PlayerStatus;
 
 public abstract class BattleStatus : ScriptableObject //キャラ共通で必要なパラメタまとめ
 {

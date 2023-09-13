@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -21,6 +22,18 @@ public class SkillCoolTimeUiManager : MonoBehaviour
     private Color32 m_CoolTimeCompletedColor;
     [SerializeField]
     private Color32 m_CoolTimeInvalidColor;
+
+    private void Awake()
+    {
+        MessageBroker.Default.Receive<BattleUiSwitch>().Subscribe(s =>
+        {
+            foreach (var t in m_Texts)
+                t.gameObject.SetActive(s.Switch);
+
+            foreach (var i in m_Images)
+                i.gameObject.SetActive(s.Switch);
+        }).AddTo(this);
+    }
 
     private void Update()
     {

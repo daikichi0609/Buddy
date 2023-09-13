@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: InGameProgressHolder
   m_EditorClassIdentifier: 
   m_Progress: 0
-  m_IsCompletedIntro: 010000
+  m_IsCompletedIntro: 000000

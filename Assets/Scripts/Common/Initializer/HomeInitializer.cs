@@ -40,6 +40,8 @@ public class HomeInitializer : SceneInitializer
         Instantiate(m_HomeSetup.Stage);
         // キャラ生成
         CreateOutGameCharacter(LeaderPos, FriendPos);
+        // カメラセット
+        SetCamera();
 
         // BGM
         var bgm = Instantiate(m_HomeSetup.BGM);

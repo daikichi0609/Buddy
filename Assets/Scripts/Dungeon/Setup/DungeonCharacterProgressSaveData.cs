@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "MyScriptable/Dungeon/CharacterProgress")]
@@ -32,5 +33,18 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
         m_Exp = exp;
         m_Hugry = hungry;
         m_Items = items;
+    }
+
+    /// <summary>
+    /// 進捗リセット
+    /// </summary>
+    [Button]
+    private void ResetData()
+    {
+        m_Exp = 0;
+        m_Hugry = 0;
+        m_Items = null;
+
+        EditorUtility.SetDirty(this);
     }
 }

@@ -17,6 +17,11 @@ public interface ISceneInitializer
     void AllowOperation(bool wrap = true);
 
     /// <summary>
+    /// カメラ追従
+    /// </summary>
+    void SetCamera();
+
+    /// <summary>
     /// 向かい合う
     /// </summary>
     /// <param name="leaderPos"></param>
@@ -127,18 +132,19 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         input.CanOperate = true; // 操作可能
 
         SetCamera();
-
-        /// <summary>
-        /// カメラ追従
-        /// </summary>
-        void SetCamera()
-        {
-            // カメラを追従させる
-            var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
-            m_CameraHandler.SetParent(objectHolder.MoveObject);
-        }
     }
     void ISceneInitializer.AllowOperation(bool wrap) => AllowOperation(wrap);
+
+    /// <summary>
+    /// カメラ追従
+    /// </summary>
+    protected void SetCamera()
+    {
+        // カメラを追従させる
+        var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
+        m_CameraHandler.SetParent(objectHolder.MoveObject);
+    }
+    void ISceneInitializer.SetCamera() => SetCamera();
 
     /// <summary>
     /// 向かい合う
