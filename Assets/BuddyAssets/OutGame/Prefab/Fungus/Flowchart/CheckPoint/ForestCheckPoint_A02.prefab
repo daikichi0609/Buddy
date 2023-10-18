@@ -84,7 +84,8 @@ MonoBehaviour:
     height: 859
   selectedBlocks:
   - {fileID: -5966442850586830378}
-  selectedCommands: []
+  selectedCommands:
+  - {fileID: 16735572971035335}
   variables: []
   description: 
   stepPause: 0
@@ -329,7 +330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: -92.19736
+    x: -93.21933
     y: -48.550747
     width: 120.51607
     height: 40
@@ -569,17 +570,17 @@ MonoBehaviour:
   itemId: 24
   indentLevel: 0
   description: 
-  targetObject: {fileID: 5498602457853490414, guid: 1ecbd11dd3659403a81367c3a3a008f2,
-    type: 3}
-  targetComponentAssemblyName: 
-  targetComponentFullname: 
-  targetComponentText: 
-  targetMethod: 
-  targetMethodText: 
+  targetObject: {fileID: 5498602457853490414}
+  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+    PublicKeyToken=null
+  targetComponentFullname: UnityEngine.Component[]
+  targetComponentText: FungusMethod
+  targetMethod: CallInitializerFungusMethod
+  targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []
   saveReturnValue: 0
   returnValueVariableKey: 
-  returnValueType: 
+  returnValueType: System.Void
   showInherited: 0
   callMode: 0
 --- !u!114 &2065137468040817397

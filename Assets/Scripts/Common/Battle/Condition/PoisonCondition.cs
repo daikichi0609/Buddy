@@ -22,14 +22,21 @@ public class PoisonCondition : Condition
             m_EffectHandler.RegisterEffect(effect, sound);
     }
 
-    protected override async Task OnStart(ICollector owner)
+    protected override async Task<bool> OnStart(ICollector owner)
     {
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
         var status = owner.GetInterface<ICharaStatus>();
+
+        if (abnormal.IsPoison == true)
+        {
+            string faleLog = status.CurrentStatus.OriginParam.GivenName + "はすでに毒状態だ。";
+            owner.GetInterface<ICharaLog>().Log(faleLog);
+            return false;
+        }
+
+        abnormal.IsPoison = true;
         string log = status.CurrentStatus.OriginParam.GivenName + "は毒状態になった！";
         owner.GetInterface<ICharaLog>().Log(log);
-
-        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
-        abnormal.IsPoison = true;
 
         var disposable = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(disposable);
@@ -40,6 +47,7 @@ public class PoisonCondition : Condition
 
         var pos = holder.CharaObject.transform.position;
         await m_EffectHandler.Play(pos, 0.5f);
+        return true;
     }
 
     protected override async Task EffectInternal(ICollector owner)

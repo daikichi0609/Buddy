@@ -44,8 +44,7 @@ public class CheckPointInitializer : SceneInitializer
     /// </summary>
     protected override async Task OnStart()
     {
-        var currentDungeon = m_DungeonProgressHolder.CurrentDungeonSetup;
-        var checkPoint = currentDungeon.CheckPointSetup;
+        var checkPoint = m_DungeonProgressHolder.CurrentCheckPointSetup;
         m_Instantiater.InstantiatePrefab(checkPoint.Stage); // ステージ生成
 
         CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラクター生成

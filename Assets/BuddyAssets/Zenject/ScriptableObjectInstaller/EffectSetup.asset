@@ -40,3 +40,6 @@ MonoBehaviour:
   - m_Effect: {fileID: 8258253318684563254, guid: 32d1728b88b2f406a8689a0d3f24bb14,
       type: 3}
     m_Key: RagonSpear
+  - m_Effect: {fileID: 4102446199997542472, guid: 058c56a3833df4eac951e004ae181d47,
+      type: 3}
+    m_Key: Buchikamashi

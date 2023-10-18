@@ -19,14 +19,21 @@ public class SleepCondition : Condition
             m_EffectHandler.RegisterEffect(effect, sound);
     }
 
-    protected override async Task OnStart(ICollector owner)
+    protected override async Task<bool> OnStart(ICollector owner)
     {
+        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
         var status = owner.GetInterface<ICharaStatus>();
+
+        if (abnormal.IsSleeping == true)
+        {
+            string faleLog = status.CurrentStatus.OriginParam.GivenName + "はすでに眠り状態だ。";
+            owner.GetInterface<ICharaLog>().Log(faleLog);
+            return false;
+        }
+
+        abnormal.IsSleeping = true;
         string log = status.CurrentStatus.OriginParam.GivenName + "は眠ってしまった！";
         owner.GetInterface<ICharaLog>().Log(log);
-
-        var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
-        abnormal.IsSleeping = true;
 
         var colorChange = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(colorChange);
@@ -43,6 +50,7 @@ public class SleepCondition : Condition
 
         var pos = holder.CharaObject.transform.position;
         await m_EffectHandler.Play(pos, 0.5f);
+        return true;
     }
 
     protected override async Task EffectInternal(ICollector owner)

@@ -19,7 +19,7 @@ public interface ICondition
     /// </summary>
     /// <param name="owner"></param>
     /// <returns></returns>
-    Task OnStart(ICollector owner);
+    Task<bool> OnStart(ICollector owner);
 
     /// <summary>
     /// 効果
@@ -102,8 +102,8 @@ public abstract class Condition : ICondition
     /// </summary>
     /// <param name="owner"></param>
     /// <returns></returns>
-    protected abstract Task OnStart(ICollector owner);
-    async Task ICondition.OnStart(ICollector owner) => await OnStart(owner);
+    protected abstract Task<bool> OnStart(ICollector owner);
+    async Task<bool> ICondition.OnStart(ICollector owner) => await OnStart(owner);
 
     /// <summary>
     /// Condition効果

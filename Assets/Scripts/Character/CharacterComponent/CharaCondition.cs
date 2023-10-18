@@ -59,20 +59,26 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
     /// <param name="condition"></param>
     async Task ICharaCondition.AddCondition(ICondition condition)
     {
-        if (condition.CanOverlapping == false)
-            for (int i = 0; i < m_CharaCondition.Count; i++)
-            {
-                var c = m_CharaCondition[i];
-                if (c.CanOverlapping == false)
-                {
-                    await c.OnFinish(Owner);
-                    m_CharaCondition.Remove(c);
-                }
-            }
-
-        m_CharaCondition.Add(condition);
         condition.Register(m_EffectHolder, m_SoundHolder);
-        await condition.OnStart(Owner);
+        var success = await condition.OnStart(Owner);
+
+        if (success == true)
+        {
+            // 重複不可な状態異常を解除
+            if (condition.CanOverlapping == false)
+                for (int i = 0; i < m_CharaCondition.Count; i++)
+                {
+                    var c = m_CharaCondition[i];
+                    if (c.CanOverlapping == false)
+                    {
+                        await c.OnFinish(Owner);
+                        m_CharaCondition.Remove(c);
+                    }
+                }
+
+            // 状態異常付与
+            m_CharaCondition.Add(condition);
+        }
     }
 
     /// <summary>

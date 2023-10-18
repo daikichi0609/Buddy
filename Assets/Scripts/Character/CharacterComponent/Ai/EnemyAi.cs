@@ -153,10 +153,10 @@ public partial class EnemyAi : CharaAi, IEnemyAi
                 Debug.LogAssertion("行き先候補がない");
 #endif
 
-            Utility.RandomLottery(candidateDir);
-
-            if (await m_CharaMove.Move(candidateDir[0]) == true)
-                return true;
+            candidateDir.Shuffle();
+            foreach (var d in candidateDir)
+                if (await m_CharaMove.Move(d) == true)
+                    return true;
 
             if (await m_CharaMove.Move(oppDirection) == true)
                 return true;

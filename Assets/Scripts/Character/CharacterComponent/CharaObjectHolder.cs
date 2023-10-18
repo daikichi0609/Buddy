@@ -63,10 +63,13 @@ public class CharaObjectHolder : ActorComponentBase, ICharaObjectHolder
     {
         m_CurrentColor = color;
         m_MeshRenderer.material.color = m_CurrentColor;
-        return Disposable.CreateWithState(this, self =>
+        return Disposable.CreateWithState((this, color), tuple =>
         {
-            self.m_CurrentColor = DEFAULT_COLOR;
-            self.m_MeshRenderer.material.color = self.m_CurrentColor;
+            if (tuple.Item1.m_CurrentColor.IsSameColor(tuple.color) == true)
+            {
+                tuple.Item1.m_CurrentColor = DEFAULT_COLOR;
+                tuple.Item1.m_MeshRenderer.material.color = tuple.Item1.m_CurrentColor;
+            }
         });
     }
 

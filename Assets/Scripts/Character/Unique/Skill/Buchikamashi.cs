@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class RagonSpear : Skill
+public class Buchikamashi : Skill
 {
-    protected override string Name => "ラゴン・スピア";
-    protected override string Description => "前方2マスまでの敵をまとめて攻撃する。";
+    protected override string Name => "ぶちかまし";
+    protected override string Description => "前方3マスまでの敵をまとめて攻撃する。攻撃は壁の向こう側にも届く。";
 
-    protected override int CoolTime => 20;
-    private static readonly float ATK_MAG = 1.3f;
-    private static readonly int DISTANCE = 2;
+    protected override int CoolTime => 5;
+    private static readonly float ATK_MAG = 1.5f;
+    private static readonly int DISTANCE = 3;
 
-    private static readonly string RAGON_SPEAR = "RagonSpear";
+    private static readonly string BUCHIKAMASHI = "Buchikamashi";
 
     /// <summary>
     /// 前方範囲攻撃
@@ -29,11 +29,11 @@ public class RagonSpear : Skill
         var status = ctx.Owner.GetInterface<ICharaStatus>().CurrentStatus;
         ctx.BattleLogManager.Log(status.OriginParam.GivenName + "は" + Name + "を使った！");
 
-        if (ctx.SoundHolder.TryGetSound(RAGON_SPEAR, out var sound) == true)
+        if (ctx.SoundHolder.TryGetSound(BUCHIKAMASHI, out var sound) == true)
             sound.Play();
 
         IDisposable disposable = null;
-        if (ctx.EffectHolder.TryGetEffect(RAGON_SPEAR, out var effect) == true)
+        if (ctx.EffectHolder.TryGetEffect(BUCHIKAMASHI, out var effect) == true)
             disposable = effect.Play(ctx.Owner);
 
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
@@ -54,12 +54,6 @@ public class RagonSpear : Skill
                 var battle = hit.GetInterface<ICharaBattle>();
                 await battle.Damage(attackInfo);
             }
-
-            // 地形チェック
-            var terrain = ctx.DungeonHandler.GetCellId(targetPos);
-            // 壁だったら走査終了
-            if (terrain == TERRAIN_ID.WALL)
-                break;
 
             distance++;
         }

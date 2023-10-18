@@ -19,6 +19,7 @@ public class DungeonProgressHolder : ScriptableObject
     private DungeonSetupHolder[] m_DungeonSetupHolders = new DungeonSetupHolder[0];
     private DungeonSetupHolder CurrentDungeonSetupHolder => m_DungeonSetupHolders[(int)m_CurrentDungeonTheme];
     public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress];
+    public CheckPointSetup CurrentCheckPointSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress - 1].CheckPointSetup;
     public BossBattleSetup CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
 
     /// <summary>

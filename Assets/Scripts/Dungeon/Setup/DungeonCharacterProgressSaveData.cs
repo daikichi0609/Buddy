@@ -15,13 +15,6 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     public float Exp => m_Exp;
 
     /// <summary>
-    /// 空腹値
-    /// </summary>
-    [SerializeField, Header("空腹値")]
-    private int m_Hugry;
-    public int Hugry => m_Hugry;
-
-    /// <summary>
     /// アイテム
     /// </summary>
     [SerializeField, Header("アイテム")]
@@ -31,7 +24,6 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     public void WriteData(float exp, int hungry, ItemSetup[] items)
     {
         m_Exp = exp;
-        m_Hugry = hungry;
         m_Items = items;
     }
 
@@ -42,7 +34,6 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     private void ResetData()
     {
         m_Exp = 0;
-        m_Hugry = 0;
         m_Items = null;
 
         EditorUtility.SetDirty(this);
