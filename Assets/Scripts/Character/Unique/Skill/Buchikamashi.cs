@@ -8,7 +8,7 @@ public class Buchikamashi : Skill
     protected override string Description => "前方3マスまでの敵をまとめて攻撃する。攻撃は壁の向こう側にも届く。";
 
     protected override int CoolTime => 5;
-    private static readonly float ATK_MAG = 1.5f;
+    private static readonly float ATK_MAG = 2f;
     private static readonly int DISTANCE = 3;
 
     private static readonly string BUCHIKAMASHI = "Buchikamashi";

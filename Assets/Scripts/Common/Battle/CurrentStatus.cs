@@ -26,7 +26,7 @@ public class CurrentStatus
     // レベル
     [ShowNativeProperty]
     public int Lv { get; set; }
-    private float LvMag => 1f + Lv * 0.1f;
+    private float LvMag => 1f + Lv * 0.05f;
     public bool IsDead => Hp == 0;
 
     // ヒットポイント
@@ -37,13 +37,11 @@ public class CurrentStatus
 
     // 攻撃力
     [ShowNativeProperty]
-    public int Atk => (int)(OriginParam.Atk * LvAtkMag * GetBuffMag(PARAMETER_TYPE.ATK));
-    private float LvAtkMag => 1f + LvMag * 0.1f;
+    public int Atk => (int)(OriginParam.Atk * LvMag * GetBuffMag(PARAMETER_TYPE.ATK));
 
     // 防御力
     [ShowNativeProperty]
-    public int Def => (int)(OriginParam.Def * LvDefMag * GetBuffMag(PARAMETER_TYPE.DEF));
-    private float LvDefMag => 1f + LvMag * 0.1f;
+    public int Def => (int)(OriginParam.Def * LvMag * GetBuffMag(PARAMETER_TYPE.DEF));
 
     /// <summary>
     /// クリティカル率
@@ -59,7 +57,7 @@ public class CurrentStatus
         Setup = setup;
         OriginParam = param;
         Lv = lv;
-        Hp = OriginParam.MaxHp;
+        Hp = MaxHp;
     }
 
     /// <summary>

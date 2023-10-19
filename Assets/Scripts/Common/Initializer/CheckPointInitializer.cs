@@ -54,7 +54,13 @@ public class CheckPointInitializer : SceneInitializer
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
 
         // 明転
-        await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
+        if (m_InGameProgressHolder.LoseBack == false)
+            await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), checkPoint.CheckPointName, "チェックポイント");
+        else
+        {
+            m_InGameProgressHolder.LoseBack = false;
+            FungusMethod();
+        }
     }
 
     /// <summary>
@@ -62,13 +68,6 @@ public class CheckPointInitializer : SceneInitializer
     /// </summary>
     private async Task OnTurnBright()
     {
-        if (m_InGameProgressHolder.LoseBack == true)
-        {
-            m_InGameProgressHolder.LoseBack = false;
-            FungusMethod();
-            return;
-        }
-
         // コントローラー取得
         ICharaController leader = m_Leader.GetInterface<ICharaController>();
         ICharaController friend = m_Friend.GetInterface<ICharaController>();
