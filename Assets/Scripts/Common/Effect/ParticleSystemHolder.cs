@@ -36,4 +36,16 @@ public class ParticleSystemHolder : MonoBehaviour
         var objectHolder = unit.GetInterface<ICharaObjectHolder>();
         return Play(objectHolder.CharaObject.transform.position, objectHolder.CharaObject.transform.eulerAngles);
     }
+
+    public IDisposable PlayFollow(ICollector unit)
+    {
+        var objectHolder = unit.GetInterface<ICharaObjectHolder>();
+        transform.SetParent(objectHolder.CharaObject.transform);
+
+        var disposable = new CompositeDisposable();
+        var stop = Play(objectHolder.CharaObject.transform.position, objectHolder.CharaObject.transform.eulerAngles);
+        disposable.Add(stop);
+        disposable.Add(Disposable.CreateWithState(this, self => self.gameObject.transform.parent = null));
+        return disposable;
+    }
 }

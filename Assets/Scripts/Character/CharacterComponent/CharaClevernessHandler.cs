@@ -55,7 +55,11 @@ public sealed class ClevernessHolder
     /// <summary>
     /// 賢さ無効化
     /// </summary>
-    public void Deactivate() => m_Disposable?.Dispose();
+    public void Deactivate()
+    {
+        m_Disposable?.Dispose();
+        m_Disposable = null;
+    }
 }
 
 public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandler
@@ -95,7 +99,8 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
         if (TryGetCleverness(index, out var cleverness) == false)
             return false;
 
-        if (cleverness.IsActive == false)
+        bool isActivate = cleverness.IsActive; // 現在のステータス
+        if (isActivate == false)
         {
             ClevernessContext ctx = new ClevernessContext(Owner);
             cleverness.Activate(ctx);

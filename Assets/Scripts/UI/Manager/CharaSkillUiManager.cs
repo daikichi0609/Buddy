@@ -92,6 +92,7 @@ public class CharaSkillUiManager : UiManagerBase, ICharaSkillUiManager
     {
         var disposable = m_CharaUiManager.SetActive(false);
         m_Disposables.Add(disposable);
+        m_Disposables.Add(Disposable.CreateWithState(this, self => self.m_UnitIndex = 0));
 
         var e0 = CreateOptionElement0();
         var e1 = CreateOptionElement1();

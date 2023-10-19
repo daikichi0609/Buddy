@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8141166108154308896
+--- !u!114 &-6034261266476120450
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a30f5ac1c0224a128b715c25dcc0e6b, type: 3}
-  m_Name: CriticalHitIfOppConditionPoison
+  m_Name: AttackUpIfPoison
   m_EditorClassIdentifier: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -22,14 +22,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d921a77ed398540bd9ebb24ff4268ca5, type: 3}
-  m_Name: RagonClevernessSetup
+  m_Name: BaleClevernessSetup
   m_EditorClassIdentifier: 
   m_Clevernesses:
-  - {fileID: 7000997319773154369}
-  - {fileID: 8719099265347784186}
-  - {fileID: -8141166108154308896}
-  m_Type: CriticalHitIfOppConditionPoison
---- !u!114 &7000997319773154369
+  - {fileID: 7441821523124342755}
+  m_Type: AttackUpIfPoisonCondition
+--- !u!114 &7441821523124342755
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -38,18 +36,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7facf7028fef441290f22ecc8d58523, type: 3}
-  m_Name: AttackUp
-  m_EditorClassIdentifier: 
---- !u!114 &8719099265347784186
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb7e717f578c444f584742f4ee39742d, type: 3}
-  m_Name: AttackWithPoison
+  m_Script: {fileID: 11500000, guid: b81389e016b584a89ae629d2e77796d2, type: 3}
+  m_Name: AttackUpIfPoisonCondition
   m_EditorClassIdentifier: 

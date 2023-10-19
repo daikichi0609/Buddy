@@ -34,7 +34,6 @@ public class PoisonCondition : Condition
             return false;
         }
 
-        abnormal.IsPoison = true;
         string log = status.CurrentStatus.OriginParam.GivenName + "は毒状態になった！";
         owner.GetInterface<ICharaLog>().Log(log);
 
@@ -46,7 +45,9 @@ public class PoisonCondition : Condition
         m_OnFinish.Add(color);
 
         var pos = holder.CharaObject.transform.position;
-        await m_EffectHandler.Play(pos, 0.5f);
+        await m_EffectHandler.Play(pos, 1f);
+
+        abnormal.IsPoison = true;
         return true;
     }
 

@@ -16,4 +16,4 @@ MonoBehaviour:
     type: 3}
   m_Status: {fileID: 11400000, guid: 44da5a393e56c4d0db390c60905ecd14, type: 2}
   m_SkillSetup: {fileID: 11400000, guid: eb431354479ff4084a52d6d10230a58e, type: 2}
-  m_ClevernessSetup: {fileID: 0}
+  m_ClevernessSetup: {fileID: 11400000, guid: 28df508c82dfa45da86c4ebdcff76aec, type: 2}

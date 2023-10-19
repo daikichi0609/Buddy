@@ -79,3 +79,9 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: ded7b69ded88942c8b66e2b585d79fe3,
       type: 3}
     m_Key: Buchikamashi
+  - m_Sound: {fileID: 5087174154848842170, guid: c92c385374dce4915b0d87878d8d3470,
+      type: 3}
+    m_Key: Buff
+  - m_Sound: {fileID: 5087174154848842170, guid: 9002b8ca015624e1ba8f829de596ea0a,
+      type: 3}
+    m_Key: Debuff

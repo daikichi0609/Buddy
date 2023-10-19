@@ -31,7 +31,6 @@ public class SleepCondition : Condition
             return false;
         }
 
-        abnormal.IsSleeping = true;
         string log = status.CurrentStatus.OriginParam.GivenName + "は眠ってしまった！";
         owner.GetInterface<ICharaLog>().Log(log);
 
@@ -49,7 +48,9 @@ public class SleepCondition : Condition
         m_OnFinish.Add(color);
 
         var pos = holder.CharaObject.transform.position;
-        await m_EffectHandler.Play(pos, 0.5f);
+        await m_EffectHandler.Play(pos, 1f);
+
+        abnormal.IsSleeping = true;
         return true;
     }
 

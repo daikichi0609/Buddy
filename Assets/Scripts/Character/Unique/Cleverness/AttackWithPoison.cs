@@ -4,7 +4,7 @@ public class AttackWithPoison : Cleverness
 {
     protected override string Name => "ラゴン・ポイズン";
     protected override string Description => "攻撃時、一定確率で相手を毒状態にする。";
-    protected override bool CanSwitch => false;
+    protected override bool CanSwitch => true;
 
     private static readonly float ADD_POISON_RATIO = 0.3f;
 

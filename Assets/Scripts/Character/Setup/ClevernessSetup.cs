@@ -34,7 +34,8 @@ public class ClevernessSetup : ScriptableObject
             { "ふみだすゆうき", typeof(CriticalRatioUp).FullName },
             { "ブレイバー・ラゴン", typeof(AttackUp).FullName },
             { "ラゴン・ポイズン", typeof(AttackWithPoison).FullName },
-            { "ラゴン・ベノム", typeof(AttackUpIfPoison).FullName },
+            { "ラゴン・ベノム", typeof(CriticalHitIfOppConditionPoison).FullName },
+            { "逆上", typeof(AttackUpIfPoisonCondition).FullName }
         };
     }
 

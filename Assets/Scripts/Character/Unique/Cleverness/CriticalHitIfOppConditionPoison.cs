@@ -1,12 +1,10 @@
 using System;
 
-public class AttackUpIfPoison : Cleverness
+public class CriticalHitIfOppConditionPoison : Cleverness
 {
     protected override string Name => "ラゴン・ベノム";
-    protected override string Description => "相手が毒状態なら、与えるダメージが上昇する。";
+    protected override string Description => "毒状態の敵への攻撃が必ずクリティカルヒットする。";
     protected override bool CanSwitch => true;
-
-    private static readonly int ATTACK_UP_RATIO = 2;
 
     protected override IDisposable Activate(ClevernessContext ctx)
     {
@@ -14,11 +12,11 @@ public class AttackUpIfPoison : Cleverness
         return battleEvent.RegisterOnDamageEvent(new BattleSystem.OnDamageEvent(Internal));
     }
 
-    static int Internal(int damage, AttackInfo info, ICollector defender)
+    static AttackInfo Internal(AttackInfo info, ICollector defender)
     {
         var abnormal = defender.GetInterface<ICharaStatusAbnormality>();
         if (abnormal.IsPoison == true)
-            damage *= ATTACK_UP_RATIO;
-        return damage;
+            return new AttackInfo(info.Attacker, info.Name, info.Atk, info.Dex, 1.0f, info.IgnoreDefence, info.Direction);
+        return info;
     }
 }

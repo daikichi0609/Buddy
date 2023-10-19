@@ -17,8 +17,6 @@ public interface ICharaClevernessUiManager : IUiManager
 public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
 {
     [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
     private ICharaUiManager m_CharaUiManager;
 
     [SerializeField]
@@ -86,6 +84,7 @@ public class CharaClevernessUiManager : UiManagerBase, ICharaClevernessUiManager
     {
         var disposable = m_CharaUiManager.SetActive(false);
         m_Disposables.Add(disposable);
+        m_Disposables.Add(Disposable.CreateWithState(this, self => self.m_UnitIndex = 0));
 
         var e0 = CreateOptionElement0();
         var e1 = CreateOptionElement1();

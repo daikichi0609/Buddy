@@ -4,7 +4,7 @@ public class CriticalRatioUp : Cleverness
 {
     protected override string Name => "ふみだすゆうき";
     protected override string Description => "クリティカル率が上昇する。";
-    protected override bool CanSwitch => false;
+    protected override bool CanSwitch => true;
 
     private static readonly float BUFF_CR_RATIO = 2f;
 

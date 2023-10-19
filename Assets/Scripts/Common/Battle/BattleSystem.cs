@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class BattleSystem
 {
-    public delegate int OnDamageEvent(int damage, AttackInfo info, ICollector defender);
+    public delegate AttackInfo OnDamageEvent(AttackInfo info, ICollector defender);
 
     /// <summary>
     /// ダメージ
@@ -14,23 +14,24 @@ public static class BattleSystem
     /// <returns></returns>
     public static AttackResult Damage(AttackInfo info, ICollector defender)
     {
+        if (info.Attacker.RequireEvent<ICharaBattleEvent>(out var battleEvent) == true && battleEvent.OnDamageEvent != null)
+            info = battleEvent.OnDamageEvent.Invoke(info, defender);
+
         var defenderStatus = defender.GetInterface<ICharaStatus>().CurrentStatus;
 
         // ヒット判定
         float random = UnityEngine.Random.Range(0, 1f);
         bool isHit = info.Dex >= random;
 
-        // ダメージ
-        random = UnityEngine.Random.Range(0.8f, 1f);
-        int power = (int)(info.Atk * random);
-        int damage = info.IgnoreDefence ? power : power - defenderStatus.Def;
-
-        if (info.Attacker.RequireEvent<ICharaBattleEvent>(out var battleEvent) == true && battleEvent.OnDamageEvent != null)
-            damage = battleEvent.OnDamageEvent.Invoke(damage, info, defender);
-
         // 急所判定
         random = UnityEngine.Random.Range(0, 1f);
         bool isCritical = info.CriticalRatio >= random;
+
+        // ダメージ
+        random = UnityEngine.Random.Range(0.8f, 1f);
+        int power = (int)(info.Atk * random);
+        bool ignoreDefence = info.IgnoreDefence || isCritical;
+        int damage = ignoreDefence ? power : power - defenderStatus.Def;
 
         // 急所でダメージ倍増
         if (isCritical == true)
