@@ -49,7 +49,7 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     bool ICharaStatusAbnormality.CanFrenzy { get => m_CanFrenzy; set => m_CanFrenzy = value; }
     private CompositeDisposable m_FinishFrenzy;
 
-    private static readonly float FRENZY_RATIO = 1.5f;
+    private static readonly float FRENZY_RATIO = 1.0f;
     private static readonly string FRENZY = "Frenzy";
 
     /// <summary>

@@ -44,7 +44,7 @@ public class CurrentStatus
     public int Def => (int)(OriginParam.Def * LvMag * GetBuffMag(PARAMETER_TYPE.DEF));
 
     /// <summary>
-    /// クリティカル率
+    /// クリティカル上昇率
     /// </summary>
     public float Cr => 1f * GetBuffMag(PARAMETER_TYPE.CR);
 

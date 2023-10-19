@@ -6,7 +6,7 @@ public class AttackUp : Cleverness
     protected override string Description => "攻撃力が上昇する。";
     protected override bool CanSwitch => true;
 
-    private static readonly float BUFF_ATTACK = 1.5f;
+    private static readonly float BUFF_ATTACK = 0.5f;
 
     protected override IDisposable Activate(ClevernessContext ctx)
     {
