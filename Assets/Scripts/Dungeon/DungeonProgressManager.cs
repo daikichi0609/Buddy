@@ -52,7 +52,9 @@ public enum FINISH_REASON
 public class DungeonProgressManager : IDungeonProgressManager
 {
     [Inject]
-    private DungeonProgressHolder m_ProgressHolder;
+    private DungeonProgressHolder m_DungeonProgressHolder;
+    [Inject]
+    private InGameProgressHolder m_InGameProgressHolder;
     [Inject]
     private IFadeManager m_FadeManager;
     [Inject]
@@ -67,6 +69,8 @@ public class DungeonProgressManager : IDungeonProgressManager
     private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
     [Inject]
     private ISoundHolder m_SoundHolder;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
 
     private static readonly string STAIRS = "Stairs";
 
@@ -83,17 +87,18 @@ public class DungeonProgressManager : IDungeonProgressManager
     /// <returns></returns>
     async Task IDungeonProgressManager.NextFloor()
     {
-        m_TurnManager.StopUnitAct(); // ユニット停止
+        var player = m_UnitHolder.Player.GetInterface<ICharaLastActionHolder>();
+        player.RegisterAction(CHARA_ACTION.NEXT_FLOOR); // プレイヤー行動権消費
         m_QuestionManager.Deactivate(); // UI非表示
         if (m_SoundHolder.TryGetSound(STAIRS, out var sound) == true) // 音
             sound.Play();
 
-        int maxFloor = m_ProgressHolder.CurrentDungeonSetup.FloorCount;
+        int maxFloor = m_DungeonProgressHolder.CurrentDungeonSetup.FloorCount;
         // すでに最上階にいるならチェックポイントへ
         if (m_CurrentFloor.Value >= maxFloor)
         {
             // 進行度+1
-            m_ProgressHolder.CurrentProgress++;
+            m_DungeonProgressHolder.CurrentProgress++;
             await MoveScene();
             return;
         }
@@ -103,7 +108,8 @@ public class DungeonProgressManager : IDungeonProgressManager
 
         // 暗転 & ダンジョン再構築
         string where = m_CurrentFloor.Value.ToString() + "F";
-        await m_FadeManager.StartFade(this, async self => await self.RebuildDungeon(), m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
+        await m_FadeManager.StartFade(this, async self => await self.RebuildDungeon(), m_DungeonProgressHolder.CurrentDungeonSetup.DungeonName, where);
+
         m_TurnManager.NextUnitAct();
     }
 
@@ -117,7 +123,7 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_DungeonContentsDeployer.RemoveAll();
 
         // ダンジョン再構築
-        var setup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
+        var setup = m_DungeonProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(setup);
         await m_DungeonContentsDeployer.DeployAll();
     }
@@ -131,9 +137,9 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_CurrentFloor.Value = 1;
         // シーン名
         string sceneName = "";
-        if (m_ProgressHolder.CurrentProgress == 0)
+        if (m_DungeonProgressHolder.CurrentProgress == 0)
             sceneName = SceneName.SCENE_HOME;
-        else if (m_ProgressHolder.CurrentProgress == m_ProgressHolder.MaxProgress)
+        else if (m_DungeonProgressHolder.IsMaxProgress == true)
             sceneName = SceneName.SCENE_BOSS_BATTLE;
         else
             sceneName = SceneName.SCENE_CHECKPOINT;
@@ -151,10 +157,15 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_TurnManager.StopUnitAct();
 
         if (reason == FINISH_REASON.PLAYER_DEAD)
+        {
+            m_InGameProgressHolder.LoseBack = true;
+            if (m_DungeonProgressHolder.IsMaxProgress == true)
+                m_DungeonProgressHolder.CurrentProgress--;
             await MoveScene();
+        }
         else if (reason == FINISH_REASON.BOSS_DEAD)
         {
-            m_ProgressHolder.CurrentProgress = 0;
+            m_DungeonProgressHolder.CurrentProgress = 0;
             await m_FadeManager.LoadScene(SceneName.SCENE_HOME);
         }
     }

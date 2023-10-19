@@ -53,7 +53,12 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     {
         // すでに行動済みなら再帰抜ける
         if (m_LastActionHolder.LastAction != CHARA_ACTION.NONE)
+        {
+#if DEBUG
+            Debug.Log("プレイヤーは行動済みなため再帰終了しました。");
+#endif
             return;
+        }
 
         // プレイヤーの入力結果を見る
         var flag = m_InputManager.InputKeyCode;

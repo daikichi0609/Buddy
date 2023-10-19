@@ -55,7 +55,10 @@ public class TurnManager : ITurnManager
     /// <summary>
     /// 再帰停止
     /// </summary>
-    void ITurnManager.StopUnitAct() => m_IsStop = true;
+    void ITurnManager.StopUnitAct()
+    {
+        m_IsStop = true;
+    }
 
     /// <summary>
     /// 行動するキャラ

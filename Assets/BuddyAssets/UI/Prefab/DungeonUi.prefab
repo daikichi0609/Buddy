@@ -3449,7 +3449,7 @@ GameObject:
   - component: {fileID: 1873212458563142453}
   - component: {fileID: 6980222664816365194}
   m_Layer: 5
-  m_Name: Strategy
+  m_Name: BattleLog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3516,7 +3516,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u4F5C\u6226"
+  m_Text: "\u30D0\u30C8\u30EB\u30ED\u30B0"
 --- !u!1 &2763614418220558659
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,4 +20,11 @@ public class InGameProgressHolder : ScriptableObject
     private bool[] m_IsCompletedIntro;
     public bool[] IsCompletedIntro => m_IsCompletedIntro;
     public bool CurrentCompletedIntro { set => m_IsCompletedIntro[m_Progress] = value; }
+
+    /// <summary>
+    /// 負けて前回の地点まで戻るフラグ
+    /// </summary>
+    [SerializeField]
+    private bool m_LoseBack;
+    public bool LoseBack { get => m_LoseBack; set => m_LoseBack = value; }
 }

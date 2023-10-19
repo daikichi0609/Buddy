@@ -62,6 +62,13 @@ public class CheckPointInitializer : SceneInitializer
     /// </summary>
     private async Task OnTurnBright()
     {
+        if (m_InGameProgressHolder.LoseBack == true)
+        {
+            m_InGameProgressHolder.LoseBack = false;
+            FungusMethod();
+            return;
+        }
+
         // コントローラー取得
         ICharaController leader = m_Leader.GetInterface<ICharaController>();
         ICharaController friend = m_Friend.GetInterface<ICharaController>();

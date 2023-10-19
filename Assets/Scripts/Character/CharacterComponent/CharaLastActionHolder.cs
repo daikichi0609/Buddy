@@ -17,6 +17,7 @@ public enum CHARA_ACTION
     WAIT,
     ITEM_USE,
     SKILL,
+    NEXT_FLOOR,
 }
 
 public interface ICharaLastActionHolder : IActorInterface

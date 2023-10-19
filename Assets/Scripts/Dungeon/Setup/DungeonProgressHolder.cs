@@ -36,7 +36,8 @@ public class DungeonProgressHolder : ScriptableObject
     [SerializeField]
     private int m_CurrentProgress;
     public int CurrentProgress { get => m_CurrentProgress; set => m_CurrentProgress = value; }
-    public int MaxProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
+    private int MaxProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
+    public bool IsMaxProgress => CurrentProgress == MaxProgress;
 
     /// <summary>
     /// ランダムな敵キャラセットアップを重み抽選
