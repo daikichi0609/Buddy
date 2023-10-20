@@ -6,7 +6,7 @@ using System;
 using UnityEngine.UI;
 using Zenject;
 
-public interface IMenuUiManager : IUiManager
+public interface IMenuUiManager : IUiManagerImp
 {
 }
 
@@ -21,6 +21,8 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     private ICharaSkillUiManager m_SkillUiManager;
     [Inject]
     private ICharaClevernessUiManager m_ClevernessUiManager;
+    [Inject]
+    private IBattleLogConfirmManager m_BattleLogConfirmManager;
 
     protected override bool IsActiveMiniMap => false;
     protected override int MaxDepth => 1;
@@ -45,7 +47,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
                 self.CheckCleverness();
             // 作戦
             else if (index == 3)
-                self.CheckStrategy();
+                self.CheckBattleLog();
             // 閉じる
             else
                 self.Deactivate();
@@ -54,7 +56,7 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
 
     protected override OptionElement[] CreateOptionElement()
     {
-        return new OptionElement[] { new OptionElement(m_OptionMethods[0], new string[5] { "バッグ", "スキル", "かしこさ", "作戦", "閉じる" }) };
+        return new OptionElement[] { new OptionElement(m_OptionMethods[0], new string[5] { "バッグ", "スキル", "かしこさ", "バトルログ", "閉じる" }) };
     }
 
     /// <summary>
@@ -103,8 +105,9 @@ public class MenuUiManager : UiManagerBase, IMenuUiManager
     /// <summary>
     /// スキル確認
     /// </summary>
-    private void CheckStrategy()
+    private void CheckBattleLog()
     {
         Deactivate();
+        m_BattleLogConfirmManager.Activate();
     }
 }

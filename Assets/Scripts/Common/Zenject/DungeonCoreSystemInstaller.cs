@@ -155,6 +155,13 @@ public class DungeonCoreSystemInstaller : MonoInstaller
             .AsSingle()
             .NonLazy();
 
+        // バトルログ確認
+        Container.Bind<IBattleLogConfirmManager>()
+            .To<BattleLogConfirmManager>()
+            .FromComponentOn(m_DungeonUiSystem)
+            .AsSingle()
+            .NonLazy();
+
         // ダメージテキスト
         Container.Bind<IAttackResultUiManager>()
             .To<AttackResultUiManager>()

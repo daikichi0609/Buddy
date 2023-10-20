@@ -15,7 +15,7 @@ public enum QUESTION_TYPE
     STAIRS,
 }
 
-public interface IYesorNoQuestionUiManager : IUiManager
+public interface IYesorNoQuestionUiManager : IUiManagerImp
 {
     void SetQuestion(QUESTION_TYPE q);
 }

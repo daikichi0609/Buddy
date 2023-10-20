@@ -6,7 +6,7 @@ using System;
 using UnityEngine.UI;
 using Zenject;
 
-public interface IBagUiManager : IUiManager
+public interface IBagUiManager : IUiManagerImp
 {
 }
 

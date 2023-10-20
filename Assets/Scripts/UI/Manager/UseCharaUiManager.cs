@@ -5,7 +5,7 @@ using UniRx;
 using Zenject;
 using System;
 
-public interface IUseCharaUiManager : IUiManager
+public interface IUseCharaUiManager : IUiManagerImp
 {
     ItemSetup ItemSetup { get; set; }
 }

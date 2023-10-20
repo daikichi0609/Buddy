@@ -26,6 +26,11 @@ public interface IBattleLogManager
     /// <param name="log"></param>
     /// <returns></returns>
     IDisposable FixLogForUi(string log);
+
+    /// <summary>
+    /// ログ全部
+    /// </summary>
+    List<string> AllTextLog { get; }
 }
 
 public class BattleLogManager : MonoBehaviour, IBattleLogManager
@@ -35,6 +40,12 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
 
     [SerializeField]
     private GameObject m_BattleLog;
+
+    /// <summary>
+    /// 全てのログ
+    /// </summary>
+    private List<string> m_AllTextLog = new List<string>();
+    List<string> IBattleLogManager.AllTextLog => m_AllTextLog;
 
     /// <summary>
     /// 表示するテキスト
@@ -48,7 +59,6 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
     private bool m_Update = true;
 
     private static readonly int MAX_LOG = 4;
-
     private static readonly float LOG_TIME = 5f;
 
     [Inject]
@@ -66,6 +76,7 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
         if (log == string.Empty)
             return;
 
+        m_AllTextLog.Add(log);
         m_LogText.Enqueue(log);
         if (m_LogText.Count > MAX_LOG)
             m_LogText.Dequeue();
@@ -115,7 +126,7 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
         sb.Append(log);
         sb.Append("\n");
         sb.Append("\n");
-        sb.Append("Enter: 決定");
+        sb.Append("Enterキー: 決定");
         sb.Append("\n");
         sb.Append("Qキー: 戻る");
 

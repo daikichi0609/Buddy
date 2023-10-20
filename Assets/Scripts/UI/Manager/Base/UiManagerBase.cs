@@ -44,11 +44,6 @@ public readonly struct OptionElement
 public interface IUiManager
 {
     /// <summary>
-    /// 親Ui
-    /// </summary>
-    IUiManager ParentUi { set; }
-
-    /// <summary>
     /// 入力購読終わり
     /// </summary>
     CompositeDisposable Disposables { get; }
@@ -57,11 +52,19 @@ public interface IUiManager
     /// UI表示
     /// </summary>
     void Activate();
+}
+
+public interface IUiManagerImp : IUiManager
+{
+    /// <summary>
+    /// 親Ui
+    /// </summary>
+    IUiManagerImp ParentUi { set; }
 
     /// <summary>
     /// UI表示
     /// </summary>
-    void Activate(IUiManager parent);
+    void Activate(IUiManagerImp parent);
 
     /// <summary>
     /// UI非表示
@@ -78,7 +81,7 @@ public interface IUiManager
 /// 左上メニューと説明のUi
 /// </summary>
 [Serializable]
-public abstract class UiManagerBase : MonoBehaviour, IUiManager
+public abstract class UiManagerBase : MonoBehaviour, IUiManagerImp
 {
     [Inject]
     protected IInputManager m_InputManager;
@@ -91,9 +94,9 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     [Inject]
     protected IUnitHolder m_UnitHolder;
 
-    protected static readonly string DECIDE = "UiDecide";
-    private static readonly string MOVE = "UiMove";
-    private static readonly string QUIT = "UiQuit";
+    public static readonly string DECIDE = "UiDecide";
+    public static readonly string MOVE = "UiMove";
+    public static readonly string QUIT = "UiQuit";
 
     /// <summary>
     /// ミニマップを表示するか
@@ -135,8 +138,8 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// 親Ui
     /// </summary>
-    private IUiManager m_ParentUi;
-    IUiManager IUiManager.ParentUi { set => m_ParentUi = value; }
+    private IUiManagerImp m_ParentUi;
+    IUiManagerImp IUiManagerImp.ParentUi { set => m_ParentUi = value; }
 
     /// <summary>
     /// Deactive時
@@ -160,13 +163,13 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
     /// <summary>
     /// Ui有効化
     /// </summary>
-    protected void Activate(IUiManager parent)
+    protected void Activate(IUiManagerImp parent)
     {
         m_ParentUi = parent; // 親Uiセット
         m_ParentUi.Disposables.Clear();
         Activate();
     }
-    void IUiManager.Activate(IUiManager parent) => Activate(parent);
+    void IUiManagerImp.Activate(IUiManagerImp parent) => Activate(parent);
     protected void Activate()
     {
         // 入力購読
@@ -215,7 +218,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
             m_ParentUi = null;
         }
     }
-    void IUiManager.Deactivate() => Deactivate();
+    void IUiManagerImp.Deactivate() => Deactivate();
 
     /// <summary>
     /// 親Ui含め無効化
@@ -227,7 +230,7 @@ public abstract class UiManagerBase : MonoBehaviour, IUiManager
 
         Deactivate(false);
     }
-    void IUiManager.DeactivateAll() => DeactivateAll();
+    void IUiManagerImp.DeactivateAll() => DeactivateAll();
 
     /// <summary>
     /// Uiの初期化

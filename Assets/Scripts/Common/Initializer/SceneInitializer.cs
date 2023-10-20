@@ -70,6 +70,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     public static IInjector ms_OutGameUnitInjector = new OutGameUnitInjector();
 
     protected virtual string FungusMessage { get; }
+    protected static readonly string ms_LoseBackMessage = "LoseBack";
 
     /// <summary>
     /// リーダーインスタンス

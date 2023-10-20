@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Zenject;
 using NaughtyAttributes;
 
-public interface ICharaClevernessUiManager : IUiManager
+public interface ICharaClevernessUiManager : IUiManagerImp
 {
 }
 

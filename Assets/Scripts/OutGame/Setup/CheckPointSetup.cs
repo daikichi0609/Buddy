@@ -34,4 +34,11 @@ public class CheckPointSetup : ScriptableObject
     [SerializeField, Header("出発時会話フロー")]
     private GameObject m_DepartureFlow;
     public GameObject DepartureFlow => m_DepartureFlow;
+
+    /// <summary>
+    /// 敗北ロールバック時会話フロー
+    /// </summary>
+    [SerializeField, Header("敗北ロールバック時会話フロー")]
+    private GameObject m_LoseBackFlow;
+    public GameObject LoseBackFlow => m_LoseBackFlow;
 }

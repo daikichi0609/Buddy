@@ -219,7 +219,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
             return false;
 
         await m_CharaMove.Face(direction); // 向く
-        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB, false, direction); // 攻撃情報　
+        var attackInfo = new AttackInfo(Owner, Status.OriginParam.GivenName, m_CharaStatus.CurrentStatus.Atk, HIT_PROB, CRITICAL_PROB * Status.Cr, false, direction); // 攻撃情報　
         m_OnAttackStart.OnNext(attackInfo); // Event発火
 
         var attackPos = m_CharaMove.Position + direction.ToV3Int(); // 攻撃地点

@@ -24,6 +24,7 @@ public class CheckPointInitializer : SceneInitializer
     /// </summary>
     private Fungus.Flowchart m_ArrivalFlowChart;
     private Fungus.Flowchart m_DeparturedFlowChart;
+    private Fungus.Flowchart m_LoseBackFlowChart;
 
     private void Awake()
     {
@@ -52,6 +53,7 @@ public class CheckPointInitializer : SceneInitializer
         // 会話フロー生成
         m_ArrivalFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.ArrivalFlow).GetComponent<Fungus.Flowchart>();
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.DepartureFlow).GetComponent<Fungus.Flowchart>();
+        m_LoseBackFlowChart = m_Instantiater.InstantiatePrefab(checkPoint.LoseBackFlow).GetComponent<Fungus.Flowchart>();
 
         // 明転
         if (m_InGameProgressHolder.LoseBack == false)
@@ -59,7 +61,7 @@ public class CheckPointInitializer : SceneInitializer
         else
         {
             m_InGameProgressHolder.LoseBack = false;
-            FungusMethod();
+            m_LoseBackFlowChart.SendFungusMessage(ms_LoseBackMessage);
         }
     }
 

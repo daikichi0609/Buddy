@@ -5,7 +5,7 @@ using UniRx;
 using Zenject;
 using System;
 
-public interface IItemUseUiManager : IUiManager
+public interface IItemUseUiManager : IUiManagerImp
 {
     ItemSetup ItemSetup { get; set; }
 }
@@ -83,7 +83,7 @@ public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
         {
             if (tuple.optionIndex == index)
             {
-                IUiManager self = tuple.Item2;
+                IUiManagerImp self = tuple.Item2;
                 self.Deactivate();
             }
         });
