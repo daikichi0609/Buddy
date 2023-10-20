@@ -15,3 +15,4 @@ MonoBehaviour:
   m_Progress: 0
   m_IsCompletedIntro: 010000
   m_LoseBack: 0
+  m_DefeatBoss: 0

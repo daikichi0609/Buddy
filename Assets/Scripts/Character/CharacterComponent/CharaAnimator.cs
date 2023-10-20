@@ -14,6 +14,11 @@ public enum ANIMATION_TYPE
     IDLE,
 
     /// <summary>
+    /// 通常2
+    /// </summary>
+    IDLE_2,
+
+    /// <summary>
     /// 移動
     /// </summary>
     MOVE,

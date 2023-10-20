@@ -13,6 +13,6 @@ public class SleepTrap : TrapEffectBase
 
         // 眠り状態にする
         var condition = ctx.Owner.GetInterface<ICharaCondition>();
-        await condition.AddCondition(new SleepCondition(Random.Range(2, 5)));
+        await condition.AddCondition(new SleepCondition(Random.Range(2, 4)));
     }
 }

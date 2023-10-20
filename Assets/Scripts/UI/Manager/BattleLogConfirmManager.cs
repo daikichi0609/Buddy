@@ -78,8 +78,8 @@ public class BattleLogConfirmManager : MonoBehaviour, IBattleLogConfirmManager
         var sb = new StringBuilder();
         for (int i = m_CurrentIndex + MAX_LOG; i >= m_CurrentIndex; i--)
         {
-            int index = allLog.Count - 1 - i;
-            if (index < 0 || index >= allLog.Count)
+            int index = allLog.Length - 1 - i;
+            if (index < 0 || index >= allLog.Length)
                 continue;
             var text = allLog[index];
             sb.Append(text);
@@ -120,7 +120,7 @@ public class BattleLogConfirmManager : MonoBehaviour, IBattleLogConfirmManager
         if (flag.HasBitFlag(KeyCodeFlag.W))
         {
             var allLog = m_BattleLogManager.AllTextLog;
-            int logCount = allLog.Count;
+            int logCount = allLog.Length;
             if (++m_CurrentIndex < 0)
                 m_CurrentIndex = 0;
             else if (m_CurrentIndex >= logCount - MAX_LOG)
@@ -133,7 +133,7 @@ public class BattleLogConfirmManager : MonoBehaviour, IBattleLogConfirmManager
         if (flag.HasBitFlag(KeyCodeFlag.S))
         {
             var allLog = m_BattleLogManager.AllTextLog;
-            int logCount = allLog.Count;
+            int logCount = allLog.Length;
             if (--m_CurrentIndex < 0)
                 m_CurrentIndex = 0;
             else if (m_CurrentIndex >= logCount - MAX_LOG)

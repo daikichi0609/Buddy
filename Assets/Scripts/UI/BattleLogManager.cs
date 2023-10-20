@@ -30,7 +30,7 @@ public interface IBattleLogManager
     /// <summary>
     /// ログ全部
     /// </summary>
-    List<string> AllTextLog { get; }
+    string[] AllTextLog { get; }
 }
 
 public class BattleLogManager : MonoBehaviour, IBattleLogManager
@@ -44,8 +44,9 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
     /// <summary>
     /// 全てのログ
     /// </summary>
-    private List<string> m_AllTextLog = new List<string>();
-    List<string> IBattleLogManager.AllTextLog => m_AllTextLog;
+    private Queue<string> m_AllTextLog = new Queue<string>();
+    string[] IBattleLogManager.AllTextLog => m_AllTextLog.ToArray();
+    private static readonly int MAX_ALL_LOG = 100;
 
     /// <summary>
     /// 表示するテキスト
@@ -76,7 +77,10 @@ public class BattleLogManager : MonoBehaviour, IBattleLogManager
         if (log == string.Empty)
             return;
 
-        m_AllTextLog.Add(log);
+        m_AllTextLog.Enqueue(log);
+        if (m_AllTextLog.Count > MAX_ALL_LOG)
+            m_AllTextLog.Dequeue();
+
         m_LogText.Enqueue(log);
         if (m_LogText.Count > MAX_LOG)
             m_LogText.Dequeue();

@@ -27,4 +27,11 @@ public class InGameProgressHolder : ScriptableObject
     [SerializeField]
     private bool m_LoseBack;
     public bool LoseBack { get => m_LoseBack; set => m_LoseBack = value; }
+
+    /// <summary>
+    /// ボス撃破フラグ
+    /// </summary>
+    [SerializeField]
+    private bool m_DefeatBoss;
+    public bool DefeatBoss { get => m_DefeatBoss; set => m_DefeatBoss = value; }
 }

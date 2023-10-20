@@ -22,6 +22,7 @@ public class BossBattleInitializer : SceneInitializer
     private ITurnManager m_TurnManager;
 
     protected override string FungusMessage => "BossBattleStart";
+    private static readonly string ms_DefeatMessage = "Defeat";
     private static readonly float OFFSET_Y = 0.5f;
 
     private Vector3 LeaderStartPos { get; set; }
@@ -66,14 +67,29 @@ public class BossBattleInitializer : SceneInitializer
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
         await DeployBossMap(bossBattleSetup); // ステージ生成
 
-        CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラ生成
         BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
         // Ui非表示
         MessageBroker.Default.Publish(new BattleUiSwitch(false));
 
         // 明転
-        await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
+        if (m_InGameProgressHolder.DefeatBoss == false)
+        {
+            CreateOutGameCharacter(LeaderStartPos, FriendStartPos); // キャラ生成
+            await m_FadeManager.TurnBright(this, async self => await self.OnTurnBright(), bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
+        }
+        else
+        {
+            m_InGameProgressHolder.DefeatBoss = false; // フラグ解除
+            CreateOutGameCharacter(LeaderEndPos, FriendEndPos); // キャラ生成
+            m_Leader.GetInterface<ICharaController>().Face(DIRECTION.UP);
+            m_Friend.GetInterface<ICharaController>().Face(DIRECTION.UP);
+            m_Boss.GetInterface<ICharaAnimator>().PlayAnimation(ANIMATION_TYPE.SLEEP);
+
+            m_DungeonProgressHolder.CurrentProgress = 0;
+            m_InGameProgressHolder.Progress++; // 進行度Up
+            await m_FadeManager.TurnBright(this, self => self.DefeatBoss());
+        }
     }
 
     /// <summary>
@@ -203,9 +219,20 @@ public class BossBattleInitializer : SceneInitializer
         // 敵がいなくなったら終了
         m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>
         {
-            if (count == 0)
-                self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+            if (count != 0)
+                return;
+
+            self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
         }).AddTo(this);
+    }
+
+    /// <summary>
+    /// ボス撃破後
+    /// </summary>
+    private void DefeatBoss()
+    {
+        m_DungeonProgressHolder.CurrentProgress++;
+        m_DefeatedFlowChart.SendFungusMessage(ms_DefeatMessage);
     }
 }
 

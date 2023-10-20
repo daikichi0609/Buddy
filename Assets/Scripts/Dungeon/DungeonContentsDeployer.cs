@@ -91,8 +91,8 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// </summary>
     async Task IDungeonContentsDeployer.DeployBossBattleContents(BossBattleDeployInfo info)
     {
-        await DeployLeader(info.PlayerPos);
-        await DeployFriend(info.FriendPos);
+        await DeployLeader(info.PlayerPos, DIRECTION.UP);
+        await DeployFriend(info.FriendPos, DIRECTION.UP);
         await m_EnemySpawner.SpawnEnemy(info.BossCharacterSetup, info.BossPos);
 
         m_OnDeployContents.OnNext(Unit.Default);
@@ -129,10 +129,10 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
         var pos = new Vector3(cellPos.x, CharaMove.OFFSET_Y, cellPos.z); // 配置位置
         await DeployLeader(pos);
     }
-    private async Task DeployLeader(Vector3 pos)
+    private async Task DeployLeader(Vector3 pos, DIRECTION dir = DIRECTION.UNDER)
     {
         var setup = m_CurrentCharacterHolder.Leader; // Setup
-        await m_FriendSpawner.SpawnLeader(setup, pos);
+        await m_FriendSpawner.SpawnLeader(setup, pos, dir);
     }
 
     /// <summary>
@@ -167,9 +167,9 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
             return nearPos;
         }
     }
-    private async Task DeployFriend(Vector3 pos)
+    private async Task DeployFriend(Vector3 pos, DIRECTION dir = DIRECTION.UNDER)
     {
         var setup = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress); // Setup
-        await m_FriendSpawner.SpawnFriend(setup, pos);
+        await m_FriendSpawner.SpawnFriend(setup, pos, dir);
     }
 }

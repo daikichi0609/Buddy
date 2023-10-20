@@ -165,8 +165,8 @@ public class DungeonProgressManager : IDungeonProgressManager
         }
         else if (reason == FINISH_REASON.BOSS_DEAD)
         {
-            m_DungeonProgressHolder.CurrentProgress = 0;
-            await m_FadeManager.LoadScene(SceneName.SCENE_HOME);
+            m_InGameProgressHolder.DefeatBoss = true;
+            await m_FadeManager.LoadScene(SceneName.SCENE_BOSS_BATTLE);
         }
     }
 }

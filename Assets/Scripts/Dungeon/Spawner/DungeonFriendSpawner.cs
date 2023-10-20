@@ -12,14 +12,14 @@ public interface IDungeonFriendSpawner
     /// </summary>
     /// <param name="setup"></param>
     /// <param name="pos"></param>
-    Task SpawnLeader(CharacterSetup setup, Vector3 pos);
+    Task SpawnLeader(CharacterSetup setup, Vector3 pos, DIRECTION dir);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="setup"></param>
     /// <param name="pos"></param>
-    Task SpawnFriend(CharacterSetup setup, Vector3 pos);
+    Task SpawnFriend(CharacterSetup setup, Vector3 pos, DIRECTION dir);
 }
 
 public class DungeonFriendSpawner : IDungeonFriendSpawner
@@ -44,7 +44,7 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     /// <param name="setup"></param>
     /// <param name="pos"></param>
     /// <returns></returns>
-    Task IDungeonFriendSpawner.SpawnLeader(CharacterSetup setup, Vector3 pos)
+    Task IDungeonFriendSpawner.SpawnLeader(CharacterSetup setup, Vector3 pos, DIRECTION dir)
     {
         var gameObject = m_ObjectPoolController.GetObject(setup, ms_PlayerInjector);
         gameObject.transform.position = pos;
@@ -61,6 +61,9 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
             }
 
         leader.Initialize();
+        var move = leader.GetInterface<ICharaMove>();
+        move.Face(dir);
+
         PostSpawnLeader(leader);
 
         // 追加
@@ -105,7 +108,7 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
     /// <param name="setup"></param>
     /// <param name="pos"></param>
     /// <returns></returns>
-    Task IDungeonFriendSpawner.SpawnFriend(CharacterSetup setup, UnityEngine.Vector3 pos)
+    Task IDungeonFriendSpawner.SpawnFriend(CharacterSetup setup, UnityEngine.Vector3 pos, DIRECTION dir)
     {
         var gameObject = m_ObjectPoolController.GetObject(setup, ms_FriendInjector);
         gameObject.transform.position = pos;
@@ -122,6 +125,8 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
             }
 
         friend.Initialize();
+        var move = friend.GetInterface<ICharaMove>();
+        move.Face(dir);
 
         // 追加
         m_UnitHolder.AddFriend(friend);

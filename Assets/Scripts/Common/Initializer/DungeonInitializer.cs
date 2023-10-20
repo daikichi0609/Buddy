@@ -28,6 +28,7 @@ public class DungeonInitializer : SceneInitializer
     {
         string where = m_DungeonProgress.CurrentFloor.ToString() + "F";
 
+        m_DungeonProgressHolder.CurrentDungeonTheme = (DUNGEON_THEME)m_InGameProgressHolder.Progress;
         var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(elementSetup);
         await m_DungeonContentsDeployer.DeployAll();
