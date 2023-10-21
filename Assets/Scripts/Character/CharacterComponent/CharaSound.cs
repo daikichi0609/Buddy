@@ -41,7 +41,7 @@ public class CharaSound : ActorComponentBase, ICharaSound
             }).AddTo(Owner.Disposables);
 
             // 空振り音
-            battle.OnAttackEnd.SubscribeWithState(this, (result, self) =>
+            battle.OnDamageStart.SubscribeWithState(this, (result, self) =>
             {
                 if (result.IsHit == false)
                     if (self.m_SoundHolder.TryGetSound(MISS_SOUND, out var sound) == true)
