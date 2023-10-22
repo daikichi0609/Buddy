@@ -9,9 +9,10 @@ using System;
 public enum TIMELINE_TYPE
 {
     NONE = -1,
-    RAGON_INTRO = 0,
-    BERRY_INTRO = 1,
-    DORCHE_INTRO = 2,
+    INTRO = 0,
+    RAGON_INTRO = 1,
+    BERRY_INTRO = 2,
+    DORCHE_INTRO = 3,
 }
 
 public readonly struct RegisterTimelineMessage

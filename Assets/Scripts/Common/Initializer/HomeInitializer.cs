@@ -69,9 +69,19 @@ public class HomeInitializer : SceneInitializer
         }
 
         int progress = m_InGameProgressHolder.Progress;
-        // 初回タイムライン再生が終わっていない && 再生成功
-        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false && m_TimelineManager.Play((TIMELINE_TYPE)progress) == true)
-            m_InGameProgressHolder.CurrentCompletedIntro = true; // フラグオン
+        // 初回タイムライン再生が終わっていない
+        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false)
+        {
+            TIMELINE_TYPE type = progress switch
+            {
+                0 => TIMELINE_TYPE.INTRO,
+                1 => TIMELINE_TYPE.BERRY_INTRO,
+                2 => TIMELINE_TYPE.DORCHE_INTRO,
+                _ => TIMELINE_TYPE.NONE,
+            };
+            if (m_TimelineManager.Play(type) == true)
+                m_InGameProgressHolder.CurrentCompletedIntro = true; // フラグオン
+        }
         // 通常時
         else if (m_InGameProgressHolder.LoseBack == false)
             await m_FadeManager.TurnBright(this, self => self.AllowOperation());
