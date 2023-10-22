@@ -30,6 +30,7 @@ public class PlayerLoopManager : MonoBehaviour, IPlayerLoopManager
     //初期化処理呼び出し
     private void Start()
     {
+        Application.targetFrameRate = 30;
         m_Initialize.OnNext(Unit.Default);
     }
 
