@@ -9,7 +9,7 @@ using Zenject;
 
 public interface ITimelineManager
 {
-    void Play(TIMELINE_TYPE type);
+    bool Play(TIMELINE_TYPE type);
 }
 
 public class TimelineManager : MonoBehaviour, ITimelineManager
@@ -49,14 +49,14 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// </summary>
     /// <param name="type"></param>
     /// <param name="finish"></param>
-    private void Play(TIMELINE_TYPE type, bool finish = false)
+    private bool Play(TIMELINE_TYPE type, bool finish = false)
     {
         if (m_CurrentDirector.TryGetValue(type, out var register) == false)
         {
 #if DEBUG
             Debug.LogWarning("タイムラインが未登録です。" + type.ToString());
 #endif
-            return;
+            return false;
         }
 
         m_FadeManager.StartFade((this, register, finish), tuple =>
@@ -65,8 +65,9 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
                 tuple.Item1.FinishInternal();
             tuple.Item1.PlayInternal(tuple.register);
         });
+        return true;
     }
-    void ITimelineManager.Play(TIMELINE_TYPE type) => Play(type);
+    bool ITimelineManager.Play(TIMELINE_TYPE type) => Play(type);
 
     /// <summary>
     /// タイムライン再生

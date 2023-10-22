@@ -15,12 +15,15 @@ public class HomeInitializer : SceneInitializer
     private HomeSetup m_HomeSetup;
     [Inject]
     private ITimelineManager m_TimelineManager;
+    [Inject]
+    private IHomeCharacterManager m_HomeCharacterManager;
 
     protected override string FungusMessage => "Home";
 
     private Vector3 FriendPos { get; set; }
 
     private Fungus.Flowchart m_DeparturedFlowChart;
+    private Fungus.Flowchart m_LoseBackFlowChart;
 
     private void Awake()
     {
@@ -49,20 +52,41 @@ public class HomeInitializer : SceneInitializer
 
         m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendFlow(m_InGameProgressHolder.Progress)).GetComponent<Fungus.Flowchart>();
         m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);
+        m_LoseBackFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.LoseBackFlow).GetComponent<Fungus.Flowchart>();
+
+        // 攻略済みフローセット
+        for (int i = 0; i < m_InGameProgressHolder.IsCompletedIntro.Length; i++)
+        {
+            if (m_InGameProgressHolder.IsCompletedIntro[i] == true)
+            {
+                // フロー取得
+                var flow = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendCompletedFlow(i)).GetComponent<Fungus.Flowchart>();
+
+                var chara = m_HomeCharacterManager.GetHomeCharacter(i);
+                var talk = chara.GetInterface<ICharaTalk>();
+                talk.FlowChart = flow; // フロー置き換え
+            }
+        }
 
         int progress = m_InGameProgressHolder.Progress;
-        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false)
-            m_TimelineManager.Play((TIMELINE_TYPE)progress);
-        else
+        // 初回タイムライン再生が終わっていない && 再生成功
+        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false && m_TimelineManager.Play((TIMELINE_TYPE)progress) == true)
+            m_InGameProgressHolder.CurrentCompletedIntro = true; // フラグオン
+        // 通常時
+        else if (m_InGameProgressHolder.LoseBack == false)
             await m_FadeManager.TurnBright(this, self => self.AllowOperation());
+        // 負け帰ったとき
+        else
+        {
+            m_InGameProgressHolder.LoseBack = false;
+            m_LoseBackFlowChart.SendFungusMessage(ms_LoseBackMessage);
+        }
     }
 
     public override void FungusMethod()
     {
         m_FadeManager.StartFade(this, self =>
         {
-            self.m_InGameProgressHolder.CurrentCompletedIntro = true; // フラグオン
-
             var fController = self.m_Friend.GetInterface<ICharaController>();
             fController.Wrap(self.FriendPos); // 元の位置に戻す
         },

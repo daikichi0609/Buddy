@@ -32,9 +32,8 @@ public class DungeonCharacterProgressManager : IDungeonCharacterProgressManager
     void IDungeonCharacterProgressManager.WriteSaveData()
     {
         var exp = m_TeamLevelHandler.Exp;
-        var hungry = m_UnitHolder.Player.GetInterface<ICharaStarvation>().Hungry;
         var items = m_TeamInventory.Items;
-        m_DungeonCharacterSaveData.WriteData(exp, hungry, items);
+        m_DungeonCharacterSaveData.WriteData(exp, items);
     }
 
     /// <summary>

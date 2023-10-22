@@ -12,14 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f063c3573c6ff40edbd8a5c852307d3c, type: 3}
   m_Name: DungeonProgressCharacterSaveData
   m_EditorClassIdentifier: 
-  m_Exp: 251.5
-  m_Hugry: 70
-  m_Items:
-  - {fileID: 11400000, guid: 9329b923d21884ea2b521ae9f058f89f, type: 2}
-  - {fileID: 11400000, guid: 9329b923d21884ea2b521ae9f058f89f, type: 2}
-  - {fileID: 11400000, guid: 9329b923d21884ea2b521ae9f058f89f, type: 2}
-  - {fileID: 11400000, guid: 6a3554999319244c3b3226e83e965eaa, type: 2}
-  - {fileID: 11400000, guid: 6a3554999319244c3b3226e83e965eaa, type: 2}
-  - {fileID: 11400000, guid: e570c6f71bfaf412cbe9517abc6bd0dc, type: 2}
-  - {fileID: 11400000, guid: e570c6f71bfaf412cbe9517abc6bd0dc, type: 2}
-  - {fileID: 11400000, guid: 9329b923d21884ea2b521ae9f058f89f, type: 2}
+  m_Exp: 0
+  m_Items: []

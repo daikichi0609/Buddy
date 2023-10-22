@@ -6,7 +6,7 @@ using Zenject;
 
 public interface IHomeCharacterManager
 {
-
+    ICollector GetHomeCharacter(int index);
 }
 
 public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
@@ -19,6 +19,7 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
     protected IInstantiater m_Instantiater;
 
     private List<ICollector> m_HomeCharacters = new List<ICollector>();
+    ICollector IHomeCharacterManager.GetHomeCharacter(int index) => m_HomeCharacters[index];
 
     private void Awake()
     {

@@ -21,9 +21,23 @@ public class HomeSetup : ScriptableObject
     public GameObject BGM => m_BGM;
 
     /// <summary>
-    /// バディ会話フロー
+    /// 攻略中バディ会話フロー
     /// </summary>
-    [SerializeField, Header("バディ会話フロー")]
+    [SerializeField, Header("バディ攻略中会話フロー")]
     private GameObject[] m_FriendFlow;
     public GameObject GetFriendFlow(int index) => m_FriendFlow[index];
+
+    /// <summary>
+    /// 攻略済みバディ会話フロー
+    /// </summary>
+    [SerializeField, Header("バディ攻略後会話フロー")]
+    private GameObject[] m_FriendCompletedFlow;
+    public GameObject GetFriendCompletedFlow(int index) => m_FriendCompletedFlow[index];
+
+    /// <summary>
+    /// 敗北時フロー
+    /// </summary>
+    [SerializeField, Header("敗北時フロー")]
+    private GameObject m_LoseBackFlow;
+    public GameObject LoseBackFlow => m_LoseBackFlow;
 }

@@ -21,7 +21,7 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     private ItemSetup[] m_Items;
     public ItemSetup[] Items => m_Items;
 
-    public void WriteData(float exp, int hungry, ItemSetup[] items)
+    public void WriteData(float exp, ItemSetup[] items)
     {
         m_Exp = exp;
         m_Items = items;
@@ -31,7 +31,7 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     /// 進捗リセット
     /// </summary>
     [Button]
-    private void ResetData()
+    public void ResetData()
     {
         m_Exp = 0;
         m_Items = null;
