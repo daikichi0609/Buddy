@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UniRx;
 using Zenject;
-using UnityEditor.EditorTools;
 using Fungus;
 using Task = System.Threading.Tasks.Task;
 using System;

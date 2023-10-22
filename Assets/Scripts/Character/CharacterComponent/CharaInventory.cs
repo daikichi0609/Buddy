@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using Zenject;
-using static UnityEditor.Progress;
 using Fungus;
 
 public interface ICharaInventory : IActorInterface
