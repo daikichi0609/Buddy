@@ -32,7 +32,7 @@ GameObject:
   - component: {fileID: 4112012249629736927}
   - component: {fileID: 7115753381881769052}
   m_Layer: 0
-  m_Name: Home_RagonTimeline
+  m_Name: Home_Ragon_Timeline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,9 +80,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 704666431050785970}
+  - {fileID: 5498602457853490413}
   selectedCommands:
-  - {fileID: 4414031729872251903}
+  - {fileID: 2617066987803377078}
   variables: []
   description: 
   stepPause: 0
@@ -498,7 +498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
-  text: "\u306F\u3044\n"
+  text: "\u306F\u3044"
   description: 
   targetBlock: {fileID: 704666431050785970}
   hideIfVisited: 0
