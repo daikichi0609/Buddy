@@ -202,6 +202,9 @@ public class BossBattleInitializer : SceneInitializer
         m_Friend.Dispose();
         m_Boss.Dispose();
 
+        // 前データ適用
+        m_DungeonCharacterProgressManager.AdoptSaveData();
+
         // ボス
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
         var boss = bossBattleSetup.BossCharacterSetup;
@@ -215,9 +218,6 @@ public class BossBattleInitializer : SceneInitializer
 
         // Ui表示
         MessageBroker.Default.Publish(new BattleUiSwitch(true));
-
-        // 前データ適用
-        m_DungeonCharacterProgressManager.AdoptSaveData();
 
         // 敵がいなくなったら終了
         m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>

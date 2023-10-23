@@ -9,9 +9,9 @@ public class PoisonCondition : Condition
     protected override bool CanOverlapping => false;
 
     private static readonly Color32 ms_BarColor = new Color32(167, 87, 168, 255);
-    private static readonly int POISON_DAMAGE = 2;
+    private static readonly int POISON_DAMAGE = 4;
     public static readonly int POISON_DAMAGE_INTERVAL = 2;
-    public static readonly int POISON_REMAINING_TURN = 20;
+    public static readonly int POISON_REMAINING_TURN = 10;
     private static readonly string POISON = "Poison";
 
     public PoisonCondition(int remainingTurn) : base(remainingTurn) { }

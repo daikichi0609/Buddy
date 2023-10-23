@@ -28,6 +28,8 @@ public class DungeonInitializer : SceneInitializer
     {
         string where = m_DungeonProgress.CurrentFloor.ToString() + "F";
 
+        m_DungeonCharacterProgressManager.AdoptSaveData();
+
         m_DungeonProgressHolder.CurrentDungeonTheme = (DUNGEON_THEME)m_InGameProgressHolder.Progress;
         var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(elementSetup);
@@ -35,8 +37,6 @@ public class DungeonInitializer : SceneInitializer
 
         var bgm = MonoBehaviour.Instantiate(m_ProgressHolder.CurrentDungeonSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
-
-        m_DungeonCharacterProgressManager.AdoptSaveData();
 
         // 明転
         await m_FadeManager.TurnBright(m_ProgressHolder.CurrentDungeonSetup.DungeonName, where);
