@@ -10,8 +10,8 @@ public class PoisonCondition : Condition
 
     private static readonly Color32 ms_BarColor = new Color32(167, 87, 168, 255);
     private static readonly int POISON_DAMAGE = 2;
-    public static readonly int POISON_DAMAGE_INTERVAL = 3;
-    public static readonly int POISON_REMAINING_TURN = 30;
+    public static readonly int POISON_DAMAGE_INTERVAL = 2;
+    public static readonly int POISON_REMAINING_TURN = 20;
     private static readonly string POISON = "Poison";
 
     public PoisonCondition(int remainingTurn) : base(remainingTurn) { }

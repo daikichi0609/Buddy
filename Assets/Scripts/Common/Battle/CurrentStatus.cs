@@ -26,22 +26,23 @@ public class CurrentStatus
     // レベル
     [ShowNativeProperty]
     public int Lv { get; set; }
-    private float LvMag => 1f + Lv * 0.05f;
     public bool IsDead => Hp == 0;
 
     // ヒットポイント
     [ShowNativeProperty]
     public int Hp { get; private set; }
-    public int MaxHp => (int)(OriginParam.MaxHp * LvMaxHpMag);
-    private float LvMaxHpMag => 1f + LvMag * 0.01f;
+    public int MaxHp => (int)(OriginParam.MaxHp * (1f + (Lv * HP_MAG)));
+    private static readonly float HP_MAG = 0.01f;
 
     // 攻撃力
     [ShowNativeProperty]
-    public int Atk => (int)(OriginParam.Atk * LvMag * GetBuffMag(PARAMETER_TYPE.ATK));
+    public int Atk => (int)(OriginParam.Atk * (1f + (Lv * ATK_MAG)) * GetBuffMag(PARAMETER_TYPE.ATK));
+    private static readonly float ATK_MAG = 0.05f;
 
     // 防御力
     [ShowNativeProperty]
-    public int Def => (int)(OriginParam.Def * LvMag * GetBuffMag(PARAMETER_TYPE.DEF));
+    public int Def => (int)(OriginParam.Def * (1f + (Lv * DEF_MAG)) * GetBuffMag(PARAMETER_TYPE.DEF));
+    private static readonly float DEF_MAG = 0.05f;
 
     /// <summary>
     /// クリティカル上昇率

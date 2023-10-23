@@ -69,7 +69,6 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private int EnemyLevelBase { get; set; }
     int ICharaStatus.EnemyLevelBase { set => EnemyLevelBase = value; }
 
-    private static readonly int ENEMY_RATIO = 3;
     private static readonly string HEAL = "Heal";
 
     /// <summary>
@@ -196,7 +195,7 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
     private void SetEnemyStatus(CharacterSetup setup, EnemyStatus enemyStatus)
     {
         BattleStatus.Parameter param = new BattleStatus.Parameter(enemyStatus.Param);
-        int level = (m_DungeonProgressManager.CurrentFloor + EnemyLevelBase) * ENEMY_RATIO;
+        int level = (m_DungeonProgressManager.CurrentFloor + EnemyLevelBase);
         m_CurrentStatus = new CurrentStatus(setup, param, level);
 
         PostSetEnemyStatus(enemyStatus.Param);

@@ -27,10 +27,12 @@ public class PlayerLoopManager : MonoBehaviour, IPlayerLoopManager
     private Subject<Unit> m_Update = new Subject<Unit>();
     IObservable<Unit> IPlayerLoopManager.GetUpdateEvent => m_Update;
 
+    private static readonly int FRAME_RATE = 60;
+
     //初期化処理呼び出し
     private void Start()
     {
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = FRAME_RATE;
         m_Initialize.OnNext(Unit.Default);
     }
 

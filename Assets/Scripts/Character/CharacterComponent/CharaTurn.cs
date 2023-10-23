@@ -115,29 +115,37 @@ public class CharaTurn : ActorComponentBase, ICharaTurn, ICharaTurnEvent
             _ => false
         };
 
+        // 移動したなら現在地セルのイベント確認
         if (check == true)
             await checker.CheckCurrentCell();
 
+        // ターン終了イベント
         m_OnTurnEnd.OnNext(Unit.Default);
 
+        // 状態異常・バフ系の更新
         await m_CharaCondition.EffectCondition();
-
-        if (check == true)
-        {
-            var switchInfo = Owner.GetInterface<ICharaMove>().SwitchInfo;
-            if (switchInfo != null)
-            {
-                await switchInfo.SwitchTask;
-                await switchInfo.Switcher.GetInterface<ICharaTurn>().TurnEnd();
-                Owner.GetInterface<ICharaMove>().SwitchInfo = null;
-                disposable.Dispose();
-                return;
-            }
-        }
 
         // 行動禁止解除
         disposable.Dispose();
+
+        // 入れ替わり後処理
+        var switchInfo = Owner.GetInterface<ICharaMove>().SwitchInfo;
+        if (switchInfo != null)
+        {
+            await CheckSwitcher(switchInfo);
+            return;
+        }
+
+        // 次のUnit行動
         m_TurnManager.NextUnitAct();
+    }
+
+    private async Task CheckSwitcher(CharaMove.MoveSwitchInfo info)
+    {
+        var turn = info.Switcher.GetInterface<ICharaTurn>();
+        await turn.TurnEnd();
+
+        Owner.GetInterface<ICharaMove>().SwitchInfo = null;
     }
 
     /// <summary>

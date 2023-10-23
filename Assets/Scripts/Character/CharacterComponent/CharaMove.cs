@@ -249,7 +249,8 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         var acting = m_CharaTurn.RegisterActing();
 
         // 移動タスク
-        m_MovingTask = MoveTask(destPos);
+        float speedMag = dir.IsDiagonal() ? 1.4f : 1f;
+        m_MovingTask = MoveTask(destPos, speedMag);
         await m_MovingTask;
         animation.Dispose();
         acting.Dispose();
@@ -262,11 +263,11 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// </summary>
     /// <param name="dest"></param>
     /// <returns></returns>
-    private async Task MoveTask(Vector3 dest)
+    private async Task MoveTask(Vector3 dest, float speedMag)
     {
         while ((MoveObject.transform.position - dest).magnitude > 0.01f)
         {
-            MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, dest, Time.deltaTime * SPEED_MAG);
+            MoveObject.transform.position = Vector3.MoveTowards(MoveObject.transform.position, dest, Time.deltaTime * speedMag * SPEED_MAG);
             await Task.Delay(1);
         }
     }

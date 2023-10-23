@@ -98,18 +98,26 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// <returns></returns>
     private async Task<bool> CheckItem()
     {
+        if (TryGetCurrentCellItem(out var cellItem) == false)
+            return false;
+
+        await m_CharaTurn.WaitFinishActing();
+        m_CharaInventory.Put(cellItem);
+        return true;
+    }
+    private bool TryGetCurrentCellItem(out IItemHandler cellItem)
+    {
         //アイテムチェック
         foreach (var item in m_ItemManager.ItemList)
         {
             var handler = item.GetInterface<IItemHandler>();
             if (m_CharaMove.Position == handler.Position)
             {
-                await m_CharaTurn.WaitFinishActing();
-                m_CharaInventory.Put(handler);
+                cellItem = handler;
                 return true;
             }
         }
-
+        cellItem = null;
         return false;
     }
 
@@ -119,18 +127,28 @@ public class CharaCellEventChecker : ActorComponentBase, ICharaCellEventChecker
     /// <returns></returns>
     private async Task<bool> CheckTrap()
     {
+        // プレイヤーサイドなら罠を踏む
         if (m_TypeHolder.Type != CHARA_TYPE.FRIEND)
             return false;
 
+        if (TryGetCurrentCellTrap(out var trap) == false)
+            return false;
+
+        await m_CharaTurn.WaitFinishActing();
+        await trap.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager);
+        return true;
+    }
+    private bool TryGetCurrentCellTrap(out ITrapHandler trap)
+    {
         var cell = m_DungeonHandler.GetCell(m_CharaMove.Position);
         if (cell.RequireInterface<ITrapHandler>(out var handler) == true)
             if (handler.HasTrap == true)
             {
-                await m_CharaTurn.WaitFinishActing();
-                await handler.ActivateTrap(Owner, m_UnitFinder, m_DungeonHandler, m_BattleLogManager);
+                trap = handler;
                 return true;
             }
 
+        trap = null;
         return false;
     }
 }
