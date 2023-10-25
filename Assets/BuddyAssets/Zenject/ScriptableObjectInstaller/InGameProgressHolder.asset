@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 088184b58361a4bab8883cd1482e95e3, type: 3}
   m_Name: InGameProgressHolder
   m_EditorClassIdentifier: 
-  m_Progress: 0
+  m_Progress: 1
   m_IsCompletedIntro: 000000
   m_LoseBack: 0
   m_DefeatBoss: 0
