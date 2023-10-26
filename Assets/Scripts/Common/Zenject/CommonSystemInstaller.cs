@@ -69,8 +69,8 @@ public class CommonSystemInstaller : MonoInstaller
             .NonLazy();
 
         // タイムラインダイアログ
-        Container.Bind<ITimelineDialogManager>()
-            .To<TimelineDialogManager>()
+        Container.Bind<ITimelineCropManager>()
+            .To<TimelineCropManager>()
             .FromComponentOn(m_CommonUiSystem)
             .AsSingle()
             .NonLazy();

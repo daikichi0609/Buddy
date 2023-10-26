@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using NaughtyAttributes;
 
 public class TimelineCropAsset : PlayableAsset
 {
-    [SerializeField]
-    private float m_Duration;
-
-    [SerializeField]
+    [SerializeField, ResizableTextArea]
     private string m_Text;
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
@@ -18,7 +16,6 @@ public class TimelineCropAsset : PlayableAsset
 
         //TimelineCropクラスにあるプロパティを設定
         var behaviour = player.GetBehaviour();
-        behaviour.Duration = m_Duration;
         behaviour.Text = m_Text;
 
         return player;

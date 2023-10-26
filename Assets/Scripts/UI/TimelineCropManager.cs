@@ -7,31 +7,37 @@ using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-public sealed class DialogTimer
+public sealed class CropInfo
 {
     public float CurrentTimer { get; set; }
-    public DialogMessage DialogMessage { get; }
 
-    public DialogTimer(DialogMessage message) => DialogMessage = message;
+    public double Duration { get; }
+    public string CropText { get; }
+
+    public CropInfo(CropMessage message)
+    {
+        Duration = message.Duration;
+        CropText = message.Text;
+    }
 }
 
-public interface ITimelineDialogManager
+public interface ITimelineCropManager
 {
 
 }
 
-public class TimelineDialogManager : MonoBehaviour, ITimelineDialogManager
+public class TimelineCropManager : MonoBehaviour, ITimelineCropManager
 {
     [SerializeField]
     private GameObject m_Panel;
     [SerializeField]
     private Text m_Text;
 
-    private List<DialogTimer> m_Dialogs = new List<DialogTimer>();
+    private List<CropInfo> m_Dialogs = new List<CropInfo>();
 
     private void Awake()
     {
-        MessageBroker.Default.Receive<DialogMessage>().SubscribeWithState(this, (message, self) => self.m_Dialogs.Add(new DialogTimer(message))).AddTo(this);
+        MessageBroker.Default.Receive<CropMessage>().SubscribeWithState(this, (message, self) => self.m_Dialogs.Add(new CropInfo(message))).AddTo(this);
     }
 
     private void Update()
@@ -40,14 +46,14 @@ public class TimelineDialogManager : MonoBehaviour, ITimelineDialogManager
         {
             var timer = m_Dialogs[i];
             timer.CurrentTimer += Time.deltaTime;
-            if (timer.CurrentTimer >= timer.DialogMessage.Dialog.m_Time)
+            if (timer.CurrentTimer >= timer.Duration)
                 m_Dialogs.Remove(timer);
         }
 
         if (m_Dialogs.Count > 0)
         {
             m_Panel.SetActive(true);
-            m_Text.text = m_Dialogs[0].DialogMessage.Dialog.m_Text;
+            m_Text.text = m_Dialogs[0].CropText;
         }
         else
         {

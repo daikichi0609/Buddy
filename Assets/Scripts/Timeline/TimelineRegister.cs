@@ -92,13 +92,15 @@ public readonly struct FinishTimelineBePlayableMessage
     }
 }
 
-public readonly struct DialogMessage
+public readonly struct CropMessage
 {
-    public DialogSetup.DialogPack Dialog { get; }
+    public double Duration { get; }
+    public string Text { get; }
 
-    public DialogMessage(DialogSetup.DialogPack dialogPack)
+    public CropMessage(double duration, string text)
     {
-        Dialog = dialogPack;
+        Duration = duration;
+        Text = text;
     }
 }
 
@@ -135,12 +137,6 @@ public class TimelineRegister : MonoBehaviour
     [SerializeField, Header("タイムライン・タイプ")]
     private TIMELINE_TYPE m_Type;
 
-    [BoxGroup("共通設定")]
-    [SerializeField, Header("ダイアログセットアップ")]
-    [Expandable]
-    private DialogSetup m_DialogSetup;
-    private int m_CurrentIndex;
-
     [BoxGroup("終了イベント")]
     [SerializeField, Header("再生終了後イベント")]
     private TIMELINE_FINISH_TYPE m_FinishType;
@@ -168,17 +164,6 @@ public class TimelineRegister : MonoBehaviour
     {
         m_Camera.SetActive(false);
         MessageBroker.Default.Publish(new RegisterTimelineMessage(m_Camera, m_Director, m_Type));
-    }
-
-    /// <summary>
-    /// 字幕表示
-    /// </summary>
-    public void ShowDialog()
-    {
-        var packs = m_DialogSetup.DialogPacks;
-        MessageBroker.Default.Publish(new DialogMessage(packs[m_CurrentIndex]));
-        if (++m_CurrentIndex >= packs.Length)
-            m_CurrentIndex = 0;
     }
 
     /// <summary>
