@@ -85,3 +85,6 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: 9002b8ca015624e1ba8f829de596ea0a,
       type: 3}
     m_Key: Debuff
+  - m_Sound: {fileID: 5087174154848842170, guid: b358e327e04f94be3bd1455d03413a6d,
+      type: 3}
+    m_Key: HealBerry

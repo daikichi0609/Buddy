@@ -101,6 +101,8 @@ public readonly struct SkillContext
 
 public readonly struct SkillTargetContext
 {
+    public ICollector Owner { get; }
+
     public Vector3Int Position { get; }
 
     public IUnitFinder UnitFinder { get; }
@@ -109,8 +111,9 @@ public readonly struct SkillTargetContext
 
     public ICharaTypeHolder TypeHolder { get; }
 
-    public SkillTargetContext(Vector3Int pos, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, ICharaTypeHolder typeHolder)
+    public SkillTargetContext(ICollector owner, Vector3Int pos, IUnitFinder unitFinder, IDungeonHandler dungeonHandler, ICharaTypeHolder typeHolder)
     {
+        Owner = owner;
         Position = pos;
         UnitFinder = unitFinder;
         DungeonHandler = dungeonHandler;

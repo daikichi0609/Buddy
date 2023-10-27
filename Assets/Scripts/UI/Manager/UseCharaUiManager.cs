@@ -13,8 +13,6 @@ public interface IUseCharaUiManager : IUiManagerImp
 public class UseCharaUiManager : UiManagerBase, IUseCharaUiManager
 {
     [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
     private ITeamInventory m_TeamInventory;

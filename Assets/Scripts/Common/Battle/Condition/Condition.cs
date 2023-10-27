@@ -19,7 +19,7 @@ public interface ICondition
     /// </summary>
     /// <param name="owner"></param>
     /// <returns></returns>
-    Task<bool> OnStart(ICollector owner);
+    Task<bool> OnStart(ICollector owner, IEffectHolder effectHolder, ISoundHolder soundHolder);
 
     /// <summary>
     /// 効果
@@ -102,8 +102,8 @@ public abstract class Condition : ICondition
     /// </summary>
     /// <param name="owner"></param>
     /// <returns></returns>
-    protected abstract Task<bool> OnStart(ICollector owner);
-    async Task<bool> ICondition.OnStart(ICollector owner) => await OnStart(owner);
+    protected abstract Task<bool> OnStart(ICollector owner, IEffectHolder effectHolder, ISoundHolder soundHolder);
+    async Task<bool> ICondition.OnStart(ICollector owner, IEffectHolder effectHolder, ISoundHolder soundHolder) => await OnStart(owner, effectHolder, soundHolder);
 
     /// <summary>
     /// Condition効果

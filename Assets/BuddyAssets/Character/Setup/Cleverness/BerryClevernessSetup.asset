@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3045314084656949865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a6d7fb33a49844d8a042f542add683e, type: 3}
+  m_Name: AttackUpIfEatStrawberry
+  m_EditorClassIdentifier: 
+  m_ItemSetup: {fileID: 11400000, guid: 8bf2d20b2397b4aaa926c501a334439f, type: 2}
+--- !u!114 &-2355153098568149619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf8dec08b95c46d9b6436a425125c83, type: 3}
+  m_Name: CriticalRatioUpIfEatStrawberry
+  m_EditorClassIdentifier: 
+  m_ItemSetup: {fileID: 11400000, guid: 8bf2d20b2397b4aaa926c501a334439f, type: 2}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d921a77ed398540bd9ebb24ff4268ca5, type: 3}
+  m_Name: BerryClevernessSetup
+  m_EditorClassIdentifier: 
+  m_Clevernesses:
+  - {fileID: 2599474964512354927}
+  - {fileID: -3045314084656949865}
+  - {fileID: -2355153098568149619}
+  m_Type: CriticalRatioUpIfEatStrawberry
+--- !u!114 &2599474964512354927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f056a687dfd44817b945ef2ea84f52b, type: 3}
+  m_Name: GenerateStrawberry
+  m_EditorClassIdentifier: 
+  m_ItemSetup: {fileID: 11400000, guid: 8bf2d20b2397b4aaa926c501a334439f, type: 2}

@@ -35,7 +35,8 @@ public class SkillSetup : ScriptableObject
             { "かいてんぎり", typeof(SpinningSlash).FullName },
             { "しんくうぎり", typeof(VaccumSlash).FullName },
             { "ラゴン・スピア", typeof(RagonSpear).FullName },
-            { "ぶちかまし", typeof(Buchikamashi).FullName}
+            { "ぶちかまし", typeof(Buchikamashi).FullName},
+            { "ベリベリヒール", typeof(HealAround).FullName}
         };
     }
 

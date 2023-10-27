@@ -29,3 +29,8 @@ public static class SceneName
     public static readonly string SCENE_CHECKPOINT = "CheckPoint";
     public static readonly string SCENE_BOSS_BATTLE = "Bossbattle";
 }
+
+public static class KeyName
+{
+    public static readonly string BUFF = "Buff";
+}

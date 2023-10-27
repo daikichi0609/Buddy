@@ -55,8 +55,14 @@ public readonly struct ClevernessContext
     /// </summary>
     public ICollector Owner { get; }
 
-    public ClevernessContext(ICollector owner)
+    /// <summary>
+    /// ターン経過管理
+    /// </summary>
+    public ITurnManager TurnManager { get; }
+
+    public ClevernessContext(ICollector owner, ITurnManager turnManager)
     {
         Owner = owner;
+        TurnManager = turnManager;
     }
 }

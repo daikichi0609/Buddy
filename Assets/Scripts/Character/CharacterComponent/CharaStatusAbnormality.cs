@@ -20,6 +20,12 @@ public interface ICharaStatusAbnormality : IActorInterface
     bool IsSleeping { get; set; }
 
     /// <summary>
+    /// 食事効果
+    /// </summary>
+    bool IsAttackUpFood { get; set; }
+    bool IsCriticalRatioUpFood { get; set; }
+
+    /// <summary>
     /// 眠り状態
     /// </summary>
     Task<bool> Sleep();
@@ -43,16 +49,6 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     private ICharaLastActionHolder m_LastAction;
 
     /// <summary>
-    /// 逆上アビリティフラグ
-    /// </summary>
-    private bool m_CanFrenzy;
-    bool ICharaStatusAbnormality.CanFrenzy { get => m_CanFrenzy; set => m_CanFrenzy = value; }
-    private CompositeDisposable m_FinishFrenzy;
-
-    private static readonly float FRENZY_RATIO = 1.0f;
-    private static readonly string FRENZY = "Frenzy";
-
-    /// <summary>
     /// 毒状態
     /// </summary>
     private ReactiveProperty<bool> m_IsPoison = new ReactiveProperty<bool>();
@@ -63,6 +59,22 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     /// </summary>
     private ReactiveProperty<bool> m_IsSleeping = new ReactiveProperty<bool>();
     bool ICharaStatusAbnormality.IsSleeping { get => m_IsSleeping.Value; set => m_IsSleeping.Value = value; }
+
+    /// <summary>
+    /// 逆上アビリティフラグ
+    /// </summary>
+    private bool m_CanFrenzy;
+    bool ICharaStatusAbnormality.CanFrenzy { get => m_CanFrenzy; set => m_CanFrenzy = value; }
+    private CompositeDisposable m_FinishFrenzy;
+
+    private static readonly float FRENZY_RATIO = 1.0f;
+    private static readonly string FRENZY = "Frenzy";
+
+    /// <summary>
+    /// 食事効果
+    /// </summary>
+    bool ICharaStatusAbnormality.IsAttackUpFood { get; set; }
+    bool ICharaStatusAbnormality.IsCriticalRatioUpFood { get; set; }
 
     protected override void Register(ICollector owner)
     {
@@ -98,7 +110,7 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
             {
                 self.m_FinishFrenzy = new CompositeDisposable();
                 // 音
-                if (self.m_SoundHolder.TryGetSound("Buff", out var sound) == true)
+                if (self.m_SoundHolder.TryGetSound(KeyName.BUFF, out var sound) == true)
                     sound.Play();
                 // エフェクト
                 if (self.m_EffectHolder.TryGetEffect(FRENZY, out var effect) == true)

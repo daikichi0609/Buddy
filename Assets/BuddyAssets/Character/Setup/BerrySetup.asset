@@ -15,3 +15,5 @@ MonoBehaviour:
   m_Prefab: {fileID: 6903897731796311978, guid: f8512884c11474b63871b278e64aebaf,
     type: 3}
   m_Status: {fileID: 11400000, guid: 034c8b91d93d848c284dd6e1cb436328, type: 2}
+  m_SkillSetup: {fileID: 11400000, guid: dffe7604cc9c84507ab535fd4f927b0c, type: 2}
+  m_ClevernessSetup: {fileID: 11400000, guid: cdec22742ad434bf08e36928df94ae1b, type: 2}

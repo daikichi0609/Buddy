@@ -64,6 +64,9 @@ public sealed class ClevernessHolder
 
 public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandler
 {
+    [Inject]
+    private ITurnManager m_TurnManager;
+
     /// <summary>
     /// 登録されたスキル
     /// </summary>
@@ -82,7 +85,7 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
     IDisposable ICharaClevernessHandler.RegisterCleverness(ICleverness cleverness)
     {
         var holder = new ClevernessHolder(cleverness);
-        ClevernessContext ctx = new ClevernessContext(Owner);
+        ClevernessContext ctx = new ClevernessContext(Owner, m_TurnManager);
         holder.Activate(ctx);
 
         m_Clevernesses.Add(holder);
@@ -102,7 +105,7 @@ public class CharaClevernessHandler : ActorComponentBase, ICharaClevernessHandle
         bool isActivate = cleverness.IsActive; // 現在のステータス
         if (isActivate == false)
         {
-            ClevernessContext ctx = new ClevernessContext(Owner);
+            ClevernessContext ctx = new ClevernessContext(Owner, m_TurnManager);
             cleverness.Activate(ctx);
         }
         else

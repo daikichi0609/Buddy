@@ -227,7 +227,7 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
             var skill = m_Skills[i];
             if (skill.IsActive == false || skill.CurrentCoolTime != 0)
                 continue;
-            if (skill.ShouldUse(new SkillTargetContext(m_CharaMove.Position, m_UnitFinder, m_DungeonHandler, m_Type), out dirs) == true)
+            if (skill.ShouldUse(new SkillTargetContext(Owner, m_CharaMove.Position, m_UnitFinder, m_DungeonHandler, m_Type), out dirs) == true)
             {
                 index = i;
                 return true;

@@ -17,5 +17,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f786b27e2f7934aa1930a15588c7f083, type: 2}
   - {fileID: 11400000, guid: a78debcb953f445c183e409cc63f7029, type: 2}
   - {fileID: 11400000, guid: 45d95b345f2414f05852c38a89c4047f, type: 2}
-  m_CurrentDungeonTheme: 0
-  m_CurrentProgress: 1
+  m_CurrentDungeonTheme: 1
+  m_CurrentProgress: 0

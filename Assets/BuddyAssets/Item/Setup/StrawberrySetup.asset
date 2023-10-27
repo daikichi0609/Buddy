@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2725125656736260956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da35f8c2a4ade452388e0fcec1d06a6a, type: 3}
+  m_Name: RecoverHp
+  m_EditorClassIdentifier: 
+  m_Recover: 10
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3a2b6811519e4e4481b67b796098846, type: 3}
+  m_Name: StrawberrySetup
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 6172340850934596841, guid: 1c6d9d2e0c8254c2ba37a8b720b00422,
+    type: 3}
+  m_ItemName: "\u3044\u3061\u3054"
+  m_Effect: {fileID: -2725125656736260956}
+  m_CanEat: 1
+  m_Recover: 10
+  m_Type: RecoverHp

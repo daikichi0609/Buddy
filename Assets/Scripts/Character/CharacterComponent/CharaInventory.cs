@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using Zenject;
 using Fungus;
+using static UnityEditor.Progress;
 
 public interface ICharaInventory : IActorInterface
 {
@@ -14,6 +15,11 @@ public interface ICharaInventory : IActorInterface
     /// <param name="item"></param>
     /// <returns></returns>
     void Put(IItemHandler item);
+
+    /// <summary>
+    /// アイテムをしまう
+    /// </summary>
+    void Put(ItemSetup item);
 }
 
 public interface ICharaInventoryEvent : IActorInterface
@@ -32,9 +38,9 @@ public interface ICharaInventoryEvent : IActorInterface
 public readonly struct ItemPutInfo
 {
     public ICollector Owner { get; }
-    public IItemHandler Item { get; }
+    public ItemSetup Item { get; }
 
-    public ItemPutInfo(ICollector owner, IItemHandler item)
+    public ItemPutInfo(ICollector owner, ItemSetup item)
     {
         Owner = owner;
         Item = item;
@@ -56,9 +62,15 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     private ICharaTypeHolder m_Type;
     private ICharaMove m_CharaMove;
 
+    /// <summary>
+    /// アイテム入手
+    /// </summary>
     Subject<ItemPutInfo> m_OnPutItem = new Subject<ItemPutInfo>();
     IObservable<ItemPutInfo> ICharaInventoryEvent.OnPutItem => m_OnPutItem;
 
+    /// <summary>
+    /// アイテム入手失敗
+    /// </summary>
     Subject<ItemPutInfo> m_OnPutItemFail = new Subject<ItemPutInfo>();
     IObservable<ItemPutInfo> ICharaInventoryEvent.OnPutItemFail => m_OnPutItemFail;
 
@@ -103,7 +115,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
                     sound.Play();
             }
             else
-                m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item));
+                m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item.Setup));
         }
         // 敵なら個人インベントリに入れる
         else if (m_Type.Type == CHARA_TYPE.ENEMY)
@@ -116,7 +128,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
                     sound.Play();
             }
             else
-                m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item));
+                m_OnPutItemFail.OnNext(new ItemPutInfo(Owner, item.Setup));
         }
 
     }
@@ -127,7 +139,7 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     /// <param name="item"></param>
     private void OnPutItem(IItemHandler item)
     {
-        m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
+        m_OnPutItem.OnNext(new ItemPutInfo(Owner, item.Setup));
         item.OnPut();
     }
 
@@ -147,5 +159,19 @@ public class CharaInventory : ActorComponentBase, ICharaInventory, ICharaInvento
     {
         m_PocketItem = null;
         base.Dispose();
+    }
+
+    /// <summary>
+    /// セットアップからアイテム生成
+    /// </summary>
+    void ICharaInventory.Put(ItemSetup item)
+    {
+        if (m_TeamInventory.TryPut(item) == true)
+        {
+            if (m_SoundHolder.TryGetSound(ITEM_PICKUP, out var sound) == true)
+                sound.Play();
+
+            m_OnPutItem.OnNext(new ItemPutInfo(Owner, item));
+        }
     }
 }

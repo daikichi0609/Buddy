@@ -13,8 +13,6 @@ public interface IItemUseUiManager : IUiManagerImp
 public class ItemUseUiManager : UiManagerBase, IItemUseUiManager
 {
     [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
     private ITeamInventory m_TeamInventory;

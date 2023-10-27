@@ -19,7 +19,7 @@ public class SleepCondition : Condition
             m_EffectHandler.RegisterEffect(effect, sound);
     }
 
-    protected override async Task<bool> OnStart(ICollector owner)
+    protected override async Task<bool> OnStart(ICollector owner, IEffectHolder effectHolder, ISoundHolder soundHolder)
     {
         var abnormal = owner.GetInterface<ICharaStatusAbnormality>();
         var status = owner.GetInterface<ICharaStatus>();

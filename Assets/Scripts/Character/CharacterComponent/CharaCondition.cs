@@ -12,7 +12,7 @@ public interface ICharaCondition : IActorInterface
     /// </summary>
     /// <param name="condition"></param>
     /// <returns></returns>
-    Task AddCondition(ICondition condition);
+    Task<bool> AddCondition(ICondition condition);
 
     /// <summary>
     /// 状態異常効果
@@ -57,10 +57,10 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
     /// 状態異常追加
     /// </summary>
     /// <param name="condition"></param>
-    async Task ICharaCondition.AddCondition(ICondition condition)
+    async Task<bool> ICharaCondition.AddCondition(ICondition condition)
     {
         condition.Register(m_EffectHolder, m_SoundHolder);
-        var success = await condition.OnStart(Owner);
+        var success = await condition.OnStart(Owner, m_EffectHolder, m_SoundHolder);
 
         if (success == true)
         {
@@ -79,6 +79,7 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
             // 状態異常付与
             m_CharaCondition.Add(condition);
         }
+        return success;
     }
 
     /// <summary>

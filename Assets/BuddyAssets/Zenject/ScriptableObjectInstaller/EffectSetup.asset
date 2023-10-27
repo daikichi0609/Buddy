@@ -46,3 +46,9 @@ MonoBehaviour:
   - m_Effect: {fileID: 7055128955092657801, guid: 36789efa4f7684c22a44a6486952cbc1,
       type: 3}
     m_Key: Frenzy
+  - m_Effect: {fileID: 1137368206947874, guid: 632f31b2828cb413b8ba47d613cb5611, type: 3}
+    m_Key: HealBerry
+  - m_Effect: {fileID: 1861261397814514, guid: 161bfc24ebcb947a9a9a1f1091c63c83, type: 3}
+    m_Key: AttackUpFood
+  - m_Effect: {fileID: 1007285568428974, guid: e2cf86f03642648d5babda9e8ab6c38b, type: 3}
+    m_Key: CriticalRatioUpFood

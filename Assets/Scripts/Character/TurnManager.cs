@@ -16,6 +16,11 @@ public interface ITurnManager
     int TotalTurnCount { get; }
 
     /// <summary>
+    /// 初めのターン開始時イベント
+    /// </summary>
+    IObservable<Unit> OnTurnStartFirst { get; }
+
+    /// <summary>
     /// ターン終了イベント
     /// </summary>
     IObservable<int> OnTurnEnd { get; }
@@ -49,23 +54,18 @@ public class TurnManager : ITurnManager
     private IUnitHolder m_UnitHolder;
 
     /// <summary>
-    /// 再帰を止めるフラグ
-    /// </summary>
-    private bool m_IsStop;
-    /// <summary>
-    /// 再帰停止
-    /// </summary>
-    void ITurnManager.StopUnitAct()
-    {
-        m_IsStop = true;
-    }
-
-    /// <summary>
-    /// 行動するキャラ
+    /// 行動するキャラリスト
     /// </summary>
     private List<ICollector> m_ActionUnits = new List<ICollector>();
     [SerializeField, NaughtyAttributes.ReadOnly]
     private int m_ActionIndex;
+
+    /// <summary>
+    /// フロア移動初回のターン開始時
+    /// </summary>
+    private Subject<Unit> m_OnTurnStartFirst = new Subject<Unit>();
+    IObservable<Unit> ITurnManager.OnTurnStartFirst => m_OnTurnStartFirst;
+    private bool m_IsInitialTurn = true;
 
     /// <summary>
     /// 累計ターン数
@@ -75,18 +75,33 @@ public class TurnManager : ITurnManager
     IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
+    /// <summary>
+    /// 再帰を止めるフラグ
+    /// </summary>
+    private bool m_IsStop;
+
+    /// <summary>
+    /// アクション禁止リクエスト
+    /// </summary>
     private Queue<ProhibitRequest> m_ProhibitRequests = new Queue<ProhibitRequest>();
     private bool ProhibitAllAction => m_ProhibitRequests.Count != 0;
+
+    [Inject]
+    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer, IDungeonProgressManager dungeonProgressManager)
+    {
+        dungeonProgressManager.FloorChanged.SubscribeWithState(this, (_, self) => self.m_IsInitialTurn = true);
+        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) => self.CreateActionList());
+    }
+
+    /// <summary>
+    /// アクション禁止登録
+    /// </summary>
+    /// <param name="collector"></param>
+    /// <returns></returns>
     IDisposable ITurnManager.RegisterProhibit(ICollector collector)
     {
         m_ProhibitRequests.Enqueue(new ProhibitRequest(collector));
         return Disposable.CreateWithState(m_ProhibitRequests, self => self.Dequeue());
-    }
-
-    [Inject]
-    public void Construct(IDungeonContentsDeployer dungeonContentsDeployer)
-    {
-        dungeonContentsDeployer.OnDeployContents.SubscribeWithState(this, (_, self) => self.CreateActionList());
     }
 
     /// <summary>
@@ -94,6 +109,14 @@ public class TurnManager : ITurnManager
     /// </summary>
     /// <param name="unit"></param>
     void ITurnManager.RemoveUnit(ICollector unit) => m_ActionUnits.Remove(unit);
+
+    /// <summary>
+    /// 再帰停止
+    /// </summary>
+    void ITurnManager.StopUnitAct()
+    {
+        m_IsStop = true;
+    }
 
     /// <summary>
     /// 次のAiの行動
@@ -109,7 +132,7 @@ public class TurnManager : ITurnManager
 
     private async Task<bool> NextUnitActInternal()
     {
-        // 更新停止中
+        // 更新停止
         if (m_IsStop == true)
         {
             m_IsStop = false;
@@ -124,6 +147,13 @@ public class TurnManager : ITurnManager
                 Debug.Log(req.Requester);
 #endif
             return true;
+        }
+
+        // 最初のターンならイベント実行
+        if (m_IsInitialTurn == true)
+        {
+            m_IsInitialTurn = false;
+            m_OnTurnStartFirst.OnNext(Unit.Default);
         }
 
         // 行動可能なキャラがいないなら、インクリメントする
@@ -182,6 +212,7 @@ public class TurnManager : ITurnManager
     /// </summary>
     private void CreateActionList()
     {
+        // リストクリア
         m_ActionUnits.Clear();
 
         foreach (var friend in m_UnitHolder.FriendList)
