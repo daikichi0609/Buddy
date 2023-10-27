@@ -16,9 +16,6 @@ GameObject:
   - component: {fileID: 259158018886216205}
   - component: {fileID: 1272386993525787669}
   - component: {fileID: -2959442448061271499}
-  - component: {fileID: -4166131296409265064}
-  - component: {fileID: 6065387872234395887}
-  - component: {fileID: 2156317147810284516}
   - component: {fileID: -1464303544566468062}
   - component: {fileID: 703540349110880460}
   - component: {fileID: 3081566630884859843}
@@ -101,7 +98,7 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 4492846475526845335}
+  - {fileID: 3021915795817822994}
   selectedCommands: []
   variables: []
   description: 
@@ -155,9 +152,6 @@ MonoBehaviour:
   - {fileID: 259158018886216205}
   - {fileID: 1272386993525787669}
   - {fileID: -2959442448061271499}
-  - {fileID: -4166131296409265064}
-  - {fileID: 6065387872234395887}
-  - {fileID: 2156317147810284516}
   - {fileID: -1464303544566468062}
   - {fileID: 703540349110880460}
   suppressAllAutoSelections: 0
@@ -259,87 +253,6 @@ MonoBehaviour:
   storyText: "\u3042\u306E\u2026\u3002\n\u300C\u30D9\u30EA\u30D9\u30EA\u30E9\u30DF\u30A3\u300D\u304C\u89E3\u6563\u3059\u308B\u3063\u3066\u672C\u5F53\u306A\u3093\u3067\u3059\u304B\uFF1F"
   description: 
   character: {fileID: 6413919571779709685}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog: {fileID: 0}
---- !u!114 &-4166131296409265064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5498602457853490414}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 5
-  indentLevel: 0
-  storyText: "\u5225\u306B\u30D9\u30A4\u30EB\u306B\u98DF\u3079\u7269\u3092\u3042\u3052\u305F\u304F\u306A\u3044\u308F\u3051\u3058\u3083\u306A\u3044\u3002\n\u3067\u3082\u6751\u306E\u98DF\u3079\u7269\u3082\u9650\u308A\u304C\u3042\u308B\u304B\u3089\u3001\u305F\u304F\u3055\u3093\u6301\u3063\u3066\u884C\u304B\u308C\u308B\u3068\u307F\u3093\u306A\u304C\u56F0\u3063\u3066\u3057\u307E\u3046\u3093\u3060\u3002"
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog: {fileID: 0}
---- !u!114 &6065387872234395887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5498602457853490414}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 6
-  indentLevel: 0
-  storyText: "\u3067\u3082\u30D9\u30A4\u30EB\u306F\u5F37\u3044\u304B\u3089\u8AB0\u3082\u8A00\u3044\u51FA\u305B\u306A\u304F\u3066\u2026\u3002\n\u6700\u8FD1\u306B\u306A\u3063\u3066\u3084\u3063\u3068\u6CE8\u610F\u306F\u3067\u304D\u305F\u3093\u3060\u3051\u3069\u3001\u5168\u7136\u805E\u3044\u3066\u304F\u308C\u306A\u3044\u3057\u2026\u3002"
-  description: 
-  character: {fileID: 0}
-  portrait: {fileID: 0}
-  voiceOverClip: {fileID: 0}
-  showAlways: 1
-  showCount: 1
-  extendPrevious: 0
-  fadeWhenDone: 1
-  waitForClick: 1
-  stopVoiceover: 1
-  waitForVO: 0
-  setSayDialog: {fileID: 0}
---- !u!114 &2156317147810284516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5498602457853490414}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemId: 7
-  indentLevel: 0
-  storyText: "\u3082\u3057\u826F\u304B\u3063\u305F\u3089\u30D9\u30A4\u30EB\u306E\u8AAC\u5F97\u306B\u4ED8\u304D\u5408\u3063\u3066\u6B32\u3057\u3044\u3093\u3060\u3051\u3069\u3001\u3069\u3046\u304B\u306A\uFF1F"
-  description: 
-  character: {fileID: 0}
   portrait: {fileID: 0}
   voiceOverClip: {fileID: 0}
   showAlways: 1

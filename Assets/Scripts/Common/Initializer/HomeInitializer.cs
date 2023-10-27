@@ -99,6 +99,7 @@ public class HomeInitializer : SceneInitializer
         {
             var fController = self.m_Friend.GetInterface<ICharaController>();
             fController.Wrap(self.FriendPos); // 元の位置に戻す
+            MessageBroker.Default.Publish(new ResetTimelineCharacterMessage());
         },
         this, self => self.AllowOperation(false));
     }

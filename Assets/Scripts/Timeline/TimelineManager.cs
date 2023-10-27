@@ -23,6 +23,13 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     [Inject]
     private IInstantiater m_Instantiater;
 
+    /// <summary>
+    /// タイムラインキャラ
+    /// </summary>
+    private TimelineCharacterHolder m_TimelineCharacters;
+    private List<DeployTimelineCharacterMessage> m_DeployTimelineMessages = new List<DeployTimelineCharacterMessage>();
+    private CompositeDisposable m_ResetDeploy = new CompositeDisposable();
+
     private static readonly string ms_FungusMessage = "Timeline";
 
     /// <summary>
@@ -42,6 +49,10 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         MessageBroker.Default.Receive<FinishTimelineBePlayableMessage>().SubscribeWithState(this, (message, self) => self.OnFinishBePlayable(message)).AddTo(this);
         MessageBroker.Default.Receive<FinishTimelineNextTimelineMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextTimeline(message)).AddTo(this);
         MessageBroker.Default.Receive<FinishTimelineNextFungusMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextFungus(message)).AddTo(this);
+
+        MessageBroker.Default.Receive<DeployTimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_DeployTimelineMessages.Add(message)).AddTo(this);
+        MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder);
+        MessageBroker.Default.Receive<ResetTimelineCharacterMessage>().SubscribeWithState(this, (_, self) => self.ResetTimelineCharacter());
     }
 
     /// <summary>
@@ -153,6 +164,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         {
             tuple.Item1.FinishInternal();
             tuple.Item1.m_SceneInitializer.FaceEachOther(tuple.message.PlayerPos, tuple.message.FriendPos);
+            tuple.Item1.DeployTimelineCharacter();
             tuple.Item1.m_SceneInitializer.SetCamera();
         },
         (this, message), tuple =>
@@ -168,5 +180,38 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     private void FinishInternal()
     {
         m_OnFinish.Clear();
+    }
+
+    /// <summary>
+    /// タイムラインキャラ配置
+    /// </summary>
+    private void DeployTimelineCharacter()
+    {
+        foreach (var m in m_DeployTimelineMessages)
+        {
+            GameObject chara = m.CharaName switch
+            {
+                CHARA_NAME.BOXMAN => m_TimelineCharacters.Logue,
+                CHARA_NAME.RAGON => m_TimelineCharacters.Ragon,
+                CHARA_NAME.BERRY => m_TimelineCharacters.Berry,
+                CHARA_NAME.DORCHE => m_TimelineCharacters.Dorch,
+                _ => null
+            };
+            chara.SetActive(true);
+            chara.transform.position = m.Transform.position;
+            chara.transform.rotation = m.Transform.rotation;
+
+            var reset = Disposable.CreateWithState(chara, chara => chara.SetActive(false));
+            m_ResetDeploy.Add(reset);
+        }
+        m_DeployTimelineMessages.Clear();
+    }
+
+    /// <summary>
+    /// タイムラインキャラ配置リセット
+    /// </summary>
+    private void ResetTimelineCharacter()
+    {
+        m_ResetDeploy.Clear();
     }
 }

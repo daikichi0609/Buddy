@@ -22,6 +22,7 @@ public class UnitInjector : Injector
         diContainer.InstantiateComponent<CharaTurn>(target);
         diContainer.InstantiateComponent<CharaTypeHolder>(target);
         diContainer.InstantiateComponent<CharaLastActionHolder>(target);
-        target.GetComponent<Rigidbody>().isKinematic = true;
+        if (target.TryGetComponent<Rigidbody>(out var rb) == true)
+            rb.isKinematic = true;
     }
 }

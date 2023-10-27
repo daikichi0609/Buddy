@@ -16,12 +16,8 @@ MonoBehaviour:
   m_BGM: {fileID: 4431878860477061281, guid: 9f52844fdc62343929376cdce95643ef, type: 3}
   m_FriendFlow:
   - {fileID: 5498602457853490414, guid: 32991e9c8621b4edb87820b37376b6d5, type: 3}
-  - {fileID: 5498602457853490414, guid: be64fa8d2a7b04789aa9081dbe2391cd, type: 3}
+  - {fileID: 5498602457853490414, guid: cd054cf1e634a4320a353dcad5f6df5c, type: 3}
   - {fileID: 5498602457853490414, guid: f04062c843f0f47689aee85e746783f7, type: 3}
-  m_FriendBeforeFlow:
-  - {fileID: 5498602457853490414, guid: 075ae06664e5a47cf9dcaed3ec2f6233, type: 3}
-  - {fileID: 5498602457853490414, guid: 5f049858349374d2da6c9b2addf9df6e, type: 3}
-  - {fileID: 5498602457853490414, guid: 9934a3902a408403a9ebc478fa971868, type: 3}
   m_FriendCompletedFlow:
   - {fileID: 5498602457853490414, guid: 7be85fd4d26d946c1800cbae72b0f768, type: 3}
   - {fileID: 5498602457853490414, guid: 2bb489826916e4e578ea1c488bc9e633, type: 3}

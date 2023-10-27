@@ -15,107 +15,6 @@ public enum TIMELINE_TYPE
     DORCHE_INTRO = 3,
 }
 
-public readonly struct RegisterTimelineMessage
-{
-    public GameObject Camera { get; }
-    public PlayableDirector Director { get; }
-    public TIMELINE_TYPE Key { get; }
-
-    public RegisterTimelineMessage(GameObject camera, PlayableDirector director, TIMELINE_TYPE key)
-    {
-        Camera = camera;
-        Director = director;
-        Key = key;
-    }
-}
-
-public readonly struct FinishTimelineNextTimelineMessage
-{
-    /// <summary>
-    /// 終了したタイムライン
-    /// </summary>
-    public TIMELINE_TYPE Type { get; }
-
-    /// <summary>
-    /// 次のタイムライン
-    /// </summary>
-    public TIMELINE_TYPE NextTimeline { get; }
-
-    public FinishTimelineNextTimelineMessage(TIMELINE_TYPE type, TIMELINE_TYPE next)
-    {
-        Type = type;
-        NextTimeline = next;
-    }
-}
-
-public readonly struct FinishTimelineNextFungusMessage
-{
-    /// <summary>
-    /// 終了したタイムライン
-    /// </summary>
-    public TIMELINE_TYPE Type { get; }
-
-    /// <summary>
-    /// 次のFungus
-    /// </summary>
-    public GameObject FungusObject { get; }
-
-    /// <summary>
-    /// リーダー座標
-    /// </summary>
-    public Vector3 PlayerPos { get; }
-
-    /// <summary>
-    /// フレンド座標
-    /// </summary>
-    public Vector3 FriendPos { get; }
-
-    public FinishTimelineNextFungusMessage(TIMELINE_TYPE type, GameObject fungus, Vector3 playerPos, Vector3 friendPos)
-    {
-        Type = type;
-        FungusObject = fungus;
-        PlayerPos = playerPos;
-        FriendPos = friendPos;
-    }
-}
-
-public readonly struct FinishTimelineBePlayableMessage
-{
-    /// <summary>
-    /// 終了したタイムライン
-    /// </summary>
-    public TIMELINE_TYPE Type { get; }
-
-    public FinishTimelineBePlayableMessage(TIMELINE_TYPE type)
-    {
-        Type = type;
-    }
-}
-
-public readonly struct CropMessage
-{
-    public double Duration { get; }
-    public string Text { get; }
-
-    public CropMessage(double duration, string text)
-    {
-        Duration = duration;
-        Text = text;
-    }
-}
-
-public readonly struct WhiteOutMessage
-{
-    public float Speed { get; }
-    public float Time { get; }
-
-    public WhiteOutMessage(float speed, float time)
-    {
-        Speed = speed;
-        Time = time;
-    }
-}
-
 public class TimelineRegister : MonoBehaviour
 {
     private enum TIMELINE_FINISH_TYPE
@@ -157,6 +56,20 @@ public class TimelineRegister : MonoBehaviour
     [SerializeField, Header("フレンド座標")]
     private Transform m_FriendPos;
 
+    [BoxGroup("終了イベント・固有")]
+    [SerializeField, Header("ラゴン座標")]
+    private bool m_DeployRagon;
+    [BoxGroup("終了イベント・固有")]
+    [SerializeField, Header("ラゴン座標"), ShowIf("m_DeployRagon")]
+    private Transform m_RagonTransform;
+
+    [BoxGroup("終了イベント・固有")]
+    [SerializeField, Header("ベリィ座標")]
+    private bool m_DeployBerry;
+    [BoxGroup("終了イベント・固有")]
+    [SerializeField, Header("ベリィ座標"), ShowIf("m_DeployBerry")]
+    private Transform m_BerryTransform;
+
     private static readonly float FADE_SPEED = 0.5f;
     private static readonly float FADE_TIME = 1f;
 
@@ -190,9 +103,17 @@ public class TimelineRegister : MonoBehaviour
                 break;
 
             case TIMELINE_FINISH_TYPE.FUNGUS_EVENT:
+                DeployTimelineCharacter();
                 MessageBroker.Default.Publish(new FinishTimelineNextFungusMessage(m_Type, m_Fungus, m_LeaderPos.position, m_FriendPos.position));
                 break;
         }
+    }
 
+    private void DeployTimelineCharacter()
+    {
+        if (m_DeployRagon == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.RAGON, m_RagonTransform));
+        if (m_DeployBerry == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BERRY, m_BerryTransform));
     }
 }
