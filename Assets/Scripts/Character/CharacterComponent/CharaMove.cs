@@ -190,10 +190,8 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// <returns></returns>
     async Task<bool> ICharaMove.Move(DIRECTION direction)
     {
-        // 前の移動タスクの完了を待つ
-        if (m_MovingTask != null)
-            while (m_MovingTask.IsCompleted == false)
-                await Task.Delay(1);
+        // 前の移動タスクを待つ
+        await WaitMovingTaskComplete();
 
         //向きを変える
         await Face(direction);
@@ -273,19 +271,6 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     }
 
     /// <summary>
-    /// 強制的に移動
-    /// 入れ替わり用
-    /// </summary>
-    /// <param name="dir"></param>
-    async Task ICharaMove.ForcedMove(DIRECTION dir)
-    {
-        await m_CharaTurn.WaitFinishActing();
-        await Face(dir);
-        Vector3Int destinationPos = Position + dir.ToV3Int();
-        await MoveInternal(destinationPos, dir);
-    }
-
-    /// <summary>
     /// 待機 ターン終了するだけ
     /// </summary>
     bool ICharaMove.Wait()
@@ -303,5 +288,32 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         Position = pos;
         var v3 = new Vector3(Position.x, OFFSET_Y, Position.z);
         m_ObjectHolder.MoveObject.transform.position = v3;
+    }
+
+    /// <summary>
+    /// 強制的に移動
+    /// 入れ替わり用
+    /// </summary>
+    /// <param name="dir"></param>
+    async Task ICharaMove.ForcedMove(DIRECTION dir)
+    {
+        await m_CharaTurn.WaitFinishActing(); // 周りを待つ
+        await WaitMovingTaskComplete(); // 自分の移動完了を待つ
+
+        await Face(dir);
+        Vector3Int destinationPos = Position + dir.ToV3Int();
+        await MoveInternal(destinationPos, dir);
+    }
+
+    /// <summary>
+    /// 前の移動タスクを待つ
+    /// </summary>
+    /// <returns></returns>
+    private async Task WaitMovingTaskComplete()
+    {
+        // 前の移動タスクの完了を待つ
+        if (m_MovingTask != null)
+            while (m_MovingTask.IsCompleted == false)
+                await Task.Delay(1);
     }
 }

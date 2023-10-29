@@ -90,6 +90,13 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
 
         // パス生成
         var path = AStarSearch.FindPath(new Vector2Int(currentPos.x, currentPos.z), new Vector2Int(targetPos.x, targetPos.z), grid);
+        if (path.Count == 0)
+        {
+#if DEBUG
+            Debug.LogError("パス取得失敗");
+#endif
+            return await Move(DIRECTION.NONE);
+        }
         var first = path[0];
         var firstPos = new Vector3Int(first.X, 0, first.Y);
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, firstPos);
