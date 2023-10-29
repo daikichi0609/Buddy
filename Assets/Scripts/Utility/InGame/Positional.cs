@@ -134,17 +134,18 @@ public static class Positional
 
     public static DIRECTION[] NearDirection(this DIRECTION dir)
     {
-        int num = (int)dir;
-
-        int low = num - 1;
-        if (low < 0)
-            low = (int)DIRECTION.MAX - 1;
-
-        int high = num + 1;
-        if (high >= (int)DIRECTION.MAX)
-            high = 0;
-
-        return new DIRECTION[2] { (DIRECTION)low, (DIRECTION)high };
+        return dir switch
+        {
+            DIRECTION.LOWER_LEFT => new DIRECTION[2] { DIRECTION.LEFT, DIRECTION.UNDER },
+            DIRECTION.LEFT => new DIRECTION[2] { DIRECTION.LOWER_LEFT, DIRECTION.UPPER_LEFT },
+            DIRECTION.UPPER_LEFT => new DIRECTION[2] { DIRECTION.LEFT, DIRECTION.UP },
+            DIRECTION.UP => new DIRECTION[2] { DIRECTION.UPPER_LEFT, DIRECTION.UPPER_RIGHT },
+            DIRECTION.UPPER_RIGHT => new DIRECTION[2] { DIRECTION.UP, DIRECTION.RIGHT },
+            DIRECTION.RIGHT => new DIRECTION[2] { DIRECTION.UPPER_RIGHT, DIRECTION.LOWER_RIGHT },
+            DIRECTION.LOWER_RIGHT => new DIRECTION[2] { DIRECTION.RIGHT, DIRECTION.UNDER },
+            DIRECTION.UNDER => new DIRECTION[2] { DIRECTION.LOWER_RIGHT, DIRECTION.LOWER_LEFT },
+            _ => new DIRECTION[1] { DIRECTION.NONE },
+        };
     }
 
     /// <summary>

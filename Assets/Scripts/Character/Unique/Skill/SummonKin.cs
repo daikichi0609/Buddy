@@ -6,11 +6,11 @@ using UnityEngine;
 public class SummonKin : Skill
 {
     protected override string Name => "眷属召喚";
-    protected override string Description => "味方3体を自分の周囲に召喚する";
+    protected override string Description => "味方2体を自分の周囲に召喚する";
 
-    protected override int CoolTime => 10;
+    protected override int CoolTime => 7;
 
-    private static readonly int KIN_COUNT = 3;
+    private static readonly int KIN_COUNT = 2;
     private static readonly string SUMMON_KIN = "SummonKin";
 
     [SerializeField]
@@ -59,13 +59,17 @@ public class SummonKin : Skill
             if (shuffle.Count <= i)
                 break;
             var chara = m_EnemyTable.GetRandomEnemySetup();
-            await ctx.DungeonContentsDeployer.DeployEnemy(chara, shuffle[i]);
+            var charaPos = shuffle[i] + new Vector3(0, CharaMove.OFFSET_Y, 0);
+            await ctx.DungeonContentsDeployer.DeployEnemy(chara, charaPos);
         }
     }
 
     protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
     {
-        List<DIRECTION> list = new List<DIRECTION>();
+        List<DIRECTION> list = new List<DIRECTION>
+        {
+            DIRECTION.NONE
+        };
         dirs = list.ToArray();
         return true;
     }

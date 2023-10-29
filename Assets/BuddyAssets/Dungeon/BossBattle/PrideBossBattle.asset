@@ -17,8 +17,8 @@ MonoBehaviour:
   m_ElementSetup: {fileID: 11400000, guid: 8372e4af5b4d74faca40a9df5bb8e000, type: 2}
   m_BossCharacterSetup: {fileID: 11400000, guid: 3439b0805d75d43a6b82b528ad5961d9,
     type: 2}
-  m_ArrivalFlow: {fileID: 5498602457853490414, guid: 5ed3ac06e527f4a27b8592cd8e85b2ba,
+  m_ArrivalFlow: {fileID: 5498602457853490414, guid: a38ea9eb558514e4ab4b7bf104f25745,
     type: 3}
-  m_DefeatedFlow: {fileID: 5498602457853490414, guid: 3cb26710d7ca6449e985f3e52246c165,
+  m_DefeatedFlow: {fileID: 5498602457853490414, guid: d984193624c484cd0a0b83b9a090c347,
     type: 3}
   m_BGM: {fileID: 8854493409717249264, guid: a8c5732c413dd4a9f8f76d27a26e688f, type: 3}

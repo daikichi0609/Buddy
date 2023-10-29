@@ -88,3 +88,6 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: b358e327e04f94be3bd1455d03413a6d,
       type: 3}
     m_Key: HealBerry
+  - m_Sound: {fileID: 5087174154848842170, guid: b358e327e04f94be3bd1455d03413a6d,
+      type: 3}
+    m_Key: SummonKin

@@ -52,3 +52,5 @@ MonoBehaviour:
     m_Key: AttackUpFood
   - m_Effect: {fileID: 1007285568428974, guid: e2cf86f03642648d5babda9e8ab6c38b, type: 3}
     m_Key: CriticalRatioUpFood
+  - m_Effect: {fileID: 1485324390469812, guid: c5cff650332c84126a812b25dec81aae, type: 3}
+    m_Key: SummonKin

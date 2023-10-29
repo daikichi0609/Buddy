@@ -43,7 +43,7 @@ public interface IDungeonContentsDeployer
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    Task DeployEnemy(CharacterSetup setup, Vector3Int pos);
+    Task DeployEnemy(CharacterSetup setup, Vector3 pos);
 }
 
 public class DungeonContentsDeployer : IDungeonContentsDeployer
@@ -185,5 +185,5 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     /// </summary>
     /// <param name="pos"></param>
     /// <returns></returns>
-    async Task IDungeonContentsDeployer.DeployEnemy(CharacterSetup setup, UnityEngine.Vector3Int pos) => await m_EnemySpawner.SpawnEnemy(setup, pos);
+    async Task IDungeonContentsDeployer.DeployEnemy(CharacterSetup setup, Vector3 pos) => await m_EnemySpawner.SpawnEnemy(setup, pos);
 }
