@@ -9,7 +9,7 @@ public class FoodCriticalRatioUpCondition : Condition
 {
     protected override bool CanOverlapping => true;
 
-    private static readonly float CRITICAL_RATIO_MAG = 3f;
+    private static readonly float CRITICAL_RATIO_MAG = 5f;
 
     private static readonly float DURING_TIME = 1f;
     private static readonly string CRITICAL_RATIO_UP_FOOD = "CriticalRatioUpFood";

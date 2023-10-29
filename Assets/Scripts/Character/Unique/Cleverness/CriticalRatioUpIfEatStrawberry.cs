@@ -5,7 +5,7 @@ using UnityEngine;
 public class CriticalRatioUpIfEatStrawberry : Cleverness
 {
     protected override string Name => "ベリベリラッキー";
-    protected override string Description => "いちごを食べると、少しの間だけクリティカル率が上昇する";
+    protected override string Description => "いちごを食べると、少しの間だけクリティカル率が大きく上昇する";
     protected override bool CanSwitch => true;
 
     [SerializeField]

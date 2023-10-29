@@ -9,7 +9,7 @@ public class FoodAttackUpCondition : Condition
 {
     protected override bool CanOverlapping => true;
 
-    private static readonly float ATTACK_UP_MAG = 1f;
+    private static readonly float ATTACK_UP_MAG = 2f;
 
     private static readonly float DURING_TIME = 1f;
     private static readonly string ATTACK_UP_FOOD = "AttackUpFood";

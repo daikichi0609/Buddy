@@ -93,16 +93,16 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (m_InputManager.IsUiPopUp == true)
             return false;
 
-        // 移動
-        if (await DetectInputMove(flag) == true)
-            return true;
-
         // 攻撃
         if (await DetectInputAttack(flag) == true)
             return true;
 
         // 攻撃
         if (await DetectInputSkill(flag) == true)
+            return true;
+
+        // 移動
+        if (await DetectInputMove(flag) == true)
             return true;
 
         return false;

@@ -8,7 +8,7 @@ public class SummonKin : Skill
     protected override string Name => "眷属召喚";
     protected override string Description => "味方2体を自分の周囲に召喚する";
 
-    protected override int CoolTime => 7;
+    protected override int CoolTime => 10;
 
     private static readonly int KIN_COUNT = 2;
     private static readonly string SUMMON_KIN = "SummonKin";

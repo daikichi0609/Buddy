@@ -5,7 +5,7 @@ using UnityEngine;
 public class AttackUpIfEatStrawberry : Cleverness
 {
     protected override string Name => "ベリベリパワー";
-    protected override string Description => "いちごを食べると、少しの間だけ攻撃力が上昇する。";
+    protected override string Description => "いちごを食べると、少しの間だけ攻撃力が大きく上昇する。";
     protected override bool CanSwitch => true;
 
     [SerializeField]
