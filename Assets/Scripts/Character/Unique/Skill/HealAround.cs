@@ -7,7 +7,7 @@ public class HealAround : Skill
     protected override string Name => "ベリベリヒール";
     protected override string Description => "周囲の味方のHpを回復する。";
 
-    protected override int CoolTime => 7;
+    protected override int CoolTime => 14;
     private static readonly float HEAL_MAG = 3f;
 
     private static readonly string HEAL_BERRY = "HealBerry";

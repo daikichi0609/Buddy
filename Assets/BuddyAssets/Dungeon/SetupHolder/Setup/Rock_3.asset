@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DungeonName: "\u30B9\u30ED\u30FC\u30B9\u5C71 \u5C71\u9802\u4ED8\u8FD1"
   m_FloorCount: 12
-  m_MapSize: {x: 24, y: 24}
+  m_MapSize: {x: 22, y: 22}
   m_RoomCountRange: {x: 5, y: 6}
   m_EnemyTable: {fileID: 11400000, guid: 9a2d8a98e501044a48565a3706a6ddb6, type: 2}
   m_EnemyCountRange: {x: 4, y: 6}
