@@ -56,11 +56,16 @@ public class HealAround : Skill
     {
         List<DIRECTION> list = new List<DIRECTION>();
 
+        var ownerStatus = ctx.Owner.GetInterface<ICharaStatus>();
+        var heal = ownerStatus.CurrentStatus.Atk * HEAL_MAG;
+        if (ownerStatus.CurrentStatus.MaxHp - ownerStatus.CurrentStatus.Hp >= heal)
+            list.Add(DIRECTION.NONE);
+
         foreach (var dir in Positional.Directions)
         {
             if (Positional.TryGetForwardUnit(ctx.Position, dir, 1, ctx.TypeHolder.Type, ctx.DungeonHandler, ctx.UnitFinder, out var hit, out var flyDistance) == true)
-                if (hit.RequireInterface<ICharaStatus>(out var status) == true && ctx.Owner.RequireInterface<ICharaStatus>(out var ownerStatus) == true)
-                    if (status.CurrentStatus.MaxHp - status.CurrentStatus.Hp >= ownerStatus.CurrentStatus.Atk * HEAL_MAG)
+                if (hit.RequireInterface<ICharaStatus>(out var status) == true)
+                    if (status.CurrentStatus.MaxHp - status.CurrentStatus.Hp >= heal)
                         list.Add(dir.ToDirEnum());
         }
 
