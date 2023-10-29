@@ -30,4 +30,4 @@ MonoBehaviour:
   - m_Setup: {fileID: 11400000, guid: cb836b1ca5b824acbb9d7008d96862f4, type: 2}
     m_Weight: 15
   - m_Setup: {fileID: 11400000, guid: 743cb2e1eca0b41f992b571018d31ee8, type: 2}
-    m_Weight: 10
+    m_Weight: 15

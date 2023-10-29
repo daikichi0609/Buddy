@@ -37,6 +37,13 @@ public interface IDungeonContentsDeployer
     /// コンテンツ撤去イベント
     /// </summary>
     IObservable<Unit> OnRemoveContents { get; }
+
+    /// <summary>
+    /// 敵召喚スキル用
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    Task DeployEnemy(CharacterSetup setup, Vector3Int pos);
 }
 
 public class DungeonContentsDeployer : IDungeonContentsDeployer
@@ -172,4 +179,11 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
         var setup = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress); // Setup
         await m_FriendSpawner.SpawnFriend(setup, pos, dir);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    async Task IDungeonContentsDeployer.DeployEnemy(CharacterSetup setup, UnityEngine.Vector3Int pos) => await m_EnemySpawner.SpawnEnemy(setup, pos);
 }

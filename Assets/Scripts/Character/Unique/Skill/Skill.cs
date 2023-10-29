@@ -69,6 +69,11 @@ public readonly struct SkillContext
     public IDungeonHandler DungeonHandler { get; }
 
     /// <summary>
+    /// ダンジョンコンテンツデプロイ
+    /// </summary>
+    public IDungeonContentsDeployer DungeonContentsDeployer { get; }
+
+    /// <summary>
     /// ユニット取得
     /// </summary>
     public IUnitFinder UnitFinder { get; }
@@ -88,10 +93,11 @@ public readonly struct SkillContext
     /// </summary>
     public ISoundHolder SoundHolder { get; }
 
-    public SkillContext(ICollector owner, IDungeonHandler dungeonHandler, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IEffectHolder effectHolder, ISoundHolder soundHolder)
+    public SkillContext(ICollector owner, IDungeonHandler dungeonHandler, IDungeonContentsDeployer dungeonContentsDeployer, IUnitFinder unitFinder, IBattleLogManager battleLogManager, IEffectHolder effectHolder, ISoundHolder soundHolder)
     {
         Owner = owner;
         DungeonHandler = dungeonHandler;
+        DungeonContentsDeployer = dungeonContentsDeployer;
         UnitFinder = unitFinder;
         BattleLogManager = battleLogManager;
         EffectHolder = effectHolder;

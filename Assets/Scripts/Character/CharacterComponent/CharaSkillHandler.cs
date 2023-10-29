@@ -101,6 +101,8 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
+    private IDungeonContentsDeployer m_DungeonContentsDeployer;
+    [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
     private IUnitHolder m_UnitHolder;
@@ -184,7 +186,7 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
 
         m_LastAction.RegisterAction(CHARA_ACTION.SKILL);
 
-        SkillContext ctx = new SkillContext(Owner, m_DungeonHandler, m_UnitFinder, m_BattleLogManager, m_EffectHolder, m_SoundHolder);
+        SkillContext ctx = new SkillContext(Owner, m_DungeonHandler, m_DungeonContentsDeployer, m_UnitFinder, m_BattleLogManager, m_EffectHolder, m_SoundHolder);
         await skillHolder.SkillInternal(ctx);
         return true;
     }

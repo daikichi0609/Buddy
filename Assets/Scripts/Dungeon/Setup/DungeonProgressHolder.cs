@@ -46,14 +46,7 @@ public class DungeonProgressHolder : ScriptableObject
     public CharacterSetup GetRandomEnemySetup()
     {
         var t = CurrentDungeonSetup.EnemyTable;
-        int length = t.EnemyPacks.Length;
-        int[] weights = new int[length];
-
-        for (int i = 0; i < length; i++)
-            weights[i] = t.EnemyPacks[i].Weight;
-
-        var index = WeightedRandomSelector.SelectIndex(weights);
-        return t.EnemyPacks[index].Setup;
+        return t.GetRandomEnemySetup();
     }
 
     /// <summary>

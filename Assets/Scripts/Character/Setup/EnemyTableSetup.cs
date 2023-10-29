@@ -30,3 +30,22 @@ public class EnemyTableSetup : ScriptableObject
         public int Weight => m_Weight;
     }
 }
+
+public static class EnemyTableSetupExtension
+{
+    /// <summary>
+    /// ランダムな敵キャラセットアップを重み抽選
+    /// </summary>
+    /// <returns></returns>
+    public static CharacterSetup GetRandomEnemySetup(this EnemyTableSetup t)
+    {
+        int length = t.EnemyPacks.Length;
+        int[] weights = new int[length];
+
+        for (int i = 0; i < length; i++)
+            weights[i] = t.EnemyPacks[i].Weight;
+
+        var index = WeightedRandomSelector.SelectIndex(weights);
+        return t.EnemyPacks[index].Setup;
+    }
+}

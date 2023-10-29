@@ -18,4 +18,4 @@ MonoBehaviour:
   - m_Setup: {fileID: 11400000, guid: a626a384a9b644a3c9d205f9bf8d03ec, type: 2}
     m_Weight: 100
   - m_Setup: {fileID: 11400000, guid: bb4d1a269b08341d68a6a3604d6255b9, type: 2}
-    m_Weight: 10
+    m_Weight: 15
