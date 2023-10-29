@@ -15,5 +15,3 @@ MonoBehaviour:
   m_EnemyPack:
   - m_Setup: {fileID: 11400000, guid: 0bb5db38277b14da4b3d5b0ebf0ba55a, type: 2}
     m_Weight: 100
-  - m_Setup: {fileID: 11400000, guid: c185a03cfacfe4a5ab45dc549aa5938a, type: 2}
-    m_Weight: 100
