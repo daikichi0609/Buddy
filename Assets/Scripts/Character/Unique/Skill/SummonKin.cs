@@ -9,9 +9,11 @@ public class SummonKin : Skill
     protected override string Description => "味方2体を自分の周囲に召喚する";
 
     protected override int CoolTime => 10;
-
     private static readonly int KIN_COUNT = 2;
+
     private static readonly string SUMMON_KIN = "SummonKin";
+    private static readonly float SUMMON_TIME = 0.5f;
+
 
     [SerializeField]
     private EnemyTableSetup m_EnemyTable;
@@ -26,17 +28,8 @@ public class SummonKin : Skill
         var status = ctx.Owner.GetInterface<ICharaStatus>().CurrentStatus;
         ctx.BattleLogManager.Log(status.OriginParam.GivenName + "は" + Name + "を使った！");
 
-        if (ctx.SoundHolder.TryGetSound(SUMMON_KIN, out var sound) == true)
-            sound.Play();
-
-        IDisposable disposable = null;
-        if (ctx.EffectHolder.TryGetEffect(SUMMON_KIN, out var effect) == true)
-            disposable = effect.Play(ctx.Owner);
-
         var anim = ctx.Owner.GetInterface<ICharaAnimator>();
         await anim.PlayAnimation(ANIMATION_TYPE.SKILL, 0.5f);
-
-        disposable?.Dispose();
 
         var move = ctx.Owner.GetInterface<ICharaMove>();
         var pos = move.Position;
@@ -58,9 +51,18 @@ public class SummonKin : Skill
         {
             if (shuffle.Count <= i)
                 break;
+
             var chara = m_EnemyTable.GetRandomEnemySetup();
             var charaPos = shuffle[i] + new Vector3(0, CharaMove.OFFSET_Y, 0);
             await ctx.DungeonContentsDeployer.DeployEnemy(chara, charaPos);
+
+            if (ctx.SoundHolder.TryGetSound(SUMMON_KIN, out var sound) == true)
+                sound.Play();
+
+            if (ctx.EffectHolder.TryGetEffect(SUMMON_KIN, out var effect) == true)
+                effect.Play(charaPos);
+
+            await Task.Delay((int)(SUMMON_TIME * 1000));
         }
     }
 

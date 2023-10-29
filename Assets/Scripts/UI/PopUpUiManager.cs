@@ -6,15 +6,16 @@ using UnityEngine.UI;
 using UniRx;
 using DG.Tweening;
 using Zenject;
+using System;
 
-public interface IAttackResultUiManager
+public interface IPopUpUiManager
 {
     void Damage(AttackResult result);
     void Miss(AttackResult result);
     void LevelUp(ICollector unit);
 }
 
-public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
+public class PopUpUiManager : MonoBehaviour, IPopUpUiManager
 {
     // フェイド速度
     private static readonly float FADE_SPEED = 1.0f;
@@ -27,19 +28,25 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// ダメージテキスト
     /// </summary>
     [SerializeField]
-    private Text m_DamageText;
+    private Text[] m_DamageText;
+    private bool m_DamageTextIndexFlag;
+    private Text DamageText => m_DamageText[Convert.ToInt32(m_DamageTextIndexFlag)];
 
     /// <summary>
-    /// ダメージテキスト
+    /// クリティカルテキスト
     /// </summary>
     [SerializeField]
-    private Text m_CriticalText;
+    private Text[] m_CriticalText;
+    private bool m_CriticalTextIndexFlag;
+    private Text CriticalText => m_CriticalText[Convert.ToInt32(m_CriticalTextIndexFlag)];
 
     /// <summary>
     /// Missテキスト
     /// </summary>
     [SerializeField]
-    private Text m_MissText;
+    private Text[] m_MissText;
+    private bool m_MissTextIndexFlag;
+    private Text MissText => m_MissText[Convert.ToInt32(m_MissTextIndexFlag)];
 
     /// <summary>
     /// レベルアップテキスト
@@ -51,26 +58,28 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// ダメージ表示
     /// </summary>
     /// <param name="result"></param>
-    void IAttackResultUiManager.Damage(AttackResult result)
+    void IPopUpUiManager.Damage(AttackResult result)
     {
         // 透明度操作
         string damage = result.Damage.ToString();
-        m_DamageText.text = damage;
-        m_DamageText.DOFade(1f, 0.001f);
-        m_DamageText.DOFade(0f, FADE_SPEED);
+        DamageText.text = damage;
+        DamageText.DOFade(1f, 0.001f);
+        DamageText.DOFade(0f, FADE_SPEED);
 
         // 位置操作
         var defender = result.Defender;
         var move = defender.GetInterface<ICharaMove>();
-        m_DamageText.transform.position = move.Position + OFFSET;
-        m_DamageText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+        DamageText.transform.position = move.Position + OFFSET;
+        DamageText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+        m_DamageTextIndexFlag = !m_DamageTextIndexFlag;
 
         if (result.IsCritical == true)
         {
-            m_CriticalText.DOFade(1f, 0.001f);
-            m_CriticalText.DOFade(0f, FADE_SPEED);
-            m_CriticalText.transform.position = move.Position + OFFSET + new Vector3(0f, 0.5f, 0f);
-            m_CriticalText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+            CriticalText.DOFade(1f, 0.001f);
+            CriticalText.DOFade(0f, FADE_SPEED);
+            CriticalText.transform.position = move.Position + OFFSET + new Vector3(0f, 0.5f, 0f);
+            CriticalText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+            m_CriticalTextIndexFlag = !m_CriticalTextIndexFlag;
         }
     }
 
@@ -78,24 +87,25 @@ public class AttackResultUiManager : MonoBehaviour, IAttackResultUiManager
     /// Miss表示
     /// </summary>
     /// <param name="result"></param>
-    void IAttackResultUiManager.Miss(AttackResult result)
+    void IPopUpUiManager.Miss(AttackResult result)
     {
         // 透明度操作
-        m_MissText.DOFade(1f, 0.001f);
-        m_MissText.DOFade(0f, FADE_SPEED);
+        MissText.DOFade(1f, 0.001f);
+        MissText.DOFade(0f, FADE_SPEED);
 
         // 位置操作
         var defender = result.Defender;
         var move = defender.GetInterface<ICharaMove>();
-        m_MissText.transform.position = move.Position + OFFSET;
-        m_MissText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+        MissText.transform.position = move.Position + OFFSET;
+        MissText.transform.DOLocalMove(new Vector3(0f, DISTANCE, 0f), FADE_SPEED).SetRelative(true);
+        m_MissTextIndexFlag = !m_MissTextIndexFlag;
     }
 
     /// <summary>
     /// レベルアップ
     /// </summary>
     /// <param name="unit"></param>
-    void IAttackResultUiManager.LevelUp(ICollector unit)
+    void IPopUpUiManager.LevelUp(ICollector unit)
     {
         // 透明度操作
         m_LevelUpText.DOFade(1f, 0.001f);

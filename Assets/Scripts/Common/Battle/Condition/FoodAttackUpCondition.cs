@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class FoodAttackUpCondition : Condition
 {
+    protected override CONDITION_FINISH_TYPE FinishType => CONDITION_FINISH_TYPE.TURN_END;
     protected override bool CanOverlapping => true;
 
     private static readonly float ATTACK_UP_MAG = 2f;

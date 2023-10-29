@@ -98,7 +98,7 @@ public class CharaBattle : ActorComponentBase, ICharaBattle, ICharaBattleEvent
     [Inject]
     private IUnitFinder m_UnitFinder;
     [Inject]
-    private IAttackResultUiManager m_AttackResultUiManager;
+    private IPopUpUiManager m_AttackResultUiManager;
 
     private ICharaStatus m_CharaStatus;
     private ICharaMove m_CharaMove;

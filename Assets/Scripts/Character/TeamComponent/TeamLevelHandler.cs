@@ -59,7 +59,7 @@ public class TeamLevelHandler : ITeamLevelHandler, IInitializable
     [Inject]
     private IDungeonHandler m_DungeonHandler;
     [Inject]
-    private IAttackResultUiManager m_AttackResultUiManager;
+    private IPopUpUiManager m_AttackResultUiManager;
     [Inject]
     private ISoundHolder m_SoundHolder;
 

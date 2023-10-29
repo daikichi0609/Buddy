@@ -5,6 +5,12 @@ using UniRx;
 using System.Threading.Tasks;
 using System;
 
+public enum CONDITION_FINISH_TYPE
+{
+    TURN_START,
+    TURN_END,
+}
+
 public interface ICondition
 {
     /// <summary>
@@ -41,6 +47,11 @@ public interface ICondition
     bool IsFinish { get; }
 
     /// <summary>
+    /// 終了タイミング
+    /// </summary>
+    CONDITION_FINISH_TYPE FinishType { get; }
+
+    /// <summary>
     /// 他と共存できるか
     /// </summary>
     bool CanOverlapping { get; }
@@ -57,12 +68,19 @@ public abstract class Condition : ICondition
     /// 残り継続ターン
     /// </summary>
     protected int m_RemainingTurn;
-    bool ICondition.IsFinish => m_RemainingTurn == 0;
+    protected bool IsFinish => m_RemainingTurn == 0;
+    bool ICondition.IsFinish => IsFinish;
 
     /// <summary>
     /// エフェクト
     /// </summary>
     protected IEffectHandler m_EffectHandler = new EffectHandler();
+
+    /// <summary>
+    /// ターン終了時にバフを終了させるか
+    /// </summary>
+    protected abstract CONDITION_FINISH_TYPE FinishType { get; }
+    CONDITION_FINISH_TYPE ICondition.FinishType => FinishType;
 
     /// <summary>
     /// 他バフとの共存が可能か
@@ -86,6 +104,9 @@ public abstract class Condition : ICondition
         {
             m_RemainingTurn--;
             await EffectInternal(owner);
+
+            if (IsFinish == true && FinishType == CONDITION_FINISH_TYPE.TURN_END)
+                await OnFinish(owner);
         }
     }
 

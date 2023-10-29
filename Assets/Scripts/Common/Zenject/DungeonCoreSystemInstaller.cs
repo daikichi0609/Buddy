@@ -162,8 +162,8 @@ public class DungeonCoreSystemInstaller : MonoInstaller
             .NonLazy();
 
         // ダメージテキスト
-        Container.Bind<IAttackResultUiManager>()
-            .To<AttackResultUiManager>()
+        Container.Bind<IPopUpUiManager>()
+            .To<PopUpUiManager>()
             .FromComponentOn(m_DungeonUiSystem)
             .AsSingle()
             .NonLazy();

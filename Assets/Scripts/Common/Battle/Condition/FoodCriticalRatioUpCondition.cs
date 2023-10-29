@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class FoodCriticalRatioUpCondition : Condition
 {
+    protected override CONDITION_FINISH_TYPE FinishType => CONDITION_FINISH_TYPE.TURN_END;
     protected override bool CanOverlapping => true;
 
     private static readonly float CRITICAL_RATIO_MAG = 5f;

@@ -107,7 +107,8 @@ public class CharaCondition : ActorComponentBase, ICharaCondition
             if (effect.IsFinish == true)
             {
                 await effect.OnFinish(Owner);
-                m_CharaCondition.Remove(effect);
+                if (effect.FinishType == CONDITION_FINISH_TYPE.TURN_START)
+                    m_CharaCondition.Remove(effect);
             }
         }
     }

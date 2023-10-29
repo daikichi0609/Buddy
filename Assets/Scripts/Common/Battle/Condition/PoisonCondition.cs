@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PoisonCondition : Condition
 {
+    protected override CONDITION_FINISH_TYPE FinishType => CONDITION_FINISH_TYPE.TURN_START;
     protected override bool CanOverlapping => false;
 
     private static readonly Color32 ms_BarColor = new Color32(167, 87, 168, 255);
