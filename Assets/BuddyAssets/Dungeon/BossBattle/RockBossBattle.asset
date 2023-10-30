@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BossBattleName: "\u30B9\u30ED\u30FC\u30B9\u5C71"
   m_WhereName: "\u5C71\u9802"
-  m_ElementSetup: {fileID: 11400000, guid: e11b7897cdff04e95be6de9d877149fa, type: 2}
+  m_ElementSetup: {fileID: 11400000, guid: 62eb992a8fd5d40bb86b820401c905ff, type: 2}
   m_BossCharacterSetup: {fileID: 11400000, guid: 183d0d7dec9bc42bbabf4e27cb87d7bf,
     type: 2}
   m_ArrivalFlow: {fileID: 5498602457853490414, guid: 1a229f2592d8540dcbc44e5eb2297b60,

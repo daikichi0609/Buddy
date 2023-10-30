@@ -23,4 +23,4 @@ MonoBehaviour:
   m_ItemCountRange: {x: 2, y: 4}
   m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
   m_ElementSetup: {fileID: 11400000, guid: c67bbe448454d41d5aa24ea27d746111, type: 2}
-  m_CheckPointSetup: {fileID: 0}
+  m_CheckPointSetup: {fileID: 11400000, guid: 89f712100d84e447c8533fdded58be83, type: 2}

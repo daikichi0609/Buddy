@@ -74,8 +74,7 @@ MonoBehaviour:
     height: 859
   selectedBlocks:
   - {fileID: 5498602457853490413}
-  selectedCommands:
-  - {fileID: 2173302402141005913}
+  selectedCommands: []
   variables: []
   description: 
   stepPause: 0
@@ -176,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentBlock: {fileID: 5498602457853490413}
   suppressBlockAutoSelect: 0
-  message: BossBattleStart
+  message: Defeat
 --- !u!114 &8332668231569157662
 MonoBehaviour:
   m_ObjectHideFlags: 0

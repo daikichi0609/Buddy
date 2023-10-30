@@ -18,4 +18,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2eeddb7d8721459fa2143d4b1a4c5d1, type: 2}
   m_TrapDeploySetup: {fileID: 11400000, guid: 853d48d3bd7704cfdb27c094419a7946, type: 2}
   m_ItemDeploySetup: {fileID: 11400000, guid: bdfee312987de49f1b80e4872a8075c3, type: 2}
-  m_BossBattleSetup: {fileID: 0}
+  m_BossBattleSetup: {fileID: 11400000, guid: 4cda4c5f2837e4bdea633d65cf63f6fe, type: 2}
