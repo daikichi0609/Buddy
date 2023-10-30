@@ -9,14 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9d4f014c492457d93ba5c385e0996e, type: 3}
-  m_Name: BarmSetup
+  m_Script: {fileID: 11500000, guid: d921a77ed398540bd9ebb24ff4268ca5, type: 3}
+  m_Name: PlisClevernessSetup
   m_EditorClassIdentifier: 
-  m_Param:
-    m_GivenName: "\u30D0\u30EB\u30E0"
-    m_MaxHp: 200
-    m_Atk: 20
-    m_Def: 5
-    m_Agi: 1
-    m_Res: 0
-    m_Ex: 100
+  m_Clevernesses: []
+  m_Type: CriticalRatioUpIfEatStrawberry

@@ -133,6 +133,10 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (direction == new Vector3Int(0, 0, 0))
             return false;
 
+        // 喪失状態
+        if (await m_CharaAbnormal.LostOne() == true)
+            return true;
+
         // 方向転換だけ
         bool onlyFace = flag.HasBitFlag(KeyCodeFlag.Right_Shift);
 
@@ -154,26 +158,38 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
     private async Task<bool> DetectInputAttack(KeyCodeFlag flag)
     {
         if (flag.HasBitFlag(KeyCodeFlag.E))
-            return await m_CharaBattle.NormalAttack();
+            if (await m_CharaAbnormal.LostOne() == true)
+                return true;
+            else
+                return await m_CharaBattle.NormalAttack();
 
         return false;
     }
 
     /// <summary>
-    /// 攻撃
+    /// スキル
     /// </summary>
     /// <param name="flag"></param>
     /// <returns></returns>
     private async Task<bool> DetectInputSkill(KeyCodeFlag flag)
     {
         if (flag.HasBitFlag(KeyCodeFlag.One))
-            return await m_CharaSkill.Skill(0);
+            if (await m_CharaAbnormal.LostOne() == true)
+                return true;
+            else
+                return await m_CharaSkill.Skill(0);
 
         if (flag.HasBitFlag(KeyCodeFlag.Two))
-            return await m_CharaSkill.Skill(1);
+            if (await m_CharaAbnormal.LostOne() == true)
+                return true;
+            else
+                return await m_CharaSkill.Skill(1);
 
         if (flag.HasBitFlag(KeyCodeFlag.Three))
-            return await m_CharaSkill.Skill(2);
+            if (await m_CharaAbnormal.LostOne() == true)
+                return true;
+            else
+                return await m_CharaSkill.Skill(2);
 
         return false;
     }

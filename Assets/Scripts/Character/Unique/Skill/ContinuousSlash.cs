@@ -56,6 +56,17 @@ public class ContinuousSlash : Skill
 
     protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
     {
-        throw new System.NotImplementedException();
+        List<DIRECTION> list = new List<DIRECTION>();
+        var move = ctx.Owner.GetInterface<ICharaMove>();
+
+        foreach (var dir in Positional.Directions)
+        {
+            var targetPos = ctx.Position + dir;
+            if (ctx.UnitFinder.TryGetSpecifiedPositionUnit(targetPos, out var unit, ctx.TypeHolder.TargetType) == true && ctx.DungeonHandler.CanMove(move.Position, move.Direction) == true)
+                list.Add(dir.ToDirEnum());
+        }
+
+        dirs = list.ToArray();
+        return dirs.Length != 0;
     }
 }

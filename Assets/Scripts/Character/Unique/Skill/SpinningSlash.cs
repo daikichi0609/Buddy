@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class SpinningSlash : Skill
 {
     protected override string Name => "かいてんぎり";
-    protected override string Description => "目の前の敵をまとめて攻撃する。";
+    protected override string Description => "周囲の敵をまとめて攻撃する。";
 
     protected override int CoolTime => 10;
     private static readonly float ATK_MAG = 1.5f;
@@ -54,6 +55,15 @@ public class SpinningSlash : Skill
 
     protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
     {
-        throw new NotImplementedException();
+        List<DIRECTION> list = new List<DIRECTION>();
+
+        foreach (var dir in Positional.Directions)
+        {
+            if (Positional.TryGetForwardUnit(ctx.Position, dir, 1, ctx.TypeHolder.TargetType, ctx.DungeonHandler, ctx.UnitFinder, out var hit, out var flyDistance) == true)
+                list.Add(dir.ToDirEnum());
+        }
+
+        dirs = list.ToArray();
+        return dirs.Length != 0;
     }
 }

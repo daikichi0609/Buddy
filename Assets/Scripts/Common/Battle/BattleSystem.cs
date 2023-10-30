@@ -4,6 +4,8 @@ using UnityEngine;
 
 public static class BattleSystem
 {
+    private static readonly float CR_DAMAGE_UP_RATIO = 1.5f;
+
     public delegate AttackInfo OnDamageEvent(AttackInfo info, ICollector defender);
 
     /// <summary>
@@ -35,7 +37,7 @@ public static class BattleSystem
 
         // 急所でダメージ倍増
         if (isCritical == true)
-            damage *= 2;
+            damage = (int)(damage * CR_DAMAGE_UP_RATIO);
 
         // ダメージは1以上
         damage = Mathf.Max(damage, 1);

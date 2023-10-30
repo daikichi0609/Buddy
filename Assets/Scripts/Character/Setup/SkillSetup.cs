@@ -41,6 +41,9 @@ public class SkillSetup : ScriptableObject
             { "アイススパイク", typeof(IceSpike).FullName},
             { "エクスプロージョン", typeof(Explosion).FullName},
             { "トルネード", typeof(Tornade).FullName},
+            { "ロスト・ワン", typeof(LostOne).FullName},
+            { "ジャッジメント", typeof(Judgement).FullName},
+            { "ホーリーインパクト", typeof(HolyImpact).FullName},
         };
     }
 

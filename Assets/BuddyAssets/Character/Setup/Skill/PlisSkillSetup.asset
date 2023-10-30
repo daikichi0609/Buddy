@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4743024490603163444
+--- !u!114 &-7775353566249352300
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88472be80ce004f258ec39ebb116fbb1, type: 3}
-  m_Name: ContinuousSlash
+  m_Script: {fileID: 11500000, guid: b02f848a7fdaa4a0d9abc08465cfb235, type: 3}
+  m_Name: LostOne
   m_EditorClassIdentifier: 
---- !u!114 &-4311316631859596594
+--- !u!114 &-1078532854559068282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -22,9 +22,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b3a5bf5f7bbc34edbbb93a03c4c02b17, type: 3}
-  m_Name: AngelBarrage
+  m_Name: HolyImpact
   m_EditorClassIdentifier: 
---- !u!114 &-184750015207039018
+--- !u!114 &-166012219928581341
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -33,8 +33,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb6197dc06d9040d988da4b4303b3b5c, type: 3}
-  m_Name: SpinningSlash
+  m_Script: {fileID: 11500000, guid: 33a1e3f56d82c4c9783925efd4461fc8, type: 3}
+  m_Name: Judgement
   m_EditorClassIdentifier: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -46,22 +46,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 618412d18cdaf41a0991aafcd5437428, type: 3}
-  m_Name: LougeSkillSetup
+  m_Name: PlisSkillSetup
   m_EditorClassIdentifier: 
   m_Skills:
-  - {fileID: -4743024490603163444}
-  - {fileID: -184750015207039018}
-  - {fileID: 7359669127743547686}
-  m_Type: VaccumSlash
---- !u!114 &7359669127743547686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 752863a9618024fbb98a7e8e9d91f9b1, type: 3}
-  m_Name: VaccumSlash
-  m_EditorClassIdentifier: 
+  - {fileID: -7775353566249352300}
+  - {fileID: -166012219928581341}
+  - {fileID: -1078532854559068282}
+  m_Type: HolyImpact

@@ -20,10 +20,20 @@ public interface ICharaStatusAbnormality : IActorInterface
     bool IsSleeping { get; set; }
 
     /// <summary>
+    /// 喪失状態
+    /// </summary>
+    bool IsLostOne { get; set; }
+
+    /// <summary>
     /// 食事効果
     /// </summary>
     bool IsAttackUpFood { get; set; }
     bool IsCriticalRatioUpFood { get; set; }
+
+    /// <summary>
+    /// 逆上アビリティフラグ
+    /// </summary>
+    bool CanFrenzy { get; set; }
 
     /// <summary>
     /// 眠り状態
@@ -31,9 +41,10 @@ public interface ICharaStatusAbnormality : IActorInterface
     Task<bool> Sleep();
 
     /// <summary>
-    /// 逆上アビリティフラグ
+    /// 喪失状態
     /// </summary>
-    bool CanFrenzy { get; set; }
+    /// <returns></returns>
+    Task<bool> LostOne();
 }
 
 public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormality
@@ -59,6 +70,12 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     /// </summary>
     private ReactiveProperty<bool> m_IsSleeping = new ReactiveProperty<bool>();
     bool ICharaStatusAbnormality.IsSleeping { get => m_IsSleeping.Value; set => m_IsSleeping.Value = value; }
+
+    /// <summary>
+    /// 喪失状態
+    /// </summary>
+    private ReactiveProperty<bool> m_IsLostOne = new ReactiveProperty<bool>();
+    bool ICharaStatusAbnormality.IsLostOne { get => m_IsLostOne.Value; set => m_IsLostOne.Value = value; }
 
     /// <summary>
     /// 逆上アビリティフラグ
@@ -128,6 +145,7 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
     {
         m_IsPoison.Value = false;
         m_IsSleeping.Value = false;
+        m_IsLostOne.Value = false;
         base.Dispose();
     }
 
@@ -141,6 +159,23 @@ public class CharaStatusAbnormality : ActorComponentBase, ICharaStatusAbnormalit
             return false;
 
         string log = m_CharaStatus.CurrentStatus.OriginParam.GivenName + "は眠っている";
+        m_BattleLogManager.Log(log);
+
+        m_LastAction.RegisterAction(CHARA_ACTION.WAIT);
+        await Task.Delay(500);
+        return true;
+    }
+
+    /// <summary>
+    /// 喪失状態
+    /// </summary>
+    /// <returns></returns>
+    async Task<bool> ICharaStatusAbnormality.LostOne()
+    {
+        if (m_IsLostOne.Value == false)
+            return false;
+
+        string log = m_CharaStatus.CurrentStatus.OriginParam.GivenName + "は自我を見失っている！";
         m_BattleLogManager.Log(log);
 
         m_LastAction.RegisterAction(CHARA_ACTION.WAIT);

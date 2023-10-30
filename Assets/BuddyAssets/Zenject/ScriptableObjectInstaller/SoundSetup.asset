@@ -100,3 +100,12 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: e7e1cf1037c7c42e78b57feb897ce697,
       type: 3}
     m_Key: Tornade
+  - m_Sound: {fileID: 5087174154848842170, guid: 26fd39b386a8d4873b96524860b488f5,
+      type: 3}
+    m_Key: LostOne
+  - m_Sound: {fileID: 5087174154848842170, guid: 5168e8a3aa5654a3fb2870c4568550d4,
+      type: 3}
+    m_Key: Judgement
+  - m_Sound: {fileID: 5087174154848842170, guid: 4dd0fe352ba6d41239bc663207581edd,
+      type: 3}
+    m_Key: HolyImpact

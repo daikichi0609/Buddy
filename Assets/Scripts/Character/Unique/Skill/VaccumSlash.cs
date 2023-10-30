@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DG.Tweening;
 
@@ -55,6 +56,15 @@ public class VaccumSlash : Skill
 
     protected override bool ExistTarget(SkillTargetContext ctx, out DIRECTION[] dirs)
     {
-        throw new NotImplementedException();
+        List<DIRECTION> list = new List<DIRECTION>();
+
+        foreach (var dir in Positional.Directions)
+        {
+            if (Positional.TryGetForwardUnit(ctx.Position, dir, DISTANCE, ctx.TypeHolder.TargetType, ctx.DungeonHandler, ctx.UnitFinder, out var hit, out var flyDistance) == true)
+                list.Add(dir.ToDirEnum());
+        }
+
+        dirs = list.ToArray();
+        return dirs.Length != 0;
     }
 }

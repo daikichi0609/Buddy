@@ -39,7 +39,7 @@ public partial class FriendAi : CharaAi, IFriendAi
     protected override async void DecideAndExecuteAction()
     {
         // 眠り状態
-        if (await m_CharaAbnormal.Sleep() == true)
+        if (await m_CharaAbnormal.Sleep() == true || await m_CharaAbnormal.LostOne() == true)
         {
             await m_CharaTurn.TurnEnd();
             return;

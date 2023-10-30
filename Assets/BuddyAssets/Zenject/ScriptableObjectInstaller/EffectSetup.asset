@@ -62,3 +62,10 @@ MonoBehaviour:
     m_Key: Explosion
   - m_Effect: {fileID: 1165083550196348, guid: fe1d38022dcb1488f8d930c020e91009, type: 3}
     m_Key: Tornade
+  - m_Effect: {fileID: 1251970232510534, guid: c0a229f4e607e4bb6bff3b4193674af5, type: 3}
+    m_Key: LostOne
+  - m_Effect: {fileID: 7352723259943148806, guid: 5946e9c07a2084a108a52fa39e2f547f,
+      type: 3}
+    m_Key: Judgement
+  - m_Effect: {fileID: 1619003085413020, guid: fe84a8b307a304e85962e4423ed1ee34, type: 3}
+    m_Key: HolyImpact
