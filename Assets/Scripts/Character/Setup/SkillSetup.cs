@@ -38,6 +38,9 @@ public class SkillSetup : ScriptableObject
             { "ぶちかまし", typeof(Buchikamashi).FullName},
             { "ベリベリヒール", typeof(HealAround).FullName},
             { "眷属召喚", typeof(SummonKin).FullName},
+            { "アイススパイク", typeof(IceSpike).FullName},
+            { "エクスプロージョン", typeof(Explosion).FullName},
+            { "トルネード", typeof(Tornade).FullName},
         };
     }
 

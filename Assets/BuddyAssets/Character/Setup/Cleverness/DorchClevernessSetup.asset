@@ -9,13 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f72509965956456f9d6623b502612a8, type: 3}
-  m_Name: DorcheStatus
+  m_Script: {fileID: 11500000, guid: d921a77ed398540bd9ebb24ff4268ca5, type: 3}
+  m_Name: DorchClevernessSetup
   m_EditorClassIdentifier: 
-  m_Param:
-    m_GivenName: "\u30C9\u30EB\u30B1"
-    m_MaxHp: 60
-    m_Atk: 12
-    m_Def: 7
-    m_Agi: 1
-    m_Res: 0
+  m_Clevernesses: []
+  m_Type: CriticalRatioUpIfEatStrawberry

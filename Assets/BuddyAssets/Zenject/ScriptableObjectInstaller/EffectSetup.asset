@@ -48,9 +48,17 @@ MonoBehaviour:
     m_Key: Frenzy
   - m_Effect: {fileID: 1137368206947874, guid: 632f31b2828cb413b8ba47d613cb5611, type: 3}
     m_Key: HealBerry
-  - m_Effect: {fileID: 1861261397814514, guid: 161bfc24ebcb947a9a9a1f1091c63c83, type: 3}
+  - m_Effect: {fileID: 1345915343543352, guid: 45d41790311f14a21a917965ed39b1fb, type: 3}
     m_Key: AttackUpFood
-  - m_Effect: {fileID: 1007285568428974, guid: e2cf86f03642648d5babda9e8ab6c38b, type: 3}
+  - m_Effect: {fileID: 1780108520312974, guid: d65133834ae724e25a64f7bccd06dd4f, type: 3}
     m_Key: CriticalRatioUpFood
   - m_Effect: {fileID: 1485324390469812, guid: c5cff650332c84126a812b25dec81aae, type: 3}
     m_Key: SummonKin
+  - m_Effect: {fileID: 1061426688155015734, guid: 7120abafe67da45d49f6727a1b106c55,
+      type: 3}
+    m_Key: IceSpike
+  - m_Effect: {fileID: 2595050241021961625, guid: 4e14666e822a24605b05c3e41459acf0,
+      type: 3}
+    m_Key: Explosion
+  - m_Effect: {fileID: 1165083550196348, guid: fe1d38022dcb1488f8d930c020e91009, type: 3}
+    m_Key: Tornade

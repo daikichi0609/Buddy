@@ -91,3 +91,12 @@ MonoBehaviour:
   - m_Sound: {fileID: 5087174154848842170, guid: b358e327e04f94be3bd1455d03413a6d,
       type: 3}
     m_Key: SummonKin
+  - m_Sound: {fileID: 5087174154848842170, guid: 6229252a6b27c4abf9da712f2ed00ceb,
+      type: 3}
+    m_Key: IceSpike
+  - m_Sound: {fileID: 5087174154848842170, guid: 2c8989087f4b54dd3ac8ec9e3b947c51,
+      type: 3}
+    m_Key: Explosion
+  - m_Sound: {fileID: 5087174154848842170, guid: e7e1cf1037c7c42e78b57feb897ce697,
+      type: 3}
+    m_Key: Tornade
