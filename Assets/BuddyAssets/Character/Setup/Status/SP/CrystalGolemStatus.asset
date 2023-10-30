@@ -16,7 +16,7 @@ MonoBehaviour:
     m_GivenName: "\u30B4\u30FC\u30EC\u30E0"
     m_MaxHp: 3
     m_Atk: 20
-    m_Def: 20
+    m_Def: 50
     m_Agi: 1
     m_Res: 0
     m_Ex: 10

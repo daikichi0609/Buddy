@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e485b0b785e247f781ad01a2dc349f7, type: 3}
+  m_Name: RockCheckPoint02
+  m_EditorClassIdentifier: 
+  m_CheckPointName: "\u30B9\u30ED\u30FC\u30B9\u5C71 \u4E2D\u8179"
+  m_Stage: {fileID: 5726103250991785477, guid: 690b3659ed8dd47b48254bd78a7ae76f, type: 3}
+  m_ArrivalFlow: {fileID: 5498602457853490414, guid: 162048655f9a94257a4046d53e15c96f,
+    type: 3}
+  m_DepartureFlow: {fileID: 5498602457853490414, guid: f04062c843f0f47689aee85e746783f7,
+    type: 3}
+  m_LoseBackFlow: {fileID: 5498602457853490414, guid: 1d285d9fce98c4fa283918151b021e85,
+    type: 3}

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbef0049f419f4198a21fcf0f6bea551, type: 3}
-  m_Name: SnowBossBattle
+  m_Name: FinalBossBattle
   m_EditorClassIdentifier: 
   m_BossBattleName: "\u30B0\u30E9\u30C3\u30C8\u30CB\u30FC\u306E\u68EE"
   m_WhereName: "\u6700\u6DF1\u90E8"
   m_ElementSetup: {fileID: 11400000, guid: e11b7897cdff04e95be6de9d877149fa, type: 2}
-  m_BossCharacterSetup: {fileID: 11400000, guid: 183d0d7dec9bc42bbabf4e27cb87d7bf,
+  m_BossCharacterSetup: {fileID: 11400000, guid: d5a7040c5bc444496a32de28b415dd8c,
     type: 2}
   m_ArrivalFlow: {fileID: 5498602457853490414, guid: 5ed3ac06e527f4a27b8592cd8e85b2ba,
     type: 3}
