@@ -12,6 +12,7 @@ public class InGameProgressHolder : ScriptableObject
     [SerializeField]
     private int m_Progress;
     public int Progress { get => m_Progress; set => m_Progress = value; }
+    public bool IsMaxProgress => m_Progress >= m_IsCompletedIntro.Length - 1;
 
     /// <summary>
     /// 冒頭イベント終了フラグ

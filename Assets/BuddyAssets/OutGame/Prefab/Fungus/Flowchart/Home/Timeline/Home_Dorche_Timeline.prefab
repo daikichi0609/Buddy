@@ -94,9 +94,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: 3783147774418262535}
+  - {fileID: 3184148153369932635}
   selectedCommands:
-  - {fileID: 930968650428335700}
+  - {fileID: 5780269608825864467}
   variables: []
   description: 
   stepPause: 0
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 2
   indentLevel: 0
-  storyText: "\u30C9\u30EB\u30B1\u2026\uFF1F\n\u30C9\u30EB\u30B1\u3063\u3066\u3042\u306E\u300C\u5927\u9B54\u6CD5\u5E2B\u30C9\u30EB\u30B1\u300D\uFF1F"
+  storyText: "\u30C9\u30EB\u30B1\u2026\uFF1F\n\u30C9\u30EB\u30B1\u3063\u3066\u3042\u306E\u300C\u5927\u9B54\u8853\u5E2B\u30C9\u30EB\u30B1\u300D\uFF1F"
   description: 
   character: {fileID: 6850953246409298075}
   portrait: {fileID: 0}
@@ -314,7 +314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 22
   indentLevel: 0
-  text: "\u5927\u9B54\u6CD5\u5E2B\uFF1F"
+  text: "\u5927\u9B54\u8853\u5E2B\uFF1F"
   description: 
   targetBlock: {fileID: 3184148153369932635}
   hideIfVisited: 0
@@ -379,7 +379,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 24
   indentLevel: 0
-  storyText: "\u300C\u5927\u9B54\u6CD5\u5E2B\u30C9\u30EB\u30B1\u300D\u306F10\u5E74\u524D\u306E\u5927\u707D\u304B\u3089\n\u4E16\u754C\u3092\u6551\u3063\u305F\u4E09\u82F1\u5091\u306E1\u4EBA\u3067\u3059\u3002"
+  storyText: "\u300C\u5927\u9B54\u8853\u5E2B\u30C9\u30EB\u30B1\u300D\u306F10\u5E74\u524D\u306E\u5927\u707D\u304B\u3089\n\u4E16\u754C\u3092\u6551\u3063\u305F\u4E09\u82F1\u5091\u306E1\u4EBA\u3067\u3059\u3002"
   description: 
   character: {fileID: 4107244484482543150}
   portrait: {fileID: 0}
@@ -568,7 +568,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 31
   indentLevel: 0
-  storyText: "\u3046\u3080\u3002\n\u305D\u306E\u4E09\u82F1\u5091\u306E\u3053\u3068\u306A\u3093\u3058\u3083\u304C\u3001\u30EF\u30B7\u4EE5\u4E0A\u306B\u30DC\u30B1\u304C\u9032\u3093\u3067\u3057\u307E\u3063\u3066\u3044\u308B\u3088\u3046\u3067\u306A\u3002"
+  storyText: "\u3046\u3080\u3002\n\u305D\u306E2\u4EBA\u306E\u3053\u3068\u306A\u3093\u3058\u3083\u304C\u3001\u3053\u3053\u3057\u3070\u3089\u304F\u884C\u65B9\u3092\u304F\u3089\u307E\u3057\u3066\u3044\u3066\u306A\u3002"
   description: 
   character: {fileID: 1602483430257243261}
   portrait: {fileID: 0}
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 32
   indentLevel: 0
-  storyText: "\u6B8B\u308A2\u4EBA\u306E\u76EE\u3092\u899A\u307E\u3059\u305F\u3081\u306B\u3001\u305D\u3053\u306E\u6BB5\u30DC\u30FC\u30EB\u3092\u88AB\u3063\u305F\u304A\u524D\u3055\u3093\u306B\u3064\u3044\u3066\u6765\u3066\u307B\u3057\u3044\u3093\u3058\u3083\u3088\u3002"
+  storyText: "\u5927\u4E8B\u306A\u78BA\u8A8D\u3092\u3057\u306A\u3051\u308C\u3070\u306A\u3089\u306A\u3044\u3086\u3048\u4F1A\u3044\u306B\u884C\u304D\u305F\u3044\u306E\u3058\u3083\u304C\u3001\u305D\u3053\u306E\u6BB5\u30DC\u30FC\u30EB\u3092\u88AB\u3063\u305F\u304A\u524D\u3055\u3093\u306B\u3064\u3044\u3066\u6765\u3066\u307B\u3057\u3044\u3093\u3058\u3083\u3088\u3002"
   description: 
   character: {fileID: 1602483430257243261}
   portrait: {fileID: 0}
@@ -622,7 +622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 33
   indentLevel: 0
-  storyText: "\u8A71\u3092\u805E\u304F\u9650\u308A\u3001\u304A\u4E3B\u306F\u76F8\u5F53\u306A\u5B9F\u529B\u3092\u6301\u3063\u3066\u3044\u308B\u3088\u3046\u3058\u3083\u304B\u3089\u306A\u3002\n\u304A\u3044\u307C\u308C1\u4EBA\u306B\u306F\u8377\u304C\u91CD\u3044\u3093\u3058\u3083\u3088\u3002"
+  storyText: "\u9053\u4E2D\u306F\u304A\u3044\u307C\u308C1\u4EBA\u3060\u3068\u306A\u304B\u306A\u304B\u53B3\u3057\u304F\u3066\u306E\u3046\u3002\n\u8A71\u3092\u805E\u304F\u9650\u308A\u3001\u304A\u4E3B\u306F\u76F8\u5F53\u306A\u5B9F\u529B\u3092\u6301\u3063\u3066\u3044\u308B\u3088\u3046\u3058\u3083\u304B\u3089\u306A\u3002"
   description: 
   character: {fileID: 1602483430257243261}
   portrait: {fileID: 0}
@@ -649,9 +649,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 34
   indentLevel: 0
-  storyText: "\u4E09\u82F1\u5091\u306E\u6B8B\u308A2\u4EBA\u304C\u30DC\u30B1\u3066\u308B\u306A\u3093\u3066\u3001\u672C\u5F53\u306A\u3093\u3067\u3059\u304B\uFF1F\n\u3060\u3044\u3044\u3061\u30012\u4EBA\u306F\u30C9\u30EB\u30B1\u3055\u3093\u3088\u308A\u5168\u7136\u82E5\u304B\u3063\u305F\u6C17\u304C\u2026\uFF1F"
+  storyText: "\u672C\u5F53\u306B\u300C\u5927\u9B54\u8853\u5E2B\u300D\u3067\u3042\u308B\u306A\u3089\u3001\u9053\u4E2D\u306E\u6575\u306A\u3093\u3066\u7C21\u5358\u306B\u5012\u305B\u305D\u3046\u3067\u3059\u304C\u2026\uFF1F"
   description: 
-  character: {fileID: 6850953246409298075}
+  character: {fileID: 4107244484482543150}
   portrait: {fileID: 0}
   voiceOverClip: {fileID: 0}
   showAlways: 1
@@ -676,7 +676,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 35
   indentLevel: 0
-  storyText: "\u2026\u2026\u3002\u8A73\u3057\u3044\u8A71\u306F\u9053\u4E2D\u3067\u8A71\u305D\u3046\u304B\u306E\u3046\u3002\n\u3069\u308C\u3001\u3064\u3044\u3066\u304F\u308B\u304B\uFF1F"
+  storyText: "\u2026\u2026\u3002\u8A73\u3057\u3044\u8A71\u306F\u6B69\u304D\u306A\u304C\u3089\u8A71\u305D\u3046\u304B\u306E\u3046\u3002\n\u3069\u308C\u3001\u3064\u3044\u3066\u304F\u308B\u304B\uFF1F"
   description: 
   character: {fileID: 1602483430257243261}
   portrait: {fileID: 0}

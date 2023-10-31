@@ -25,14 +25,30 @@ public class HomeSetup : ScriptableObject
     /// </summary>
     [SerializeField, Header("バディ攻略中会話フロー")]
     private GameObject[] m_FriendFlow;
-    public GameObject GetFriendFlow(int index) => m_FriendFlow[index];
+    public bool TryGetFriendFlow(int index, out GameObject friend)
+    {
+        friend = null;
+        if (index < 0 || index >= m_FriendFlow.Length)
+            return false;
+
+        friend = m_FriendFlow[index];
+        return friend != null;
+    }
 
     /// <summary>
     /// 攻略済みバディ会話フロー
     /// </summary>
     [SerializeField, Header("バディ攻略後会話フロー")]
     private GameObject[] m_FriendCompletedFlow;
-    public GameObject GetFriendCompletedFlow(int index) => m_FriendCompletedFlow[index];
+    public bool TryGetFriendCompletedFlow(int index, out GameObject friendFlow)
+    {
+        friendFlow = null;
+        if (index < 0 || index >= m_FriendFlow.Length)
+            return false;
+
+        friendFlow = m_FriendCompletedFlow[index];
+        return friendFlow != null;
+    }
 
     /// <summary>
     /// 敗北時フロー

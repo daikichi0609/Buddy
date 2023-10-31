@@ -176,8 +176,8 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     }
     private async Task DeployFriend(Vector3 pos, DIRECTION dir = DIRECTION.UNDER)
     {
-        var setup = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress); // Setup
-        await m_FriendSpawner.SpawnFriend(setup, pos, dir);
+        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.Progress, out var setup) == true)
+            await m_FriendSpawner.SpawnFriend(setup, pos, dir);
     }
 
     /// <summary>

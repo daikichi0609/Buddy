@@ -109,11 +109,13 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         m_Leader.Initialize();
 
         // バディ
-        var friend = m_CurrentCharacterHolder.GetFriend(m_InGameProgressHolder.Progress);
-        var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
-        f.transform.position = friendPos;
-        m_Friend = f.GetComponent<ActorComponentCollector>();
-        m_Friend.Initialize();
+        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.Progress, out var friend) == true)
+        {
+            var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
+            f.transform.position = friendPos;
+            m_Friend = f.GetComponent<ActorComponentCollector>();
+            m_Friend.Initialize();
+        }
         // ---------- //
     }
 
@@ -170,6 +172,9 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// <returns></returns>
     IDisposable ISceneInitializer.SwitchLeaderActive(bool isActivate)
     {
+        if (m_Leader == null)
+            return Disposable.Empty;
+
         var objectHolder = m_Leader.GetInterface<ICharaObjectHolder>();
         objectHolder.MoveObject.SetActive(isActivate);
         return Disposable.CreateWithState((objectHolder, isActivate), tuple => tuple.objectHolder.MoveObject.SetActive(!tuple.isActivate));
@@ -182,6 +187,9 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// <returns></returns>
     IDisposable ISceneInitializer.SwitchFriendActive(bool isActivate)
     {
+        if (m_Friend == null)
+            return Disposable.Empty;
+
         var objectHolder = m_Friend.GetInterface<ICharaObjectHolder>();
         objectHolder.MoveObject.SetActive(isActivate);
         return Disposable.CreateWithState((objectHolder, isActivate), tuple => tuple.objectHolder.MoveObject.SetActive(!tuple.isActivate));

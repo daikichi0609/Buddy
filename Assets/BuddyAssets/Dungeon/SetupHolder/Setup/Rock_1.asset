@@ -20,7 +20,7 @@ MonoBehaviour:
   m_EnemyCountRange: {x: 3, y: 5}
   m_MonsterHouseRate: 0
   m_TrapCountRange: {x: 0, y: 2}
-  m_ItemCountRange: {x: 2, y: 4}
+  m_ItemCountRange: {x: 3, y: 5}
   m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
   m_ElementSetup: {fileID: 11400000, guid: c67bbe448454d41d5aa24ea27d746111, type: 2}
   m_CheckPointSetup: {fileID: 11400000, guid: c497c5346b15a457da22a0d20f6c259a, type: 2}

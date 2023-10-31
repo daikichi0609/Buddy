@@ -15,11 +15,11 @@ MonoBehaviour:
   m_DungeonName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F"
   m_FloorCount: 3
   m_MapSize: {x: 20, y: 20}
-  m_RoomCountRange: {x: 4, y: 5}
+  m_RoomCountRange: {x: 3, y: 3}
   m_EnemyTable: {fileID: 11400000, guid: eeb065e4ce00a4ce1971bb02e1443ca9, type: 2}
-  m_EnemyCountRange: {x: 1, y: 3}
+  m_EnemyCountRange: {x: 1, y: 1}
   m_MonsterHouseRate: 0
-  m_TrapCountRange: {x: 1, y: 3}
+  m_TrapCountRange: {x: 1, y: 4}
   m_ItemCountRange: {x: 0, y: 0}
   m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
   m_ElementSetup: {fileID: 11400000, guid: bcb2a062fa64e4b1b95120615d5e281c, type: 2}

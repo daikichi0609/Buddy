@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Snow_2
   m_EditorClassIdentifier: 
   m_DungeonName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F"
-  m_FloorCount: 10
-  m_MapSize: {x: 23, y: 23}
+  m_FloorCount: 20
+  m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 4, y: 6}
   m_EnemyTable: {fileID: 11400000, guid: a69717c2ddcb946c3a1cc59892d5892b, type: 2}
-  m_EnemyCountRange: {x: 4, y: 7}
+  m_EnemyCountRange: {x: 3, y: 6}
   m_MonsterHouseRate: 0
   m_TrapCountRange: {x: 1, y: 4}
   m_ItemCountRange: {x: 3, y: 5}

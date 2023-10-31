@@ -50,17 +50,23 @@ public class HomeInitializer : SceneInitializer
         var bgm = Instantiate(m_HomeSetup.BGM);
         m_BGMHandler.SetBGM(bgm);
 
-        m_DeparturedFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendFlow(m_InGameProgressHolder.Progress)).GetComponent<Fungus.Flowchart>();
-        m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);
+        // フロー作成＆会話登録
+        if (m_HomeSetup.TryGetFriendFlow(m_InGameProgressHolder.Progress, out var fFlow) == true)
+        {
+            var go = m_Instantiater.InstantiatePrefab(fFlow);
+            m_DeparturedFlowChart = go.GetComponent<Fungus.Flowchart>();
+            m_ConversationManager.Register(m_Friend, m_DeparturedFlowChart, FriendPos);
+        }
+
         m_LoseBackFlowChart = m_Instantiater.InstantiatePrefab(m_HomeSetup.LoseBackFlow).GetComponent<Fungus.Flowchart>();
 
         // 攻略済みフローセット
         for (int i = 0; i < m_InGameProgressHolder.IsCompletedIntro.Length; i++)
         {
-            if (m_InGameProgressHolder.IsCompletedIntro[i] == true)
+            if (m_InGameProgressHolder.IsCompletedIntro[i] == true && m_HomeSetup.TryGetFriendCompletedFlow(i, out var go) == true)
             {
                 // フロー取得
-                var flow = m_Instantiater.InstantiatePrefab(m_HomeSetup.GetFriendCompletedFlow(i)).GetComponent<Fungus.Flowchart>();
+                var flow = m_Instantiater.InstantiatePrefab(go).GetComponent<Fungus.Flowchart>();
 
                 var chara = m_HomeCharacterManager.GetHomeCharacter(i);
                 var talk = chara.GetInterface<ICharaTalk>();
@@ -77,6 +83,7 @@ public class HomeInitializer : SceneInitializer
                 0 => TIMELINE_TYPE.INTRO,
                 1 => TIMELINE_TYPE.BERRY_INTRO,
                 2 => TIMELINE_TYPE.DORCHE_INTRO,
+                3 => TIMELINE_TYPE.FINAL_INTRO,
                 _ => TIMELINE_TYPE.NONE,
             };
             if (m_TimelineManager.Play(type) == true)

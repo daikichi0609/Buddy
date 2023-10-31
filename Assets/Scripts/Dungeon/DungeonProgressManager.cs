@@ -137,10 +137,16 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_CurrentFloor.Value = 1;
         // シーン名
         string sceneName = "";
+        // 物語進行度最大 ボス戦へ
+        if (m_InGameProgressHolder.IsMaxProgress == true)
+            sceneName = SceneName.SCENE_BOSS_BATTLE;
+        // チェックポイント未到達 ホームに戻る
         if (m_DungeonProgressHolder.CurrentDungeonProgress == 0)
             sceneName = SceneName.SCENE_HOME;
+        // ダンジョン進行度最大 ボス戦へ
         else if (m_DungeonProgressHolder.IsMaxProgress == true)
             sceneName = SceneName.SCENE_BOSS_BATTLE;
+        // 進行度に応じたチェックポイントへ
         else
             sceneName = SceneName.SCENE_CHECKPOINT;
 

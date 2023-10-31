@@ -20,5 +20,13 @@ public class CurrentCharacterHolder : ScriptableObject
     [SerializeField]
     [Expandable]
     private CharacterSetup[] m_Friend;
-    public CharacterSetup GetFriend(int index) => m_Friend[index];
+    public bool TryGetFriend(int index, out CharacterSetup setup)
+    {
+        setup = null;
+        if (index < 0 || index >= m_Friend.Length)
+            return false;
+
+        setup = m_Friend[index];
+        return setup != null;
+    }
 }
