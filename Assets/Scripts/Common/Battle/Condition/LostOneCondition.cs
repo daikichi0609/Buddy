@@ -35,6 +35,12 @@ public class LostOneCondition : Condition
         string log = status.CurrentStatus.OriginParam.GivenName + "は自我を見失った！";
         owner.GetInterface<ICharaLog>().Log(log);
 
+        if (owner.RequireInterface<ICharaAnimator>(out var anim) == true)
+        {
+            var disposable = anim.PlayAnimation(ANIMATION_TYPE.SLEEP);
+            m_OnFinish.Add(disposable);
+        }
+
         var colorChange = status.ChangeBarColor(ms_BarColor);
         m_OnFinish.Add(colorChange);
 

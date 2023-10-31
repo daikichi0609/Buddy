@@ -98,7 +98,7 @@ public class DungeonProgressManager : IDungeonProgressManager
         if (m_CurrentFloor.Value >= maxFloor)
         {
             // 進行度+1
-            m_DungeonProgressHolder.CurrentProgress++;
+            m_DungeonProgressHolder.CurrentDungeonProgress++;
             await MoveScene();
             return;
         }
@@ -137,7 +137,7 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_CurrentFloor.Value = 1;
         // シーン名
         string sceneName = "";
-        if (m_DungeonProgressHolder.CurrentProgress == 0)
+        if (m_DungeonProgressHolder.CurrentDungeonProgress == 0)
             sceneName = SceneName.SCENE_HOME;
         else if (m_DungeonProgressHolder.IsMaxProgress == true)
             sceneName = SceneName.SCENE_BOSS_BATTLE;
@@ -160,7 +160,7 @@ public class DungeonProgressManager : IDungeonProgressManager
         {
             m_InGameProgressHolder.LoseBack = true;
             if (m_DungeonProgressHolder.IsMaxProgress == true)
-                m_DungeonProgressHolder.CurrentProgress--;
+                m_DungeonProgressHolder.CurrentDungeonProgress--;
             await MoveScene();
         }
         else if (reason == FINISH_REASON.BOSS_DEAD)

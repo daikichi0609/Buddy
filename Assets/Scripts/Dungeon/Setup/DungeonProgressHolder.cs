@@ -18,8 +18,8 @@ public class DungeonProgressHolder : ScriptableObject
     [SerializeField]
     private DungeonSetupHolder[] m_DungeonSetupHolders = new DungeonSetupHolder[0];
     private DungeonSetupHolder CurrentDungeonSetupHolder => m_DungeonSetupHolders[(int)m_CurrentDungeonTheme];
-    public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress];
-    public CheckPointSetup CurrentCheckPointSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentProgress - 1].CheckPointSetup;
+    public DungeonSetup CurrentDungeonSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentDungeonProgress];
+    public CheckPointSetup CurrentCheckPointSetup => CurrentDungeonSetupHolder.DungeonSetup[m_CurrentDungeonProgress - 1].CheckPointSetup;
     public BossBattleSetup CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
 
     /// <summary>
@@ -34,10 +34,10 @@ public class DungeonProgressHolder : ScriptableObject
     /// </summary>
     // [ShowNonSerializedField]
     [SerializeField]
-    private int m_CurrentProgress;
-    public int CurrentProgress { get => m_CurrentProgress; set => m_CurrentProgress = value; }
+    private int m_CurrentDungeonProgress;
+    public int CurrentDungeonProgress { get => m_CurrentDungeonProgress; set => m_CurrentDungeonProgress = value; }
     private int MaxProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
-    public bool IsMaxProgress => CurrentProgress == MaxProgress;
+    public bool IsMaxProgress => CurrentDungeonProgress == MaxProgress;
 
     /// <summary>
     /// ランダムな敵キャラセットアップを重み抽選

@@ -49,10 +49,11 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         MessageBroker.Default.Receive<FinishTimelineBePlayableMessage>().SubscribeWithState(this, (message, self) => self.OnFinishBePlayable(message)).AddTo(this);
         MessageBroker.Default.Receive<FinishTimelineNextTimelineMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextTimeline(message)).AddTo(this);
         MessageBroker.Default.Receive<FinishTimelineNextFungusMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextFungus(message)).AddTo(this);
+        MessageBroker.Default.Receive<FinishTimelineNextLoadScene>().SubscribeWithState(this, (message, self) => self.OnFinishNextScene(message)).AddTo(this);
 
         MessageBroker.Default.Receive<DeployTimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_DeployTimelineMessages.Add(message)).AddTo(this);
-        MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder);
-        MessageBroker.Default.Receive<ResetTimelineCharacterMessage>().SubscribeWithState(this, (_, self) => self.ResetTimelineCharacter());
+        MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder).AddTo(this);
+        MessageBroker.Default.Receive<ResetTimelineCharacterMessage>().SubscribeWithState(this, (_, self) => self.ResetTimelineCharacter()).AddTo(this);
     }
 
     /// <summary>
@@ -173,6 +174,12 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
             fungus.SendFungusMessage(ms_FungusMessage);
         });
     }
+
+    /// <summary>
+    /// 続けてロードシーン
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishNextScene(FinishTimelineNextLoadScene message) => m_FadeManager.LoadScene(message.SceneName);
 
     /// <summary>
     /// タイムライン再生終了

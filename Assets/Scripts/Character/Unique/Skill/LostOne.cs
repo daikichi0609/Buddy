@@ -10,7 +10,7 @@ public class LostOne : Skill
     protected override string Description => "目の前の敵を喪失状態にする。";
 
     protected override int CoolTime => 10;
-    private static readonly int LOST_ONE_TURN = 4;
+    private static readonly int LOST_ONE_TURN = 3;
 
     private static readonly string LOST_ONE_SKILL = "LostOne";
     private static readonly float LOST_ONE_SKILL_TIME = 1f;

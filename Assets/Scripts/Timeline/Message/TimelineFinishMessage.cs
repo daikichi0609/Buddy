@@ -73,3 +73,19 @@ public readonly struct FinishTimelineBePlayableMessage
         Type = type;
     }
 }
+
+/// <summary>
+/// シーンをロードする
+/// </summary>
+public readonly struct FinishTimelineNextLoadScene
+{
+    /// <summary>
+    /// 終了したタイムライン
+    /// </summary>
+    public string SceneName { get; }
+
+    public FinishTimelineNextLoadScene(string sceneName)
+    {
+        SceneName = sceneName;
+    }
+}

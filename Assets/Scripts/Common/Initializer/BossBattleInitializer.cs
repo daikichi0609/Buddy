@@ -89,7 +89,7 @@ public class BossBattleInitializer : SceneInitializer
             m_Boss.GetInterface<ICharaAnimator>().PlayAnimation(ANIMATION_TYPE.SLEEP);
 
             m_DungeonCharacterSaveData.ResetData(); // キャラデータリセット
-            m_DungeonProgressHolder.CurrentProgress = 0; // ダンジョン進行度リセット
+            m_DungeonProgressHolder.CurrentDungeonProgress = 0; // ダンジョン進行度リセット
             m_InGameProgressHolder.Progress++; // 進行度Up
             await m_FadeManager.TurnBright(this, self => self.DefeatBoss());
         }
@@ -234,7 +234,7 @@ public class BossBattleInitializer : SceneInitializer
     /// </summary>
     private void DefeatBoss()
     {
-        m_DungeonProgressHolder.CurrentProgress++;
+        m_DungeonProgressHolder.CurrentDungeonProgress++;
         m_DefeatedFlowChart.SendFungusMessage(ms_DefeatMessage);
     }
 }

@@ -8,7 +8,7 @@ public class IceSpike : Skill
     protected override string Name => "アイススパイク";
     protected override string Description => "1マス先の敵にダメージを与える";
 
-    protected override int CoolTime => 15;
+    protected override int CoolTime => 10;
     private static readonly float ATK_MAG = 2f;
     private static readonly int DISTANCE = 2;
 

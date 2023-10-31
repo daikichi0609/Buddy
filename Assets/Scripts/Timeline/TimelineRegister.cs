@@ -13,6 +13,8 @@ public enum TIMELINE_TYPE
     RAGON_INTRO = 1,
     BERRY_INTRO = 2,
     DORCHE_INTRO = 3,
+    FINAL_INTRO = 4,
+    FINAL_KING = 5,
 }
 
 public class TimelineRegister : MonoBehaviour
@@ -22,6 +24,7 @@ public class TimelineRegister : MonoBehaviour
         PLAYER_PLAYABLE,
         NEXT_TIMELINE,
         FUNGUS_EVENT,
+        LOAD_SCENE,
     }
 
     [BoxGroup("共通設定")]
@@ -45,8 +48,12 @@ public class TimelineRegister : MonoBehaviour
     private TIMELINE_TYPE m_NextTimeline;
 
     [BoxGroup("終了イベント")]
-    [SerializeField, Header("Fungus")]
+    [SerializeField, Header("次に再生するFungus")]
     private GameObject m_Fungus;
+
+    [BoxGroup("終了イベント")]
+    [SerializeField, Header("シーン名")]
+    private string m_SceneName;
 
     [BoxGroup("終了イベント")]
     [SerializeField, Header("リーダー座標")]
@@ -105,6 +112,10 @@ public class TimelineRegister : MonoBehaviour
             case TIMELINE_FINISH_TYPE.FUNGUS_EVENT:
                 DeployTimelineCharacter();
                 MessageBroker.Default.Publish(new FinishTimelineNextFungusMessage(m_Type, m_Fungus, m_LeaderPos.position, m_FriendPos.position));
+                break;
+
+            case TIMELINE_FINISH_TYPE.LOAD_SCENE:
+                MessageBroker.Default.Publish(new FinishTimelineNextLoadScene(m_SceneName));
                 break;
         }
     }

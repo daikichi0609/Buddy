@@ -6,11 +6,11 @@ using DG.Tweening;
 public class Explosion : Skill
 {
     protected override string Name => "エクスプロージョン";
-    protected override string Description => "1マス先の敵に大ダメージを与える。その周囲に居る敵にも小ダメージを与える。";
+    protected override string Description => "1マス先の敵に大ダメージを与える。\nその周囲に居る敵にも小ダメージを与える。";
 
-    protected override int CoolTime => 15;
+    protected override int CoolTime => 12;
     private static readonly float ATK_MAG_CENTER = 1.5f;
-    private static readonly float ATK_MAG_AROUND = 0.5f;
+    private static readonly float ATK_MAG_AROUND = 0.75f;
     private static readonly int DISTANCE = 2;
 
     private static readonly string EXPLOSION = "Explosion";
