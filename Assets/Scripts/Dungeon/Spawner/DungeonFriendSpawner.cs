@@ -15,11 +15,20 @@ public interface IDungeonFriendSpawner
     Task SpawnLeader(CharacterSetup setup, Vector3 pos, DIRECTION dir);
 
     /// <summary>
-    /// 
+    /// 味方
     /// </summary>
     /// <param name="setup"></param>
     /// <param name="pos"></param>
     Task SpawnFriend(CharacterSetup setup, Vector3 pos, DIRECTION dir);
+
+    /// <summary>
+    /// 死んでもゲームが終わらない
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <param name="pos"></param>
+    /// <param name="dir"></param>
+    /// <returns></returns>
+    Task SpawnFriendNotDeadEnd(CharacterSetup setup, Vector3 pos, DIRECTION dir);
 }
 
 public class DungeonFriendSpawner : IDungeonFriendSpawner
@@ -123,6 +132,32 @@ public class DungeonFriendSpawner : IDungeonFriendSpawner
                 e.SetStatus(setup);
                 m_TeamStatusHolder.RegisterFriendStatus(e.CurrentStatus);
             }
+
+        friend.Initialize();
+        var move = friend.GetInterface<ICharaMove>();
+        move.Face(dir);
+
+        // 追加
+        m_UnitHolder.AddFriend(friend);
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// バディスポーン
+    /// </summary>
+    /// <param name="setup"></param>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    Task IDungeonFriendSpawner.SpawnFriendNotDeadEnd(CharacterSetup setup, UnityEngine.Vector3 pos, DIRECTION dir)
+    {
+        var gameObject = m_ObjectPoolController.GetObject(setup, ms_FriendInjector);
+        gameObject.transform.position = pos;
+
+        // 初期化
+        var friend = gameObject.GetComponent<ICollector>();
+        if (friend.RequireInterface<ICharaStatus>(out var e) == true)
+            e.SetStatusNotDeadEnd(setup);
 
         friend.Initialize();
         var move = friend.GetInterface<ICharaMove>();

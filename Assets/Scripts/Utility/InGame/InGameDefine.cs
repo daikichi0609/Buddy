@@ -27,7 +27,8 @@ public static class SceneName
     public static readonly string SCENE_HOME = "Home";
     public static readonly string SCENE_DUNGEON = "Dungeon";
     public static readonly string SCENE_CHECKPOINT = "CheckPoint";
-    public static readonly string SCENE_BOSS_BATTLE = "Bossbattle";
+    public static readonly string SCENE_BOSS_BATTLE = "BossBattle";
+    public static readonly string SCENE_FINAL_BOSS_BATTLE = "FinalBossBattle";
 }
 
 public static class KeyName

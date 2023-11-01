@@ -24,6 +24,14 @@ public interface IDungeonContentsDeployer
     Task DeployBossBattleContents(BossBattleDeployInfo info);
 
     /// <summary>
+    /// ボスバトル用（キング）
+    /// </summary>
+    /// <param name="playerPos"></param>
+    /// <param name="friendPos"></param>
+    /// <param name="bossPos"></param>
+    Task DeployBossBattleContents(KingBattleDeployInfo info);
+
+    /// <summary>
     /// コンテンツ撤去
     /// </summary>
     void RemoveAll();
@@ -106,6 +114,23 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     }
 
     /// <summary>
+    /// キング戦
+    /// </summary>
+    async Task IDungeonContentsDeployer.DeployBossBattleContents(KingBattleDeployInfo info)
+    {
+        await DeployLeader(info.PlayerPos, DIRECTION.UP);
+        await m_EnemySpawner.SpawnEnemy(info.BossCharacterSetup, info.BossPos);
+        for (int i = 0; i < info.WarriorPos.Length; i++)
+            await m_EnemySpawner.SpawnEnemy(info.WarriorSetup, info.WarriorPos[i], info.WarriorDir[i]);
+
+        if (info.FriendPos != null && info.FriendDir != null)
+            for (int j = 0; j < info.FriendPos.Length; j++)
+                await m_FriendSpawner.SpawnFriendNotDeadEnd(info.FriendSetup[j], info.FriendPos[j], info.FriendDir[j]);
+
+        m_OnDeployContents.OnNext(Unit.Default);
+    }
+
+    /// <summary>
     /// ダンジョンコンテンツ全て撤去
     /// </summary>
     private void RemoveAll()
@@ -176,7 +201,7 @@ public class DungeonContentsDeployer : IDungeonContentsDeployer
     }
     private async Task DeployFriend(Vector3 pos, DIRECTION dir = DIRECTION.UNDER)
     {
-        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.Progress, out var setup) == true)
+        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.InGameProgress, out var setup) == true)
             await m_FriendSpawner.SpawnFriend(setup, pos, dir);
     }
 

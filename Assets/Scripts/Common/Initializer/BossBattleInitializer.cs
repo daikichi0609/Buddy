@@ -15,9 +15,9 @@ public class BossBattleInitializer : SceneInitializer
     [Inject]
     protected IDungeonProgressManager m_DungeonProgressManager;
     [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
     private IDungeonCharacterProgressManager m_DungeonCharacterProgressManager;
+    [Inject]
+    private IUnitHolder m_UnitHolder;
     [Inject]
     private ITurnManager m_TurnManager;
     [Inject]
@@ -32,7 +32,7 @@ public class BossBattleInitializer : SceneInitializer
     private Vector3 LeaderEndPos { get; set; }
     private Vector3 FriendEndPos { get; set; }
 
-    private Vector3 BossPos { get; set; }
+    private Vector3 BossPos { get; set; } = new Vector3(11f, OFFSET_Y, 13f);
 
     /// <summary>
     /// Fungusフロー
@@ -51,7 +51,6 @@ public class BossBattleInitializer : SceneInitializer
         FriendStartPos = new Vector3(12f, OFFSET_Y, 5f);
         LeaderEndPos = new Vector3(10f, OFFSET_Y, 10f);
         FriendEndPos = new Vector3(12f, OFFSET_Y, 10f);
-        BossPos = new Vector3(11f, OFFSET_Y, 13f);
 
         /*
         MessageBroker.Default.Receive<BossBattleInitializerInfo>().Subscribe(info =>
@@ -67,7 +66,7 @@ public class BossBattleInitializer : SceneInitializer
     protected override async Task OnStart()
     {
         var bossBattleSetup = m_DungeonProgressHolder.CurrentBossBattleSetup;
-        await DeployBossMap(bossBattleSetup); // ステージ生成
+        await DeployBossMap(bossBattleSetup, m_DungeonDeployer); // ステージ生成
 
         BossSetup(bossBattleSetup, BossPos); // ボスキャラ生成
 
@@ -90,7 +89,7 @@ public class BossBattleInitializer : SceneInitializer
 
             m_DungeonCharacterSaveData.ResetData(); // キャラデータリセット
             m_DungeonProgressHolder.CurrentDungeonProgress = 0; // ダンジョン進行度リセット
-            m_InGameProgressHolder.Progress++; // 進行度Up
+            m_InGameProgressHolder.InGameProgress++; // 進行度Up
             await m_FadeManager.TurnBright(this, self => self.DefeatBoss());
         }
     }
@@ -150,7 +149,7 @@ public class BossBattleInitializer : SceneInitializer
     /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
-    private async Task DeployBossMap(BossBattleSetup setup)
+    public static async Task DeployBossMap(BossBattleSetup setup, IDungeonDeployer dungeonDeployer)
     {
         // ダンジョン
         var cellMap = new TERRAIN_ID[21, 21];
@@ -190,7 +189,7 @@ public class BossBattleInitializer : SceneInitializer
 
         var elementSetup = setup.ElementSetup;
 
-        await m_DungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
+        await dungeonDeployer.DeployDungeon(cellMap, range, elementSetup);
     }
 
     /// <summary>

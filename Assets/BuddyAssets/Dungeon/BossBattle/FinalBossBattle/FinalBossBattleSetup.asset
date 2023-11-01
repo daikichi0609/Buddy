@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18089de57f5744e02944159fe30a748f, type: 3}
+  m_Name: FinalBossBattleSetup
+  m_EditorClassIdentifier: 
+  m_KingBossBattleSetup: {fileID: 11400000, guid: 1f66b286c12464296be3fdebd66271d6,
+    type: 2}
+  m_WarriorSetup: {fileID: 11400000, guid: 0bb5db38277b14da4b3d5b0ebf0ba55a, type: 2}
+  m_FriendSetup:
+  - {fileID: 11400000, guid: fd04f6e4722f241ef80167cc905fd4dd, type: 2}
+  - {fileID: 11400000, guid: e3517a734011b49a68b086077dd1f467, type: 2}
+  - {fileID: 11400000, guid: 76041367724e24600a810d39eef03b9b, type: 2}
+  m_BarmBossBattleSetup: {fileID: 11400000, guid: c6460fddbed6449a8a93581c42087ae0,
+    type: 2}
+  m_Stage: {fileID: 3815324097327591244, guid: cd821f1c246af42938b13cd7535362b6, type: 3}
+  m_FriendIndex: 0
+  m_IsLoseBack: 1
+  m_IsLoseBackComplete: 0

@@ -51,7 +51,7 @@ public class HomeInitializer : SceneInitializer
         m_BGMHandler.SetBGM(bgm);
 
         // フロー作成＆会話登録
-        if (m_HomeSetup.TryGetFriendFlow(m_InGameProgressHolder.Progress, out var fFlow) == true)
+        if (m_HomeSetup.TryGetFriendFlow(m_InGameProgressHolder.InGameProgress, out var fFlow) == true)
         {
             var go = m_Instantiater.InstantiatePrefab(fFlow);
             m_DeparturedFlowChart = go.GetComponent<Fungus.Flowchart>();
@@ -74,16 +74,17 @@ public class HomeInitializer : SceneInitializer
             }
         }
 
-        int progress = m_InGameProgressHolder.Progress;
+        int progress = m_InGameProgressHolder.InGameProgress;
+        if (m_InGameProgressHolder.IsMaxInGameProgress == true)
+            m_TimelineManager.Play(TIMELINE_TYPE.FINAL_INTRO);
         // 初回タイムライン再生が終わっていない
-        if (m_InGameProgressHolder.IsCompletedIntro[progress] == false)
+        else if (m_InGameProgressHolder.IsCompletedIntro[progress] == false)
         {
             TIMELINE_TYPE type = progress switch
             {
                 0 => TIMELINE_TYPE.INTRO,
                 1 => TIMELINE_TYPE.BERRY_INTRO,
                 2 => TIMELINE_TYPE.DORCHE_INTRO,
-                3 => TIMELINE_TYPE.FINAL_INTRO,
                 _ => TIMELINE_TYPE.NONE,
             };
             if (m_TimelineManager.Play(type) == true)

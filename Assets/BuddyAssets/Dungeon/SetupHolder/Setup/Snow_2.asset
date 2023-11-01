@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070548b6f87644ffcace57c8e162dccd, type: 3}
   m_Name: Snow_2
   m_EditorClassIdentifier: 
-  m_DungeonName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F"
+  m_DungeonName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F \u6DF1\u90E8"
   m_FloorCount: 20
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 4, y: 6}

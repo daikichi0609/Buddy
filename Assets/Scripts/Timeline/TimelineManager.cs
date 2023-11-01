@@ -9,7 +9,17 @@ using Zenject;
 
 public interface ITimelineManager
 {
+    /// <summary>
+    /// 再生
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     bool Play(TIMELINE_TYPE type);
+
+    /// <summary>
+    /// 停止
+    /// </summary>
+    void Finish();
 }
 
 public class TimelineManager : MonoBehaviour, ITimelineManager
@@ -44,12 +54,17 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 
     private void Awake()
     {
+        // タイムライン登録
         MessageBroker.Default.Receive<RegisterTimelineMessage>().SubscribeWithState(this, (message, self) => self.m_CurrentDirector.Add(message.Key, message)).AddTo(this);
 
+        // アウトゲームキャラ操作可能
         MessageBroker.Default.Receive<FinishTimelineBePlayableMessage>().SubscribeWithState(this, (message, self) => self.OnFinishBePlayable(message)).AddTo(this);
+        // 続けてタイムライン再生
         MessageBroker.Default.Receive<FinishTimelineNextTimelineMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextTimeline(message)).AddTo(this);
+        // 続けてFungus
         MessageBroker.Default.Receive<FinishTimelineNextFungusMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextFungus(message)).AddTo(this);
-        MessageBroker.Default.Receive<FinishTimelineNextLoadScene>().SubscribeWithState(this, (message, self) => self.OnFinishNextScene(message)).AddTo(this);
+        // ロードシーン
+        MessageBroker.Default.Receive<FinishTimelineNextSceneLoadMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextScene(message)).AddTo(this);
 
         MessageBroker.Default.Receive<DeployTimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_DeployTimelineMessages.Add(message)).AddTo(this);
         MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder).AddTo(this);
@@ -74,7 +89,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         m_FadeManager.StartFade((this, register, finish), tuple =>
         {
             if (tuple.finish == true)
-                tuple.Item1.FinishInternal();
+                tuple.Item1.OnFinish();
             tuple.Item1.PlayInternal(tuple.register);
         });
         return true;
@@ -110,6 +125,12 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     }
 
     /// <summary>
+    /// タイムライン再生終了
+    /// </summary>
+    private void OnFinish() => m_OnFinish.Clear();
+    void ITimelineManager.Finish() => OnFinish();
+
+    /// <summary>
     /// 操作可能
     /// </summary>
     /// <param name="message"></param>
@@ -125,7 +146,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 
         m_FadeManager.StartFade(this, self =>
         {
-            self.FinishInternal();
+            self.OnFinish();
             self.m_SceneInitializer.AllowOperation();
         });
     }
@@ -163,7 +184,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 
         m_FadeManager.StartFade((this, message), tuple =>
         {
-            tuple.Item1.FinishInternal();
+            tuple.Item1.OnFinish();
             tuple.Item1.m_SceneInitializer.FaceEachOther(tuple.message.PlayerPos, tuple.message.FriendPos);
             tuple.Item1.DeployTimelineCharacter();
             tuple.Item1.m_SceneInitializer.SetCamera();
@@ -179,15 +200,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// 続けてロードシーン
     /// </summary>
     /// <param name="message"></param>
-    private void OnFinishNextScene(FinishTimelineNextLoadScene message) => m_FadeManager.LoadScene(message.SceneName);
-
-    /// <summary>
-    /// タイムライン再生終了
-    /// </summary>
-    private void FinishInternal()
-    {
-        m_OnFinish.Clear();
-    }
+    private void OnFinishNextScene(FinishTimelineNextSceneLoadMessage message) => m_FadeManager.LoadScene(message.SceneName);
 
     /// <summary>
     /// タイムラインキャラ配置

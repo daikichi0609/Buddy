@@ -10,9 +10,9 @@ public class InGameProgressHolder : ScriptableObject
     /// 進捗度
     /// </summary>
     [SerializeField]
-    private int m_Progress;
-    public int Progress { get => m_Progress; set => m_Progress = value; }
-    public bool IsMaxProgress => m_Progress >= m_IsCompletedIntro.Length - 1;
+    private int m_InGameProgress;
+    public int InGameProgress { get => m_InGameProgress; set => m_InGameProgress = value; }
+    public bool IsMaxInGameProgress => m_InGameProgress >= m_IsCompletedIntro.Length - 1;
 
     /// <summary>
     /// 冒頭イベント終了フラグ
@@ -20,7 +20,7 @@ public class InGameProgressHolder : ScriptableObject
     [SerializeField]
     private bool[] m_IsCompletedIntro;
     public bool[] IsCompletedIntro => m_IsCompletedIntro;
-    public bool CurrentCompletedIntro { set => m_IsCompletedIntro[m_Progress] = value; }
+    public bool CurrentCompletedIntro { set => m_IsCompletedIntro[m_InGameProgress] = value; }
 
     /// <summary>
     /// 負けて前回の地点まで戻るフラグ

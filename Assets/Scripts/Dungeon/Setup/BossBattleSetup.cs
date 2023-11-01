@@ -30,15 +30,6 @@ public class BossBattleSetup : ScriptableObject
     private DungeonElementSetup m_ElementSetup;
     public DungeonElementSetup ElementSetup => m_ElementSetup;
 
-    /*
-    /// <summary>
-    /// ステージ
-    /// </summary>
-    [SerializeField, Header("ステージ")]
-    private GameObject m_Stage;
-    public GameObject Stage => m_Stage;
-    */
-
     /// <summary>
     /// ボスキャラクター
     /// </summary>

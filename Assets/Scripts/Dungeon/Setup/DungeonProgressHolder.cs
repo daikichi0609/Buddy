@@ -23,6 +23,13 @@ public class DungeonProgressHolder : ScriptableObject
     public BossBattleSetup CurrentBossBattleSetup => CurrentDungeonSetupHolder.BossBattleSetup;
 
     /// <summary>
+    /// 最終ボスセットアップ
+    /// </summary>
+    [SerializeField]
+    private FinalBossBattleSetup m_FinalBossBattleSetup;
+    public FinalBossBattleSetup FinalBossBattleSetup => m_FinalBossBattleSetup;
+
+    /// <summary>
     /// 現在のダンジョンテーマ
     /// </summary>
     [SerializeField]
@@ -36,8 +43,8 @@ public class DungeonProgressHolder : ScriptableObject
     [SerializeField]
     private int m_CurrentDungeonProgress;
     public int CurrentDungeonProgress { get => m_CurrentDungeonProgress; set => m_CurrentDungeonProgress = value; }
-    private int MaxProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
-    public bool IsMaxProgress => CurrentDungeonProgress == MaxProgress;
+    private int MaxDungeonProgress => CurrentDungeonSetupHolder.DungeonSetup.Length;
+    public bool IsMaxDungeonProgress => CurrentDungeonProgress == MaxDungeonProgress;
 
     /// <summary>
     /// ランダムな敵キャラセットアップを重み抽選

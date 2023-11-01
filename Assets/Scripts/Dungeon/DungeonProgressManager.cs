@@ -34,6 +34,7 @@ public interface IDungeonProgressManager
 /// </summary>
 public enum DUNGEON_THEME
 {
+    NONE = -1,
     GRASS = 0,
     PRIDE = 1,
     ROCK = 2,
@@ -137,14 +138,16 @@ public class DungeonProgressManager : IDungeonProgressManager
         m_CurrentFloor.Value = 1;
         // シーン名
         string sceneName = "";
+
         // 物語進行度最大 ボス戦へ
-        if (m_InGameProgressHolder.IsMaxProgress == true)
-            sceneName = SceneName.SCENE_BOSS_BATTLE;
+        if (m_InGameProgressHolder.IsMaxInGameProgress == true)
+            sceneName = SceneName.SCENE_FINAL_BOSS_BATTLE;
+
         // チェックポイント未到達 ホームに戻る
-        if (m_DungeonProgressHolder.CurrentDungeonProgress == 0)
+        else if (m_DungeonProgressHolder.CurrentDungeonProgress == 0)
             sceneName = SceneName.SCENE_HOME;
         // ダンジョン進行度最大 ボス戦へ
-        else if (m_DungeonProgressHolder.IsMaxProgress == true)
+        else if (m_DungeonProgressHolder.IsMaxDungeonProgress == true)
             sceneName = SceneName.SCENE_BOSS_BATTLE;
         // 進行度に応じたチェックポイントへ
         else
@@ -162,17 +165,52 @@ public class DungeonProgressManager : IDungeonProgressManager
     {
         m_TurnManager.StopUnitAct();
 
-        if (reason == FINISH_REASON.PLAYER_DEAD)
+        // 進行度最大
+        if (m_InGameProgressHolder.IsMaxInGameProgress == true)
+            await FinishDungeon(reason);
+
+        // プレイヤー死亡
+        else if (reason == FINISH_REASON.PLAYER_DEAD)
         {
             m_InGameProgressHolder.LoseBack = true;
-            if (m_DungeonProgressHolder.IsMaxProgress == true)
+            if (m_DungeonProgressHolder.IsMaxDungeonProgress == true)
                 m_DungeonProgressHolder.CurrentDungeonProgress--;
             await MoveScene();
         }
+        // ボス死亡
         else if (reason == FINISH_REASON.BOSS_DEAD)
         {
             m_InGameProgressHolder.DefeatBoss = true;
             await m_FadeManager.LoadScene(SceneName.SCENE_BOSS_BATTLE);
+        }
+    }
+
+    /// <summary>
+    /// 進行度最大
+    /// </summary>
+    /// <param name="reason"></param>
+    /// <returns></returns>
+    private async Task FinishDungeon(FINISH_REASON reason)
+    {
+        int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
+        if (progress == 1 && m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBack == false && m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBackComplete == false)
+        {
+            m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBack = true;
+            await m_FadeManager.LoadScene(SceneName.SCENE_FINAL_BOSS_BATTLE);
+            return;
+        }
+
+        m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBackComplete = false;
+        if (reason == FINISH_REASON.PLAYER_DEAD)
+        {
+            if (--m_DungeonProgressHolder.CurrentDungeonProgress < 0)
+                m_DungeonProgressHolder.CurrentDungeonProgress = 0;
+            await m_FadeManager.LoadScene(SceneName.SCENE_DUNGEON);
+        }
+        else if (reason == FINISH_REASON.BOSS_DEAD)
+        {
+            m_InGameProgressHolder.DefeatBoss = true;
+            await m_FadeManager.LoadScene(SceneName.SCENE_FINAL_BOSS_BATTLE);
         }
     }
 }

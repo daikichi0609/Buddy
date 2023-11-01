@@ -30,7 +30,7 @@ public class DungeonInitializer : SceneInitializer
 
         m_DungeonCharacterProgressManager.AdoptSaveData();
 
-        m_DungeonProgressHolder.CurrentDungeonTheme = (DUNGEON_THEME)m_InGameProgressHolder.Progress;
+        m_DungeonProgressHolder.CurrentDungeonTheme = (DUNGEON_THEME)m_InGameProgressHolder.InGameProgress;
         var elementSetup = m_ProgressHolder.CurrentDungeonSetup.ElementSetup;
         await m_DungeonDeployer.DeployDungeon(elementSetup);
         await m_DungeonContentsDeployer.DeployAll();

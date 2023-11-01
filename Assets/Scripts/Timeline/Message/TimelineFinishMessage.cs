@@ -77,14 +77,14 @@ public readonly struct FinishTimelineBePlayableMessage
 /// <summary>
 /// シーンをロードする
 /// </summary>
-public readonly struct FinishTimelineNextLoadScene
+public readonly struct FinishTimelineNextSceneLoadMessage
 {
     /// <summary>
     /// 終了したタイムライン
     /// </summary>
     public string SceneName { get; }
 
-    public FinishTimelineNextLoadScene(string sceneName)
+    public FinishTimelineNextSceneLoadMessage(string sceneName)
     {
         SceneName = sceneName;
     }

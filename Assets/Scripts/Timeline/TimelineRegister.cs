@@ -14,7 +14,11 @@ public enum TIMELINE_TYPE
     BERRY_INTRO = 2,
     DORCHE_INTRO = 3,
     FINAL_INTRO = 4,
-    FINAL_KING = 5,
+    KING_INTRO = 5,
+    KING_HELPER = 6,
+    KING_DEFEAT = 7,
+    BARM_INTRO = 8,
+    BARM_DEFEAT = 9,
 }
 
 public class TimelineRegister : MonoBehaviour
@@ -25,6 +29,7 @@ public class TimelineRegister : MonoBehaviour
         NEXT_TIMELINE,
         FUNGUS_EVENT,
         LOAD_SCENE,
+        READY_TO_BATTLE,
     }
 
     [BoxGroup("共通設定")]
@@ -115,7 +120,11 @@ public class TimelineRegister : MonoBehaviour
                 break;
 
             case TIMELINE_FINISH_TYPE.LOAD_SCENE:
-                MessageBroker.Default.Publish(new FinishTimelineNextLoadScene(m_SceneName));
+                MessageBroker.Default.Publish(new FinishTimelineNextSceneLoadMessage(m_SceneName));
+                break;
+
+            case TIMELINE_FINISH_TYPE.READY_TO_BATTLE:
+                MessageBroker.Default.Publish(new FinishTimelineReadyToBossBattleMessage());
                 break;
         }
     }

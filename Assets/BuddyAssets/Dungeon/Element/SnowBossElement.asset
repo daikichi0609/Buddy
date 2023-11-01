@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8263aef5c37924790ba6f886d77050e0, type: 3}
+  m_Name: SnowBossElement
+  m_EditorClassIdentifier: 
+  m_Room: {fileID: 2132629838152799188, guid: b1d7a82c47b94442b80b6601e96894ff, type: 3}
+  m_Path: {fileID: 2132629838152799188, guid: ae3956470c5f3486c9a665c3dbdf48af, type: 3}
+  m_Wall: {fileID: 5602990615096958296, guid: 3c8ce8dc260f44dc18b4a1d78c6ae79c, type: 3}
+  m_Stairs: {fileID: 3611137922286253241, guid: 905ed7eb84768418a92498ec19b62d71,
+    type: 3}

@@ -109,7 +109,7 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
         m_Leader.Initialize();
 
         // バディ
-        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.Progress, out var friend) == true)
+        if (m_CurrentCharacterHolder.TryGetFriend(m_InGameProgressHolder.InGameProgress, out var friend) == true)
         {
             var f = m_Instantiater.InstantiatePrefab(friend.Prefab, ms_OutGameUnitInjector);
             f.transform.position = friendPos;

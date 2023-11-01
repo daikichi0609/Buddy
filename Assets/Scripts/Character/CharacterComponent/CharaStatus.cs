@@ -7,6 +7,8 @@ using Zenject;
 using UniRx;
 using System;
 using System.Threading.Tasks;
+using static Cinemachine.DocumentationSortingAttribute;
+using Zenject.SpaceFighter;
 
 public interface ICharaStatus : IActorInterface
 {
@@ -28,6 +30,12 @@ public interface ICharaStatus : IActorInterface
     /// <param name="param"></param>
     /// <returns></returns>
     void SetStatus(CharacterSetup setup);
+
+    /// <summary>
+    /// ステータスセット（死んでも終わらない味方）
+    /// </summary>
+    /// <param name="setup"></param>
+    void SetStatusNotDeadEnd(CharacterSetup setup);
 
     /// <summary>
     /// 現在のステータス
@@ -151,6 +159,45 @@ public class CharaStatus : ActorComponentBase, ICharaStatus
                 if (isPlayer == false)
                     Owner.Disposables.Add(disposable);
             }
+        }
+    }
+
+    /// <summary>
+    /// 死亡時に終了しない味方
+    /// </summary>
+    /// <param name="setup"></param>
+    void ICharaStatus.SetStatusNotDeadEnd(CharacterSetup setup)
+    {
+        PlayerStatus status = setup.Status as PlayerStatus;
+        BattleStatus.Parameter param = new BattleStatus.Parameter(status.Param);
+        m_CurrentStatus = new CurrentStatus(setup, param, 0);
+
+        if (setup.SkillSetup != null)
+        {
+            var skillHandler = Owner.GetInterface<ICharaSkillHandler>();
+            foreach (var skill in setup.SkillSetup.SkillEffects)
+            {
+                var disposable = skillHandler.RegisterSkill(skill);
+                Owner.Disposables.Add(disposable);
+            }
+
+        }
+
+        if (setup.ClevernesssSetup != null)
+        {
+            var clevernessHandler = Owner.GetInterface<ICharaClevernessHandler>();
+            foreach (var cleverness in setup.ClevernesssSetup.ClevernessEffects)
+            {
+                var disposable = clevernessHandler.RegisterCleverness(cleverness);
+                Owner.Disposables.Add(disposable);
+            }
+        }
+
+        // タイプセット
+        if (Owner.RequireInterface<ICharaTypeHolder>(out var type) == true)
+        {
+            type.Type = CHARA_TYPE.FRIEND;
+            type.TargetType = CHARA_TYPE.ENEMY;
         }
     }
 

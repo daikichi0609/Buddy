@@ -12,7 +12,7 @@ public interface IDungeonEnemySpawner
     /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
-    Task SpawnEnemy(CharacterSetup setup, Vector3 pos);
+    Task SpawnEnemy(CharacterSetup setup, Vector3 pos, DIRECTION dir = DIRECTION.UNDER);
 
     /// <summary>
     /// ランダムな敵を生成する
@@ -40,7 +40,7 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
     /// </summary>
     /// <param name="setup"></param>
     /// <returns></returns>
-    private Task SpawnEnemy(CharacterSetup setup, Vector3 pos)
+    private async Task SpawnEnemy(CharacterSetup setup, Vector3 pos, DIRECTION dir = DIRECTION.UNDER)
     {
         var gameObject = m_ObjectPoolController.GetObject(setup, ms_EnemyInjector);
         gameObject.transform.position = pos;
@@ -51,12 +51,12 @@ public class DungeonEnemySpawner : IDungeonEnemySpawner
             e.SetStatus(setup as CharacterSetup);
         enemy.Initialize();
 
+        await enemy.GetInterface<ICharaMove>().Face(dir);
+
         // 追加
         m_UnitHolder.AddEnemy(enemy);
-
-        return Task.CompletedTask;
     }
-    Task IDungeonEnemySpawner.SpawnEnemy(CharacterSetup setup, Vector3 pos) => SpawnEnemy(setup, pos);
+    Task IDungeonEnemySpawner.SpawnEnemy(CharacterSetup setup, Vector3 pos, DIRECTION dir) => SpawnEnemy(setup, pos, dir);
 
     /// <summary>
     /// 敵をランダムスポーンさせる

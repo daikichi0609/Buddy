@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183574de1c0654e2bb3e2160f0c561aa, type: 3}
+  m_Name: AllyBaleSetup
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 7962460036953278266, guid: bf0d16afdfde34503bbf4df82775b531,
+    type: 3}
+  m_Status: {fileID: 11400000, guid: cc08e06b627db44c2b53041f4e94680d, type: 2}
+  m_SkillSetup: {fileID: 11400000, guid: eb431354479ff4084a52d6d10230a58e, type: 2}
+  m_ClevernessSetup: {fileID: 11400000, guid: 28df508c82dfa45da86c4ebdcff76aec, type: 2}
