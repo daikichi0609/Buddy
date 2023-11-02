@@ -22,8 +22,6 @@ public class DungeonCharacterProgressManager : IDungeonCharacterProgressManager
     [Inject]
     private ITeamLevelHandler m_TeamLevelHandler;
     [Inject]
-    private IUnitHolder m_UnitHolder;
-    [Inject]
     private ITeamInventory m_TeamInventory;
 
     /// <summary>

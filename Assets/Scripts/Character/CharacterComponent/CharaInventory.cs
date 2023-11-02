@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using Zenject;
 using Fungus;
-using static UnityEditor.Progress;
 
 public interface ICharaInventory : IActorInterface
 {

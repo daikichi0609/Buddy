@@ -238,8 +238,8 @@ public class TurnManager : ITurnManager
     {
         // 階段チェック
         var player = m_UnitHolder.Player;
-        var checker = player.GetInterface<ICharaCellEventChecker>();
-        await checker.CheckStairsCell();
+        if (player != null && player.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
+            await checker.CheckStairsCell();
     }
 }
 

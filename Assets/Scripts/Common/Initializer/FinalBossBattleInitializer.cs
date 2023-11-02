@@ -65,36 +65,39 @@ public class FinalBossBattleInitializer : SceneInitializer
         MessageBroker.Default.Publish(new BattleUiSwitch(false));
 
         int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
-        TIMELINE_TYPE type = TIMELINE_TYPE.NONE;
 
         // 負けフラグ回収
         if (m_FinalBossBattleSetup.IsLoseBack == true)
         {
             m_FinalBossBattleSetup.IsLoseBack = false;
             m_FinalBossBattleSetup.IsLoseBackComplete = true;
-            type = TIMELINE_TYPE.KING_HELPER;
+            m_TimelineManager.Play(TIMELINE_TYPE.KING_HELPER);
         }
         else if (m_InGameProgressHolder.DefeatBoss == false)
         {
-            type = progress switch
+            // イントロタイムライン再生
+            var type = progress switch
             {
                 1 => TIMELINE_TYPE.KING_INTRO,
                 2 => TIMELINE_TYPE.BARM_INTRO,
                 _ => TIMELINE_TYPE.NONE,
             };
+            m_TimelineManager.Play(type);
         }
         else
         {
+            // 撃破後フロー再生
             m_InGameProgressHolder.DefeatBoss = false;
-            type = progress switch
+
+            // イントロタイムライン再生
+            var type = progress switch
             {
                 1 => TIMELINE_TYPE.KING_DEFEAT,
                 2 => TIMELINE_TYPE.BARM_DEFEAT,
                 _ => TIMELINE_TYPE.NONE,
             };
+            m_TimelineManager.Play(type);
         }
-
-        m_TimelineManager.Play(type);
         return Task.CompletedTask;
     }
 
@@ -105,8 +108,8 @@ public class FinalBossBattleInitializer : SceneInitializer
     {
         m_FadeManager.StartFadeWhite(this, async self =>
         {
-            self.m_TimelineManager.Finish();
             await self.ReadyToBossBattle();
+            self.m_TimelineManager.Finish();
         },
         this, self => self.m_TurnManager.NextUnitAct());
     }

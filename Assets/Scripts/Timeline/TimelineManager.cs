@@ -215,6 +215,9 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
                 CHARA_NAME.RAGON => m_TimelineCharacters.Ragon,
                 CHARA_NAME.BERRY => m_TimelineCharacters.Berry,
                 CHARA_NAME.DORCHE => m_TimelineCharacters.Dorch,
+                CHARA_NAME.BALE => m_TimelineCharacters.Bale,
+                CHARA_NAME.LAMY => m_TimelineCharacters.Lamy,
+                CHARA_NAME.PLISS => m_TimelineCharacters.Plis,
                 _ => null
             };
             chara.SetActive(true);

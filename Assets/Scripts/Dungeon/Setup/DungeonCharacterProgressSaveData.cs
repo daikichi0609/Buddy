@@ -36,7 +36,7 @@ public class DungeonCharacterProgressSaveData : ScriptableObject
     public void ResetData()
     {
         m_Exp = 0;
-        m_Items = null;
+        m_Items = new ItemSetup[0];
 #if UNITY_EDITOR
         EditorUtility.SetDirty(this);
 #endif

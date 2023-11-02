@@ -44,43 +44,71 @@ public class TimelineRegister : MonoBehaviour
     [SerializeField, Header("タイムライン・タイプ")]
     private TIMELINE_TYPE m_Type;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・タイプ")]
     [SerializeField, Header("再生終了後イベント")]
     private TIMELINE_FINISH_TYPE m_FinishType;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・Timeline")]
     [SerializeField, Header("次に再生するタイムライン")]
     private TIMELINE_TYPE m_NextTimeline;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・Fungus")]
     [SerializeField, Header("次に再生するFungus")]
     private GameObject m_Fungus;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・ロードシーン")]
     [SerializeField, Header("シーン名")]
     private string m_SceneName;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("リーダー座標")]
     private Transform m_LeaderPos;
 
-    [BoxGroup("終了イベント")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("フレンド座標")]
     private Transform m_FriendPos;
 
-    [BoxGroup("終了イベント・固有")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("ラゴン座標")]
     private bool m_DeployRagon;
-    [BoxGroup("終了イベント・固有")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("ラゴン座標"), ShowIf("m_DeployRagon")]
     private Transform m_RagonTransform;
 
-    [BoxGroup("終了イベント・固有")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("ベリィ座標")]
     private bool m_DeployBerry;
-    [BoxGroup("終了イベント・固有")]
+    [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("ベリィ座標"), ShowIf("m_DeployBerry")]
     private Transform m_BerryTransform;
+
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ドルケ座標")]
+    private bool m_DeployDorch;
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ドルケ座標"), ShowIf("m_DeployDorch")]
+    private Transform m_DorchTransform;
+
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ベイル座標")]
+    private bool m_DeployBale;
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ベイル座標"), ShowIf("m_DeployBale")]
+    private Transform m_BaleTransform;
+
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ラミィ座標")]
+    private bool m_DeployLamy;
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("ラミィ座標"), ShowIf("m_DeployLamy")]
+    private Transform m_LamyTransform;
+
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("プリス座標")]
+    private bool m_DeployPlis;
+    [BoxGroup("終了イベント・座標")]
+    [SerializeField, Header("プリス座標"), ShowIf("m_DeployPlis")]
+    private Transform m_PlisTransform;
 
     private static readonly float FADE_SPEED = 0.5f;
     private static readonly float FADE_TIME = 1f;
@@ -135,5 +163,13 @@ public class TimelineRegister : MonoBehaviour
             MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.RAGON, m_RagonTransform));
         if (m_DeployBerry == true)
             MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BERRY, m_BerryTransform));
+        if (m_DeployDorch == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.DORCHE, m_DorchTransform));
+        if (m_DeployBale == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BALE, m_BaleTransform));
+        if (m_DeployLamy == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.LAMY, m_LamyTransform));
+        if (m_DeployPlis == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.PLISS, m_PlisTransform));
     }
 }

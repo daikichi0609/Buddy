@@ -26,6 +26,15 @@ public class TimelineCharacterHolder : MonoBehaviour
     [SerializeField]
     private GameObject m_Dorch;
     public GameObject Dorch => m_Dorch;
+    [SerializeField]
+    private GameObject m_Bale;
+    public GameObject Bale => m_Bale;
+    [SerializeField]
+    private GameObject m_Lamy;
+    public GameObject Lamy => m_Lamy;
+    [SerializeField]
+    private GameObject m_Plis;
+    public GameObject Plis => m_Plis;
 
     private void Awake()
     {

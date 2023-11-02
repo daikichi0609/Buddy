@@ -19,6 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fd04f6e4722f241ef80167cc905fd4dd, type: 2}
   - {fileID: 11400000, guid: e3517a734011b49a68b086077dd1f467, type: 2}
   - {fileID: 11400000, guid: 76041367724e24600a810d39eef03b9b, type: 2}
+  m_SelectBuddyFlow: {fileID: 0}
   m_BarmBossBattleSetup: {fileID: 11400000, guid: c6460fddbed6449a8a93581c42087ae0,
     type: 2}
   m_Stage: {fileID: 3815324097327591244, guid: cd821f1c246af42938b13cd7535362b6, type: 3}
