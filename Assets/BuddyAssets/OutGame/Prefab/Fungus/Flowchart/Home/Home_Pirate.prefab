@@ -98,7 +98,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: -58.250443
     y: -55.259804
-    width: 114.22018
+    width: 117.27828
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
@@ -184,10 +184,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: OnFinishFlow
   targetMethodText: 'OnFinishFlow (): Void'
   methodParameters: []

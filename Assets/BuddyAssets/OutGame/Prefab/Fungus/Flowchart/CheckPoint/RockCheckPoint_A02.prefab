@@ -95,8 +95,10 @@ MonoBehaviour:
     y: -340
     width: 1114
     height: 859
-  selectedBlocks: []
-  selectedCommands: []
+  selectedBlocks:
+  - {fileID: 6163757745988578977}
+  selectedCommands:
+  - {fileID: 8651611947624667004}
   variables: []
   description: 
   stepPause: 0
@@ -859,7 +861,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 102
+  itemId: 114
   blockName: "\u30C1\u30A7\u30C3\u30AF\u30DD\u30A4\u30F3\u30C8\u7D42\u308F\u308A"
   description: 
   eventHandler: {fileID: 0}
@@ -966,10 +968,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: CallInitializerFungusMethod
   targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []

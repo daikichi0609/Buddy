@@ -83,8 +83,9 @@ MonoBehaviour:
     width: 1114
     height: 859
   selectedBlocks:
-  - {fileID: -1213671178214566531}
-  selectedCommands: []
+  - {fileID: -5966442850586830378}
+  selectedCommands:
+  - {fileID: 16735572971035335}
   variables: []
   description: 
   stepPause: 0
@@ -570,10 +571,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: CallInitializerFungusMethod
   targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []

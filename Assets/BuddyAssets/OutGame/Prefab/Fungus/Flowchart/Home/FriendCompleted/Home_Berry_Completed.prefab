@@ -176,9 +176,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 2
   indentLevel: 0
-  storyText: "\u4ECA\u5EA6\u3001\u30E9\u30DF\u30A3\u306E\u30E9\u30A4\u30D6\u306B\u3054\u62DB\u5F85\u3057\u307E\u3059\u306E\u3067\n\u305C\u3072\u3054\u89A7\u306B\u306A\u3063\u3066\u304F\u3060\u3055\u3044\u306D\uFF01\uFF01"
+  storyText: "\u4ECA\u5EA6\u3001\u30E9\u30DF\u30A3\u306E\u30E9\u30A4\u30D6\u306B\u3054\u62DB\u5F85\u3057\u307E\u3059\u306E\u3067\n\u305C\u3072\u904A\u3073\u306B\u6765\u3066\u304F\u3060\u3055\u3044\uFF01"
   description: 
-  character: {fileID: 0}
+  character: {fileID: 4114103539967280122}
   portrait: {fileID: 0}
   voiceOverClip: {fileID: 0}
   showAlways: 1
@@ -205,10 +205,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: OnFinishFlow
   targetMethodText: 'OnFinishFlow (): Void'
   methodParameters: []

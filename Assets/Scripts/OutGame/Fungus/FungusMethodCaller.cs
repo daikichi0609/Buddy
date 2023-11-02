@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using Zenject;
 
-public class FungusMethod : MonoBehaviour
+public class FungusMethodCaller : MonoBehaviour
 {
     [Inject]
     private IFadeManager m_FadeManager;
@@ -31,4 +32,21 @@ public class FungusMethod : MonoBehaviour
     ///  ホームシーンをロード
     /// </summary>
     public void LoadHomeScene() => m_FadeManager.LoadScene(SceneName.SCENE_HOME);
+
+    /// <summary>
+    /// フレンド決定
+    /// </summary>
+    public void SetFriendRagon() => MessageBroker.Default.Publish(new SetFriendMessage(CHARA_NAME.RAGON));
+    public void SetFriendBerry() => MessageBroker.Default.Publish(new SetFriendMessage(CHARA_NAME.BERRY));
+    public void SetFriendDorch() => MessageBroker.Default.Publish(new SetFriendMessage(CHARA_NAME.DORCHE));
+}
+
+public readonly struct SetFriendMessage
+{
+    public SetFriendMessage(CHARA_NAME name)
+    {
+        FriendName = name;
+    }
+
+    public CHARA_NAME FriendName { get; }
 }

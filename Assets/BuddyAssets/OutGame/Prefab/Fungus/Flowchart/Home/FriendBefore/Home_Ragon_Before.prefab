@@ -66,7 +66,7 @@ MonoBehaviour:
   selectedBlocks:
   - {fileID: 5498602457853490413}
   selectedCommands:
-  - {fileID: 452435552748330490}
+  - {fileID: 1288695315159715789}
   variables: []
   description: 
   stepPause: 0
@@ -176,10 +176,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: OnFinishFlow
   targetMethodText: 'OnFinishFlow (): Void'
   methodParameters: []

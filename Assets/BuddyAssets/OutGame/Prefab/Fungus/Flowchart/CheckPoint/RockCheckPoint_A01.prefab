@@ -45,6 +45,8 @@ GameObject:
   - component: {fileID: 1701439196324225195}
   - component: {fileID: 7430746806440394757}
   - component: {fileID: 4007652384206452092}
+  - component: {fileID: 6325575453410904887}
+  - component: {fileID: 8160340262956769886}
   m_Layer: 0
   m_Name: RockCheckPoint_A01
   m_TagString: Untagged
@@ -96,7 +98,7 @@ MonoBehaviour:
   selectedBlocks:
   - {fileID: 7890289633937112855}
   selectedCommands:
-  - {fileID: 7430746806440394757}
+  - {fileID: 3439108712982599143}
   variables: []
   description: 
   stepPause: 0
@@ -300,6 +302,7 @@ MonoBehaviour:
   eventHandler: {fileID: 0}
   commandList:
   - {fileID: 6258516973974361517}
+  - {fileID: 8160340262956769886}
   - {fileID: 179993835329060861}
   - {fileID: 3993904936122638871}
   - {fileID: 6207275023413002038}
@@ -389,6 +392,7 @@ MonoBehaviour:
   - {fileID: -4724080350088677580}
   - {fileID: 4007652384206452092}
   - {fileID: 1189271557119800692}
+  - {fileID: 6325575453410904887}
   - {fileID: 7430746806440394757}
   - {fileID: 3439108712982599143}
   suppressAllAutoSelections: 0
@@ -408,10 +412,10 @@ MonoBehaviour:
   indentLevel: 0
   description: 
   targetObject: {fileID: 5498602457853490414}
-  targetComponentAssemblyName: FungusMethod, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  targetComponentAssemblyName: FungusMethodCaller, Assembly-CSharp, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
-  targetComponentText: FungusMethod
+  targetComponentText: FungusMethodCaller
   targetMethod: CallInitializerFungusMethod
   targetMethodText: 'CallInitializerFungusMethod (): Void'
   methodParameters: []
@@ -542,7 +546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 62
   indentLevel: 0
-  storyText: "\u90AA\u7ADC\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u306F410\u5E74\u524D\u306B\u3082\u5C01\u5370\u3055\u308C\u3066\u304A\u308B\u3002\n\u305D\u3057\u3066\u305D\u306E\u5C01\u5370\u306F\u304A\u3088\u305D400\u5E74\u3067\u305D\u306E\u52B9\u529B\u3092\u5931\u3046\u3082\u306E\u3058\u3083\u3063\u305F\u3002"
+  storyText: "\u90AA\u7ADC\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u306F410\u5E74\u524D\u306B\u5C01\u5370\u3055\u308C\u3066\u304A\u308B\u3002\n\u3064\u307E\u308A\u5C01\u5370\u306F\u304A\u3088\u305D400\u5E74\u3067\u305D\u306E\u52B9\u529B\u3092\u5931\u3046\u3082\u306E\u3060\u3063\u305F\u306E\u3058\u3083\u3002"
   description: 
   character: {fileID: 2582617921211817194}
   portrait: {fileID: 0}
@@ -596,7 +600,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 64
   indentLevel: 0
-  storyText: "400\u5E74\u524D\u3068\u540C\u3058\u3088\u3046\u306B\u90AA\u7ADC\u3092\u5C01\u5370\u3059\u308B\u305F\u3081\u306B\n\u30EF\u30B7\u3089\u4E09\u82F1\u5091\u3092\u4E2D\u5FC3\u306B\u3001\u4EBA\u3005\u306F\u6765\u305F\u308B\u5927\u707D\u306B\u5411\u3051\u3066\u5099\u3048\u7D9A\u3051\u305F\u3002"
+  storyText: "\u305D\u3057\u3066400\u5E74\u524D\u3068\u540C\u3058\u3088\u3046\u306B\u90AA\u7ADC\u3092\u5C01\u5370\u3059\u308B\u305F\u3081\u306B\n\u30EF\u30B7\u3089\u4E09\u82F1\u5091\u3092\u4E2D\u5FC3\u306B\u3001\u4EBA\u3005\u306F\u6765\u305F\u308B\u5927\u707D\u306B\u5411\u3051\u3066\u5099\u3048\u7D9A\u3051\u305F\u3002"
   description: 
   character: {fileID: 2582617921211817194}
   portrait: {fileID: 0}
@@ -623,7 +627,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 65
   indentLevel: 0
-  storyText: "\u305D\u3057\u3066\u4ECA\u304B\u308910\u5E74\u524D\u3002\n\u90AA\u7ADC\u3068\u306E\u58EE\u7D76\u306A\u6226\u3044\u306E\u672B\u306B\u3001\u30EF\u30B7\u3089\u306F\u90AA\u7ADC\u3092\u5C01\u5370\u3059\u308B\u3053\u3068\u304C\u3067\u304D\u305F\u306E\u3058\u3083\u3002"
+  storyText: "\u305D\u3057\u3066\u4ECA\u304B\u308910\u5E74\u524D\u3002\n\u58EE\u7D76\u306A\u6226\u3044\u306E\u672B\u306B\u3001\u30EF\u30B7\u3089\u306F\u90AA\u7ADC\u3092\u5C01\u5370\u3059\u308B\u3053\u3068\u304C\u3067\u304D\u305F\u306E\u3058\u3083\u3002"
   description: 
   character: {fileID: 2582617921211817194}
   portrait: {fileID: 0}
@@ -786,7 +790,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 78
+  itemId: 88
   blockName: "\u30C9\u30EB\u30B1"
   description: 
   eventHandler: {fileID: 0}
@@ -814,7 +818,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 78
+  itemId: 89
   blockName: "\u30D7\u30EA\u30B9"
   description: 
   eventHandler: {fileID: 0}
@@ -1008,6 +1012,60 @@ MonoBehaviour:
   itemId: 87
   indentLevel: 0
   storyText: "\u305D\u306E\u305F\u3081\u306B\u540C\u3058\u4E09\u82F1\u5091\u3067\u3042\u308B\u300C\u6559\u7687\u30D7\u30EA\u30B9\u300D\u306E\u529B\u3092\u501F\u308A\u308B\u305F\u3081\u306B\u9053\u3092\u6025\u3044\u3067\u3044\u308B\u306E\u3058\u3083\u304C\u2026\u3002\u3046\u30FC\u3080\u3001\u3084\u306F\u308A\u2026\u3002"
+  description: 
+  character: {fileID: 2582617921211817194}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &6325575453410904887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5498602457853490414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 90
+  indentLevel: 0
+  storyText: "\u9A0E\u58EB\u30D0\u30EB\u30E0\u306E\u66B4\u6319\u306B\u3001\u4ED6\u306E\u4E09\u82F1\u5091\u304C\u4F55\u3082\u53CD\u5FDC\u3057\u306A\u3044\u306E\u306F\u304A\u304B\u3057\u3044\u3058\u3083\u308D\u3046\u3002\n\u304D\u3063\u3068\u4F55\u304B\u3042\u3063\u305F\u306B\u9055\u3044\u306A\u3044\u306E\u3058\u3083\u3002"
+  description: 
+  character: {fileID: 2582617921211817194}
+  portrait: {fileID: 0}
+  voiceOverClip: {fileID: 0}
+  showAlways: 1
+  showCount: 1
+  extendPrevious: 0
+  fadeWhenDone: 1
+  waitForClick: 1
+  stopVoiceover: 1
+  waitForVO: 0
+  setSayDialog: {fileID: 0}
+--- !u!114 &8160340262956769886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5498602457853490414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec422cd568a9c4a31ad7c36d0572b9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 91
+  indentLevel: 0
+  storyText: "\u76F8\u624B\u306E\u59FF\u3084\u8A18\u61B6\u3092\u55B0\u3089\u3046\u80FD\u529B\u3092\u6301\u3064\u3053\u3068\u304B\u3089\n\u5225\u540D\u300C\u8EE2\u751F\u9F8D\u300D\u3068\u3082\u547C\u3070\u308C\u3066\u304A\u308B\u3002"
   description: 
   character: {fileID: 2582617921211817194}
   portrait: {fileID: 0}
