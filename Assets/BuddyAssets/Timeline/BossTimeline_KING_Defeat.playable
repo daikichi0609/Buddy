@@ -784,7 +784,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u306F\u3044\u3002\u3053\u308C\u3067\u56FD\u738B\u69D8\u3082\u300C\u30ED\u30B9\u30C8\u30FB\u30EF\u30F3\u300D\u304B\u3089\u89E3\u653E\u3055\u308C\u307E\u3057\u305F\u3002"
+  m_Text: "\u3053\u308C\u3067\u56FD\u738B\u69D8\u3082\u300C\u30ED\u30B9\u30C8\u30FB\u30EF\u30F3\u300D\u304B\u3089\u89E3\u653E\u3055\u308C\u307E\u3057\u305F\u3002"
 --- !u!114 &-5585159070578555883
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1570,25 +1570,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1639,13 +1621,13 @@ MonoBehaviour:
     m_Start: 12
     m_ClipIn: 0
     m_Asset: {fileID: -3674753586898770160}
-    m_Duration: 9
+    m_Duration: 12.999999999999993
     m_TimeScale: 1
     m_ParentTrack: {fileID: -3570185453320858811}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: 1
-    m_BlendOutDuration: 1
+    m_BlendOutDuration: 0.9999999999999929
     m_MixInCurve:
       serializedVersion: 2
       m_Curve: []
@@ -1669,15 +1651,15 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: VcamPlis (1)
   - m_Version: 1
-    m_Start: 20
+    m_Start: 24
     m_ClipIn: 0
     m_Asset: {fileID: -2387809813335034632}
-    m_Duration: 5
+    m_Duration: 5.999999999999993
     m_TimeScale: 1
     m_ParentTrack: {fileID: -3570185453320858811}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
-    m_BlendInDuration: 1
+    m_BlendInDuration: 0.9999999999999929
     m_BlendOutDuration: 1
     m_MixInCurve:
       serializedVersion: 2
@@ -1702,7 +1684,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: VcamLamy
   - m_Version: 1
-    m_Start: 24
+    m_Start: 28.999999999999993
     m_ClipIn: 0
     m_Asset: {fileID: -1422566649346159602}
     m_Duration: 5
@@ -1735,7 +1717,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: VcamBale_1
   - m_Version: 1
-    m_Start: 28
+    m_Start: 32.99999999999999
     m_ClipIn: 0
     m_Asset: {fileID: 2362442355333599283}
     m_Duration: 5
@@ -1768,10 +1750,10 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: VcamLamy
   - m_Version: 1
-    m_Start: 32
+    m_Start: 36.99999999999999
     m_ClipIn: 0
     m_Asset: {fileID: -4071573369038472187}
-    m_Duration: 17
+    m_Duration: 12.000000000000007
     m_TimeScale: 1
     m_ParentTrack: {fileID: -3570185453320858811}
     m_EaseInDuration: 0
@@ -1780,13 +1762,49 @@ MonoBehaviour:
     m_BlendOutDuration: 1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -2086,7 +2104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u305D\u308C\u3067\uFF1F \u738B\u30B5\u30DE\u3076\u3063\u98DB\u3070\u3057\u3061\u3083\u3063\u3066\u53F8\u6559\u30B5\u30DE\u306F\u6E80\u8DB3\u306A\u306E\u304B\u3088\uFF1F"
+  m_Text: "\u30CF\u30C3\uFF01 \u3054\u7ACB\u6D3E\u306A\u306E\u306F\u6570\u3060\u3051\u3060\u3063\u305F\u306A\uFF01"
 --- !u!74 &-2969851693090948651
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -2647,7 +2665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u30EF\u30BF\u30B7\u304C\u9A0E\u58EB\u30D0\u30EB\u30E0\u3092\u6B62\u3081\u308B\u3053\u3068\u304C\u3067\u304D\u308C\u3070\u3001\u3053\u306E\u3088\u3046\u306A\u4E8B\u614B\u306F\u8D77\u304D\u306A\u304B\u3063\u305F\u306E\u3067\u3059\u3002"
+  m_Text: "\u7686\u3055\u3093\u3002\u3054\u5354\u529B\u611F\u8B1D\u3044\u305F\u3057\u307E\u3059\u3002"
 --- !u!114 &-1618441904263821050
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4357,7 +4375,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 13
+    m_Start: 17
     m_ClipIn: 0
     m_Asset: {fileID: -5771385214492075106}
     m_Duration: 4
@@ -4366,7 +4384,7 @@ MonoBehaviour:
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: -1
-    m_BlendOutDuration: -1
+    m_BlendOutDuration: 0
     m_MixInCurve:
       serializedVersion: 2
       m_Curve:
@@ -4393,25 +4411,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4426,7 +4426,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 17
+    m_Start: 20.999999999999993
     m_ClipIn: 0
     m_Asset: {fileID: 7380723109446516285}
     m_Duration: 4
@@ -4434,53 +4434,17 @@ MonoBehaviour:
     m_ParentTrack: {fileID: 1611934186044916451}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
-    m_BlendInDuration: -1
+    m_BlendInDuration: 0
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4495,7 +4459,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 21
+    m_Start: 24.999999999999993
     m_ClipIn: 0
     m_Asset: {fileID: 6260437524784227631}
     m_Duration: 4
@@ -4507,49 +4471,13 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4564,7 +4492,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 25
+    m_Start: 28.999999999999993
     m_ClipIn: 0
     m_Asset: {fileID: -1111688125712616195}
     m_Duration: 4
@@ -4576,49 +4504,13 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4633,7 +4525,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 29
+    m_Start: 32.99999999999999
     m_ClipIn: 0
     m_Asset: {fileID: 62385764885732050}
     m_Duration: 4
@@ -4645,49 +4537,13 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4702,10 +4558,10 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 33
+    m_Start: 36.99999999999999
     m_ClipIn: 0
     m_Asset: {fileID: -1732846077309221343}
-    m_Duration: 4
+    m_Duration: 4.000000000000007
     m_TimeScale: 1
     m_ParentTrack: {fileID: 1611934186044916451}
     m_EaseInDuration: 0
@@ -4714,49 +4570,13 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4771,7 +4591,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: TimelineCropAsset
   - m_Version: 1
-    m_Start: 37
+    m_Start: 13
     m_ClipIn: 0
     m_Asset: {fileID: -1694743256811429746}
     m_Duration: 4
@@ -4783,25 +4603,7 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -5382,7 +5184,25 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -6169,7 +5989,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u6211\u306B\u5203\u5411\u304B\u3063\u305F\u3053\u3068\u2026\u2026\u65AD\u3058\u3066\u2026\u2026\u2026\u3086\u308B\u2026\u2026\u3059\u307E\u3058\u2026\u3002"
+  m_Text: "\u6211\u306B\u5203\u5411\u304B\u3063\u305F\u3053\u3068\u2026\u2026\u6C7A\u3057\u3066\u2026\u2026\u2026\u3086\u308B\u2026\u2026\u3059\u307E\u3058\u2026\u3002"
 --- !u!114 &3952449986984036452
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7166,7 +6986,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u76F8\u624B\u3092\u30D6\u30C3\u98DB\u3070\u3055\u306A\u3044\u3068\u6CBB\u3089\u306A\u3044\u9B54\u6CD5\u306A\u3093\u3066\u3001\u672C\u5F53\u306B\u5384\u4ECB\u306D\u3002"
+  m_Text: "\u76F8\u624B\u3092\u30D6\u30C3\u98DB\u3070\u3055\u306A\u3044\u3068\u6CBB\u3089\u306A\u3044\u6D17\u8133\u9B54\u6CD5\u306A\u3093\u3066\u3001\u672C\u5F53\u306B\u5384\u4ECB\u306D\u3002"
 --- !u!114 &6388485670020821420
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7190,7 +7010,6 @@ MonoBehaviour:
   m_Clips: []
   m_Markers:
     m_Objects:
-    - {fileID: 7688494909061650167}
     - {fileID: -8901952604057697762}
 --- !u!114 &6416385094056395037
 MonoBehaviour:
@@ -7928,7 +7747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 811e9ffd2b1b64f589c9c80320f588e1, type: 3}
   m_Name: TimelineCropAsset(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  m_Text: "\u3057\u3070\u3089\u304F\u3059\u308C\u3070\u3001\u5143\u901A\u308A\u306E\u512A\u3057\u3044\u56FD\u738B\u69D8\u306B\u623B\u3089\u308C\u308B\u306F\u305A\u3067\u3059\u3002"
+  m_Text: "\u3057\u3070\u3089\u304F\u3059\u308C\u3070\u3001\u5143\u901A\u308A\u306E\u304A\u512A\u3057\u3044\u56FD\u738B\u69D8\u306B\u623B\u3089\u308C\u308B\u306F\u305A\u3067\u3059\u3002"
 --- !u!114 &7415435677094610691
 MonoBehaviour:
   m_ObjectHideFlags: 1

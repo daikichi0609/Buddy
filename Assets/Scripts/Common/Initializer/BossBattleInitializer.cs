@@ -89,7 +89,7 @@ public class BossBattleInitializer : SceneInitializer
 
             m_DungeonCharacterSaveData.ResetData(); // キャラデータリセット
             m_DungeonProgressHolder.CurrentDungeonProgress = 0; // ダンジョン進行度リセット
-            m_InGameProgressHolder.InGameProgress++; // 進行度Up
+            m_InGameProgressHolder.IncrementInGameProgress(); // 進行度Up
             await m_FadeManager.TurnBright(this, self => self.m_DefeatedFlowChart.SendFungusMessage(ms_DefeatMessage)); // 明転明け
         }
     }

@@ -51,7 +51,7 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
 
     private void OnUpdateProgress()
     {
-        int progress = m_InGameInfoManager.InGameProgress;
-        m_HomeCharacters[progress].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
+        int index = m_InGameInfoManager.FriendIndex;
+        m_HomeCharacters[index].GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
     }
 }

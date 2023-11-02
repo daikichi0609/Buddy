@@ -51,6 +51,20 @@ public class FinalBossBattleInitializer : SceneInitializer
     private void Awake()
     {
         MessageBroker.Default.Receive<FinishTimelineReadyToBossBattleMessage>().SubscribeWithState(this, (_, self) => self.OnReadyToBossBattleMessage()).AddTo(this);
+
+        // フレンド設定
+        MessageBroker.Default.Receive<SetFriendMessage>().SubscribeWithState(this, (message, self) =>
+        {
+            int index = message.FriendName switch
+            {
+                CHARA_NAME.RAGON => 0,
+                CHARA_NAME.BERRY => 1,
+                CHARA_NAME.DORCHE => 2,
+                _ => -1,
+            };
+            self.m_InGameProgressHolder.SetFinalBattleFriendIndex(index);
+            self.m_InGameProgressHolder.SetNoFriend(false);
+        }).AddTo(this);
     }
 
     /// <summary>
@@ -65,7 +79,6 @@ public class FinalBossBattleInitializer : SceneInitializer
         MessageBroker.Default.Publish(new BattleUiSwitch(false));
 
         int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
-
         // 負けフラグ回収
         if (m_FinalBossBattleSetup.IsLoseBack == true)
         {
@@ -73,9 +86,9 @@ public class FinalBossBattleInitializer : SceneInitializer
             m_FinalBossBattleSetup.IsLoseBackComplete = true;
             m_TimelineManager.Play(TIMELINE_TYPE.KING_HELPER);
         }
+        // イントロタイムライン再生
         else if (m_InGameProgressHolder.DefeatBoss == false)
         {
-            // イントロタイムライン再生
             var type = progress switch
             {
                 1 => TIMELINE_TYPE.KING_INTRO,
@@ -84,9 +97,9 @@ public class FinalBossBattleInitializer : SceneInitializer
             };
             m_TimelineManager.Play(type);
         }
+        // 撃破後フロー再生
         else
         {
-            // 撃破後フロー再生
             m_InGameProgressHolder.DefeatBoss = false;
 
             // イントロタイムライン再生
@@ -123,12 +136,16 @@ public class FinalBossBattleInitializer : SceneInitializer
         m_DungeonCharacterProgressManager.AdoptSaveData();
 
         int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
-        // キング戦
-        if (progress == 1)
+        if (progress == 1) // キング戦
             await ReadyToKingBossBattle(m_FinalBossBattleSetup.IsLoseBackComplete);
-        // バルム戦
-        else if (progress == 2)
+        else if (progress == 2) // バルム戦
             await ReadyToKingBossBattle(m_FinalBossBattleSetup.IsLoseBack);
+#if DEBUG
+        else
+        {
+            Debug.LogError("ダンジョン進行度が適切ではありません。");
+        }
+#endif
     }
 
     /// <summary>
