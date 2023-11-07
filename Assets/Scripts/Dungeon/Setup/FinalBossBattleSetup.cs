@@ -28,13 +28,6 @@ public class FinalBossBattleSetup : ScriptableObject
     public CharacterSetup[] FriendSetup => m_FriendSetup;
 
     /// <summary>
-    /// バディ選択フロー
-    /// </summary>
-    [SerializeField, Header("バディ選択フロー")]
-    private GameObject m_SelectBuddyFlow;
-    public GameObject SelectBuddyFlow => m_SelectBuddyFlow;
-
-    /// <summary>
     /// バルム戦
     /// </summary>
     [SerializeField, Header("バルム戦")]

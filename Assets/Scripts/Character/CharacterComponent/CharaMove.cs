@@ -250,6 +250,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         float speedMag = dir.IsDiagonal() ? 1.4f : 1f;
         m_MovingTask = MoveTask(destPos, speedMag);
         await m_MovingTask;
+
         animation.Dispose();
         acting.Dispose();
 

@@ -238,8 +238,13 @@ public class TurnManager : ITurnManager
     {
         // 階段チェック
         var player = m_UnitHolder.Player;
-        if (player != null && player.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
-            await checker.CheckStairsCell();
+        if (player != null)
+        {
+            if (player.RequireInterface<ICharaCellEventChecker>(out var checker) == true)
+                await checker.CheckStairsCell();
+            if (player.RequireInterface<ICharaObjectHolder>(out var holder) == true)
+                holder.CharaObject.transform.localPosition = Vector3.zero;
+        }
     }
 }
 
