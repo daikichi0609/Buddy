@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rock_1
   m_EditorClassIdentifier: 
   m_DungeonName: "\u30B9\u30ED\u30FC\u30B9\u5C71"
-  m_FloorCount: 7
+  m_FloorCount: 5
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 4, y: 5}
   m_EnemyTable: {fileID: 11400000, guid: ae6ef0b91874049b5b373fe6ea51dc6b, type: 2}

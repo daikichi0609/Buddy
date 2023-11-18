@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pride_3
   m_EditorClassIdentifier: 
   m_DungeonName: "\u30D7\u30EA\u30C7\u30ED\u30FC\u30C9 \u6700\u7D42\u90E8"
-  m_FloorCount: 8
+  m_FloorCount: 6
   m_MapSize: {x: 20, y: 20}
   m_RoomCountRange: {x: 4, y: 5}
   m_EnemyTable: {fileID: 11400000, guid: 4b02421e8475149e78833e7054061b08, type: 2}

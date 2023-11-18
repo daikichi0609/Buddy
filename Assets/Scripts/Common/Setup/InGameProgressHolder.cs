@@ -16,7 +16,7 @@ public class InGameProgressHolder : ScriptableObject
     /// <summary>
     /// 進捗度最大か
     /// </summary>
-    public bool IsMaxInGameProgress => m_InGameProgress >= m_IsCompletedIntro.Length - 1;
+    public bool IsMaxInGameProgress => m_InGameProgress >= m_IsCompletedIntro.Length;
 
     /// <summary>
     /// 最終決戦のフレンドインデックス
@@ -28,6 +28,7 @@ public class InGameProgressHolder : ScriptableObject
     /// <summary>
     /// フレンドなしフラグ
     /// </summary>
+    [SerializeField]
     private bool m_NoFriend;
     public void SetNoFriend(bool no) => m_NoFriend = no;
 
