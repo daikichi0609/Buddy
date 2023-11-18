@@ -4,7 +4,6 @@ Temp/
 *.dll
 *.log
 *.pdb
-*.psd
 Library/
 *.keystore
 *.vsconfig
@@ -41,4 +40,3 @@ sysinfo.txt
 
 # Builds
 *.apk
-*.unitypackage
