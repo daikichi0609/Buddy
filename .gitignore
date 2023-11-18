@@ -8,7 +8,6 @@ Library/
 *.keystore
 *.vsconfig
 
-
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -40,3 +39,7 @@ sysinfo.txt
 
 # Builds
 *.apk
+
+Assets/ImportAsset/AlmostEngine/
+Assets/AlmostEngine/
+Assets/AlmostEngine.meta/
