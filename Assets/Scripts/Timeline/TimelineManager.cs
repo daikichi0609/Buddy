@@ -32,6 +32,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     private ISceneInitializer m_SceneInitializer;
     [Inject]
     private IInstantiater m_Instantiater;
+    [Inject]
+    private IInputManager m_InputManager;
 
     /// <summary>
     /// タイムラインキャラ
@@ -46,6 +48,11 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// 現在再生中のタイムライン
     /// </summary>
     private Dictionary<TIMELINE_TYPE, RegisterTimelineMessage> m_CurrentDirector = new Dictionary<TIMELINE_TYPE, RegisterTimelineMessage>();
+
+    /// <summary>
+    /// タイムライン再生終了中
+    /// </summary>
+    private bool m_WhileFinishing;
 
     /// <summary>
     /// タイムライン終了時
@@ -119,6 +126,14 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         var friend = m_SceneInitializer.SwitchFriendActive(false);
         m_OnFinish.Add(friend);
 
+        // タイムラインスキップ
+        var input = m_InputManager.InputStartEvent.SubscribeWithState(register, (info, register) =>
+        {
+            if (info.KeyCodeFlag.HasBitFlag(KeyCodeFlag.Return) == true)
+                register.FinishTimeline();
+        });
+        m_OnFinish.Add(input);
+
         // CinemachineTrackの状態をResetする
         register.Director.Stop();
         register.Director.Play();
@@ -127,8 +142,34 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// <summary>
     /// タイムライン再生終了
     /// </summary>
-    private void OnFinish() => m_OnFinish.Clear();
+    private void OnFinish()
+    {
+        m_OnFinish.Clear();
+        m_WhileFinishing = false;
+    }
     void ITimelineManager.Finish() => OnFinish();
+
+    /// <summary>
+    /// タイムライン終了可能確認
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    private bool CheckCanFinish(TIMELINE_TYPE type)
+    {
+        if (m_CurrentDirector.TryGetValue(type, out var register) == false)
+        {
+#if DEBUG
+            Debug.LogWarning("タイムラインが未登録です。" + type.ToString());
+#endif
+            return false;
+        }
+
+        if (m_WhileFinishing == true)
+            return false;
+
+        m_WhileFinishing = true;
+        return true;
+    }
 
     /// <summary>
     /// 操作可能
@@ -136,13 +177,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// <param name="message"></param>
     private void OnFinishBePlayable(FinishTimelineBePlayableMessage message)
     {
-        if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
-        {
-#if DEBUG
-            Debug.LogWarning("タイムラインが未登録です。" + message.Type.ToString());
-#endif
+        if (CheckCanFinish(message.Type) == false)
             return;
-        }
 
         m_FadeManager.StartFade(this, self =>
         {
@@ -157,13 +193,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// <param name="message"></param>
     private void OnFinishNextTimeline(FinishTimelineNextTimelineMessage message)
     {
-        if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
-        {
-#if DEBUG
-            Debug.LogWarning("タイムラインが未登録です。" + message.Type.ToString());
-#endif
+        if (CheckCanFinish(message.Type) == false)
             return;
-        }
 
         Play(message.NextTimeline, true);
     }
@@ -174,13 +205,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// <param name="message"></param>
     private void OnFinishNextFungus(FinishTimelineNextFungusMessage message)
     {
-        if (m_CurrentDirector.TryGetValue(message.Type, out var register) == false)
-        {
-#if DEBUG
-            Debug.LogWarning("タイムラインが未登録です。" + message.Type.ToString());
-#endif
+        if (CheckCanFinish(message.Type) == false)
             return;
-        }
 
         m_FadeManager.StartFade((this, message), tuple =>
         {
@@ -200,7 +226,14 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// 続けてロードシーン
     /// </summary>
     /// <param name="message"></param>
-    private void OnFinishNextScene(FinishTimelineNextSceneLoadMessage message) => m_FadeManager.LoadScene(message.SceneName);
+    private void OnFinishNextScene(FinishTimelineNextSceneLoadMessage message)
+    {
+        if (CheckCanFinish(message.Type) == false)
+            return;
+
+        m_FadeManager.LoadScene(message.SceneName.GetSceneName());
+    }
+
 
     /// <summary>
     /// タイムラインキャラ配置

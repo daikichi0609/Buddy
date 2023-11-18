@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,13 +12,19 @@ public readonly struct RegisterTimelineMessage
     public GameObject Camera { get; }
     public PlayableDirector Director { get; }
     public TIMELINE_TYPE Key { get; }
+    private TimelineRegister TimelineRegister { get; }
+    private Action<TimelineRegister> OnFinish { get; }
 
-    public RegisterTimelineMessage(GameObject camera, PlayableDirector director, TIMELINE_TYPE key)
+    public RegisterTimelineMessage(GameObject camera, PlayableDirector director, TIMELINE_TYPE key, TimelineRegister register, Action<TimelineRegister> onFinish)
     {
         Camera = camera;
         Director = director;
         Key = key;
+        TimelineRegister = register;
+        OnFinish = onFinish;
     }
+
+    public void FinishTimeline() => OnFinish(TimelineRegister);
 }
 
 /// <summary>

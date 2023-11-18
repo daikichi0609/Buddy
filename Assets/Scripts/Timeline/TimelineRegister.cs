@@ -58,7 +58,7 @@ public class TimelineRegister : MonoBehaviour
 
     [BoxGroup("終了イベント・ロードシーン")]
     [SerializeField, Header("シーン名")]
-    private string m_SceneName;
+    private SceneName.SCENE_NAME m_SceneName;
 
     [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("リーダー座標")]
@@ -116,7 +116,23 @@ public class TimelineRegister : MonoBehaviour
     private void Awake()
     {
         m_Camera.SetActive(false);
-        MessageBroker.Default.Publish(new RegisterTimelineMessage(m_Camera, m_Director, m_Type));
+        MessageBroker.Default.Publish(new RegisterTimelineMessage(m_Camera, m_Director, m_Type, this, self => self.OnFinish()));
+    }
+
+    private void DeployTimelineCharacter()
+    {
+        if (m_DeployRagon == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.RAGON, m_RagonTransform));
+        if (m_DeployBerry == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BERRY, m_BerryTransform));
+        if (m_DeployDorch == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.DORCHE, m_DorchTransform));
+        if (m_DeployBale == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BALE, m_BaleTransform));
+        if (m_DeployLamy == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.LAMY, m_LamyTransform));
+        if (m_DeployPlis == true)
+            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.PLISS, m_PlisTransform));
     }
 
     /// <summary>
@@ -148,28 +164,12 @@ public class TimelineRegister : MonoBehaviour
                 break;
 
             case TIMELINE_FINISH_TYPE.LOAD_SCENE:
-                MessageBroker.Default.Publish(new FinishTimelineNextSceneLoadMessage(m_SceneName));
+                MessageBroker.Default.Publish(new FinishTimelineNextSceneLoadMessage(m_Type, m_SceneName));
                 break;
 
             case TIMELINE_FINISH_TYPE.READY_TO_BATTLE:
                 MessageBroker.Default.Publish(new FinishTimelineReadyToBossBattleMessage());
                 break;
         }
-    }
-
-    private void DeployTimelineCharacter()
-    {
-        if (m_DeployRagon == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.RAGON, m_RagonTransform));
-        if (m_DeployBerry == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BERRY, m_BerryTransform));
-        if (m_DeployDorch == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.DORCHE, m_DorchTransform));
-        if (m_DeployBale == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.BALE, m_BaleTransform));
-        if (m_DeployLamy == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.LAMY, m_LamyTransform));
-        if (m_DeployPlis == true)
-            MessageBroker.Default.Publish(new DeployTimelineCharacterMessage(CHARA_NAME.PLISS, m_PlisTransform));
     }
 }

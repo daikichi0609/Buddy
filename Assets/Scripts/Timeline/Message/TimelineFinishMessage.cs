@@ -82,10 +82,16 @@ public readonly struct FinishTimelineNextSceneLoadMessage
     /// <summary>
     /// 終了したタイムライン
     /// </summary>
-    public string SceneName { get; }
+    public TIMELINE_TYPE Type { get; }
 
-    public FinishTimelineNextSceneLoadMessage(string sceneName)
+    /// <summary>
+    /// 読み込むシーンの名前
+    /// </summary>
+    public SceneName.SCENE_NAME SceneName { get; }
+
+    public FinishTimelineNextSceneLoadMessage(TIMELINE_TYPE type, SceneName.SCENE_NAME name)
     {
-        SceneName = sceneName;
+        Type = type;
+        SceneName = name;
     }
 }
