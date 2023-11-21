@@ -5,13 +5,13 @@ using UnityEngine;
 
 public struct HomeInitializerInfo
 {
-    public Vector3 LeaderPos { get; }
-    public Vector3 FriendPos { get; }
+    public Transform LeaderTransform { get; }
+    public Transform FriendTransform { get; }
 
-    public HomeInitializerInfo(Vector3 lp, Vector3 fp)
+    public HomeInitializerInfo(Transform lt, Transform ft)
     {
-        LeaderPos = lp;
-        FriendPos = fp;
+        LeaderTransform = lt;
+        FriendTransform = ft;
     }
 }
 
@@ -45,7 +45,7 @@ public class HomeMessenger : MonoBehaviour
 
     private void Awake()
     {
-        var info = new HomeInitializerInfo(m_LeaderPos.position, m_FriendPos.position);
+        var info = new HomeInitializerInfo(m_LeaderPos, m_FriendPos);
         MessageBroker.Default.Publish(info);
 
         var charaInfo = new HomeCharacterInfo(m_Characters, m_Positions, m_Flows);

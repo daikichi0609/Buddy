@@ -1,11 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Timeline;
 using Zenject;
 
 public interface ITimelineManager
@@ -224,7 +220,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         {
             tuple.Item1.OnFinish();
             await Task.Delay(1); // TL終了処理待ちで1F挟む
-            tuple.Item1.m_SceneInitializer.WrapLeader(message.PlayerTransform);
+            tuple.Item1.m_SceneInitializer.WrapLeaderAndFriend(message.PlayerTransform, message.FriendTransform);
             tuple.Item1.m_SceneInitializer.SetCamera();
             tuple.Item1.DeployTimelineCharacter();
         },

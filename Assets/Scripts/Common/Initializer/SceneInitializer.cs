@@ -20,7 +20,7 @@ public interface ISceneInitializer
     /// </summary>
     /// <param name="leaderPos"></param>
     /// <param name="friendPos"></param>
-    void WrapLeader(Transform leaderTransform);
+    void WrapLeaderAndFriend(Transform leaderTransform, Transform friendTransform);
 
     /// <summary>
     /// カメラ追従
@@ -153,11 +153,18 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     /// </summary>
     /// <param name="leaderPos"></param>
     /// <param name="friendPos"></param>
-    void ISceneInitializer.WrapLeader(Transform leaderTransform)
+    void ISceneInitializer.WrapLeaderAndFriend(Transform leaderTransform, Transform friendTransform)
     {
         var leader = m_Leader.GetInterface<ICharaObjectHolder>();
         leader.MoveObject.transform.position = leaderTransform.position;
         leader.CharaObject.transform.rotation = leaderTransform.rotation;
+
+        if (m_Friend != null)
+        {
+            var friend = m_Friend.GetInterface<ICharaObjectHolder>();
+            friend.MoveObject.transform.position = friendTransform.position;
+            friend.CharaObject.transform.rotation = friendTransform.rotation;
+        }
     }
 
     /// <summary>

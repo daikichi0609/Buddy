@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Zenject;
 using Fungus;
 using Task = System.Threading.Tasks.Task;
+using System;
 
 public class HomeInitializer : SceneInitializer
 {
@@ -22,15 +23,19 @@ public class HomeInitializer : SceneInitializer
 
     private Vector3 FriendPos { get; set; }
 
+    private IDisposable m_HomeCharactersActivate;
+
     private Fungus.Flowchart m_DeparturedFlowChart;
     private Fungus.Flowchart m_LoseBackFlowChart;
+
+    private static readonly Vector3 DEFAULT_EULERANGLE = new Vector3(0f, 180f, 0f);
 
     private void Awake()
     {
         MessageBroker.Default.Receive<HomeInitializerInfo>().SubscribeWithState(this, (info, self) =>
         {
-            self.LeaderPos = info.LeaderPos;
-            self.FriendPos = info.FriendPos;
+            self.LeaderPos = info.LeaderTransform.position;
+            self.FriendPos = info.FriendTransform.position;
         }).AddTo(this);
     }
 
@@ -74,10 +79,13 @@ public class HomeInitializer : SceneInitializer
             }
         }
 
+        // 進行度最大
         if (m_InGameProgressHolder.IsMaxInGameProgress == true)
         {
             m_InGameProgressHolder.NoFriend = true;
             m_TimelineManager.Play(TIMELINE_TYPE.FINAL_INTRO);
+
+            m_HomeCharactersActivate = m_HomeCharacterManager.DeactivateAll(); // ホームキャラ非表示
         }
         // 初回タイムライン再生が終わっていない
         else if (m_InGameProgressHolder.CurrentIntroCompleted == false)
@@ -85,6 +93,8 @@ public class HomeInitializer : SceneInitializer
             var theme = m_InGameProgressHolder.CurrentIntroTimelineTheme;
             if (m_TimelineManager.Play(theme) == true)
                 m_InGameProgressHolder.CurrentIntroCompleted = true; // フラグオン
+
+            m_HomeCharactersActivate = m_HomeCharacterManager.DeactivateAll(); // ホームキャラ非表示
         }
         // 通常時
         else if (m_InGameProgressHolder.LoseBack == false)
@@ -97,13 +107,24 @@ public class HomeInitializer : SceneInitializer
         }
     }
 
+    /// <summary>
+    /// タイムライン → Fungus終了時
+    /// </summary>
     public override void FungusMethod()
     {
         m_FadeManager.StartFade(this, self =>
         {
-            var fController = self.m_Friend.GetInterface<ICharaController>();
-            fController.Wrap(self.FriendPos); // 元の位置に戻す
+            var fObject = self.m_Friend.GetInterface<ICharaObjectHolder>();
+            fObject.MoveObject.transform.position = FriendPos; // 元の位置に戻す
+            fObject.CharaObject.transform.eulerAngles = DEFAULT_EULERANGLE;
+
             MessageBroker.Default.Publish(new ResetTimelineCharacterMessage());
+
+            if (self.m_HomeCharactersActivate != null)
+            {
+                self.m_HomeCharactersActivate.Dispose();
+                self.m_HomeCharactersActivate = null;
+            }
         },
         this, self => self.AllowOperation(false));
     }

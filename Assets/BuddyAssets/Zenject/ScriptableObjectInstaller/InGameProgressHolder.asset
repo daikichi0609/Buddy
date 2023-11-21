@@ -15,6 +15,6 @@ MonoBehaviour:
   m_InGameProgress: 0
   m_FinalBattleFriendIndex: 0
   m_NoFriend: 0
-  m_IsCompletedIntro: 010000
+  m_IsCompletedIntro: 000000
   m_LoseBack: 0
   m_DefeatBoss: 0
