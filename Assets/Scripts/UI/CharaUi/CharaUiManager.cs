@@ -27,6 +27,8 @@ public interface ICharaUiManager
 public class CharaUiManager : MonoBehaviour, ICharaUiManager
 {
     [Inject]
+    private InGameProgressHolder m_InGameProgressHolder;
+    [Inject]
     private IPlayerLoopManager m_LoopManager;
     [Inject]
     private IDungeonContentsDeployer m_DungeonContentsDeployer;
@@ -99,10 +101,12 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
         if (m_CharacterUiList.Count != 0)
             return;
 
-        int i = 0;
-
-        foreach (var unit in units)
+        for (int i = 0; i < units.Length; i++)
         {
+            if (m_InGameProgressHolder.NoFriend == true && i > 0)
+                break;
+
+            var unit = units[i];
             GameObject obj = Instantiate(m_CharacterUiPrefab);
             obj.transform.SetParent(m_ParentObject.transform, false);
             obj.transform.SetAsFirstSibling();

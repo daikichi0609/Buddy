@@ -62,11 +62,11 @@ public class TimelineRegister : MonoBehaviour
 
     [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("リーダー座標")]
-    private Transform m_LeaderPos;
+    private Transform m_LeaderTransform;
 
     [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("フレンド座標")]
-    private Transform m_FriendPos;
+    private Transform m_FriendTransform;
 
     [BoxGroup("終了イベント・座標")]
     [SerializeField, Header("ラゴン座標")]
@@ -160,7 +160,7 @@ public class TimelineRegister : MonoBehaviour
 
             case TIMELINE_FINISH_TYPE.FUNGUS_EVENT:
                 DeployTimelineCharacter();
-                MessageBroker.Default.Publish(new FinishTimelineNextFungusMessage(m_Type, m_Fungus, m_LeaderPos.position, m_FriendPos.position));
+                MessageBroker.Default.Publish(new FinishTimelineNextFungusMessage(m_Type, m_Fungus, m_LeaderTransform, m_FriendTransform));
                 break;
 
             case TIMELINE_FINISH_TYPE.LOAD_SCENE:
@@ -168,7 +168,7 @@ public class TimelineRegister : MonoBehaviour
                 break;
 
             case TIMELINE_FINISH_TYPE.READY_TO_BATTLE:
-                MessageBroker.Default.Publish(new FinishTimelineReadyToBossBattleMessage());
+                MessageBroker.Default.Publish(new FinishTimelineReadyToBossBattleMessage(m_Type));
                 break;
         }
     }

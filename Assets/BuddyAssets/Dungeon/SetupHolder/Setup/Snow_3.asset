@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070548b6f87644ffcace57c8e162dccd, type: 3}
   m_Name: Snow_3
   m_EditorClassIdentifier: 
-  m_DungeonName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F"
-  m_FloorCount: 15
-  m_MapSize: {x: 23, y: 23}
-  m_RoomCountRange: {x: 5, y: 6}
+  m_DungeonName: "\u5C01\u5370\u306E\u5730 \u3082\u3063\u3068\u6DF1\u90E8"
+  m_FloorCount: 20
+  m_MapSize: {x: 20, y: 20}
+  m_RoomCountRange: {x: 4, y: 6}
   m_EnemyTable: {fileID: 11400000, guid: d143d3d273d6c47f0bce3938a3b5f6a1, type: 2}
-  m_EnemyCountRange: {x: 5, y: 7}
+  m_EnemyCountRange: {x: 3, y: 7}
   m_MonsterHouseRate: 0
   m_TrapCountRange: {x: 2, y: 4}
   m_ItemCountRange: {x: 3, y: 5}

@@ -76,7 +76,7 @@ public class HomeInitializer : SceneInitializer
 
         if (m_InGameProgressHolder.IsMaxInGameProgress == true)
         {
-            m_InGameProgressHolder.SetNoFriend(true);
+            m_InGameProgressHolder.NoFriend = true;
             m_TimelineManager.Play(TIMELINE_TYPE.FINAL_INTRO);
         }
         // 初回タイムライン再生が終わっていない

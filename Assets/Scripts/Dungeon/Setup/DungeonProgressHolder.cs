@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
-using UniRx;
-using System;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using UnityEngine.Analytics;
-using Zenject;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [CreateAssetMenu(menuName = "MyScriptable/Dungeon/Progress")]
 public class DungeonProgressHolder : ScriptableObject
@@ -32,7 +27,7 @@ public class DungeonProgressHolder : ScriptableObject
     /// <summary>
     /// 現在のダンジョンテーマ
     /// </summary>
-    [SerializeField]
+    [SerializeField, ReadOnly]
     private DUNGEON_THEME m_CurrentDungeonTheme;
     public void SetCurrentDungeonTheme(DUNGEON_THEME theme) => m_CurrentDungeonTheme = theme;
 
@@ -88,5 +83,19 @@ public class DungeonProgressHolder : ScriptableObject
 
         var index = WeightedRandomSelector.SelectIndex(weights);
         return d.TrapPacks[index].Setup;
+    }
+
+    /// <summary>
+    /// リセット
+    /// </summary>
+    [Button]
+    public void ResetAll()
+    {
+        m_CurrentDungeonTheme = DUNGEON_THEME.NONE;
+        m_CurrentDungeonProgress = 0;
+
+#if UNITY_EDITOR
+        EditorUtility.SetDirty(this);
+#endif
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -72,6 +73,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         MessageBroker.Default.Receive<FinishTimelineNextFungusMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextFungus(message)).AddTo(this);
         // ロードシーン
         MessageBroker.Default.Receive<FinishTimelineNextSceneLoadMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextScene(message)).AddTo(this);
+        // ボスバトル開始
+        MessageBroker.Default.Receive<FinishTimelineReadyToBossBattleMessage>().SubscribeWithState(this, (message, self) => self.OnFinishReadyToBossBattle(message)).AddTo(this);
 
         MessageBroker.Default.Receive<DeployTimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_DeployTimelineMessages.Add(message)).AddTo(this);
         MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder).AddTo(this);
@@ -90,6 +93,15 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 #if DEBUG
             Debug.LogWarning("タイムラインが未登録です。" + type.ToString());
 #endif
+            // 一旦タイムラインは無しで進める
+            // バルム戦開始
+            if (type == TIMELINE_TYPE.BARM_INTRO)
+                MessageBroker.Default.Publish(new ReadyToBossBattleMessage());
+
+            // バルム戦後
+            if (type == TIMELINE_TYPE.BARM_DEFEAT)
+                MessageBroker.Default.Publish(new GameClearMessage());
+
             return false;
         }
 
@@ -125,6 +137,15 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         // フレンド無効化
         var friend = m_SceneInitializer.SwitchFriendActive(false);
         m_OnFinish.Add(friend);
+
+        // クロップ有効化
+        MessageBroker.Default.Publish(new CropSetActivateMessage(true));
+        var crop = Disposable.Create(() => MessageBroker.Default.Publish(new CropSetActivateMessage(false)));
+        m_OnFinish.Add(crop);
+
+        // 再生停止
+        var finish = Disposable.CreateWithState(register, register => register.Director.Stop());
+        m_OnFinish.Add(finish);
 
         // タイムラインスキップ
         var input = m_InputManager.InputStartEvent.SubscribeWithState(register, (info, register) =>
@@ -208,12 +229,13 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         if (CheckCanFinish(message.Type) == false)
             return;
 
-        m_FadeManager.StartFade((this, message), tuple =>
+        m_FadeManager.StartFade((this, message), async tuple =>
         {
             tuple.Item1.OnFinish();
-            tuple.Item1.m_SceneInitializer.FaceEachOther(tuple.message.PlayerPos, tuple.message.FriendPos);
-            tuple.Item1.DeployTimelineCharacter();
+            await Task.Delay(1); // TL終了処理待ちで1F挟む
+            tuple.Item1.m_SceneInitializer.WrapLeader(message.PlayerTransform);
             tuple.Item1.m_SceneInitializer.SetCamera();
+            tuple.Item1.DeployTimelineCharacter();
         },
         (this, message), tuple =>
         {
@@ -234,6 +256,17 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         m_FadeManager.LoadScene(message.SceneName.GetSceneName());
     }
 
+    /// <summary>
+    /// ボスバトル開始
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishReadyToBossBattle(FinishTimelineReadyToBossBattleMessage message)
+    {
+        if (CheckCanFinish(message.Type) == false)
+            return;
+
+        MessageBroker.Default.Publish(new ReadyToBossBattleMessage());
+    }
 
     /// <summary>
     /// タイムラインキャラ配置

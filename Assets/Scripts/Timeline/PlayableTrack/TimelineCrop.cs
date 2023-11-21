@@ -12,6 +12,6 @@ public class TimelineCrop : PlayableBehaviour
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
         double duration = playable.GetDuration();
-        MessageBroker.Default.Publish(new CropMessage(duration, Text));
+        MessageBroker.Default.Publish(new CropTextMessage(duration, Text));
     }
 }

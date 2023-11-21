@@ -11,8 +11,20 @@ using Zenject;
 
 public interface IDungeonCharacterProgressManager
 {
+    /// <summary>
+    /// データセーブ
+    /// </summary>
     void WriteSaveData();
+
+    /// <summary>
+    /// データ適用
+    /// </summary>
     void AdoptSaveData();
+
+    /// <summary>
+    /// データリセット
+    /// </summary>
+    void ResetAll();
 }
 
 public class DungeonCharacterProgressManager : IDungeonCharacterProgressManager
@@ -42,4 +54,9 @@ public class DungeonCharacterProgressManager : IDungeonCharacterProgressManager
         m_TeamLevelHandler.SetExp(m_DungeonCharacterSaveData.Exp);
         m_TeamInventory.SetItems(m_DungeonCharacterSaveData.Items);
     }
+
+    /// <summary>
+    /// リセット
+    /// </summary>
+    void IDungeonCharacterProgressManager.ResetAll() => m_DungeonCharacterSaveData.ResetData();
 }

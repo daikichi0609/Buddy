@@ -42,19 +42,19 @@ public readonly struct FinishTimelineNextFungusMessage
     /// <summary>
     /// リーダー座標
     /// </summary>
-    public Vector3 PlayerPos { get; }
+    public Transform PlayerTransform { get; }
 
     /// <summary>
     /// フレンド座標
     /// </summary>
-    public Vector3 FriendPos { get; }
+    public Transform FriendTransform { get; }
 
-    public FinishTimelineNextFungusMessage(TIMELINE_TYPE type, GameObject fungus, Vector3 playerPos, Vector3 friendPos)
+    public FinishTimelineNextFungusMessage(TIMELINE_TYPE type, GameObject fungus, Transform playerTransform, Transform friendTransform)
     {
         Type = type;
         FungusObject = fungus;
-        PlayerPos = playerPos;
-        FriendPos = friendPos;
+        PlayerTransform = playerTransform;
+        FriendTransform = friendTransform;
     }
 }
 
@@ -94,4 +94,17 @@ public readonly struct FinishTimelineNextSceneLoadMessage
         Type = type;
         SceneName = name;
     }
+}
+
+/// <summary>
+/// ボスバトル開始
+/// </summary>
+public readonly struct FinishTimelineReadyToBossBattleMessage
+{
+    /// <summary>
+    /// 終了したタイムライン
+    /// </summary>
+    public TIMELINE_TYPE Type { get; }
+
+    public FinishTimelineReadyToBossBattleMessage(TIMELINE_TYPE type) => Type = type;
 }

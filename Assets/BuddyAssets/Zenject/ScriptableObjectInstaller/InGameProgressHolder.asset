@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: InGameProgressHolder
   m_EditorClassIdentifier: 
   m_InGameProgress: 3
-  m_FinalBattleFriendIndex: 0
-  m_NoFriend: 1
+  m_FinalBattleFriendIndex: 2
+  m_NoFriend: 0
   m_IsCompletedIntro: 010101
   m_LoseBack: 0
   m_DefeatBoss: 0

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8263aef5c37924790ba6f886d77050e0, type: 3}
   m_Name: SnowElement
   m_EditorClassIdentifier: 
-  m_Room: {fileID: 7274343517776778505, guid: ac4e6bc16a8d3430f80c61b7bf11223c, type: 3}
-  m_Path: {fileID: 2132629838152799188, guid: ae3956470c5f3486c9a665c3dbdf48af, type: 3}
-  m_Wall: {fileID: 5602990615096958296, guid: 3c8ce8dc260f44dc18b4a1d78c6ae79c, type: 3}
+  m_Room: {fileID: 2132629838152799188, guid: ad30338fcfed7463291f6877a224a4ba, type: 3}
+  m_Path: {fileID: 5602990615096958296, guid: e7265bbb725c84598830820d559001bb, type: 3}
+  m_Wall: {fileID: 7274343517776778505, guid: 413f769b70f3a495d9fe30d73ce6e65d, type: 3}
   m_Stairs: {fileID: 3611137922286253241, guid: 905ed7eb84768418a92498ec19b62d71,
     type: 3}

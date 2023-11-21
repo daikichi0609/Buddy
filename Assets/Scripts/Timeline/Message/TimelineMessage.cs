@@ -28,18 +28,38 @@ public readonly struct RegisterTimelineMessage
 }
 
 /// <summary>
-/// クロップ
+/// クロップテキスト表示
 /// </summary>
-public readonly struct CropMessage
+public readonly struct CropTextMessage
 {
+    /// <summary>
+    /// 表示時間
+    /// </summary>
     public double Duration { get; }
+
+    /// <summary>
+    /// テキスト
+    /// </summary>
     public string Text { get; }
 
-    public CropMessage(double duration, string text)
+    public CropTextMessage(double duration, string text)
     {
         Duration = duration;
         Text = text;
     }
+}
+
+/// <summary>
+/// クロップ有効化
+/// </summary>
+public readonly struct CropSetActivateMessage
+{
+    /// <summary>
+    /// 有効化
+    /// </summary>
+    public bool IsActive { get; }
+
+    public CropSetActivateMessage(bool isActive) => IsActive = isActive;
 }
 
 /// <summary>

@@ -20,8 +20,6 @@ public class BossBattleInitializer : SceneInitializer
     private IUnitHolder m_UnitHolder;
     [Inject]
     private ITurnManager m_TurnManager;
-    [Inject]
-    private DungeonCharacterProgressSaveData m_DungeonCharacterSaveData;
 
     protected override string FungusMessage => "BossBattleStart";
     private static readonly string ms_DefeatMessage = "Defeat";
@@ -87,7 +85,7 @@ public class BossBattleInitializer : SceneInitializer
             m_Friend.GetInterface<ICharaController>().Face(DIRECTION.UP);
             m_Boss.GetInterface<ICharaAnimator>().PlayAnimation(ANIMATION_TYPE.SLEEP);
 
-            m_DungeonCharacterSaveData.ResetData(); // キャラデータリセット
+            m_DungeonCharacterProgressManager.ResetAll(); // キャラデータリセット
             m_DungeonProgressHolder.CurrentDungeonProgress = 0; // ダンジョン進行度リセット
             m_InGameProgressHolder.IncrementInGameProgress(); // 進行度Up
             await m_FadeManager.TurnBright(this, self => self.m_DefeatedFlowChart.SendFungusMessage(ms_DefeatMessage)); // 明転明け

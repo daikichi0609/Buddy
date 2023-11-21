@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [CreateAssetMenu(menuName = "MyScriptable/Progress")]
 public class InGameProgressHolder : ScriptableObject
@@ -30,7 +33,7 @@ public class InGameProgressHolder : ScriptableObject
     /// </summary>
     [SerializeField]
     private bool m_NoFriend;
-    public void SetNoFriend(bool no) => m_NoFriend = no;
+    public bool NoFriend { get => m_NoFriend; set => m_NoFriend = value; }
 
     /// <summary>
     /// 最終決戦前まで物語の進捗度依存
@@ -45,6 +48,11 @@ public class InGameProgressHolder : ScriptableObject
             return IsMaxInGameProgress ? m_FinalBattleFriendIndex : m_InGameProgress;
         }
     }
+
+    /// <summary>
+    /// ダンジョンテーマ
+    /// 進行度に依存
+    /// </summary>
     public DUNGEON_THEME DungeonTheme => (DUNGEON_THEME)m_InGameProgress;
 
     /// <summary>
@@ -97,4 +105,24 @@ public class InGameProgressHolder : ScriptableObject
     [SerializeField]
     private bool m_DefeatBoss;
     public bool DefeatBoss { get => m_DefeatBoss; set => m_DefeatBoss = value; }
+
+    /// <summary>
+    /// リセット
+    /// </summary>
+    [Button]
+    public void ResetAll()
+    {
+        m_InGameProgress = 0;
+        m_FinalBattleFriendIndex = 0;
+        m_NoFriend = false;
+        for (int i = 0; i < m_IsCompletedIntro.Length; i++)
+            m_IsCompletedIntro[i] = false;
+
+        m_LoseBack = false;
+        m_DefeatBoss = false;
+
+#if UNITY_EDITOR
+        EditorUtility.SetDirty(this);
+#endif
+    }
 }

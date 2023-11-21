@@ -16,16 +16,16 @@ public interface ISceneInitializer
     void AllowOperation(bool wrap = true);
 
     /// <summary>
-    /// カメラ追従
-    /// </summary>
-    void SetCamera();
-
-    /// <summary>
-    /// 向かい合う
+    /// リーダー移動
     /// </summary>
     /// <param name="leaderPos"></param>
     /// <param name="friendPos"></param>
-    void FaceEachOther(Vector3 leaderPos, Vector3 friendPos);
+    void WrapLeader(Transform leaderTransform);
+
+    /// <summary>
+    /// カメラ追従
+    /// </summary>
+    void SetCamera();
 
     /// <summary>
     /// Leaderの有効化切り替え
@@ -35,7 +35,7 @@ public interface ISceneInitializer
     IDisposable SwitchLeaderActive(bool isActivate);
 
     /// <summary>
-    /// Leaderの有効化切り替え
+    /// Friendの有効化切り替え
     /// </summary>
     /// <param name="isActivate"></param>
     /// <returns></returns>
@@ -149,20 +149,15 @@ public abstract class SceneInitializer : MonoBehaviour, ISceneInitializer
     void ISceneInitializer.SetCamera() => SetCamera();
 
     /// <summary>
-    /// 向かい合う
+    /// リーダーワープ
     /// </summary>
     /// <param name="leaderPos"></param>
     /// <param name="friendPos"></param>
-    void ISceneInitializer.FaceEachOther(Vector3 leaderPos, Vector3 friendPos)
+    void ISceneInitializer.WrapLeader(Transform leaderTransform)
     {
-        var lController = m_Leader.GetInterface<ICharaController>();
-        lController.Wrap(leaderPos);
-
-        var fController = m_Friend.GetInterface<ICharaController>();
-        fController.Wrap(friendPos);
-
-        lController.Face(friendPos);
-        fController.Face(leaderPos);
+        var leader = m_Leader.GetInterface<ICharaObjectHolder>();
+        leader.MoveObject.transform.position = leaderTransform.position;
+        leader.CharaObject.transform.rotation = leaderTransform.rotation;
     }
 
     /// <summary>

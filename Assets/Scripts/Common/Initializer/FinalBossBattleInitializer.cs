@@ -50,7 +50,8 @@ public class FinalBossBattleInitializer : SceneInitializer
 
     private void Awake()
     {
-        MessageBroker.Default.Receive<FinishTimelineReadyToBossBattleMessage>().SubscribeWithState(this, (_, self) => self.OnReadyToBossBattleMessage()).AddTo(this);
+        // ボスバトル開始
+        MessageBroker.Default.Receive<ReadyToBossBattleMessage>().SubscribeWithState(this, (_, self) => self.OnReadyToBossBattleMessageReceive()).AddTo(this);
 
         // フレンド設定
         MessageBroker.Default.Receive<SetFriendMessage>().SubscribeWithState(this, (message, self) =>
@@ -63,8 +64,11 @@ public class FinalBossBattleInitializer : SceneInitializer
                 _ => -1,
             };
             self.m_InGameProgressHolder.SetFinalBattleFriendIndex(index);
-            self.m_InGameProgressHolder.SetNoFriend(false);
+            self.m_InGameProgressHolder.NoFriend = false;
         }).AddTo(this);
+
+        // ボスバトル開始
+        MessageBroker.Default.Receive<GameClearMessage>().SubscribeWithState(this, (_, self) => self.OnGameClearMessageReceive()).AddTo(this);
     }
 
     /// <summary>
@@ -72,6 +76,8 @@ public class FinalBossBattleInitializer : SceneInitializer
     /// </summary>
     protected override Task OnStart()
     {
+        CreateOutGameCharacter(Vector3.zero, Vector3.zero);
+
         m_FinalBossBattleSetup = m_DungeonProgressHolder.FinalBossBattleSetup;
         m_Stage = Instantiate(m_FinalBossBattleSetup.Stage);
 
@@ -117,7 +123,7 @@ public class FinalBossBattleInitializer : SceneInitializer
     /// <summary>
     /// ボスバトル開始
     /// </summary>
-    private void OnReadyToBossBattleMessage()
+    private void OnReadyToBossBattleMessageReceive()
     {
         m_FadeManager.StartFadeWhite(this, async self =>
         {
@@ -139,7 +145,7 @@ public class FinalBossBattleInitializer : SceneInitializer
         if (progress == 1) // キング戦
             await ReadyToKingBossBattle(m_FinalBossBattleSetup.IsLoseBackComplete);
         else if (progress == 2) // バルム戦
-            await ReadyToKingBossBattle(m_FinalBossBattleSetup.IsLoseBack);
+            await ReadyToBarmBossBattle();
 #if DEBUG
         else
         {
@@ -169,9 +175,6 @@ public class FinalBossBattleInitializer : SceneInitializer
         // Ui表示
         MessageBroker.Default.Publish(new BattleUiSwitch(true));
 
-        // ボス
-        var boss = bossSetup.BossCharacterSetup;
-
         // 敵がいなくなったら終了
         m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>
         {
@@ -179,6 +182,9 @@ public class FinalBossBattleInitializer : SceneInitializer
                 return;
             self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
         }).AddTo(this);
+
+        // ボス
+        var boss = bossSetup.BossCharacterSetup;
 
         // 初回挑戦時
         if (loseBack == false)
@@ -201,8 +207,70 @@ public class FinalBossBattleInitializer : SceneInitializer
             await m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
         }
     }
+
+    /// <summary>
+    /// バルム戦
+    /// </summary>
+    /// <param name="loseBack"></param>
+    /// <returns></returns>
+    private async Task ReadyToBarmBossBattle()
+    {
+        BossPos = new Vector3(11f, OFFSET_Y, 15f);
+
+        Destroy(m_Stage);
+
+        var bossSetup = m_FinalBossBattleSetup.BarmBossBattleSetup;
+        await BossBattleInitializer.DeployBossMap(bossSetup, m_DungeonDeployer); // ステージ生成
+
+        // BGM
+        var bgm = Instantiate(bossSetup.BGM);
+        m_BGMHandler.SetBGM(bgm);
+
+        // Ui表示
+        MessageBroker.Default.Publish(new BattleUiSwitch(true));
+
+        // 敵がいなくなったら終了
+        m_UnitHolder.OnEnemyRemove.SubscribeWithState(this, (count, self) =>
+        {
+            if (count != 0)
+                return;
+            self.m_DungeonProgressManager.FinishDungeon(FINISH_REASON.BOSS_DEAD);
+        }).AddTo(this);
+
+        LeaderPos = new Vector3(10f, OFFSET_Y, 11f);
+        Vector3 friendPos = new Vector3(12f, OFFSET_Y, 11f);
+        BossPos = new Vector3(11f, OFFSET_Y, 13f);
+        var boss = bossSetup.BossCharacterSetup;
+        var bossBattleDeployInfo = new BossBattleDeployInfo(LeaderPos, friendPos, BossPos, boss);
+
+        await m_DungeonContentsDeployer.DeployBossBattleContents(bossBattleDeployInfo);
+    }
+
+    /// <summary>
+    /// ゲームクリア時
+    /// 全ての進行度をリセットして、はじめからにする
+    /// </summary>
+    private void OnGameClearMessageReceive()
+    {
+        m_InGameProgressHolder.ResetAll();
+        m_DungeonProgressHolder.ResetAll();
+        m_DungeonCharacterProgressManager.ResetAll();
+
+        m_FadeManager.LoadScene(SceneName.SCENE_HOME);
+    }
 }
 
+/// <summary>
+/// ボスバトル開始
+/// </summary>
+public readonly struct ReadyToBossBattleMessage
+{
+
+}
+
+/// <summary>
+/// キング戦
+/// </summary>
 public readonly struct KingBattleDeployInfo
 {
     public KingBattleDeployInfo(Vector3 playerPos, Vector3 bossPos, CharacterSetup bossCharacterSetup, Vector3[] warriorPos, DIRECTION[] warriorDir, CharacterSetup warriorSetup,
@@ -257,7 +325,10 @@ public readonly struct KingBattleDeployInfo
     public CharacterSetup[] FriendSetup { get; }
 }
 
-public readonly struct FinishTimelineReadyToBossBattleMessage
+/// <summary>
+/// ゲームクリア時
+/// </summary>
+public readonly struct GameClearMessage
 {
 
 }
