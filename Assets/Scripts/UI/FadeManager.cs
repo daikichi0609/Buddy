@@ -75,6 +75,14 @@ public interface IFadeManager
     Task StartFadeWhite(float speed, float time);
 
     /// <summary>
+    /// テキストのみ表示
+    /// </summary>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    Task ShowWhere(string dungeonName, string where);
+
+    /// <summary>
     /// 暗転中にシーンをロード
     /// </summary>
     /// <returns></returns>
@@ -223,6 +231,21 @@ public class FadeManager : MonoBehaviour, IFadeManager
         whileEvent?.Invoke(arg1);
         await FadeInScreen(m_WhiteScreen);
         completedEvent.Invoke(arg2);
+    }
+
+    /// <summary>
+    /// テキストのみ表示
+    /// </summary>
+    /// <param name="dungeonName"></param>
+    /// <param name="where"></param>
+    /// <returns></returns>
+    async Task IFadeManager.ShowWhere(string dungeonName, string where)
+    {
+        m_DungeonName.text = dungeonName;
+        m_FloorText.text = where;
+
+        await FadeInText();
+        await FadeOutText();
     }
 
     /// <summary>

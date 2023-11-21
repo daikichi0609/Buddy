@@ -48,6 +48,52 @@ public class FinalBossBattleInitializer : SceneInitializer
         DIRECTION.LEFT, DIRECTION.RIGHT, DIRECTION.UNDER
     };
 
+    /// <summary>
+    /// イントロタイムライン
+    /// </summary>
+    /// <param name="progress"></param>
+    /// <returns></returns>
+    private TIMELINE_TYPE GetCurrentIntroTimelineType(int progress)
+    {
+        return progress switch
+        {
+            1 => TIMELINE_TYPE.KING_INTRO,
+            2 => TIMELINE_TYPE.BARM_INTRO,
+            _ => TIMELINE_TYPE.NONE,
+        };
+    }
+
+    /// <summary>
+    /// 撃破タイムライン
+    /// </summary>
+    /// <param name="progress"></param>
+    /// <returns></returns>
+    private TIMELINE_TYPE GetCurrentDefeatTimelineType(int progress)
+    {
+        // イントロタイムライン再生
+        return progress switch
+        {
+            1 => TIMELINE_TYPE.KING_DEFEAT,
+            2 => TIMELINE_TYPE.BARM_DEFEAT,
+            _ => TIMELINE_TYPE.NONE,
+        };
+    }
+
+    /// <summary>
+    /// ボスバトルセットアップ
+    /// </summary>
+    /// <param name="progress"></param>
+    /// <returns></returns>
+    private BossBattleSetup GetCurrentBossBattleSetup(int progress)
+    {
+        return progress switch
+        {
+            1 => m_FinalBossBattleSetup.KingBossBattleSetup,
+            2 => m_FinalBossBattleSetup.BarmBossBattleSetup,
+            _ => null
+        };
+    }
+
     private void Awake()
     {
         // ボスバトル開始
@@ -74,7 +120,7 @@ public class FinalBossBattleInitializer : SceneInitializer
     /// <summary>
     /// スタート処理
     /// </summary>
-    protected override Task OnStart()
+    protected override async Task OnStart()
     {
         CreateOutGameCharacter(Vector3.zero, Vector3.zero);
 
@@ -85,6 +131,7 @@ public class FinalBossBattleInitializer : SceneInitializer
         MessageBroker.Default.Publish(new BattleUiSwitch(false));
 
         int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
+
         // 負けフラグ回収
         if (m_FinalBossBattleSetup.IsLoseBack == true)
         {
@@ -95,29 +142,36 @@ public class FinalBossBattleInitializer : SceneInitializer
         // イントロタイムライン再生
         else if (m_InGameProgressHolder.DefeatBoss == false)
         {
-            var type = progress switch
+            var type = GetCurrentIntroTimelineType(progress);
+            var bossBattleSetup = GetCurrentBossBattleSetup(progress);
+
+            // 一旦タイムラインは無しで進める
+            // バルム戦開始
+            if (type == TIMELINE_TYPE.BARM_INTRO)
             {
-                1 => TIMELINE_TYPE.KING_INTRO,
-                2 => TIMELINE_TYPE.BARM_INTRO,
-                _ => TIMELINE_TYPE.NONE,
-            };
+                var _ = m_FadeManager.TurnBright(string.Empty, string.Empty);
+                OnReadyToBossBattleMessageReceive();
+                return;
+            }
+
+            await m_FadeManager.ShowWhere(bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
             m_TimelineManager.Play(type);
         }
         // 撃破後フロー再生
         else
         {
             m_InGameProgressHolder.DefeatBoss = false;
+            var type = GetCurrentDefeatTimelineType(progress);
 
-            // イントロタイムライン再生
-            var type = progress switch
+            // バルム戦後
+            if (type == TIMELINE_TYPE.BARM_DEFEAT)
             {
-                1 => TIMELINE_TYPE.KING_DEFEAT,
-                2 => TIMELINE_TYPE.BARM_DEFEAT,
-                _ => TIMELINE_TYPE.NONE,
-            };
+                OnGameClearMessageReceive();
+                return;
+            }
+
             m_TimelineManager.Play(type);
         }
-        return Task.CompletedTask;
     }
 
     /// <summary>

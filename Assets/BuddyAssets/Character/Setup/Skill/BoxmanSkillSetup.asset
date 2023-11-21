@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4743024490603163444
+--- !u!114 &-7557460907948714556
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,19 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88472be80ce004f258ec39ebb116fbb1, type: 3}
   m_Name: ContinuousSlash
   m_EditorClassIdentifier: 
---- !u!114 &-4311316631859596594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3a5bf5f7bbc34edbbb93a03c4c02b17, type: 3}
-  m_Name: AngelBarrage
-  m_EditorClassIdentifier: 
---- !u!114 &-184750015207039018
+--- !u!114 &-3384014527410349690
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,14 +34,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 618412d18cdaf41a0991aafcd5437428, type: 3}
-  m_Name: LougeSkillSetup
+  m_Name: BoxmanSkillSetup
   m_EditorClassIdentifier: 
   m_Skills:
-  - {fileID: -4743024490603163444}
-  - {fileID: -184750015207039018}
-  - {fileID: 7359669127743547686}
+  - {fileID: -7557460907948714556}
+  - {fileID: -3384014527410349690}
+  - {fileID: 110908011948055590}
   m_Type: VaccumSlash
---- !u!114 &7359669127743547686
+--- !u!114 &110908011948055590
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -85,7 +85,7 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
     /// タイムライン再生
     /// </summary>
     /// <param name="type"></param>
-    /// <param name="finish"></param>
+    /// <param name="finish">連続再生</param>
     private bool Play(TIMELINE_TYPE type, bool finish = false)
     {
         if (m_CurrentDirector.TryGetValue(type, out var register) == false)
@@ -93,15 +93,6 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
 #if DEBUG
             Debug.LogWarning("タイムラインが未登録です。" + type.ToString());
 #endif
-            // 一旦タイムラインは無しで進める
-            // バルム戦開始
-            if (type == TIMELINE_TYPE.BARM_INTRO)
-                MessageBroker.Default.Publish(new ReadyToBossBattleMessage());
-
-            // バルム戦後
-            if (type == TIMELINE_TYPE.BARM_DEFEAT)
-                MessageBroker.Default.Publish(new GameClearMessage());
-
             return false;
         }
 

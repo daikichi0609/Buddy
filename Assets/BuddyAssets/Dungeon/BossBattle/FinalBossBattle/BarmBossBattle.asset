@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbef0049f419f4198a21fcf0f6bea551, type: 3}
   m_Name: BarmBossBattle
   m_EditorClassIdentifier: 
-  m_BossBattleName: "\u30F4\u30A1\u30EA\u30C6\u30A3\u30A2\u96EA\u539F"
+  m_BossBattleName: "\u5C01\u5370\u306E\u5730"
   m_WhereName: "\u6700\u6DF1\u90E8"
   m_ElementSetup: {fileID: 11400000, guid: 1b1108a41fd6743cf8cbd7d2e3c6ed99, type: 2}
   m_BossCharacterSetup: {fileID: 11400000, guid: d5a7040c5bc444496a32de28b415dd8c,

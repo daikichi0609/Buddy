@@ -19,5 +19,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a78debcb953f445c183e409cc63f7029, type: 2}
   m_FinalBossBattleSetup: {fileID: 11400000, guid: a6d5c4823a9ea49609e313df0cd5aeb2,
     type: 2}
-  m_CurrentDungeonTheme: 0
-  m_CurrentDungeonProgress: 1
+  m_CurrentDungeonTheme: -1
+  m_CurrentDungeonProgress: 0

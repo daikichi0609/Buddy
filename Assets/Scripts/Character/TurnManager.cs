@@ -72,7 +72,7 @@ public class TurnManager : ITurnManager
     /// </summary>
     [SerializeField, NaughtyAttributes.ReadOnly]
     private ReactiveProperty<int> m_TotalTurnCount = new ReactiveProperty<int>(1);
-    IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount;
+    IObservable<int> ITurnManager.OnTurnEnd => m_TotalTurnCount.Skip(1);
     int ITurnManager.TotalTurnCount => m_TotalTurnCount.Value;
 
     /// <summary>

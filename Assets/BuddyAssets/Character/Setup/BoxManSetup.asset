@@ -17,5 +17,3 @@ MonoBehaviour:
   m_Status: {fileID: 11400000, guid: 00a59bb3ded4a4befb11dd63b7a74242, type: 2}
   m_SkillSetup: {fileID: 11400000, guid: e0709fd700b3f4470b9ec4402a20f1bd, type: 2}
   m_ClevernessSetup: {fileID: 11400000, guid: 49dd7023242dd4618a5531e4d2d23b40, type: 2}
-  m_OutGamePrefab: {fileID: 799977712478907360, guid: 59a5fb3448fb0440581b11fea6141b5e,
-    type: 3}

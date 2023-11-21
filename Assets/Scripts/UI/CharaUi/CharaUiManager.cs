@@ -114,7 +114,7 @@ public class CharaUiManager : MonoBehaviour, ICharaUiManager
             m_CharacterUiList.Add(ui);
             ui.Initialize(unit);
 
-            obj.GetComponent<RectTransform>().transform.position += ms_Diff * i++;
+            obj.GetComponent<RectTransform>().transform.position += ms_Diff * i;
         }
     }
 
