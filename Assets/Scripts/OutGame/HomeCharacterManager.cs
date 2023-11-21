@@ -18,7 +18,7 @@ public interface IHomeCharacterManager
     /// ホームキャラ非表示
     /// </summary>
     /// <returns></returns>
-    IDisposable DeactivateAll();
+    IDisposable DeactivateFriends();
 }
 
 public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
@@ -32,6 +32,8 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
 
     private List<ICollector> m_HomeCharacters = new List<ICollector>();
     ICollector IHomeCharacterManager.GetHomeCharacter(int index) => m_HomeCharacters[index];
+
+    private static readonly int FRIEND_COUNT = 3;
 
     private void Awake()
     {
@@ -48,10 +50,6 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
 
         for (int i = 0; i < info.Prefabs.Length; i++)
         {
-            // 進行度に応じて生成しない
-            if (index == i)
-                continue;
-
             var prefab = info.Prefabs[i];
             var chara = m_Instantiater.InstantiatePrefab(prefab, SceneInitializer.ms_OutGameUnitInjector);
 
@@ -63,6 +61,13 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
             collector.Initialize();
             m_HomeCharacters.Add(collector);
 
+            // 進行度に応じて会話登録せずに非表示にする
+            if (index == i)
+            {
+                collector.GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
+                continue;
+            }
+
             var flowPrefab = info.Flows[i];
             var flow = m_Instantiater.InstantiatePrefab(flowPrefab).GetComponent<Fungus.Flowchart>();
             m_ConversationManager.Register(collector, flow, tf.position);
@@ -73,15 +78,25 @@ public class HomeCharacterManager : MonoBehaviour, IHomeCharacterManager
     /// ホームキャラ非表示
     /// </summary>
     /// <param name="isActive"></param>
-    IDisposable IHomeCharacterManager.DeactivateAll()
+    IDisposable IHomeCharacterManager.DeactivateFriends()
     {
-        foreach (var chara in m_HomeCharacters)
-            chara.GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
-
-        return Disposable.CreateWithState(m_HomeCharacters, characters =>
+        for (int i = 0; i < FRIEND_COUNT; i++)
         {
-            foreach (var chara in characters)
+            var chara = m_HomeCharacters[i];
+            chara.GetInterface<ICharaObjectHolder>().MoveObject.SetActive(false);
+        }
+
+        int index = m_InGameInfoManager.FriendIndex;
+        return Disposable.CreateWithState((m_HomeCharacters, index), tuple =>
+        {
+            for (int i = 0; i < FRIEND_COUNT; i++)
+            {
+                if (tuple.index == i)
+                    continue;
+
+                var chara = tuple.m_HomeCharacters[i];
                 chara.GetInterface<ICharaObjectHolder>().MoveObject.SetActive(true);
+            }
         });
     }
 }

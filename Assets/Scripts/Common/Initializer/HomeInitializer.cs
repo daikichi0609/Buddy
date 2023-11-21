@@ -23,7 +23,7 @@ public class HomeInitializer : SceneInitializer
 
     private Vector3 FriendPos { get; set; }
 
-    private IDisposable m_HomeCharactersActivate;
+    private IDisposable m_HomeFriendsActivate;
 
     private Fungus.Flowchart m_DeparturedFlowChart;
     private Fungus.Flowchart m_LoseBackFlowChart;
@@ -85,7 +85,7 @@ public class HomeInitializer : SceneInitializer
             m_InGameProgressHolder.NoFriend = true;
             m_TimelineManager.Play(TIMELINE_TYPE.FINAL_INTRO);
 
-            m_HomeCharactersActivate = m_HomeCharacterManager.DeactivateAll(); // ホームキャラ非表示
+            m_HomeFriendsActivate = m_HomeCharacterManager.DeactivateFriends(); // ホームキャラ非表示
         }
         // 初回タイムライン再生が終わっていない
         else if (m_InGameProgressHolder.CurrentIntroCompleted == false)
@@ -94,7 +94,8 @@ public class HomeInitializer : SceneInitializer
             if (m_TimelineManager.Play(theme) == true)
                 m_InGameProgressHolder.CurrentIntroCompleted = true; // フラグオン
 
-            m_HomeCharactersActivate = m_HomeCharacterManager.DeactivateAll(); // ホームキャラ非表示
+            if (theme != TIMELINE_TYPE.INTRO)
+                m_HomeFriendsActivate = m_HomeCharacterManager.DeactivateFriends(); // ホームキャラ非表示
         }
         // 通常時
         else if (m_InGameProgressHolder.LoseBack == false)
@@ -120,10 +121,10 @@ public class HomeInitializer : SceneInitializer
 
             MessageBroker.Default.Publish(new ResetTimelineCharacterMessage());
 
-            if (self.m_HomeCharactersActivate != null)
+            if (self.m_HomeFriendsActivate != null)
             {
-                self.m_HomeCharactersActivate.Dispose();
-                self.m_HomeCharactersActivate = null;
+                self.m_HomeFriendsActivate.Dispose();
+                self.m_HomeFriendsActivate = null;
             }
         },
         this, self => self.AllowOperation(false));
