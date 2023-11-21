@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using System.Threading.Tasks;
 using Zenject;
-using Fungus;
 using Task = System.Threading.Tasks.Task;
 using System;
 
