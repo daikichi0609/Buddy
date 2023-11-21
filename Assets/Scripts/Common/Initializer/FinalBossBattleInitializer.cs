@@ -163,6 +163,7 @@ public class FinalBossBattleInitializer : SceneInitializer
             m_InGameProgressHolder.DefeatBoss = false;
             var type = GetCurrentDefeatTimelineType(progress);
 
+            // 一旦タイムラインは無しで進める
             // バルム戦後
             if (type == TIMELINE_TYPE.BARM_DEFEAT)
             {
