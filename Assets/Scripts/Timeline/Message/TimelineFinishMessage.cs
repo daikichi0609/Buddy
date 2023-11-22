@@ -108,3 +108,16 @@ public readonly struct FinishTimelineReadyToBossBattleMessage
 
     public FinishTimelineReadyToBossBattleMessage(TIMELINE_TYPE type) => Type = type;
 }
+
+/// <summary>
+/// ゲームクリア
+/// </summary>
+public readonly struct FinishTimelineGameClearMessage
+{
+    /// <summary>
+    /// 終了したタイムライン
+    /// </summary>
+    public TIMELINE_TYPE Type { get; }
+
+    public FinishTimelineGameClearMessage(TIMELINE_TYPE type) => Type = type;
+}

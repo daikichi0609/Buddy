@@ -83,6 +83,12 @@ public interface IFadeManager
     Task ShowWhere(string dungeonName, string where);
 
     /// <summary>
+    /// 暗転
+    /// </summary>
+    /// <returns></returns>
+    Task BlackOut<T>(T arg, Action<T> completedEvent);
+
+    /// <summary>
     /// 暗転中にシーンをロード
     /// </summary>
     /// <returns></returns>
@@ -230,7 +236,7 @@ public class FadeManager : MonoBehaviour, IFadeManager
         await FadeOutScreen(m_WhiteScreen);
         whileEvent?.Invoke(arg1);
         await FadeInScreen(m_WhiteScreen);
-        completedEvent.Invoke(arg2);
+        completedEvent?.Invoke(arg2);
     }
 
     /// <summary>
@@ -246,6 +252,19 @@ public class FadeManager : MonoBehaviour, IFadeManager
 
         await FadeInText();
         await FadeOutText();
+    }
+
+    /// <summary>
+    /// 暗転のみ
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="arg"></param>
+    /// <param name="completedEvent"></param>
+    /// <returns></returns>
+    async Task IFadeManager.BlackOut<T>(T arg, Action<T> completedEvent)
+    {
+        await FadeOutScreen(m_BlackScreen);
+        completedEvent?.Invoke(arg);
     }
 
     /// <summary>

@@ -28,6 +28,11 @@ public class FinalBossBattleInitializer : SceneInitializer
 
     private Vector3 BossPos { get; set; }
 
+    /// <summary>
+    /// Fungus
+    /// </summary>
+    protected override string FungusMessage => "GameClear";
+
     private static readonly float OFFSET_Y = 0.5f;
     private static readonly Vector3[] WARRIOR_POS = new Vector3[7]
     {
@@ -145,15 +150,6 @@ public class FinalBossBattleInitializer : SceneInitializer
             var type = GetCurrentIntroTimelineType(progress);
             var bossBattleSetup = GetCurrentBossBattleSetup(progress);
 
-            // 一旦タイムラインは無しで進める
-            // バルム戦開始
-            if (type == TIMELINE_TYPE.BARM_INTRO)
-            {
-                var _ = m_FadeManager.TurnBright(string.Empty, string.Empty);
-                OnReadyToBossBattleMessageReceive();
-                return;
-            }
-
             await m_FadeManager.ShowWhere(bossBattleSetup.BossBattleName, bossBattleSetup.WhereName);
             m_TimelineManager.Play(type);
         }
@@ -162,14 +158,6 @@ public class FinalBossBattleInitializer : SceneInitializer
         {
             m_InGameProgressHolder.DefeatBoss = false;
             var type = GetCurrentDefeatTimelineType(progress);
-
-            // 一旦タイムラインは無しで進める
-            // バルム戦後
-            if (type == TIMELINE_TYPE.BARM_DEFEAT)
-            {
-                OnGameClearMessageReceive();
-                return;
-            }
 
             m_TimelineManager.Play(type);
         }
@@ -311,7 +299,12 @@ public class FinalBossBattleInitializer : SceneInitializer
         m_DungeonProgressHolder.ResetAll();
         m_DungeonCharacterProgressManager.ResetAll();
 
-        m_FadeManager.LoadScene(SceneName.SCENE_HOME);
+        // 会話フロー生成
+        var setup = m_FinalBossBattleSetup;
+        var flow = m_Instantiater.InstantiatePrefab(setup.GameClearFlow).GetComponent<Fungus.Flowchart>();
+
+        // 会話開始
+        m_FadeManager.BlackOut((this, flow), tuple => tuple.flow.SendFungusMessage(tuple.Item1.FungusMessage));
     }
 }
 

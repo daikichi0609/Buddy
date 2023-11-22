@@ -42,6 +42,13 @@ public class FinalBossBattleSetup : ScriptableObject
     public GameObject Stage => m_Stage;
 
     /// <summary>
+    /// ゲームクリアフロー
+    /// </summary>
+    [SerializeField, Header("ゲームクリアフロー")]
+    private GameObject m_GameClearFlow;
+    public GameObject GameClearFlow => m_GameClearFlow;
+
+    /// <summary>
     /// フレンドインデックス
     /// </summary>
     [SerializeField, Header("フレンドインデックス")]

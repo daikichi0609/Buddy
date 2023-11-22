@@ -30,6 +30,7 @@ public class TimelineRegister : MonoBehaviour
         FUNGUS_EVENT,
         LOAD_SCENE,
         READY_TO_BATTLE,
+        GAME_CLEAR,
     }
 
     [BoxGroup("共通設定")]
@@ -169,6 +170,10 @@ public class TimelineRegister : MonoBehaviour
 
             case TIMELINE_FINISH_TYPE.READY_TO_BATTLE:
                 MessageBroker.Default.Publish(new FinishTimelineReadyToBossBattleMessage(m_Type));
+                break;
+
+            case TIMELINE_FINISH_TYPE.GAME_CLEAR:
+                MessageBroker.Default.Publish(new FinishTimelineGameClearMessage(m_Type));
                 break;
         }
     }

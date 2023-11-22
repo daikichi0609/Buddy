@@ -71,6 +71,8 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
         MessageBroker.Default.Receive<FinishTimelineNextSceneLoadMessage>().SubscribeWithState(this, (message, self) => self.OnFinishNextScene(message)).AddTo(this);
         // ボスバトル開始
         MessageBroker.Default.Receive<FinishTimelineReadyToBossBattleMessage>().SubscribeWithState(this, (message, self) => self.OnFinishReadyToBossBattle(message)).AddTo(this);
+        // ゲームクリア
+        MessageBroker.Default.Receive<FinishTimelineGameClearMessage>().SubscribeWithState(this, (message, self) => self.OnFinishGameClear(message)).AddTo(this);
 
         MessageBroker.Default.Receive<DeployTimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_DeployTimelineMessages.Add(message)).AddTo(this);
         MessageBroker.Default.Receive<TimelineCharacterMessage>().SubscribeWithState(this, (message, self) => self.m_TimelineCharacters = message.TimelineCharacterHolder).AddTo(this);
@@ -253,6 +255,18 @@ public class TimelineManager : MonoBehaviour, ITimelineManager
             return;
 
         MessageBroker.Default.Publish(new ReadyToBossBattleMessage());
+    }
+
+    /// <summary>
+    /// ゲームクリア
+    /// </summary>
+    /// <param name="message"></param>
+    private void OnFinishGameClear(FinishTimelineGameClearMessage message)
+    {
+        if (CheckCanFinish(message.Type) == false)
+            return;
+
+        MessageBroker.Default.Publish(new GameClearMessage());
     }
 
     /// <summary>
