@@ -169,10 +169,35 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
     /// <returns></returns>
     private async Task<bool> Skill(int index)
     {
+        if (await CheckCanSkill(index) == false)
+            return false;
+
+        await SkillInternal(index);
+        return true;
+    }
+    Task<bool> ICharaSkillHandler.Skill(int index) => Skill(index);
+    async Task<bool> ICharaSkillHandler.Skill(int index, DIRECTION dir)
+    {
+        if (await CheckCanSkill(index) == false)
+            return false;
+
+        await m_CharaMove.Face(dir);
+        await SkillInternal(index);
+        return true;
+    }
+
+    /// <summary>
+    /// スキルを使えるかどうか
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    private async Task<bool> CheckCanSkill(int index)
+    {
         // 誰かが行動中なら攻撃できない
         if (m_UnitHolder.NoOneActing == false)
             return false;
 
+        // スキルindex例外
         if (index < 0 || index >= m_Skills.Count)
             return false;
 
@@ -184,19 +209,28 @@ public class CharaSkillHandler : ActorComponentBase, ICharaSkillHandler
             return false;
         }
 
-        m_LastAction.RegisterAction(CHARA_ACTION.SKILL);
-
-        SkillContext ctx = new SkillContext(Owner, m_DungeonHandler, m_DungeonContentsDeployer, m_UnitFinder, m_BattleLogManager, m_EffectHolder, m_SoundHolder);
-        await skillHolder.SkillInternal(ctx);
         return true;
     }
-    Task<bool> ICharaSkillHandler.Skill(int index) => Skill(index);
-    async Task<bool> ICharaSkillHandler.Skill(int index, DIRECTION dir)
+
+    /// <summary>
+    /// スキル処理
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    private async Task SkillInternal(int index)
     {
-        await m_CharaMove.Face(dir);
-        return await Skill(index);
+        m_LastAction.RegisterAction(CHARA_ACTION.SKILL);
+
+        var skill = m_Skills[index];
+        SkillContext ctx = new SkillContext(Owner, m_DungeonHandler, m_DungeonContentsDeployer, m_UnitFinder, m_BattleLogManager, m_EffectHolder, m_SoundHolder);
+        await skill.SkillInternal(ctx);
     }
 
+    /// <summary>
+    /// スキル有効化切り替え
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     bool ICharaSkillHandler.SwitchActivate(int index)
     {
         if (TryGetSkill(index, out var skill) == false)
