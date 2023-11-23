@@ -93,6 +93,7 @@ public partial class EnemyAi : CharaAi, IEnemyAi
                         candidates.Add(candidate);
                     else if (distance < minDistance)
                     {
+                        minDistance = distance;
                         candidates.Clear();
                         candidates.Add(candidate);
                     }
