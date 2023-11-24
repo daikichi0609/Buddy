@@ -35,6 +35,11 @@ public interface ICharaMove : IActorInterface
     Task Face(DIRECTION direction);
 
     /// <summary>
+    /// 敵に向き直る
+    /// </summary>
+    Task FaceToEnemy();
+
+    /// <summary>
     /// 移動
     /// </summary>
     /// <param name="dir"></param>
@@ -79,8 +84,24 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private ICharaTypeHolder m_Type;
     private ICharaLastActionHolder m_CharaLastActionHolder;
     private ICharaTurn m_CharaTurn;
+    private ICharaTurnEvent m_CharaTurnEvent;
     private ICharaAnimator m_CharaAnimator;
     private ICharaStatusAbnormality m_Abnormal;
+
+    /// <summary>
+    /// 移動前に呼ばれる
+    /// </summary>
+    private Subject<Unit> m_OnMoveStart = new Subject<Unit>();
+    IObservable<Unit> ICharaMoveEvent.OnMoveStart => m_OnMoveStart;
+
+    /// <summary>
+    /// 移動後に呼ばれる
+    /// </summary>
+    private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
+    IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
+
+    private static readonly float SPEED_MAG = 3f;
+    public static readonly float OFFSET_Y = 0.51f;
 
     /// <summary>
     /// 位置
@@ -125,19 +146,10 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     }
 
     /// <summary>
-    /// 移動前に呼ばれる
+    /// 敵と隣接している方向
     /// </summary>
-    private Subject<Unit> m_OnMoveStart = new Subject<Unit>();
-    IObservable<Unit> ICharaMoveEvent.OnMoveStart => m_OnMoveStart;
-
-    /// <summary>
-    /// 移動後に呼ばれる
-    /// </summary>
-    private Subject<Unit> m_OnMoveEnd = new Subject<Unit>();
-    IObservable<Unit> ICharaMoveEvent.OnMoveEnd => m_OnMoveEnd;
-
-    private static readonly float SPEED_MAG = 3f;
-    public static readonly float OFFSET_Y = 0.51f;
+    private List<DIRECTION> m_EnemyDir;
+    private int m_EnemyDirIndex;
 
     protected override void Register(ICollector owner)
     {
@@ -152,6 +164,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         m_Type = Owner.GetInterface<ICharaTypeHolder>();
         m_CharaLastActionHolder = Owner.GetInterface<ICharaLastActionHolder>();
         m_CharaTurn = Owner.GetInterface<ICharaTurn>();
+        m_CharaTurnEvent = Owner.GetEvent<ICharaTurnEvent>();
         m_CharaAnimator = Owner.GetInterface<ICharaAnimator>();
         m_Abnormal = Owner.GetInterface<ICharaStatusAbnormality>();
 
@@ -163,6 +176,13 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
 
         // アクション登録
         m_OnMoveStart.SubscribeWithState(this, (_, self) => self.m_CharaLastActionHolder.RegisterAction(CHARA_ACTION.MOVE)).AddTo(Owner.Disposables);
+
+        // 敵振り向き
+        m_CharaTurnEvent.OnTurnEnd.SubscribeWithState(this, (_, self) =>
+        {
+            self.m_EnemyDir = null;
+            self.m_EnemyDirIndex = 0;
+        }).AddTo(Owner.Disposables);
     }
 
     /// <summary>
@@ -174,7 +194,7 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         if (direction == DIRECTION.NONE)
             return Task.CompletedTask;
 
-        if (m_Abnormal.IsSleeping == true)
+        if (m_Abnormal.IsSleeping == true || m_Abnormal.IsLostOne == true)
             return Task.CompletedTask;
 
         Direction = direction;
@@ -316,5 +336,32 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
         if (m_MovingTask != null)
             while (m_MovingTask.IsCompleted == false)
                 await Task.Delay(1);
+    }
+
+    /// <summary>
+    /// 周囲の敵に向き直る
+    /// </summary>
+    /// <returns></returns>
+    async Task ICharaMove.FaceToEnemy()
+    {
+        if (m_EnemyDir == null)
+        {
+            m_EnemyDir = new List<DIRECTION>();
+            // 敵と隣接している方向を探る
+            foreach (var dir in Positional.Directions)
+            {
+                if (Positional.TryGetForwardUnit(Position, dir, 1, m_Type.TargetType, m_DungeonHandler, m_UnitFinder, out var hit, out var flyDistance) == true)
+                    m_EnemyDir.Add(dir.ToDirEnum());
+            }
+        }
+
+        // リスト空ならなにもしない
+        if (m_EnemyDir.Count == 0)
+            return;
+
+        // インクリメントして敵の方向向く
+        if (++m_EnemyDirIndex >= m_EnemyDir.Count)
+            m_EnemyDirIndex = 0;
+        await Face(m_EnemyDir[m_EnemyDirIndex]);
     }
 }

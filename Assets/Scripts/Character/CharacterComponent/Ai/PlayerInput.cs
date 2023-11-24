@@ -60,7 +60,11 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
             return;
         }
 
-        // プレイヤーの入力結果を見る
+        // 入力始め
+        var startFlag = m_InputManager.InputStartKeyCode;
+        await DetectInputFaceToEnemy(startFlag);
+
+        // 入力中
         var flag = m_InputManager.InputKeyCode;
         var result = await DetectInputInternal(flag);
 
@@ -97,7 +101,7 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
         if (await DetectInputAttack(flag) == true)
             return true;
 
-        // 攻撃
+        // スキル
         if (await DetectInputSkill(flag) == true)
             return true;
 
@@ -192,5 +196,15 @@ public class PlayerInput : ActorComponentBase, IPlayerInput
                 return await m_CharaSkill.Skill(2);
 
         return false;
+    }
+
+    /// <summary>
+    /// 敵の方向へ向く
+    /// </summary>
+    /// <returns></returns>
+    private async Task DetectInputFaceToEnemy(KeyCodeFlag flag)
+    {
+        if (flag.HasBitFlag(KeyCodeFlag.Right_Shift) == true)
+            await m_CharaMove.FaceToEnemy();
     }
 }

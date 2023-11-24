@@ -29,6 +29,7 @@ public enum KeyCodeFlag
     // Ui決定
     Return = 1 << 9,
 
+    // スキル
     One = 1 << 10,
     Two = 1 << 11,
     Three = 1 << 12,
