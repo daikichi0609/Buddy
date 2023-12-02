@@ -11,28 +11,28 @@ public enum KeyCodeFlag
     None = 0,
 
     // ----- 移動 ----- //
-    W = 1 << 1,
-    A = 1 << 2,
-    S = 1 << 3,
-    D = 1 << 4,
-    Right_Shift = 1 << 5,
+    W = 1 << 0,
+    A = 1 << 1,
+    S = 1 << 2,
+    D = 1 << 3,
+    Right_Shift = 4 << 5,
 
     // 攻撃
-    E = 1 << 6,
+    E = 1 << 5,
 
     // 戻る
-    Q = 1 << 7,
+    Q = 1 << 6,
 
     // メニュー
-    M = 1 << 8,
+    M = 1 << 7,
 
     // Ui決定
-    Return = 1 << 9,
+    Return = 1 << 8,
 
     // スキル
-    One = 1 << 10,
-    Two = 1 << 11,
-    Three = 1 << 12,
+    One = 1 << 9,
+    Two = 1 << 10,
+    Three = 1 << 11,
 }
 
 public readonly struct InputInfo
