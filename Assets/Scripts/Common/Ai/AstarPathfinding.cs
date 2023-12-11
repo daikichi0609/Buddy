@@ -110,9 +110,6 @@ public static class AStarSearch
     /// <returns></returns>
     public static List<Node> FindPath(Vector2Int startPos, Vector2Int goalPos, int[,] grid)
     {
-        // ノード集合
-        var nodeList = new List<Node>();
-
         // スタートとゴールのノード作成
         var startNode = new Node(startPos.x, startPos.y, 0, startPos.GetDistance(goalPos));
 

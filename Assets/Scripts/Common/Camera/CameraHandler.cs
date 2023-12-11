@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UniRx;
 using System;
 
 public interface ICameraHandler
 {
     /// <summary>
-    /// 親子設定
+    /// 親子関係構築
     /// </summary>
     /// <param name="parent"></param>
     /// <returns></returns>

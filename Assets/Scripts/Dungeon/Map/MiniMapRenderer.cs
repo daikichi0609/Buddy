@@ -385,6 +385,11 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
         m_StairsIcons.Clear();
     }
 
+    /// <summary>
+    /// ミニマップの表示切り替え
+    /// </summary>
+    /// <param name="isActive"></param>
+    /// <returns></returns>
     IDisposable IMiniMapRenderer.SetActive(bool isActive)
     {
         m_MiniMapwindow.SetActive(isActive);
