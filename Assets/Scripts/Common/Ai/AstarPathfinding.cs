@@ -240,7 +240,7 @@ public static class AStarSearch
     }
 
     /// <summary>
-    /// 二点間のマンハッタン距離を計算する（斜め移動可能）
+    /// 二点間のチェビシェフ距離を計算する（斜め移動可能）
     /// ヒューリスティックコストに使う
     /// </summary>
     /// <param name="distanceX"></param>
