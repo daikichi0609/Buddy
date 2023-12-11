@@ -152,17 +152,17 @@ public static class AStarSearch
                 bool existInOpen = openList.TryGetSamePositionNode(neighbor, out var open); // オープンリストに存在するか
                 bool existInClose = closedList.TryGetSamePositionNode(neighbor, out var close); // クローズリストに存在するか
 
-                // オープンとクローズリストに追加するノードがない
+                // オープンリストとクローズリストに存在しないなら、このノードをオープンリストに追加
                 if (existInOpen == false && existInClose == false)
                     openList.Add(neighbor);
 
-                // クローズリストにコストの大きいノードがあるなら古いノードを削除して新しいノードをオープンに追加
+                // クローズリストにコストの大きいノードがあるなら古いノードを削除して新しいノードをオープンリストに追加
                 else if (existInClose == true && neighbor.SumCost < close.SumCost)
                 {
                     closedList.Remove(close);
                     openList.Add(neighbor);
                 }
-                // オープンリストにコストの大きいノードがあるなら古いノードを削除して新しいノードをオープンに追加
+                // オープンリストにコストの大きいノードがあるなら古いノードを削除して新しいノードをオープンリストに追加
                 else if (existInOpen == true && neighbor.SumCost < open.SumCost)
                 {
                     openList.Remove(open);
