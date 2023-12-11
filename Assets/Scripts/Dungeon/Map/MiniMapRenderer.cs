@@ -393,6 +393,6 @@ public class MiniMapRenderer : MonoBehaviour, IMiniMapRenderer
     IDisposable IMiniMapRenderer.SetActive(bool isActive)
     {
         m_MiniMapwindow.SetActive(isActive);
-        return Disposable.CreateWithState((this, isActive), tuple => tuple.Item1.m_MiniMapwindow.SetActive(!isActive));
+        return Disposable.CreateWithState((this, isActive), tuple => tuple.Item1.m_MiniMapwindow.SetActive(!tuple.isActive));
     }
 }
