@@ -240,7 +240,7 @@ public static class AStarSearch
     }
 
     /// <summary>
-    /// 二点間のチェビシェフ距離を計算する（斜め移動可能）
+    /// 二点間の改良版チェビシェフ距離を計算する（斜め移動時に距離増）
     /// ヒューリスティックコストに使う
     /// </summary>
     /// <param name="distanceX"></param>
