@@ -15,7 +15,7 @@ public enum KeyCodeFlag
     A = 1 << 1,
     S = 1 << 2,
     D = 1 << 3,
-    Right_Shift = 4 << 5,
+    Right_Shift = 1 << 4,
 
     // 攻撃
     E = 1 << 5,
