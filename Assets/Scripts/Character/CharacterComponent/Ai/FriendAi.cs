@@ -86,10 +86,10 @@ public partial class FriendAi : CharaAi, IFriendAi
                     }
                 }
 
-                // 隣り合っているならプレイヤーを見る
+                // 隣り合っている
                 if (isNeighborOn == true)
                 {
-                    // 自分とリーダーが同じ部屋にいるなら
+                    // 自分とリーダーが同じ部屋にいるなら待機
                     if (m_DungeonHandler.TryGetRoomId(m_CharaMove.Position, out var myId) == true &&
                         m_DungeonHandler.TryGetRoomId(playerPos, out var playerId) == true &&
                         myId == playerId)
@@ -97,14 +97,17 @@ public partial class FriendAi : CharaAi, IFriendAi
                         await m_CharaMove.Face(dir);
                         result = m_CharaMove.Wait();
                     }
+                    // 同じ部屋じゃなくて、縦横に隣接なら待機
                     else if (dir.IsDiagonal() == false)
                     {
                         await m_CharaMove.Face(dir);
                         result = m_CharaMove.Wait();
                     }
+                    // 同じ部屋じゃなくて、斜め隣接なら縦横に隣接するように移動
                     else
                         result = await FollowAstarPath(m_UnitHolder.Player);
                 }
+                // 隣り合っていないならプレイヤーを追う
                 else
                     result = await FollowAstarPath(m_UnitHolder.Player);
 
