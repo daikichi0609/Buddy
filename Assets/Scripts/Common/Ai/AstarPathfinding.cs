@@ -100,6 +100,8 @@ public static class AStarSearch
         List<Node> closeList = new List<Node>(); // 調査済みノード
         openList.Add(startNode);
 
+        int calculationCount = 0;
+
         // OpenListが空になるまで続ける
         while (openList.Count > 0)
         {
@@ -121,9 +123,13 @@ public static class AStarSearch
             // goalと同じノードなら終了
             if (currentNode.Equals(goalPos) == true)
             {
+#if DEBUG
+                Debug.Log("計算量：" + calculationCount);
+#endif
                 return RetracePath(startNode, currentNode);
             }
 
+            calculationCount++;
             // 隣接するノードを調査する
             OpenNeighborNode(currentNode, grid, goalPos, openList, closeList);
         }
@@ -142,7 +148,7 @@ public static class AStarSearch
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
 
-        while (currentNode.Equals(startNode) == false)
+        while (currentNode != null)
         {
             path.Add(currentNode);
             currentNode = currentNode.Parent;

@@ -31,6 +31,11 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     protected ICharaStatusAbnormality m_CharaAbnormal;
     protected ICharaSkillHandler m_CharaSkill;
 
+#if DEBUG
+    private List<AStarSearch.Node> m_Path = new List<AStarSearch.Node>();
+    public AStarSearch.Node[] Path => m_Path.ToArray();
+#endif
+
     protected override void Register(ICollector owner)
     {
         base.Register(owner);
@@ -51,7 +56,13 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
     /// 行動を決めて実行する
     /// </summary>
     protected abstract void DecideAndExecuteAction();
-    void IAiAction.DecideAndExecuteAction() => DecideAndExecuteAction();
+    void IAiAction.DecideAndExecuteAction()
+    {
+#if DEBUG
+        m_Path.Clear();
+#endif 
+        DecideAndExecuteAction();
+    }
 
     /// <summary>
     /// 移動する
@@ -90,6 +101,10 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
 
         // パス生成
         var path = AStarSearch.FindPath(new Vector2Int(currentPos.x, currentPos.z), new Vector2Int(targetPos.x, targetPos.z), grid);
+#if DEBUG
+        m_Path = path;
+#endif
+        // パス取得失敗
         if (path.Count == 0)
         {
 #if DEBUG
@@ -97,7 +112,9 @@ public abstract partial class CharaAi : ActorComponentBase, IAiAction
 #endif
             return await Move(DIRECTION.NONE);
         }
-        var first = path[0];
+
+        // 次の目標地点
+        var first = path[1];
         var firstPos = new Vector3Int(first.X, 0, first.Y);
         var dir = Positional.CalculateNormalDirection(m_CharaMove.Position, firstPos);
         return await Move(dir);
