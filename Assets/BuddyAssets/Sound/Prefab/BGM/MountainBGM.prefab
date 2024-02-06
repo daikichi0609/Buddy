@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1929618725428839190}
   - component: {fileID: 1929618725428839191}
   m_Layer: 0
-  m_Name: WhiteBGM
+  m_Name: MountainBGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1884870faca984d5cb749f7284ac7d6e, type: 3}
+  m_audioClip: {fileID: 8300000, guid: a74cd2e87da734537936bee89bff647b, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.2
   m_Pitch: 1

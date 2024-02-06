@@ -21,6 +21,6 @@ MonoBehaviour:
   m_MonsterHouseRate: 0
   m_TrapCountRange: {x: 0, y: 0}
   m_ItemCountRange: {x: 3, y: 5}
-  m_BGM: {fileID: 1929618725428839193, guid: d68d54a58367e461ca6eb03a37726d00, type: 3}
+  m_BGM: {fileID: 1929618725428839193, guid: 6405ec372c728439fac40e1f8d90d7b6, type: 3}
   m_ElementSetup: {fileID: 11400000, guid: e11b7897cdff04e95be6de9d877149fa, type: 2}
   m_CheckPointSetup: {fileID: 0}
