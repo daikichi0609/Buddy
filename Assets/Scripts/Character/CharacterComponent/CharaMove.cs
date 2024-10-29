@@ -63,6 +63,11 @@ public interface ICharaMove : IActorInterface
     /// </summary>
     /// <param name="pos"></param>
     void Warp(Vector3Int pos);
+
+    /// <summary>
+    /// 移動しているか
+    /// </summary>
+    bool IsMoving { get; }
 }
 
 public interface ICharaMoveEvent : IActorEvent
@@ -126,6 +131,21 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     /// 現在の移動タスク
     /// </summary>
     private Task m_MovingTask;
+
+    /// <summary>
+    /// 移動中かどうか
+    /// </summary>
+    private bool IsMoving
+    {
+        get
+        {
+            if (m_MovingTask != null && m_MovingTask.IsCompleted == false)
+                return true;
+
+            return false;
+        }
+    }
+    bool ICharaMove.IsMoving => IsMoving;
 
     /// <summary>
     /// 入れ替わるユニット
@@ -230,12 +250,16 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
                 return false;
             else
             {
+                var move = unit.GetInterface<ICharaMove>();
+                if (move.IsMoving == true)
+                    return false;
+
                 var last = unit.GetInterface<ICharaLastActionHolder>();
                 // ターン消費していないなら入れ違い
                 if (last.LastAction != CHARA_ACTION.NONE)
                     return false; // 入れ違いできないなら移動不可
 
-                var move = unit.GetInterface<ICharaMove>();
+                Debug.Log(last.LastAction);
                 var forced = move.ForcedMove(direction.ToOppositeDir());
                 m_SwitchInfo = new MoveSwitchInfo(unit, forced);
             }
@@ -333,9 +357,8 @@ public class CharaMove : ActorComponentBase, ICharaMove, ICharaMoveEvent
     private async Task WaitMovingTaskComplete()
     {
         // 前の移動タスクの完了を待つ
-        if (m_MovingTask != null)
-            while (m_MovingTask.IsCompleted == false)
-                await Task.Delay(1);
+        while (IsMoving == true)
+            await Task.Delay(1);
     }
 
     /// <summary>
