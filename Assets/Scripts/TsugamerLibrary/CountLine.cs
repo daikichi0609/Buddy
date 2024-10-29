@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -46,3 +45,4 @@ public class CountLine : EditorWindow
         }
     }
 }
+#endif

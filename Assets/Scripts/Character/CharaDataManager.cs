@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.IO;
-using UnityEditor;
 
 public static class CharaDataManager
 {
