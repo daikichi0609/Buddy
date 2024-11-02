@@ -44,6 +44,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5498602457853490414}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -53,7 +54,6 @@ Transform:
   - {fileID: 6631204444992403499}
   - {fileID: 7721726596558713312}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5498602457853490415
 MonoBehaviour:
@@ -81,8 +81,7 @@ MonoBehaviour:
     height: 859
   selectedBlocks:
   - {fileID: 5498602457853490413}
-  selectedCommands:
-  - {fileID: 866200049597434919}
+  selectedCommands: []
   variables: []
   description: 
   stepPause: 0
@@ -629,6 +628,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 7013871215542880426, guid: 88203f457db5047f7af671073420fa3a,
@@ -692,6 +692,9 @@ PrefabInstance:
       value: Boxman
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88203f457db5047f7af671073420fa3a, type: 3}
 --- !u!4 &5498602457450990942 stripped
 Transform:
@@ -704,6 +707,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 6862751102181812592, guid: 9b1ffae6fcd4a4351bb09c6b006ce9b2,
@@ -767,6 +771,9 @@ PrefabInstance:
       value: Lamy
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b1ffae6fcd4a4351bb09c6b006ce9b2, type: 3}
 --- !u!4 &7721726596558713312 stripped
 Transform:
@@ -791,6 +798,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 7013871215542880426, guid: 93b2b5efdf0db4dcf87317d029397078,
@@ -854,6 +862,9 @@ PrefabInstance:
       value: Berry
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93b2b5efdf0db4dcf87317d029397078, type: 3}
 --- !u!114 &6631204444992403498 stripped
 MonoBehaviour:

@@ -37,6 +37,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5498602457853490414}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -46,7 +47,6 @@ Transform:
   - {fileID: 6924781224597143263}
   - {fileID: 5876160422790426466}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5498602457853490415
 MonoBehaviour:
@@ -102,11 +102,11 @@ MonoBehaviour:
   nodeRect:
     serializedVersion: 2
     x: -44.513603
-    y: -70.24043
+    y: -71.29306
     width: 134.73682
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
-  useCustomTint: 0
+  useCustomTint: 1
   itemId: 0
   blockName: "\u30DC\u30B9\u30D0\u30C8\u30EB\u59CB\u3081"
   description: 
@@ -224,8 +224,8 @@ MonoBehaviour:
     Culture=neutral, PublicKeyToken=null
   targetComponentFullname: UnityEngine.Component[]
   targetComponentText: FungusMethodCaller
-  targetMethod: CallInitializerFungusMethod
-  targetMethodText: 'CallInitializerFungusMethod (): Void'
+  targetMethod: LoadHomeScene
+  targetMethodText: 'LoadHomeScene (): Void'
   methodParameters: []
   saveReturnValue: 0
   returnValueVariableKey: 
@@ -426,6 +426,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 6862751102181812592, guid: 11182f5bc5a5d41faa607827ecc0ab80,
@@ -489,6 +490,9 @@ PrefabInstance:
       value: Plis
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11182f5bc5a5d41faa607827ecc0ab80, type: 3}
 --- !u!114 &5876160422790426465 stripped
 MonoBehaviour:
@@ -513,6 +517,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 7013871215542880426, guid: 88203f457db5047f7af671073420fa3a,
@@ -576,6 +581,9 @@ PrefabInstance:
       value: Boxman
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88203f457db5047f7af671073420fa3a, type: 3}
 --- !u!4 &5498602457450990942 stripped
 Transform:
@@ -588,6 +596,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5498602457853490410}
     m_Modifications:
     - target: {fileID: 6862751102181812592, guid: 57e929e1dc4da4bbfa2b51449523708c,
@@ -651,6 +660,9 @@ PrefabInstance:
       value: Dorche
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57e929e1dc4da4bbfa2b51449523708c, type: 3}
 --- !u!114 &6924781224597143260 stripped
 MonoBehaviour:
