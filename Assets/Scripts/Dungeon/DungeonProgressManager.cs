@@ -193,6 +193,7 @@ public class DungeonProgressManager : IDungeonProgressManager
     private async Task FinishDungeon(FINISH_REASON reason)
     {
         int progress = m_DungeonProgressHolder.CurrentDungeonProgress;
+        // 負けイベ処理
         if (progress == 1 && m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBack == false && m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBackComplete == false)
         {
             m_DungeonProgressHolder.FinalBossBattleSetup.IsLoseBack = true;
@@ -210,7 +211,10 @@ public class DungeonProgressManager : IDungeonProgressManager
         else if (reason == FINISH_REASON.BOSS_DEAD)
         {
             m_InGameProgressHolder.DefeatBoss = true;
-            await m_FadeManager.LoadScene(SceneName.SCENE_BOSS_BATTLE);
+            if (m_InGameProgressHolder.IsMaxInGameProgress == false)
+                await m_FadeManager.LoadScene(SceneName.SCENE_BOSS_BATTLE);
+            else
+                await m_FadeManager.LoadScene(SceneName.SCENE_FINAL_BOSS_BATTLE);
         }
     }
 }

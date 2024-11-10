@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Threading.Tasks;
-using Zenject.SpaceFighter;
 using Zenject;
 
 public class FinalBossBattleInitializer : SceneInitializer

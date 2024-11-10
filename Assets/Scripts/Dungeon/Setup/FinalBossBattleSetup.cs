@@ -65,7 +65,7 @@ public class FinalBossBattleSetup : ScriptableObject
     /// <summary>
     /// 負けフラグ通過済み
     /// </summary>
-    [SerializeField, Header("負けフラグ")]
+    [SerializeField, Header("負けフラグ通過済み")]
     private bool m_IsLoseBackComplete;
     public bool IsLoseBackComplete { get => m_IsLoseBackComplete; set => m_IsLoseBackComplete = value; }
 }
